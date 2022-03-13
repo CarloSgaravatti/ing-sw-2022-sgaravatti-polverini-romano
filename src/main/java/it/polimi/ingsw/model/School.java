@@ -26,7 +26,7 @@ public class School {
 
 	}
 
-	public void getStudentsDinigRoom(RealmType r) {
+	public void getStudentsDiningRoom(RealmType r) {
 
 	}
 

@@ -6,11 +6,12 @@ public abstract class Island {
 	private boolean entryTilePresent;
 	private Student[] student;
 
-	private Student[] students;
 
 	public boolean isMotherNaturePresent() {
-		return false;
+		return motherNaturePresent;
 	}
+
+	public void setMotherNaturePresent(boolean motherNaturePresent){}
 
 	public int getInfluence(Player p) {
 		return 0;
