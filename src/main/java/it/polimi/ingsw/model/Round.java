@@ -6,7 +6,7 @@ public class Round {
 	private CharacterCard[] characterCard;
 
 	public Assistant[] getAssistantPlayed() {
-		return null;
+		return assistantPlayed;
 	}
 
 	public void insertAssistant(Assistant a) {

@@ -13,16 +13,21 @@ public abstract class Island {
 
 	public void setMotherNaturePresent(boolean motherNaturePresent){}
 
-	public int getInfluence(Player p) {
-		return 0;
-	}
+	public abstract int getInfluence(Player p);
+
 
 	public boolean isEntryTilePresent() {
 		return false;
 	}
 
-	public void putTower(TowerType t) {
+	public void setEntryTilePresent(boolean entryTilePresent) {
+		this.entryTilePresent = entryTilePresent;
+	}
 
+	public abstract void putTower(TowerType t);
+
+	public TowerType getTowerType(){
+		return towerType;
 	}
 
 }
