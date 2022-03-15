@@ -6,6 +6,11 @@ import it.polimi.ingsw.model.Student;
 public class Character11 extends CharacterCard {
     private Student[] students;
 
+    @Override
+    public void playCard() {
+
+    }
+
     public Student[] getStudents() {
         return students;
     }

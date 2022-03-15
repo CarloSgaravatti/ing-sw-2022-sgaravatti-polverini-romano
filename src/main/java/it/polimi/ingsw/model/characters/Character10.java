@@ -8,6 +8,11 @@ public class Character10 extends CharacterCard {
         return 0;
     }
 
+    @Override
+    public void playCard() {
+
+    }
+
     public void swap(Student[] toEntrance, Student[] toDiningRoom){
 
     }

@@ -7,6 +7,11 @@ public class Character7 extends CharacterCard {
     private static final int numStudents = 6;
     private Student[] students;
 
+    @Override
+    public void playCard() {
+
+    }
+
     public void pickStudents(int num, Student[] studentsToInsert, Student[] studentsToTake){
 
     }

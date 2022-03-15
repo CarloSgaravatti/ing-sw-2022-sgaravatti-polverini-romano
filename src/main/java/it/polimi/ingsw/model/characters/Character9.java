@@ -4,6 +4,11 @@ import it.polimi.ingsw.model.CharacterCard;
 import it.polimi.ingsw.model.RealmType;
 
 public class Character9 extends CharacterCard {
+    @Override
+    public void playCard() {
+
+    }
+
     public RealmType chooseRealm(){
         return null;
     }

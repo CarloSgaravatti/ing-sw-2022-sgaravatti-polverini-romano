@@ -7,4 +7,9 @@ public class Character3 extends CharacterCard {
     public Island choseIsland(Island[] i){
         return null;
     }
+
+    @Override
+    public void playCard() {
+
+    }
 }
