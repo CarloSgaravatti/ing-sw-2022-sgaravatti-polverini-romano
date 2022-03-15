@@ -5,11 +5,11 @@ public class Student {
 	public static final int numStudents = 130;
 
 
-	public void insertInCloud() {
+	public void insertInCloud(Cloud c) {
 
 	}
 
-	public void insertInIsland() {
+	public void insertInIsland(Island chosenIsland) {
 
 	}
 

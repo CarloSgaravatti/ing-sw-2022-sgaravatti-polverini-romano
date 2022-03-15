@@ -6,11 +6,11 @@ public class Assistant {
 	private int motherNatureMovement;
 
 	public int getCardValue() {
-		return 0;
+		return cardValue;
 	}
 
 	public int getMotherNatureMovement() {
-		return 0;
+		return motherNatureMovement;
 	}
 
 	public void playCard() {

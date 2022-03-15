@@ -29,5 +29,8 @@ public class School {
 	public void getStudentsDiningRoom(RealmType r) {
 
 	}
+	public void isProfessorPresent(RealmType r){
+
+	}
 
 }

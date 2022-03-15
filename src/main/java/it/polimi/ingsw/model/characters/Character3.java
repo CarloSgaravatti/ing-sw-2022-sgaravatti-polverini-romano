@@ -2,6 +2,7 @@ package it.polimi.ingsw.model.characters;
 
 import it.polimi.ingsw.model.CharacterCard;
 import it.polimi.ingsw.model.Island;
+import it.polimi.ingsw.model.Player;
 
 public class Character3 extends CharacterCard {
     public Island choseIsland(Island[] i){
@@ -9,7 +10,7 @@ public class Character3 extends CharacterCard {
     }
 
     @Override
-    public void playCard() {
+    public void playCard(Player player) {
 
     }
 }

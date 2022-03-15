@@ -1,6 +1,7 @@
 package it.polimi.ingsw.model.characters;
 
 import it.polimi.ingsw.model.CharacterCard;
+import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.Student;
 
 public class Character7 extends CharacterCard {
@@ -8,7 +9,7 @@ public class Character7 extends CharacterCard {
     private Student[] students;
 
     @Override
-    public void playCard() {
+    public void playCard(Player player) {
 
     }
 

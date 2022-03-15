@@ -1,13 +1,13 @@
 package it.polimi.ingsw.model.characters;
 
 import it.polimi.ingsw.model.CharacterCard;
-import it.polimi.ingsw.model.Island;
+import it.polimi.ingsw.model.Player;
 
 public class Character5 extends CharacterCard {
     private int noEntryTiles;
 
     @Override
-    public void playCard() {
+    public void playCard(Player player) {
 
     }
 
