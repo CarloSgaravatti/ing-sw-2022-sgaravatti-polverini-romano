@@ -44,8 +44,8 @@ public class Player {
 		System.out.println("Chose the assistant you want to play: ");
 		Scanner s1 = new Scanner(System.in);
 		int ass = s1.nextInt();
-		while(1){
-			if(assistants[ass-1].getPlayed==false){
+		while(true){
+			if(assistants[ass-1].getPlayed()==false){
 				// non posso farlo deve essere fatto dentro round
 			}
 		}
