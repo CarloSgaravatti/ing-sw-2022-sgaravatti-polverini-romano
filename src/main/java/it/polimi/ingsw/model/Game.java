@@ -11,6 +11,7 @@ public class Game {
 	private Island[] island;
 	private int numPlayer;
 	private int numRound=0;
+	private Cloud[] clouds;
 
 	public Game(){
 		numPlayer = 0;
@@ -146,6 +147,16 @@ public class Game {
 			players[i].setAssistants(assistants);
 		}
 
+		clouds = new Cloud[numPlayer];
+
+		for(i=0;i<numPlayer;i++){
+			clouds[i] = new Cloud(numPlayer);
+		}
+
+	}
+
+	public Cloud[] getClouds(){
+		return this.clouds;
 	}
 
 }

@@ -8,8 +8,8 @@ public class Cloud {
 	private Student[] students;
 	public static final int MAX_NUM_STUDENTS = 3;
 
-	public Cloud() {
-		students = new Student[MAX_NUM_STUDENTS];
+	public Cloud(int numPlayers) {
+		students = new Student[numPlayers];
 	}
 
 	public int getStudentsNumber() {
