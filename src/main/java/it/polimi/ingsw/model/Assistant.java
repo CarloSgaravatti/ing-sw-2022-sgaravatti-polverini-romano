@@ -5,7 +5,7 @@ public class Assistant {
 	private int cardValue;
 	private int motherNatureMovement;
 	private boolean played = false;
-	public static final int numAssistants = 10;
+	public static final int NUM_ASSISTANTS = 10;
 
 	public int getCardValue() {
 		return cardValue;

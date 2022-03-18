@@ -1,5 +1,8 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.exceptions.EmptyBagException;
+
+import java.util.Random;
 import java.util.Scanner;
 
 public class Game {
@@ -22,7 +25,7 @@ public class Game {
 		numPlayer++;
 	}
 
-	public void start() {
+	public void start() throws EmptyBagException{
 		if(numPlayer>=2 || numPlayer<=4) {
 			started = true;
 			doPreoaration();
@@ -48,7 +51,7 @@ public class Game {
 		return round;
 	}
 
-	public void doPreoaration(){
+	public void doPreoaration() throws EmptyBagException{
 		int i;
 
 		bag = new Bag();
@@ -100,6 +103,20 @@ public class Game {
 		}
 
 		Island[] islands = new Island[Island.NUM_ISLANDS]; // devo creare isole ma non so come fare perchè forse devo usare Singleisland
+		for(i=0;i<Island.NUM_ISLANDS;i++){
+			islands[i] = new SingleIsland();
+		}
+		//ass mother nature and students on islands
+		Random rnd = new Random();
+		int islandMothereNature = rnd.nextInt(Island.NUM_ISLANDS);
+		islands[islandMothereNature].setMotherNaturePresent(true);
+		int islandNoStudent=0;
+		islandNoStudent = (islandMothereNature + 6)%Island.NUM_ISLANDS;
+		for(i=0;i<Island.NUM_ISLANDS;i++){
+			if(i!=islandMothereNature && i!= islandNoStudent){
+				islands[i].addStudent(bag.pickStudent());
+			}
+		}
 
 		//creation of schools and set for esch students
 
