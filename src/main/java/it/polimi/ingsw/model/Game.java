@@ -12,6 +12,7 @@ public class Game {
 	private int numPlayer;
 	private int numRound=0;
 	private Cloud[] clouds;
+	private int coinGeneralSupply;
 
 	public Game(){
 		numPlayer = 0;
@@ -74,7 +75,7 @@ public class Game {
 			}
 		}
 
-		Professor[] professors=new Professor[Professor.numProfessor];
+		Professor[] professors=new Professor[Professor.NUM_PROFESSORS];
 
 
 		professors[RealmType.YELLOW_GNOMES.ordinal()] = new Professor(RealmType.YELLOW_GNOMES);
@@ -98,7 +99,7 @@ public class Game {
 			players[i]=new Player(nick);
 		}
 
-		Island[] islands = new Island[Island.numIslands]; // devo creare isole ma non so come fare perchè forse devo usare Singleisland
+		Island[] islands = new Island[Island.NUM_ISLANDS]; // devo creare isole ma non so come fare perchè forse devo usare Singleisland
 
 		//creation of schools and set for esch students
 
@@ -133,9 +134,9 @@ public class Game {
 
 		int j=1;
 		for(i=0;i<numPlayer;i++){
-			Assistant[] assistants = new Assistant[Assistant.numAssistants];
+			Assistant[] assistants = new Assistant[Assistant.NUM_ASSISTANTS];
 
-			for(i=0;i<Assistant.numAssistants;i++){ //da controllare manca costruttore in assistant e attributo static = 10
+			for(i=0; i<Assistant.NUM_ASSISTANTS; i++){ //da controllare manca costruttore in assistant e attributo static = 10
 				assistants[i] = new Assistant(i+1,j);
 				assistants[i+1] = new Assistant(i+2,j);
 				i++;

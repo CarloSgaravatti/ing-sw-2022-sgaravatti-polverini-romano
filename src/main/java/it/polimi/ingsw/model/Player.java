@@ -54,4 +54,11 @@ public class Player {
 		this.assistants=assistants;
 	}
 
+	public TowerType getTowerType() {
+		return towerType;
+	}
+
+	public int getNumCoins() {
+		return numCoins;
+	}
 }
