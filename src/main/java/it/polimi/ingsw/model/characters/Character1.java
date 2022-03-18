@@ -6,6 +6,16 @@ import it.polimi.ingsw.model.Student;
 
 public class Character1 extends CharacterCard {
     private Student[] students;
+    private static Character1 instance;
+
+    protected Character1() {
+        super(1);
+    }
+
+    public static Character1 getInstance() {
+        if (instance == null) instance = new Character1();
+        return instance;
+    }
 
     @Override
     public void playCard(Player player) {

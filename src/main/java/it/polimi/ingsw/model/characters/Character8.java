@@ -4,6 +4,17 @@ import it.polimi.ingsw.model.CharacterCard;
 import it.polimi.ingsw.model.Player;
 
 public class Character8 extends CharacterCard {
+    private static Character8 instance;
+
+    protected Character8() {
+        super(2);
+    }
+
+    public static Character8 getInstance() {
+        if (instance == null) instance = new Character8();
+        return instance;
+    }
+
     @Override
     public void playCard(Player player) {
 

@@ -1,22 +1,36 @@
 package it.polimi.ingsw.model;
 
-public class Bag {
-	private Student[] students;
+import it.polimi.ingsw.exceptions.EmptyBagException;
 
-	public Student pickStudent() {
-		return null;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class Bag {
+	private final List<Student> students;
+
+	public Bag() {
+		students = new ArrayList<>();
+	}
+
+	public Student pickStudent() throws EmptyBagException {
+		if (isEmpty()) throw new EmptyBagException();
+		Random rnd = new Random();
+		int indexToPick = rnd.nextInt(students.size());
+		Student res = students.get(indexToPick);
+		students.remove(indexToPick);
+		return res;
 	}
 
 	public boolean isEmpty() {
-		return false;
+		return students.isEmpty();
 	}
 
 	public void clear() {
-
+		students.clear();
 	}
 
 	public void insertStudent(Student s) {
-
+		students.add(s);
 	}
-
 }

@@ -5,6 +5,16 @@ import it.polimi.ingsw.model.Island;
 import it.polimi.ingsw.model.Player;
 
 public class Character3 extends CharacterCard {
+    private static Character3 instance;
+
+    protected Character3() {
+        super(3);
+    }
+
+    public Character3 getInstance() {
+        if (instance == null) instance = new Character3();
+        return instance;
+    }
     public Island choseIsland(Island[] i){
         return null;
     }
