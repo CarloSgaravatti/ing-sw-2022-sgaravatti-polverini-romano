@@ -20,13 +20,6 @@ public class Assistant {
 		this.motherNatureMovement = motherNatureMovement;
 	}
 
-	public void playCard() {
-		if(played == false){
-			played = true;
-		}
-
-	}
-
 	public boolean getPlayed() {
 		return played;
 	}

@@ -41,14 +41,12 @@ public class Game {
 		if(numPlayers >=2 || numPlayers <=4) {
 			started = true;
 			doPreparation();
-			//newRound();
 			studentsPerCloud = (numPlayers == 3) ? 4 : 3;
 		}
-		//What i propose:
 		while(!isFinished()) {
 			Round currRound = newRound();
-			currRound.planningPhase(players);
-			currRound.actionPhase(players);
+			currRound.planningPhase();
+			currRound.actionPhase();
 		}
 	}
 

@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.exceptions.EmptyCloudException;
+
 import java.util.Scanner;
 
 public class Player {
@@ -20,7 +22,7 @@ public class Player {
 
 	}
 
-	public void doPlanningPhase() {
+	public void doPlanningPhase() throws EmptyCloudException {
 
 	}
 
@@ -32,6 +34,10 @@ public class Player {
 		return starter;
 	}
 
+	public void setStarter(boolean bol){
+		this.starter=starter;
+	}
+
 	public void setSchool(School s){
 		this.school = s;
 	}
@@ -40,15 +46,15 @@ public class Player {
 		return school;
 	}
 
-	public void playCard() {
-		System.out.println("Chose the assistant you want to play: ");
-		Scanner s1 = new Scanner(System.in);
-		int ass = s1.nextInt();
-		while(true){
-			if(assistants[ass-1].getPlayed()==false){
-				// non posso farlo deve essere fatto dentro round
+	public boolean playCard(int ass/*numero scelto dato dalla view*/, Round round) {
+			// metto ass-1 perchè cosi la persona ha i numeri da scegliere da 1 a 12 inclusi
+		if(!assistants[ass-1].getPlayed()){
+			if(round.checkPlayedCardForAllPlayer(ass-1, nickName) != 0){
+				assistants[ass-1].setPlayed(true);
+				return true;
 			}
 		}
+		return false;
 	}
 	public void setAssistants(Assistant[] assistants){
 		this.assistants=assistants;
@@ -60,5 +66,13 @@ public class Player {
 
 	public int getNumCoins() {
 		return numCoins;
+	}
+
+	public Assistant[] getAssistants() {
+		return assistants;
+	}
+
+	public String getNickName() {
+		return nickName;
 	}
 }
