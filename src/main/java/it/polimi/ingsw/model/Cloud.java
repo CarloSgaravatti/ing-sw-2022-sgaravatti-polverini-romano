@@ -6,24 +6,24 @@ import it.polimi.ingsw.exceptions.StudentsNumberInCloudException;
 public class Cloud {
 	private boolean studentsPresents;
 	private Student[] students;
-	public static final int MAX_NUM_STUDENTS = 3;
 
-	public Cloud(int numPlayers) {
-		students = new Student[numPlayers];
+	public Cloud(int numStudents) {
+		students = new Student[numStudents];
+		studentsPresents = false;
 	}
 
 	public int getStudentsNumber() {
-		return (students[0] == null) ? 0 : 3;
+		return (studentsPresents) ? students.length : 0;
 	}
 
 	public Student[] pickStudents() throws EmptyCloudException {
 		if (students[0] == null) throw new EmptyCloudException();
-		students[0] = null;
+		studentsPresents = false;
 		return students;
 	}
 
-	public void insertStudents(Student[] students) throws StudentsNumberInCloudException {
-		if (students.length != 3) throw new StudentsNumberInCloudException();
+	public void insertStudents(Student ... students) throws StudentsNumberInCloudException {
+		if (students.length != this.students.length) throw new StudentsNumberInCloudException();
 		this.students = students;
 	}
 
