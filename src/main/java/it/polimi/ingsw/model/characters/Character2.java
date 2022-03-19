@@ -10,7 +10,7 @@ public class Character2 extends CharacterCard {
         super(2);
     }
 
-    public Character2 getInstance() {
+    public static Character2 getInstance() {
         if (instance == null) instance = new Character2();
         return instance;
     }

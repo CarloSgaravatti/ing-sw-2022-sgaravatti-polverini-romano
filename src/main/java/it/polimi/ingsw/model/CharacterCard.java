@@ -6,6 +6,7 @@ public abstract class CharacterCard {
 	private int coinPrice;
 	private boolean coinPresent;
 	public static final int NUM_CHARACTERS_PER_GAME = 3;
+	public static final int NUM_CHARACTERS = 12;
 
 	public CharacterCard (int coinPrice){
 		this.coinPrice = coinPrice;

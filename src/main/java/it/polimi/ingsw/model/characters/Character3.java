@@ -11,7 +11,7 @@ public class Character3 extends CharacterCard {
         super(3);
     }
 
-    public Character3 getInstance() {
+    public static Character3 getInstance() {
         if (instance == null) instance = new Character3();
         return instance;
     }
