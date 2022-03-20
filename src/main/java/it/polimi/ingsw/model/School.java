@@ -37,9 +37,19 @@ public class School {
 			entrance[s.getStudentType().ordinal()] ++;
 	}
 
-	public void insertDiningRoom (Student s) {
+	//These two methods return true if the player puts a student in a place which gives him a coin.
+	//The first method is useful because a character card can give the opportunity to put a student
+	//directly in the dining room, without passing from the entrance.
+	public boolean insertDiningRoom (Student s) {
 		studentDiningRoom.add(s);
 		diningRoom[s.getStudentType().ordinal()] ++;
+		int newStudentsDiningRoom = diningRoom[s.getStudentType().ordinal()];
+		//maybe the return condition can be done better
+		return (newStudentsDiningRoom == 3 || newStudentsDiningRoom == 6 || newStudentsDiningRoom == 9);
+	}
+
+	public boolean moveFromEntranceToDiningRoom (RealmType studentType) throws StudentNotFoundException{
+		return insertDiningRoom(removeStudentEntrance(studentType));
 	}
 
 	public void insertProfessor (Professor p) {
@@ -59,13 +69,7 @@ public class School {
 	}
 
 	public void sendStudentToIsland (Island island, RealmType studentType) throws StudentNotFoundException {
-		Optional<Student> toEliminate = studentEntrance.stream()
-				.filter(a -> a.getStudentType() == studentType)
-				.findFirst();
-		if (toEliminate.isEmpty()) throw new StudentNotFoundException();
-		studentEntrance.remove(toEliminate.get());
-		entrance[studentType.ordinal()] --;
-		island.addStudent(toEliminate.get());
+		island.addStudent(removeStudentEntrance(studentType));
 	}
 
 	public int getNumStudentsDiningRoom (RealmType r) {
@@ -82,5 +86,16 @@ public class School {
 
 	public int getNumTowers() {
 		return numTowers;
+	}
+
+	//This method is used when a student is moved from entrance to dining room or island
+	private Student removeStudentEntrance(RealmType studentType) throws StudentNotFoundException{
+		Optional<Student> toEliminate = studentEntrance.stream()
+				.filter(a -> a.getStudentType() == studentType)
+				.findFirst();
+		if (toEliminate.isEmpty()) throw new StudentNotFoundException();
+		studentEntrance.remove(toEliminate.get());
+		entrance[studentType.ordinal()] --;
+		return toEliminate.get();
 	}
 }

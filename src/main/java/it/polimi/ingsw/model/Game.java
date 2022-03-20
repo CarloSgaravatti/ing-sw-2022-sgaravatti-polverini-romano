@@ -6,21 +6,19 @@ import it.polimi.ingsw.exceptions.EmptyCloudException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Scanner;
 
 public class Game {
-
 	private boolean started;
-	private Player[] players;
-	private Round round;
-	private Bag bag;
-	private Island[] island;
+	private final List<Player> players;
+	private Round currRound;
+	private final Bag bag;
+	private final Island[] islands;
 	private int numPlayers;
 	private int numRound;
 	private Cloud[] clouds;
 	private int studentsPerCloud;
 	private int coinGeneralSupply;
-	private CharacterCard[] characterCards;
+	private final CharacterCard[] characterCards;
 
 	public Game(){
 		numPlayers = 0;
@@ -29,20 +27,19 @@ public class Game {
 		bag = new Bag();
 		coinGeneralSupply = 20;
 		characterCards = new CharacterCard[CharacterCard.NUM_CHARACTERS_PER_GAME];
-	}
-
-	public void addPlayer(Player p) {
-		numPlayers++;
+		islands = new Island[Island.NUM_ISLANDS];
+		players = new ArrayList<>();
 	}
 
 	public void start() throws EmptyBagException, EmptyCloudException {
-		//maybe it is not necessary the if instruction, because someone call start()
+		//maybe it is not necessary the if instruction, because someone calls start()
 		//only when there is a correct number of players
-		if(numPlayers >=2 || numPlayers <=4) {
+		if(numPlayers >=2 && numPlayers <=4) {
 			started = true;
 			doPreparation();
 			studentsPerCloud = (numPlayers == 3) ? 4 : 3;
 		}
+		//At the moment, to test you have to comment these lines
 		while(!isFinished()) {
 			Round currRound = newRound();
 			currRound.planningPhase();
@@ -50,8 +47,14 @@ public class Game {
 		}
 	}
 
+	public void addPlayer(String nickname) {
+		numPlayers++;
+		coinGeneralSupply--;
+		players.add(new Player(nickname));
+	}
+
 	public int getNumPlayers(){
-		return numPlayers;
+		return players.size();
 	}
 
 	public boolean isStarted() {
@@ -70,25 +73,13 @@ public class Game {
 
 	public void doPreparation() throws EmptyBagException{
 		int i;
-		//creating list of students and chose the type
-		for(i=0;i<Student.NUM_STUDENTS;i++){
-			if(i<26){
-				bag.insertStudent(new Student(RealmType.YELLOW_GNOMES));
-			}
-			if(i>=26 && i<52){
-				bag.insertStudent(new Student(RealmType.BLUE_UNICORNS));
-			}
-			if(i>=52 && i<78){
-				bag.insertStudent(new Student(RealmType.GREEN_FROGS));
-			}
-			if(i>=78 && i<104){
-				bag.insertStudent(new Student(RealmType.RED_DRAGONS));
-			}
-			if(i>=104){
-				bag.insertStudent(new Student(RealmType.PINK_FAIRES));
-			}
+		//insert students in bag
+		int studentsPerType = Student.NUM_STUDENTS / RealmType.values().length;//=26
+		for(i = 0; i < Student.NUM_STUDENTS; i++) {
+			bag.insertStudent(new Student(RealmType.values()[i / studentsPerType]));
 		}
 
+		//TODO: someone have to save these professor
 		Professor[] professors = new Professor[Professor.NUM_PROFESSORS];
 		professors[RealmType.YELLOW_GNOMES.ordinal()] = new Professor(RealmType.YELLOW_GNOMES);
 		professors[RealmType.BLUE_UNICORNS.ordinal()] = new Professor(RealmType.BLUE_UNICORNS);
@@ -96,76 +87,54 @@ public class Game {
 		professors[RealmType.RED_DRAGONS.ordinal()] = new Professor(RealmType.RED_DRAGONS);
 		professors[RealmType.PINK_FAIRES.ordinal()] = new Professor(RealmType.PINK_FAIRES);
 
-		players = new Player[numPlayers];
-		for(i=0; i< numPlayers; i++){
-			// chose nickname and create player
-			System.out.println("Chose your nickname: ");
-			Scanner s1 = new Scanner(System.in);
-			String nick = s1.nextLine();
-			players[i]=new Player(nick);
-		}
-		coinGeneralSupply -= numPlayers;
-
-		Island[] islands = new Island[Island.NUM_ISLANDS]; // devo creare isole ma non so come fare perchè forse devo usare Singleisland
-		for(i=0;i<Island.NUM_ISLANDS;i++){
+		//islands = new Island[Island.NUM_ISLANDS];
+		for(i = 0;i < Island.NUM_ISLANDS; i++){
 			islands[i] = new SingleIsland();
 		}
-		//ass mother nature and students on islands
+		//put mother nature and students on islands
 		Random rnd = new Random();
 		int islandMotherNature = rnd.nextInt(Island.NUM_ISLANDS);
 		islands[islandMotherNature].setMotherNaturePresent(true);
-		int islandNoStudent=0;
-		islandNoStudent = (islandMotherNature + 6)%Island.NUM_ISLANDS;
-		for(i=0;i<Island.NUM_ISLANDS;i++){
-			if(i!=islandMotherNature && i!= islandNoStudent){
+		int islandNoStudent = (islandMotherNature + 6) % Island.NUM_ISLANDS;
+		for(i = 0;i < Island.NUM_ISLANDS; i++) {
+			if(i != islandMotherNature && i != islandNoStudent)
 				islands[i].addStudent(bag.pickStudent());
+		}
+
+		//creation of schools and set for each player
+		for(i = 0; i < numPlayers; i++){
+			if(numPlayers == 2 || numPlayers == 4) {
+				if(i == 0)
+					players.get(i).setSchool(new School(8, TowerType.WHITE));
+				if(i == 1)
+					players.get(i).setSchool(new School(8, TowerType.BLACK));
+			}
+			if(numPlayers == 3) {
+				if(i == 0)
+					players.get(i).setSchool(new School(6, TowerType.WHITE));
+				if(i == 1)
+					players.get(i).setSchool(new School(6, TowerType.BLACK));
+				if(i == 2)
+					players.get(i).setSchool(new School(6, TowerType.GREY));
 			}
 		}
 
-		//creation of schools and set for each student
-		School[] schools = new School[numPlayers];
-		for(i=0; i< numPlayers; i++){
-			if(numPlayers ==2 || numPlayers ==4) {
-				if(i==0) {
-					schools[i] = new School(8, TowerType.WHITE);
-					players[i].setSchool(schools[i]);
-				}
-				if(i==1){
-					schools[i] = new School(8, TowerType.BLACK);
-					players[i].setSchool(schools[i]);
-				}
-			}
-			if(numPlayers ==3) {
-				if(i==0) {
-					schools[i] = new School(6, TowerType.WHITE);
-					players[i].setSchool(schools[i]);
-				}
-				if(i==1){
-					schools[i] = new School(6, TowerType.BLACK);
-					players[i].setSchool(schools[i]);
-				}
-				if(i==2){
-					schools[i] = new School(6, TowerType.GREY);
-					players[i].setSchool(schools[i]);
-				}
-			}
-		}
-
-		int j=1;
-		for(i=0; i< numPlayers; i++){
+		//TODO: created to much assistants, two assistants are created at every iteration
+		int j = 1;
+		for(i = 0; i < numPlayers; i++){
 			Assistant[] assistants = new Assistant[Assistant.NUM_ASSISTANTS];
-			for(i=0; i<Assistant.NUM_ASSISTANTS; i++){ //da controllare manca costruttore in assistant e attributo static = 10
-				assistants[i] = new Assistant(i+1,j);
-				assistants[i+1] = new Assistant(i+2,j);
-				i++;
+			for(int k = 0; k < Assistant.NUM_ASSISTANTS; k++){ //da controllare manca costruttore in assistant e attributo static = 10
+				assistants[k] = new Assistant(k+1,j);
+				assistants[k+1] = new Assistant(k+2,j);
+				k++;
 				j++;
 			}
 			// set assistant deck to all players
-			players[i].setAssistants(assistants);
+			players.get(i).setAssistants(assistants);
 		}
 
 		clouds = new Cloud[numPlayers];
-		for(i=0; i< numPlayers; i++){
+		for(i = 0; i < numPlayers; i++) {
 			clouds[i] = new Cloud(studentsPerCloud);
 		}
 		//create character cards
@@ -193,6 +162,10 @@ public class Game {
 	}
 
 	public Player[] getPlayers () {
-		return players;
+		return players.toArray(new Player[0]);
+	}
+
+	public Island[] getIslands() {
+		return islands;
 	}
 }
