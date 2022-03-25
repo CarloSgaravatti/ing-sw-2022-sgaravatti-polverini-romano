@@ -10,7 +10,7 @@ public class GameController {
 	private Game game;
 
 	public void startGame() {
-
+		game.start();
 	}
 
 	public void endGame() {
@@ -22,15 +22,19 @@ public class GameController {
 	}
 
 	public Game getModel() {
-		return null;
+		return game;
 	}
 
 	public TurnController getTurnController() {
-		return null;
+		return turnController;
 	}
 
 	public ActionController getActionController() {
-		return null;
+		return actionController;
+	}
+
+	public void setGame(){
+		this.game=initController.getGame();
 	}
 
 }

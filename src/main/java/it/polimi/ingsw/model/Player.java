@@ -13,17 +13,9 @@ public class Player {
 	private Assistant[] assistants;
 
 	public Player(String nickName){
-		numCoins = 0;
+		numCoins = 1;
 		starter = false;
 		this.nickName = nickName;
-	}
-
-	public void doActionPhase() {
-
-	}
-
-	public void doPlanningPhase() throws EmptyCloudException {
-
 	}
 
 	public void chooseCloud(Cloud cloud) {
@@ -75,4 +67,9 @@ public class Player {
 	public String getNickName() {
 		return nickName;
 	}
+
+	public void setTowerType(TowerType type){
+		this.towerType = type;
+	}
+
 }

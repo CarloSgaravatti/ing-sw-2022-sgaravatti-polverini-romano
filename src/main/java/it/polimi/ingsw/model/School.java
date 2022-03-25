@@ -16,7 +16,6 @@ public class School {
 	private int numTowers;
 	private final List<Student> studentDiningRoom;
 	private final List<Student> studentEntrance;
-	private final List<Professor> professors;
 
 	public School (int numTower, TowerType towerType) {
 		this.towerType = towerType;
@@ -28,7 +27,6 @@ public class School {
 			professorTable[i] = false;
 		studentEntrance = new ArrayList<>();
 		studentDiningRoom = new ArrayList<>();
-		professors = new ArrayList<>();
 	}
 
 	public void insertEntrance (Student ... students){
@@ -52,14 +50,12 @@ public class School {
 		return insertDiningRoom(removeStudentEntrance(studentType));
 	}
 
-	public void insertProfessor (Professor p) {
-		professorTable[p.getProfessorType().ordinal()] = true;
-		professors.add(p);
+	public void insertProfessor (RealmType type) {
+		professorTable[type.ordinal()] = true;
 	}
 
-	public void removeProfessor (Professor p){
-		professorTable[p.getProfessorType().ordinal()] = false;
-		professors.remove(p);
+	public void removeProfessor (RealmType type){
+		professorTable[type.ordinal()] = false;
 	}
 
 	public void sendTowerToIsland (Island island) throws SchoolWithoutTowersException {
