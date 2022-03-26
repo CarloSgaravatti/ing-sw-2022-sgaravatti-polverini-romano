@@ -1,15 +1,18 @@
 package it.polimi.ingsw.model.characters;
 
-import it.polimi.ingsw.model.CharacterCard;
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.Student;
+import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.effects.StudentContainer;
 
-public class Character11 extends CharacterCard {
-    private Student[] students;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Character11 extends CharacterCard implements StudentContainer {
+    private final List<Student> students;
     private static Character11 instance;
 
     protected Character11() {
-        super(2);
+        super(2, 11);
+        students = new ArrayList<>();
     }
 
     public static Character11 getInstance() {
@@ -22,16 +25,18 @@ public class Character11 extends CharacterCard {
 
     }
 
-    public Student[] getStudents() {
-        return students;
+    @Override
+    public List<Student> getStudents() {
+        return null;
     }
 
-    //Send to DiningRoom
-    public void pickStudent(Student s){
-
+    @Override
+    public Student pickStudent(RealmType studentType) {
+        return null;
     }
 
-    public void insertStudent(Student s){
+    @Override
+    public void insertStudent(Student student) {
 
     }
 }

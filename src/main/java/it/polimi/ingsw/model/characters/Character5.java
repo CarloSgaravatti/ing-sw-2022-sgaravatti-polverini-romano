@@ -8,7 +8,7 @@ public class Character5 extends CharacterCard {
     private static Character5 instance;
 
     protected Character5() {
-        super(2);
+        super(2, 5);
     }
 
     public static Character5 getInstance() {

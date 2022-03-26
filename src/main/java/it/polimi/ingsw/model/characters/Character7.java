@@ -1,16 +1,19 @@
 package it.polimi.ingsw.model.characters;
 
-import it.polimi.ingsw.model.CharacterCard;
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.Student;
+import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.effects.StudentContainer;
 
-public class Character7 extends CharacterCard {
-    private static final int numStudents = 6;
-    private Student[] students;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Character7 extends CharacterCard implements StudentContainer {
+    private final int NUM_STUDENTS = 6;
+    private final List<Student> students;
     private static Character7 instance;
 
     protected Character7() {
-        super(1);
+        super(1, 7);
+        students = new ArrayList<>();
     }
 
     public static Character7 getInstance() {
@@ -18,13 +21,23 @@ public class Character7 extends CharacterCard {
         return instance;
     }
 
-
     @Override
     public void playCard(Player player) {
+        player.getTurnEffect().setStudentContainer(this);
+    }
+
+    @Override
+    public Student pickStudent(RealmType studentType) {
+        return null;
+    }
+
+    @Override
+    public void insertStudent(Student student) {
 
     }
 
-    public void pickStudents(int num, Student[] studentsToInsert, Student[] studentsToTake){
-
+    @Override
+    public List<Student> getStudents() {
+        return null;
     }
 }

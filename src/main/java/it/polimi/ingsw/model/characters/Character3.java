@@ -8,15 +8,12 @@ public class Character3 extends CharacterCard {
     private static Character3 instance;
 
     protected Character3() {
-        super(3);
+        super(3, 3);
     }
 
     public static Character3 getInstance() {
         if (instance == null) instance = new Character3();
         return instance;
-    }
-    public Island choseIsland(Island[] i){
-        return null;
     }
 
     @Override

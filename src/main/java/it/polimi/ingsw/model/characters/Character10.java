@@ -8,7 +8,7 @@ public class Character10 extends CharacterCard {
     private static Character10 instance;
 
     protected Character10() {
-        super(1);
+        super(1, 10);
     }
 
     public static Character10 getInstance() {
@@ -16,16 +16,8 @@ public class Character10 extends CharacterCard {
         return instance;
     }
 
-    public int chooseNumSwap(){
-        return 0;
-    }
-
     @Override
     public void playCard(Player player) {
-
-    }
-
-    public void swap(Student[] toEntrance, Student[] toDiningRoom){
 
     }
 }

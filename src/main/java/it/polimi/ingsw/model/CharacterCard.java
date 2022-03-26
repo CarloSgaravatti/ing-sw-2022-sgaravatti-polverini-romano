@@ -2,14 +2,18 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.CoinAlreadyPresentException;
 
+import java.util.Objects;
+
 public abstract class CharacterCard {
+	private final int id;
 	private int coinPrice;
 	private boolean coinPresent;
 	public static final int NUM_CHARACTERS_PER_GAME = 3;
 	public static final int NUM_CHARACTERS = 12;
 
-	public CharacterCard (int coinPrice){
+	public CharacterCard (int coinPrice, int id){
 		this.coinPrice = coinPrice;
+		this.id = id;
 		coinPresent = false;
 	}
 
@@ -25,4 +29,17 @@ public abstract class CharacterCard {
 	}
 
 	public abstract void playCard(Player player);
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof CharacterCard)) return false;
+		CharacterCard that = (CharacterCard) o;
+		return id == that.id;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
 }

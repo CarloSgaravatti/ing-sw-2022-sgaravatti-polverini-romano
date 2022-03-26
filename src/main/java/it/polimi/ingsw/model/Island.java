@@ -1,16 +1,18 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.modelObservables.MotherNatureMovementObservable;
+
 import java.util.List;
 
-public abstract class Island {
+public abstract class Island extends MotherNatureMovementObservable {
 	private TowerType towerType;
 	private boolean motherNaturePresent;
-	private boolean entryTilePresent;
+	private boolean noEntryTilePresent;
 	public static final int NUM_ISLANDS = 12;
 
 	public Island() {
 		motherNaturePresent = false;
-		entryTilePresent = false;
+		noEntryTilePresent = false;
 	}
 
 	protected Island(TowerType towerType){
@@ -24,7 +26,11 @@ public abstract class Island {
 
 	public abstract List<Student> getStudents();
 
+	public abstract int getNumStudentsOfType (RealmType studentType);
+
 	public abstract void addStudent(Student s);
+
+	public abstract int getNumTowers();
 
 	public boolean isMotherNaturePresent() {
 		return motherNaturePresent;
@@ -32,14 +38,18 @@ public abstract class Island {
 
 	public void setMotherNaturePresent(boolean motherNaturePresent){
 		this.motherNaturePresent = motherNaturePresent;
+		if (!noEntryTilePresent && motherNaturePresent) {
+			notifyObservers(this);
+		}
+		//TODO: gestire il caso con no entry tiles
 	}
 
-	public boolean isEntryTilePresent() {
-		return entryTilePresent;
+	public boolean isNoEntryTilePresent() {
+		return noEntryTilePresent;
 	}
 
-	public void setEntryTilePresent(boolean entryTilePresent) {
-		this.entryTilePresent = entryTilePresent;
+	public void setNoEntryTilePresent(boolean noEntryTilePresent) {
+		this.noEntryTilePresent = noEntryTilePresent;
 	}
 
 	public TowerType getTowerType() {

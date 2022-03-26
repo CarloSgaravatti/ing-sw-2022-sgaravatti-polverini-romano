@@ -7,7 +7,7 @@ public class Character2 extends CharacterCard {
     private static Character2 instance;
 
     protected Character2() {
-        super(2);
+        super(2, 2);
     }
 
     public static Character2 getInstance() {
@@ -16,6 +16,6 @@ public class Character2 extends CharacterCard {
     }
     @Override
     public void playCard(Player player) {
-
+        player.getTurnEffect().setProfessorPrecedence(true);
     }
 }

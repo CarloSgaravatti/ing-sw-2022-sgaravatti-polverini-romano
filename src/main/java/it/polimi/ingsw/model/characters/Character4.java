@@ -4,10 +4,11 @@ import it.polimi.ingsw.model.CharacterCard;
 import it.polimi.ingsw.model.Player;
 
 public class Character4 extends CharacterCard {
+    private static final int MOTHER_NATURE_INCREMENT = 2;
     private static Character4 instance;
 
     protected Character4() {
-        super(1);
+        super(1, 4);
     }
 
     public static Character4 getInstance() {
@@ -16,6 +17,6 @@ public class Character4 extends CharacterCard {
     }
     @Override
     public void playCard(Player player) {
-
+        player.getTurnEffect().incrementMotherNatureMovement(MOTHER_NATURE_INCREMENT);
     }
 }

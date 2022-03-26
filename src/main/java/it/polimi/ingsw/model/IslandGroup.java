@@ -8,14 +8,17 @@ import java.util.Random;
 
 public class IslandGroup extends Island {
 	private final List<Island> islands;
+	private int numTowers;
 
-	public IslandGroup(Island ... islands) throws IllegalIslandGroupException {
+	public IslandGroup(Island ... islands) /*throws IllegalIslandGroupException*/ {
 		super(islands[0].getTowerType());
 		this.islands = new ArrayList<>();
+		numTowers = 0;
 		for (Island i: islands) {
-			if (i.getTowerType() == null || i.getTowerType() != getTowerType())
-				throw new IllegalIslandGroupException();
+			/*if (i.getTowerType() == null || i.getTowerType() != getTowerType())
+				throw new IllegalIslandGroupException();*/
 			this.islands.add(i);
+			numTowers += i.getNumTowers();
 		}
 	}
 
@@ -46,5 +49,17 @@ public class IslandGroup extends Island {
 		Random rnd = new Random();
 		int islandToInsert = rnd.nextInt(islands.size());
 		islands.get(islandToInsert).addStudent(s);
+	}
+
+	@Override
+	public int getNumStudentsOfType (RealmType studentType) {
+		return islands.stream()
+				.map(i -> i.getNumStudentsOfType(studentType))
+				.reduce(0, Integer::sum);
+	}
+
+	@Override
+	public int getNumTowers() {
+		return numTowers;
 	}
 }

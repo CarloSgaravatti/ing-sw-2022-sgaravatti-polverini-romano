@@ -1,15 +1,21 @@
 package it.polimi.ingsw.model.characters;
 
-import it.polimi.ingsw.model.CharacterCard;
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.Student;
+import it.polimi.ingsw.exceptions.StudentNotFoundException;
+import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.effects.StudentContainer;
 
-public class Character1 extends CharacterCard {
-    private Student[] students;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+public class Character1 extends CharacterCard implements StudentContainer {
+    private final List<Student> students;
     private static Character1 instance;
+    private final int MAX_NUM_STUDENTS = 4;
 
     protected Character1() {
-        super(1);
+        super(1, 1);
+        students = new ArrayList<>();
     }
 
     public static Character1 getInstance() {
@@ -19,19 +25,25 @@ public class Character1 extends CharacterCard {
 
     @Override
     public void playCard(Player player) {
-
+        player.getTurnEffect().setStudentContainer(this);
     }
 
-    public Student[] getStudents() {
+    @Override
+    public List<Student> getStudents() {
         return students;
     }
 
-    //Send to island
-    public void pickStudent(Student s){
-
+    @Override
+    public Student pickStudent(RealmType studentType) throws StudentNotFoundException {
+        Optional<Student> student = students.stream()
+                .filter(s -> s.getStudentType() == studentType)
+                .findAny();
+        if (student.isEmpty()) throw new StudentNotFoundException();
+        return student.get();
     }
 
-    public void insertStudent(Student s){
-
+    @Override
+    public void insertStudent(Student student) {
+        students.add(student);
     }
 }

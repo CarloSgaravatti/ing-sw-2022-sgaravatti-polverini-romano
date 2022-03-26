@@ -2,13 +2,12 @@ package it.polimi.ingsw.model.characters;
 
 import it.polimi.ingsw.model.CharacterCard;
 import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.RealmType;
 
 public class Character9 extends CharacterCard {
     private static Character9 instance;
 
     protected Character9() {
-        super(3);
+        super(3, 9);
     }
 
     public static Character9 getInstance() {
@@ -19,9 +18,5 @@ public class Character9 extends CharacterCard {
     @Override
     public void playCard(Player player) {
 
-    }
-
-    public RealmType chooseRealm(){
-        return null;
     }
 }

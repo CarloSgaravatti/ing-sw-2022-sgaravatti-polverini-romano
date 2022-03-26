@@ -2,13 +2,14 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.SchoolWithoutTowersException;
 import it.polimi.ingsw.exceptions.StudentNotFoundException;
+import it.polimi.ingsw.model.modelObservables.ProfessorPresenceObservable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class School {
+public class School extends ProfessorPresenceObservable {
 	private final int[] entrance;
 	private final int[] diningRoom;
 	private final boolean[] professorTable;
@@ -16,6 +17,7 @@ public class School {
 	private int numTowers;
 	private final List<Student> studentDiningRoom;
 	private final List<Student> studentEntrance;
+	private final List<Professor> professors;
 
 	public School (int numTower, TowerType towerType) {
 		this.towerType = towerType;
@@ -27,6 +29,8 @@ public class School {
 			professorTable[i] = false;
 		studentEntrance = new ArrayList<>();
 		studentDiningRoom = new ArrayList<>();
+		professors = new ArrayList<>();
+		//Pick students from bag?
 	}
 
 	public void insertEntrance (Student ... students){
@@ -46,20 +50,22 @@ public class School {
 		return (newStudentsDiningRoom == 3 || newStudentsDiningRoom == 6 || newStudentsDiningRoom == 9);
 	}
 
-	public boolean moveFromEntranceToDiningRoom (RealmType studentType) throws StudentNotFoundException{
-		return insertDiningRoom(removeStudentEntrance(studentType));
+	public boolean moveFromEntranceToDiningRoom (RealmType studentType) throws StudentNotFoundException {
+		boolean res = insertDiningRoom(removeStudentEntrance(studentType));
+		notifyObservers(studentType);
+		return res;
 	}
 
-	public void insertProfessor (RealmType type) {
-		professorTable[type.ordinal()] = true;
+	public void insertProfessor (RealmType professorType) {
+		professorTable[professorType.ordinal()] = true;
 	}
 
-	public void removeProfessor (RealmType type){
-		professorTable[type.ordinal()] = false;
+	public void removeProfessor (RealmType professorType){
+		professorTable[professorType.ordinal()] = false;
 	}
 
-	public void sendTowerToIsland (Island island) throws SchoolWithoutTowersException {
-		if (numTowers == 0) throw new SchoolWithoutTowersException();
+	public void sendTowerToIsland (Island island) /*throws SchoolWithoutTowersException*/ {
+		//if (numTowers == 0) throw new SchoolWithoutTowersException();
 		island.putTower(towerType);
 		numTowers--;
 	}
@@ -82,6 +88,10 @@ public class School {
 
 	public int getNumTowers() {
 		return numTowers;
+	}
+
+	public void insertTower() {
+		numTowers++;
 	}
 
 	//This method is used when a student is moved from entrance to dining room or island

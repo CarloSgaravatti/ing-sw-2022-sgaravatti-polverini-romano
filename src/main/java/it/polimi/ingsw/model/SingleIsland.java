@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SingleIsland extends Island {
-    private List<Student> students;
+    private final List<Student> students;
+    private static final int NUM_TOWERS_PER_ISLAND = 1;
 
     public SingleIsland() {
         super();
@@ -38,9 +39,15 @@ public class SingleIsland extends Island {
         this.students.add(s);
     }
 
-    private int getNumStudentsOfType (final RealmType r) {
+    @Override
+    public int getNumStudentsOfType (RealmType studentType) {
         return (int) this.students.stream()
-                .filter((s) -> s.getStudentType() == r)
+                .filter((s) -> s.getStudentType() == studentType)
                 .count();
+    }
+
+    @Override
+    public int getNumTowers(){
+        return NUM_TOWERS_PER_ISLAND;
     }
 }

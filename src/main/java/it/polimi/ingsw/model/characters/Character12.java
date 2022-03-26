@@ -9,7 +9,7 @@ public class Character12 extends CharacterCard {
     private static Character12 instance;
 
     protected Character12() {
-        super(3);
+        super(3, 12);
     }
 
     public static Character12 getInstance() {
@@ -19,15 +19,6 @@ public class Character12 extends CharacterCard {
 
     @Override
     public void playCard(Player player) {
-
-    }
-
-    public RealmType chooseRealm(){
-        return null;
-    }
-
-    //For all players
-    public void sendToBag(Student[] students){
 
     }
 }

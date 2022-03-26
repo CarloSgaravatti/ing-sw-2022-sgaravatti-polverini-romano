@@ -1,23 +1,22 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.exceptions.EmptyBagException;
-import it.polimi.ingsw.exceptions.EmptyCloudException;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
-public class Game {
+public class Game implements ModelObserver{
 	private boolean started;
 	private final List<Player> players;
 	private final Bag bag;
 	private final List<Island> islands;
 	private int numPlayers;
 	private int numRound;
-	private Cloud[] clouds;
+	private final Cloud[] clouds;
 	private int studentsPerCloud;
 	private int coinGeneralSupply;
 	private final CharacterCard[] characterCards;
+	private int indexActivePlayer;
 	private final static int NUM_STUDENTS = 130;
 
 	public Game(List<Island> islands,Cloud[] clouds){
@@ -54,11 +53,11 @@ public class Game {
 
 	public void moveMotherNature(int movement /*Movement inteso gia la scelta del giocatore di quanto muovere madre natura*/){
 		int i=0;
-		while(!islands.get(i).isMotherNaturePresent() && i<islands.size()){
+		while(!islands.get(i).isMotherNaturePresent() && i<islands.size()) {
 			i++;
 		}
 		islands.get(i).setMotherNaturePresent(false);
-		i = (i+movement)%islands.size();
+		i = (i + movement) % islands.size();
 		islands.get(i).setMotherNaturePresent(true);
 	}
 
@@ -88,6 +87,97 @@ public class Game {
 			}while(charactersCreated.contains(characterToCreate));
 			charactersCreated.add(characterToCreate);
 			characterCards[i] = CharacterCreator.getCharacter(characterToCreate+1);
+		}
+	}
+
+	public CharacterCard[] getCharacterCards() {
+		return characterCards;
+	}
+
+	public Player getPlayerByTowerType(TowerType towerType) {
+		for (Player p: players) {
+			if (p.getSchool().getTowerType() == towerType) return p;
+		}
+		//temporary solution
+		return null;
+	}
+
+	public void setIndexActivePlayer(int indexActivePlayer) {
+		this.indexActivePlayer = indexActivePlayer;
+	}
+
+	//This method maybe can be done in a better way
+	@Override
+	public void updateProfessorPresence(RealmType studentType) {
+		Optional<Player> currPlayerProfessor = players.stream()
+				.filter(p -> p.getSchool().isProfessorPresent(studentType))
+				.findFirst();
+		int indexPlayerProfessor = currPlayerProfessor.map(players::indexOf).orElseGet(() -> numPlayers + 1);
+		int maxStudents = 0;
+		Player playerTakeProfessor = null;
+		if (currPlayerProfessor.isPresent()) {
+			maxStudents = currPlayerProfessor.get().getSchool().getNumStudentsDiningRoom(studentType);
+			playerTakeProfessor = currPlayerProfessor.get();
+		}
+		for (int i = 0; i < numPlayers; i++) {
+			if (i != indexPlayerProfessor) {
+				Player currPlayer = players.get(i);
+				int students = currPlayer.getSchool().getNumStudentsDiningRoom(studentType);
+				//Only one player can have the professor precedence at a time
+				if (students > maxStudents || (students == maxStudents &&
+						currPlayer.getTurnEffect().isProfessorPrecedence())) {
+					playerTakeProfessor = currPlayer;
+					maxStudents = students;
+				}
+			}
+		}
+		if (playerTakeProfessor != null) {
+			currPlayerProfessor.ifPresent(p -> p.getSchool().removeProfessor(studentType));
+			playerTakeProfessor.getSchool().insertProfessor(studentType);
+		}
+	}
+
+	@Override
+	public void updateIslandTower(Island island) {
+		List<Integer> playerInfluences = new ArrayList<>();
+		int maxInfluence = 0;
+		for (int i = 0; i < numPlayers; i++) {
+			playerInfluences.add(players.get(indexActivePlayer).getTurnEffect().getInfluence(island, players.get(i)));
+			if (playerInfluences.get(i) > maxInfluence) {
+				maxInfluence = playerInfluences.get(i);
+			}
+		}
+		int maxInfluenceOcc = 0;
+		for (Integer i: playerInfluences) {
+			if (i == maxInfluence) maxInfluenceOcc++;
+		}
+		Player playerMaxInfluence = players.get(playerInfluences.indexOf(maxInfluence));
+		if (maxInfluenceOcc == 1 && island.getTowerType() != playerMaxInfluence.getSchool().getTowerType()) {
+			getPlayerByTowerType(island.getTowerType()).getSchool().insertTower();
+			playerMaxInfluence.getSchool().sendTowerToIsland(island);
+		}
+	}
+
+	@Override
+	public void updateIslandUnification(Island island) {
+		List<Island> islandToUnify = new ArrayList<>();
+		int islandIndex = islands.indexOf(island);
+		int leftIndex = (islandIndex - 1) % islands.size();
+		int rightIndex = (islandIndex + 1) % islands.size();
+		int indexToReplace = islandIndex;
+		TowerType towerType = island.getTowerType();
+		if (islands.get(leftIndex).getTowerType() == towerType) {
+			islandToUnify.add(islands.get(leftIndex));
+			indexToReplace = Integer.min(indexToReplace, leftIndex);
+		}
+		if (islands.get(rightIndex).getTowerType() == towerType) {
+			islandToUnify.add(islands.get(rightIndex));
+			indexToReplace = Integer.min(indexToReplace, rightIndex);
+		}
+		if (!islandToUnify.isEmpty()) {
+			islandToUnify.add(island);
+			islands.removeAll(islandToUnify);
+			islands.add(indexToReplace, new IslandGroup(islandToUnify.toArray(new Island[0])));
 		}
 	}
 }
