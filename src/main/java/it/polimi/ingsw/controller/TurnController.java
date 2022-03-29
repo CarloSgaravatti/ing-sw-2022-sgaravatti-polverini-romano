@@ -1,6 +1,6 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.model.*;
 
 public class TurnController {
 	private RoundPhase currentPhase;
@@ -10,6 +10,8 @@ public class TurnController {
 	private int activePlayerIndex;
 	private boolean turnActive;
 	private PhaseOrder phaseOrder;
+	private Game game;
+
 
 	private void calculateOrder() {
 
@@ -31,4 +33,18 @@ public class TurnController {
 		return null;
 	}
 
+	public Player[] getPlayerOrder() {
+		return playerOrder;
+	}
+	public Player getPosition(int i) {
+		return playerOrder[i];
+	}
+	public void setNextPlayer(Player player, int i) {
+
+			this.playerOrder[i] = player;
+
+	}
 }
+
+
+

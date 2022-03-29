@@ -14,6 +14,7 @@ public class Player {
 	private School school;
 	private List<Assistant> assistants;
 	private TurnEffect turnEffect;
+	private boolean selected;
 
 	public Player(String nickName){
 		numCoins = 1;
@@ -92,5 +93,16 @@ public class Player {
 
 	public void moveMotherNature(int movement) {
 
+	}
+
+	public int getCardValue() {
+		return turnEffect.getOrderPrecedence();
+	}
+
+	public boolean getSelected() {
+		return selected;
+	}
+	public void setSelected() {
+		this.selected = true;
 	}
 }
