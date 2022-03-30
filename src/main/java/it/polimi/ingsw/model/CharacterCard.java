@@ -8,6 +8,7 @@ public abstract class CharacterCard {
 	private final int id;
 	private int coinPrice;
 	private boolean coinPresent;
+	private Player playerActive;
 	public static final int NUM_CHARACTERS_PER_GAME = 3;
 	public static final int NUM_CHARACTERS = 12;
 
@@ -22,13 +23,26 @@ public abstract class CharacterCard {
 	}
 
 	//only the first time the card is played it is allowed to put a coin
-	public void putCoin() throws CoinAlreadyPresentException{
-		if (coinPresent) throw new CoinAlreadyPresentException();
+	public void putCoin() /*throws CoinAlreadyPresentException*/ {
+		//if (coinPresent) throw new CoinAlreadyPresentException();
 		coinPresent = true;
 		coinPrice++;
 	}
 
-	public abstract void playCard(Player player);
+	//default implementation
+	public void playCard(Player player) {
+		playerActive = player;
+		if (!coinPresent) putCoin();
+		//TODO: handle player coin supply
+	}
+
+	public Player getPlayerActive() {
+		return playerActive;
+	}
+
+	public int getId() {
+		return id;
+	}
 
 	@Override
 	public boolean equals(Object o) {

@@ -10,17 +10,21 @@ public class InitController {
 	private int numPlayers;
 
 	public void setNumPlayers(int numPlayers){
-		this.numPlayers=numPlayers;
+		this.numPlayers = numPlayers;
 	}
 
-	public void inizializeGameComponents() {
+	//Bad level of abstraction; two ways: create all little methods in game or create all here
+	public void initializeGameComponents() {
 		List <Island> islands = new ArrayList<>();
 		for(int i=0; i<Island.NUM_ISLANDS;i++){
 			islands.add(new SingleIsland());
 		}
-		School[] schools = new School[numPlayers];
+		School[] schools = new School[numPlayers];//?
 		game = new Game(islands,createClouds());
 		game.createCharacterCard();
+		//TODO: mother nature initialization
+		//TODO: put students in islands
+		//TODO: bag initialization
 	}
 
 	public void addPlayer(String nick) {
@@ -31,7 +35,9 @@ public class InitController {
 		int towerPerSchool = (numPlayers==3) ? 6 : 8;
 		player.setSchool(new School(towerPerSchool,type));
 		player.setTowerType(type);
+		//TODO: set assistants
 	}
+
 	public Cloud[] createClouds(){
 		int studentsPerCloud = (numPlayers == 3) ? 4 : 3;
 		Cloud[] clouds = new Cloud[numPlayers];
@@ -40,8 +46,8 @@ public class InitController {
 		}
 		return clouds;
 	}
+
 	public Game getGame(){
 		return this.game;
 	}
-
 }

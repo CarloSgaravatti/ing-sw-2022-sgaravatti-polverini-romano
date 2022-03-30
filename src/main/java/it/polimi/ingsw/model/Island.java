@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.effects.NoEntryTileManager;
 import it.polimi.ingsw.model.modelObservables.MotherNatureMovementObservable;
 
 import java.util.List;
@@ -7,12 +8,14 @@ import java.util.List;
 public abstract class Island extends MotherNatureMovementObservable {
 	private TowerType towerType;
 	private boolean motherNaturePresent;
-	private boolean noEntryTilePresent;
+	private int noEntryTilePresents;
+	private NoEntryTileManager noEntryTileManager = null;
 	public static final int NUM_ISLANDS = 12;
 
 	public Island() {
+		super();
 		motherNaturePresent = false;
-		noEntryTilePresent = false;
+		noEntryTilePresents = 0;
 	}
 
 	protected Island(TowerType towerType){
@@ -38,18 +41,26 @@ public abstract class Island extends MotherNatureMovementObservable {
 
 	public void setMotherNaturePresent(boolean motherNaturePresent){
 		this.motherNaturePresent = motherNaturePresent;
-		if (!noEntryTilePresent && motherNaturePresent) {
+		if (noEntryTilePresents == 0 && motherNaturePresent) {
 			notifyObservers(this);
+		} else if (noEntryTilePresents > 0){
+			removeNoEntryTile();
 		}
-		//TODO: gestire il caso con no entry tiles
 	}
 
-	public boolean isNoEntryTilePresent() {
-		return noEntryTilePresent;
+	public int getNoEntryTilePresents() {
+		return noEntryTilePresents;
 	}
 
-	public void setNoEntryTilePresent(boolean noEntryTilePresent) {
-		this.noEntryTilePresent = noEntryTilePresent;
+	public void insertNoEntryTile(NoEntryTileManager noEntryTileManager) {
+		this.noEntryTilePresents++;
+		if (this.noEntryTileManager == null) this.noEntryTileManager = noEntryTileManager;
+	}
+
+	//TODO: handle the case with 0 no entry tiles
+	private void removeNoEntryTile () {
+		noEntryTileManager.insertNoEntryTile();
+		noEntryTilePresents--;
 	}
 
 	public TowerType getTowerType() {

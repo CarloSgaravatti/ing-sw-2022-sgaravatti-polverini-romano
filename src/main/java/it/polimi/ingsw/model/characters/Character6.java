@@ -18,6 +18,7 @@ public class Character6 extends CharacterCard {
 
     @Override
     public void playCard(Player player) {
+        super.playCard(player);
         player.getTurnEffect().setInfluenceStrategy(new NoTowerInfluenceStrategy(player.getTurnEffect().getInfluenceStrategy()));
     }
 }

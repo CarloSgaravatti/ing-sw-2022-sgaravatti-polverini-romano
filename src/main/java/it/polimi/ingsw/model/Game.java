@@ -1,5 +1,8 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.exceptions.EmptyBagException;
+import it.polimi.ingsw.model.effects.StudentContainer;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -81,12 +84,14 @@ public class Game implements ModelObserver{
 		Random rnd = new Random();
 		List<Integer> charactersCreated = new ArrayList<>();
 		int characterToCreate;
-		for(int i = 0; i<CharacterCard.NUM_CHARACTERS_PER_GAME; i++){
-			do{
+		CharacterCreator characterCreator = CharacterCreator.getInstance();
+		characterCreator.setGame(this);
+		for (int i = 0; i < CharacterCard.NUM_CHARACTERS_PER_GAME; i++) {
+			do {
 				characterToCreate = rnd.nextInt(CharacterCard.NUM_CHARACTERS);
-			}while(charactersCreated.contains(characterToCreate));
+			} while(charactersCreated.contains(characterToCreate));
 			charactersCreated.add(characterToCreate);
-			characterCards[i] = CharacterCreator.getCharacter(characterToCreate+1);
+			characterCards[i] = characterCreator.getCharacter(characterToCreate + 1);
 		}
 	}
 
@@ -102,8 +107,8 @@ public class Game implements ModelObserver{
 		return null;
 	}
 
-	public void setIndexActivePlayer(int indexActivePlayer) {
-		this.indexActivePlayer = indexActivePlayer;
+	public void setIndexActivePlayer(Player player) {
+		this.indexActivePlayer = players.indexOf(player);
 	}
 
 	//This method maybe can be done in a better way
@@ -178,6 +183,15 @@ public class Game implements ModelObserver{
 			islandToUnify.add(island);
 			islands.removeAll(islandToUnify);
 			islands.add(indexToReplace, new IslandGroup(islandToUnify.toArray(new Island[0])));
+		}
+	}
+
+	@Override
+	public void updateStudentContainer(StudentContainer studentContainer) {
+		try {
+			studentContainer.insertStudent(bag.pickStudent());
+		} catch(EmptyBagException e) {
+			//TODO: the game is finished
 		}
 	}
 }

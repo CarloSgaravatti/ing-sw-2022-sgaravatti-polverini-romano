@@ -1,13 +1,11 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.exceptions.SchoolWithoutTowersException;
 import it.polimi.ingsw.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.model.modelObservables.ProfessorPresenceObservable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 public class School extends ProfessorPresenceObservable {
 	private final int[] entrance;
@@ -17,7 +15,6 @@ public class School extends ProfessorPresenceObservable {
 	private int numTowers;
 	private final List<Student> studentDiningRoom;
 	private final List<Student> studentEntrance;
-	private final List<Professor> professors;
 
 	public School (int numTower, TowerType towerType) {
 		this.towerType = towerType;
@@ -29,8 +26,7 @@ public class School extends ProfessorPresenceObservable {
 			professorTable[i] = false;
 		studentEntrance = new ArrayList<>();
 		studentDiningRoom = new ArrayList<>();
-		professors = new ArrayList<>();
-		//Pick students from bag?
+		//TODO: pick students from bag to initialize school
 	}
 
 	public void insertEntrance (Student ... students){
@@ -46,14 +42,13 @@ public class School extends ProfessorPresenceObservable {
 		studentDiningRoom.add(s);
 		diningRoom[s.getStudentType().ordinal()] ++;
 		int newStudentsDiningRoom = diningRoom[s.getStudentType().ordinal()];
+		notifyObservers(s.getStudentType());
 		//maybe the return condition can be done better
 		return (newStudentsDiningRoom == 3 || newStudentsDiningRoom == 6 || newStudentsDiningRoom == 9);
 	}
 
 	public boolean moveFromEntranceToDiningRoom (RealmType studentType) throws StudentNotFoundException {
-		boolean res = insertDiningRoom(removeStudentEntrance(studentType));
-		notifyObservers(studentType);
-		return res;
+		return insertDiningRoom(removeStudentEntrance(studentType));
 	}
 
 	public void insertProfessor (RealmType professorType) {
@@ -94,14 +89,26 @@ public class School extends ProfessorPresenceObservable {
 		numTowers++;
 	}
 
-	//This method is used when a student is moved from entrance to dining room or island
-	private Student removeStudentEntrance(RealmType studentType) throws StudentNotFoundException{
-		Optional<Student> toEliminate = studentEntrance.stream()
-				.filter(a -> a.getStudentType() == studentType)
-				.findFirst();
-		if (toEliminate.isEmpty()) throw new StudentNotFoundException();
-		studentEntrance.remove(toEliminate.get());
+	public Student removeStudentEntrance(RealmType studentType) throws StudentNotFoundException {
+		Student toEliminate = remove(entrance, studentEntrance, studentType);
+		studentEntrance.remove(toEliminate);
 		entrance[studentType.ordinal()] --;
-		return toEliminate.get();
+		return toEliminate;
+	}
+
+	public Student removeFromDiningRoom (RealmType studentType) throws StudentNotFoundException {
+		Student toEliminate = remove(diningRoom, studentDiningRoom, studentType);
+		studentDiningRoom.remove(toEliminate);
+		diningRoom[studentType.ordinal()] --;
+		return toEliminate;
+	}
+
+	//For a better reuse of code
+	private static Student remove(int[] studentsOfType, List<Student> studentsList, RealmType studentType) throws StudentNotFoundException {
+		if (studentsOfType[studentType.ordinal()] == 0) throw new StudentNotFoundException();
+		return studentsList.stream()
+				.filter(a -> a.getStudentType() == studentType)
+				.findFirst()
+				.orElseThrow(); //this should never be thrown
 	}
 }

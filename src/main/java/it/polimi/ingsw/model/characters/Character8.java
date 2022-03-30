@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.Player;
 
 public class Character8 extends CharacterCard {
     private static Character8 instance;
+    private static final int ADDITIONAL_INFLUENCE = 2;
 
     protected Character8() {
         super(2, 8);
@@ -18,6 +19,8 @@ public class Character8 extends CharacterCard {
 
     @Override
     public void playCard(Player player) {
+        super.playCard(player);
         player.getTurnEffect().setInfluenceStrategy(new GainInfluenceStrategy(player.getTurnEffect().getInfluenceStrategy()));
+        player.getTurnEffect().setAdditionalInfluence(ADDITIONAL_INFLUENCE);
     }
 }

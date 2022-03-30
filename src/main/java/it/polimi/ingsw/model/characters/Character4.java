@@ -15,8 +15,10 @@ public class Character4 extends CharacterCard {
         if (instance == null) instance = new Character4();
         return instance;
     }
+
     @Override
     public void playCard(Player player) {
+        super.playCard(player);
         player.getTurnEffect().incrementMotherNatureMovement(MOTHER_NATURE_INCREMENT);
     }
 }
