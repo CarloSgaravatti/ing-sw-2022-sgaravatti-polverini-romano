@@ -10,12 +10,6 @@ import java.util.Random;
 
 public class GameTest extends TestCase {
 
-    public void testStart() {
-        Game game = new Game(null, null);
-        game.start();
-        assertTrue(game.isStarted());
-    }
-
     public void testAddPlayer() {
         Game game = new Game(null, null);
         for(int i = 0; i < 4; i++){
@@ -38,17 +32,6 @@ public class GameTest extends TestCase {
         assertTrue(game.getIslands().get((index+4)%game.getIslands().size()).isMotherNaturePresent());
     }
 
-
-    public void testGetBag() {
-        Game game = new Game(null, null);
-        assertNotNull(game.getBag());
-    }
-
-    public void testGetPlayers() {
-        Game game = new Game(null, null);
-        assertNotNull(game.getPlayers());
-    }
-
     public void testCreateCharacterCard() {
     }
     
@@ -66,19 +49,4 @@ public class GameTest extends TestCase {
         assertEquals(120,game.getBag().getStudent().size());
     }
 
-
-    public void testGetPlayerByTowerType() {
-    }
-
-    public void testSetIndexActivePlayer() {
-    }
-
-    public void testUpdateProfessorPresence() {
-    }
-
-    public void testUpdateIslandTower() {
-    }
-
-    public void testUpdateIslandUnification() {
-    }
 }
