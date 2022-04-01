@@ -17,7 +17,11 @@ public class Game implements ModelObserver{
 	private int coinGeneralSupply;
 	private final CharacterCard[] characterCards;
 	private int indexActivePlayer;
-	private final static int NUM_STUDENTS = 130;
+	private boolean checkIfStartMethodIsLounched=false;
+	private List<Student> students;
+	//contatore
+	private int[] cont = new int[RealmType.values().length];
+	private int numStudents = Student.NUM_STUDENTS;
 
 	public Game(List<Island> islands,Cloud[] clouds){
 		numPlayers = 0;
@@ -28,15 +32,17 @@ public class Game implements ModelObserver{
 		characterCards = new CharacterCard[CharacterCard.NUM_CHARACTERS_PER_GAME];
 		this.islands = islands;
 		players = new ArrayList<>();
+		students = new ArrayList<>();
 		this.clouds = clouds;
 	}
 
 	public void start() {
-
+		this.started = true;
+		this.checkIfStartMethodIsLounched = true; //aggiungto per test ( serve a capire se start è stato usato)
 	}
 
 	public void addPlayer(String nickname) {
-		if(numPlayers <= 4) {
+		if(numPlayers < 4) {
 			numPlayers++;
 			coinGeneralSupply--;
 			players.add(new Player(nickname));
@@ -44,7 +50,7 @@ public class Game implements ModelObserver{
 	}
 
 	public int getNumPlayers(){
-		return players.size();
+		return this.numPlayers;
 	}
 
 	public boolean isStarted() {
@@ -102,8 +108,40 @@ public class Game implements ModelObserver{
 		return null;
 	}
 
+	public void setNumPlayers(int numPlayers){
+		if(numPlayers<=4 && numPlayers>=2) {
+			this.numPlayers = numPlayers;
+		}
+	}
+
 	public void setIndexActivePlayer(int indexActivePlayer) {
 		this.indexActivePlayer = indexActivePlayer;
+	}
+
+	public boolean isCheckIfStartMethodIsLounched(){
+		return checkIfStartMethodIsLounched;
+	}
+
+	public void createAllStudentsForBag(){
+		for(RealmType r: RealmType.values()){
+			for(int i = 0; i<24;i++){
+				bag.insertStudent(new Student(r));
+				numStudents--;
+			}
+		}
+	}
+
+	public void genStudentForBeginning(){
+		for(int i = 0; i< 2; i++) {
+			for (RealmType r : RealmType.values()) {
+				bag.insertStudent(new Student(r));
+				numStudents--;
+			}
+		}
+	}
+
+	public List<Student> getStudent(){
+		return this.students;
 	}
 
 	//This method maybe can be done in a better way

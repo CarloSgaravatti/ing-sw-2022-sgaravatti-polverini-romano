@@ -22,6 +22,11 @@ public class Bag {
 		return res;
 	}
 
+	//just for tests
+	public List<Student> getStudent(){
+		return this.students;
+	}
+
 	public boolean isEmpty() {
 		return students.isEmpty();
 	}
