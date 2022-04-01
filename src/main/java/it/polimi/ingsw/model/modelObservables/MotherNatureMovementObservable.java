@@ -16,7 +16,6 @@ public abstract class MotherNatureMovementObservable {
     public void notifyObservers(Island island) {
         for (ModelObserver o: observers) {
             o.updateIslandTower(island);
-            o.updateIslandUnification(island);
         }
     }
 }

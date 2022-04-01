@@ -31,10 +31,6 @@ public class Bag {
 		return students.isEmpty();
 	}
 
-	public void clear() {
-		students.clear();
-	}
-
 	public void insertStudent(Student s) {
 		students.add(s);
 	}

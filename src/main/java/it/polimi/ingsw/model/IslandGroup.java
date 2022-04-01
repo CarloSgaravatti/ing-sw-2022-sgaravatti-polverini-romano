@@ -23,17 +23,10 @@ public class IslandGroup extends Island {
 	}
 
 	@Override
-	public int getInfluence (Player p) {
-		int res = 0;
-		for (Island i: islands)
-			res += i.getInfluence(p);
-		return res;
-	}
-
-	@Override
 	public void putTower(TowerType towerType) {
 		for (Island i: islands)
 			i.putTower(towerType);
+		super.setTowerType(towerType);
 	}
 
 	@Override

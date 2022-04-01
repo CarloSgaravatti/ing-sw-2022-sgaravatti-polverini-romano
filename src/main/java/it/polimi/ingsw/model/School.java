@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.exceptions.FullDiningRoomException;
 import it.polimi.ingsw.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.model.modelObservables.ProfessorPresenceObservable;
 
@@ -15,6 +16,9 @@ public class School extends ProfessorPresenceObservable {
 	private int numTowers;
 	private final List<Student> studentDiningRoom;
 	private final List<Student> studentEntrance;
+	private final int MAX_STUDENTS_DINING_ROOM = 10;
+
+	//TODO: add observer from game
 
 	public School (int numTower, TowerType towerType) {
 		this.towerType = towerType;
@@ -38,7 +42,10 @@ public class School extends ProfessorPresenceObservable {
 	//These two methods return true if the player puts a student in a place which gives him a coin.
 	//The first method is useful because a character card can give the opportunity to put a student
 	//directly in the dining room, without passing from the entrance.
-	public boolean insertDiningRoom (Student s) {
+	public boolean insertDiningRoom (Student s) throws FullDiningRoomException {
+		if (diningRoom[s.getStudentType().ordinal()] >= MAX_STUDENTS_DINING_ROOM) {
+			throw new FullDiningRoomException();
+		}
 		studentDiningRoom.add(s);
 		diningRoom[s.getStudentType().ordinal()] ++;
 		int newStudentsDiningRoom = diningRoom[s.getStudentType().ordinal()];
@@ -47,7 +54,7 @@ public class School extends ProfessorPresenceObservable {
 		return (newStudentsDiningRoom == 3 || newStudentsDiningRoom == 6 || newStudentsDiningRoom == 9);
 	}
 
-	public boolean moveFromEntranceToDiningRoom (RealmType studentType) throws StudentNotFoundException {
+	public boolean moveFromEntranceToDiningRoom (RealmType studentType) throws StudentNotFoundException, FullDiningRoomException {
 		return insertDiningRoom(removeStudentEntrance(studentType));
 	}
 
@@ -60,9 +67,10 @@ public class School extends ProfessorPresenceObservable {
 	}
 
 	public void sendTowerToIsland (Island island) /*throws SchoolWithoutTowersException*/ {
-		//if (numTowers == 0) throw new SchoolWithoutTowersException();
+		int numTowersIsland = island.getNumTowers();
+		//if (numTowers < numTowersIsland) throw new SchoolWithoutTowersException();
 		island.putTower(towerType);
-		numTowers--;
+		numTowers -= numTowersIsland;
 	}
 
 	public void sendStudentToIsland (Island island, RealmType studentType) throws StudentNotFoundException {
@@ -85,8 +93,8 @@ public class School extends ProfessorPresenceObservable {
 		return numTowers;
 	}
 
-	public void insertTower() {
-		numTowers++;
+	public void insertTower(int numTowersToIns) {
+		this.numTowers += numTowersToIns;
 	}
 
 	public Student removeStudentEntrance(RealmType studentType) throws StudentNotFoundException {

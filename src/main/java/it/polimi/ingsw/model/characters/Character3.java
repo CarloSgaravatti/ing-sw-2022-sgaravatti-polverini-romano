@@ -20,6 +20,5 @@ public class Character3 extends CharacterCard {
     @SuppressWarnings("unused") //accessed with reflection
     public void chooseIslandToUpdate(Island island) {
         modelObserver.updateIslandTower(island);
-        modelObserver.updateIslandUnification(island);
     }
 }

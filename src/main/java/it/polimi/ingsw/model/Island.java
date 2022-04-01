@@ -12,6 +12,8 @@ public abstract class Island extends MotherNatureMovementObservable {
 	private NoEntryTileManager noEntryTileManager = null;
 	public static final int NUM_ISLANDS = 12;
 
+	//TODO: add an observer
+
 	public Island() {
 		super();
 		motherNaturePresent = false;
@@ -22,8 +24,6 @@ public abstract class Island extends MotherNatureMovementObservable {
 		this();
 		this.towerType = towerType;
 	}
-
-	public abstract int getInfluence(Player p);
 
 	public abstract void putTower(TowerType t);
 
@@ -58,6 +58,8 @@ public abstract class Island extends MotherNatureMovementObservable {
 	}
 
 	//TODO: handle the case with 0 no entry tiles
+	//This method is private because a no entry tile can be removed only when mother nature
+	//comes to this island
 	private void removeNoEntryTile () {
 		noEntryTileManager.insertNoEntryTile();
 		noEntryTilePresents--;

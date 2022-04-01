@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.characters;
 
+import it.polimi.ingsw.exceptions.FullDiningRoomException;
 import it.polimi.ingsw.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.model.*;
 
@@ -19,7 +20,7 @@ public class Character10 extends CharacterCard {
     }
 
     @SuppressWarnings("unused") //accessed with reflection
-    public void swap(RealmType[] entrance, RealmType[] diningRoom) throws StudentNotFoundException {
+    public void swap(RealmType[] entrance, RealmType[] diningRoom) throws StudentNotFoundException, FullDiningRoomException {
         School school = super.getPlayerActive().getSchool();
         List<Student> removedFromDiningRoom = new ArrayList<>();
         for (RealmType s: diningRoom)

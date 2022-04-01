@@ -13,18 +13,6 @@ public class SingleIsland extends Island {
     }
 
     @Override
-    public int getInfluence(Player p) {
-        int res = 0;
-        for (RealmType r: RealmType.values()) {
-            if (p.getSchool().isProfessorPresent(r))
-                res += getNumStudentsOfType(r);
-        }
-        if (this.getTowerType() == p.getSchool().getTowerType())
-            res ++;
-        return res;
-    }
-
-    @Override
     public void putTower(TowerType t){
         super.setTowerType(t);
     }
