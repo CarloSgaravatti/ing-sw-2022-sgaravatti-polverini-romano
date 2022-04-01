@@ -1,43 +1,28 @@
 package it.polimi.ingsw.model.characters;
 
+import it.polimi.ingsw.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.effects.StudentContainer;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class Character11 extends CharacterCard implements StudentContainer {
-    private final List<Student> students;
+public class Character11 extends CharacterCard {
     private static Character11 instance;
+    private final int MAX_NUM_STUDENTS = 4;
+    private final StudentContainer studentContainer;
 
-    protected Character11() {
+    protected Character11(ModelObserver observer) {
         super(2, 11);
-        students = new ArrayList<>();
+        studentContainer = new StudentContainer(MAX_NUM_STUDENTS, observer);
     }
 
-    public static Character11 getInstance() {
-        if (instance == null) instance = new Character11();
+    public static Character11 getInstance(ModelObserver observer) {
+        if (instance == null) instance = new Character11(observer);
         return instance;
     }
 
-    @Override
-    public void playCard(Player player) {
-
-    }
-
-    @Override
-    public List<Student> getStudents() {
-        return null;
-    }
-
-    @Override
-    public Student pickStudent(RealmType studentType) {
-        return null;
-    }
-
-    @Override
-    public void insertStudent(Student student) {
-
+    @SuppressWarnings("unused") //accessed with reflection
+    public void pickAndSendToDiningRoom(RealmType studentType) throws StudentNotFoundException {
+        School school = super.getPlayerActive().getSchool();
+        school.insertDiningRoom(studentContainer.pickStudent(studentType, true));
     }
 }
 

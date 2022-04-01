@@ -3,25 +3,28 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.exceptions.EmptyCloudException;
 import it.polimi.ingsw.exceptions.NoSuchAssistantException;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
-	private TowerType towerType;
+	private TowerType towerType; //useless
 	private int numCoins;
 	private boolean starter;
 	private final String nickName;
 	private School school;
 	private List<Assistant> assistants;
-	private TurnEffect turnEffect;
+	private final TurnEffect turnEffect;
+	private boolean selected;
 
 	public Player(String nickName){
 		numCoins = 1;
 		starter = false;
 		this.nickName = nickName;
+		turnEffect = new TurnEffect();
+		assistants = new ArrayList<>();
 	}
 
-	public void chooseCloud(Cloud cloud) throws EmptyCloudException{
+	public void pickFromCloud(Cloud cloud) throws EmptyCloudException{
 		school.insertEntrance(cloud.pickStudents());
 	}
 
@@ -58,8 +61,8 @@ public class Player {
 		throw new NoSuchAssistantException();
 	}
 
-	public void setAssistants(Assistant[] assistants){
-		this.assistants = Arrays.asList(assistants);
+	public void setAssistants(List<Assistant> assistants){
+		this.assistants = assistants;
 	}
 
 	public int getNumCoins() {
@@ -90,7 +93,20 @@ public class Player {
 		numCoins++;
 	}
 
-	public void moveMotherNature(int movement) {
+	//TODO: handle the case in which the player doesn't have enough coins
+	//TODO: put coins in game general supply
+	public void removeCoins(int coins) {
+		numCoins -= coins;
+	}
 
+	public int getCardValue() {
+		return turnEffect.getOrderPrecedence();
+	}
+
+	public boolean getSelected() {
+		return selected;
+	}
+	public void setSelected() {
+		this.selected = true;
 	}
 }

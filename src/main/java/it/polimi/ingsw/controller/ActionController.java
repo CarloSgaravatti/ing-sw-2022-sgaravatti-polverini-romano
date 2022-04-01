@@ -1,11 +1,15 @@
 package it.polimi.ingsw.controller;
 
+import com.google.gson.JsonObject;
 import it.polimi.ingsw.exceptions.AssistantAlreadyPlayedException;
 import it.polimi.ingsw.exceptions.EmptyCloudException;
 import it.polimi.ingsw.exceptions.NoSuchAssistantException;
 import it.polimi.ingsw.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.utils.JsonUtils;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +22,8 @@ public class ActionController {
 	//TODO: these methods should return a message to the client and not an exception
 	//TODO: change in the turn phase after a conventional action is requested
 	public void doAction(String message) throws IllegalArgumentException, AssistantAlreadyPlayedException,
-			StudentNotFoundException, EmptyCloudException, NoSuchAssistantException {
+			StudentNotFoundException, NoSuchAssistantException, ClassNotFoundException, NoSuchMethodException,
+			InvocationTargetException, IllegalAccessException, EmptyCloudException {
 		List<String> args = Arrays.asList(message.split(" "));
 		String action = args.get(0);
 		args.remove(0);
@@ -54,7 +59,7 @@ public class ActionController {
 		RealmType studentType;
 		int islandIndex;
 		for (int i = 0; i < args.size(); i+=2) {
-			studentType = getStudentType(args.get(i));
+			getStudentType(args.get(i)); //make sure that the argument is correct
 			if (!args.get(i + 1).equals("D") && !args.get(i + 1).equals("I")) {
 				throw new IllegalArgumentException();
 			}
@@ -93,7 +98,12 @@ public class ActionController {
 		gameController.getModel().moveMotherNature(motherNatureMovement);
 	}
 
-	public void chooseCloudPickStudents(List<String> args) throws IllegalArgumentException, EmptyCloudException {
+	//Is this useful?
+	public void chooseCloudPickStudents(List<String> args) {
+
+	}
+
+	public void pickStudentsFillClouds(List<String> args) throws EmptyCloudException, IllegalArgumentException {
 		if (args.size() != 1) throw new IllegalArgumentException();
 		Cloud cloud = gameController.getModel().getClouds()[Integer.parseInt(args.get(0))];
 		Student[] students = cloud.pickStudents();
@@ -101,28 +111,33 @@ public class ActionController {
 		school.insertEntrance(students);
 	}
 
-	//Is this useful?
-	public void pickStudentsFillClouds(List<String> args) {
-
-	}
-
-	public void playCharacter(List<String> args) throws IllegalArgumentException {
+	public void playCharacter(List<String> args) throws IllegalArgumentException, ClassNotFoundException, NoSuchMethodException,
+			InvocationTargetException, IllegalAccessException {
 		int characterId = Integer.parseInt(args.get(0));
 		if (!isValidCharacter(characterId)) throw new IllegalArgumentException();
-		CharacterCard characterCard = CharacterCreator.getCharacter(characterId);
+		CharacterCreator characterCreator = CharacterCreator.getInstance();
+		CharacterCard characterCard = characterCreator.getCharacter(characterId);
 		characterCard.playCard(turnController.getActivePlayer());
 		turnController.getActivePlayer().getTurnEffect().setCharacterPlayed(true);
 		turnController.getActivePlayer().getTurnEffect().setCharacterEffectConsumed(false);
-		//If the character effect is active and the player calls it immediately
+		//If the character effect is active and the player calls the effect immediately
 		if (args.size() > 1) {
 			characterEffect(args);
 		}
 	}
 
+	//TODO: add a method to have a better reuse of code from playCharacter and characterEffect
 	//Character effect is ok to be called only for characters that have some active effects,
-	//these are characters 1,3,5,7,10,11,12
-	public void characterEffect(List<String> args) {
-		//TODO: reflection with json
+	//these are characters 1,3,7,9,10,11,12
+	public void characterEffect(List<String> args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		int characterId = Integer.parseInt(args.get(0));
+		if (!isValidCharacter(characterId)) throw new IllegalArgumentException();
+		JsonObject characterJsonObject = JsonUtils.getCharacterJsonObject(characterId);
+		Method effectMethod = JsonUtils.getCharacterMethod(characterJsonObject);
+		Object[] methodParameters = getParameters(args.subList(1, args.size()), effectMethod.getParameterCount());
+		CharacterCreator characterCreator = CharacterCreator.getInstance();
+		CharacterCard characterCard = characterCreator.getCharacter(characterId);
+		effectMethod.invoke(characterCard, methodParameters);
 	}
 
 	private RealmType getStudentType(String abbreviation) throws IllegalArgumentException {
@@ -136,17 +151,46 @@ public class ActionController {
 		};
 	}
 
+	private Island getIslandFromNumber(int islandId) {
+		return gameController.getModel().getIslands().get(islandId);
+	}
+
 	private boolean isValidIsland(int islandIndex) {
 		int islandNumber = gameController.getModel().getIslands().size();
 		return islandIndex < islandNumber && islandIndex >= 0;
 	}
 
-	public boolean isValidCharacter(int characterId) {
+	private boolean isValidCharacter(int characterId) {
 		CharacterCard[] characterCards = gameController.getModel().getCharacterCards();
-		CharacterCard characterRequested = CharacterCreator.getCharacter(characterId);
+		CharacterCreator characterCreator = CharacterCreator.getInstance();
+		CharacterCard characterRequested = characterCreator.getCharacter(characterId);
 		for (CharacterCard c: characterCards) {
 			if (characterRequested.equals(c)) return true;
 		}
 		return false;
+	}
+
+	private Object[] getParameters(List<String> args, int numMethodParameters) throws IllegalArgumentException {
+		Object[] parameters = new Object[numMethodParameters];
+		int argIndex = 0;
+		if (args.size() != 2 * numMethodParameters) throw new IllegalArgumentException();
+		for (int i = 0; i < numMethodParameters; i++) {
+			if (args.get(argIndex).equals("S")) {
+				if (args.get(argIndex).length() == 1) {
+					parameters[i] = getStudentType(args.get((argIndex) + 1));
+				}
+				else {
+					Object[] studentTypes = new RealmType[Integer.parseInt(args.get(argIndex).substring(1))];
+					for (int k = 0; k < studentTypes.length; k++) {
+						studentTypes[k] = getStudentType(args.get((argIndex) + k + 1));
+					}
+					parameters[i] = studentTypes;
+				}
+			} else if (args.get(argIndex).equals("I")){
+				parameters[i] = getIslandFromNumber(Integer.parseInt(args.get(argIndex + 1)));
+			} else throw new IllegalArgumentException();
+			argIndex += 2;
+		}
+		return parameters;
 	}
 }

@@ -1,5 +1,8 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.exceptions.EmptyBagException;
+import it.polimi.ingsw.model.effects.StudentContainer;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -17,11 +20,7 @@ public class Game implements ModelObserver{
 	private int coinGeneralSupply;
 	private final CharacterCard[] characterCards;
 	private int indexActivePlayer;
-	private boolean checkIfStartMethodIsLounched=false;
-	private List<Student> students;
-	//contatore
-	private int[] cont = new int[RealmType.values().length];
-	private int numStudents = Student.NUM_STUDENTS;
+	private final static int NUM_STUDENTS = 130;
 
 	public Game(List<Island> islands,Cloud[] clouds){
 		numPlayers = 0;
@@ -32,17 +31,15 @@ public class Game implements ModelObserver{
 		characterCards = new CharacterCard[CharacterCard.NUM_CHARACTERS_PER_GAME];
 		this.islands = islands;
 		players = new ArrayList<>();
-		students = new ArrayList<>();
 		this.clouds = clouds;
 	}
 
 	public void start() {
-		this.started = true;
-		this.checkIfStartMethodIsLounched = true; //aggiungto per test ( serve a capire se start è stato usato)
+
 	}
 
 	public void addPlayer(String nickname) {
-		if(numPlayers < 4) {
+		if(numPlayers <= 4) {
 			numPlayers++;
 			coinGeneralSupply--;
 			players.add(new Player(nickname));
@@ -50,7 +47,7 @@ public class Game implements ModelObserver{
 	}
 
 	public int getNumPlayers(){
-		return this.numPlayers;
+		return players.size();
 	}
 
 	public boolean isStarted() {
@@ -87,12 +84,14 @@ public class Game implements ModelObserver{
 		Random rnd = new Random();
 		List<Integer> charactersCreated = new ArrayList<>();
 		int characterToCreate;
-		for(int i = 0; i<CharacterCard.NUM_CHARACTERS_PER_GAME; i++){
-			do{
+		CharacterCreator characterCreator = CharacterCreator.getInstance();
+		characterCreator.setGame(this);
+		for (int i = 0; i < CharacterCard.NUM_CHARACTERS_PER_GAME; i++) {
+			do {
 				characterToCreate = rnd.nextInt(CharacterCard.NUM_CHARACTERS);
-			}while(charactersCreated.contains(characterToCreate));
+			} while(charactersCreated.contains(characterToCreate));
 			charactersCreated.add(characterToCreate);
-			characterCards[i] = CharacterCreator.getCharacter(characterToCreate+1);
+			characterCards[i] = characterCreator.getCharacter(characterToCreate + 1);
 		}
 	}
 
@@ -108,40 +107,8 @@ public class Game implements ModelObserver{
 		return null;
 	}
 
-	public void setNumPlayers(int numPlayers){
-		if(numPlayers<=4 && numPlayers>=2) {
-			this.numPlayers = numPlayers;
-		}
-	}
-
-	public void setIndexActivePlayer(int indexActivePlayer) {
-		this.indexActivePlayer = indexActivePlayer;
-	}
-
-	public boolean isCheckIfStartMethodIsLounched(){
-		return checkIfStartMethodIsLounched;
-	}
-
-	public void createAllStudentsForBag(){
-		for(RealmType r: RealmType.values()){
-			for(int i = 0; i<24;i++){
-				bag.insertStudent(new Student(r));
-				numStudents--;
-			}
-		}
-	}
-
-	public void genStudentForBeginning(){
-		for(int i = 0; i< 2; i++) {
-			for (RealmType r : RealmType.values()) {
-				bag.insertStudent(new Student(r));
-				numStudents--;
-			}
-		}
-	}
-
-	public List<Student> getStudent(){
-		return this.students;
+	public void setIndexActivePlayer(Player player) {
+		this.indexActivePlayer = players.indexOf(player);
 	}
 
 	//This method maybe can be done in a better way
@@ -216,6 +183,15 @@ public class Game implements ModelObserver{
 			islandToUnify.add(island);
 			islands.removeAll(islandToUnify);
 			islands.add(indexToReplace, new IslandGroup(islandToUnify.toArray(new Island[0])));
+		}
+	}
+
+	@Override
+	public void updateStudentContainer(StudentContainer studentContainer) {
+		try {
+			studentContainer.insertStudent(bag.pickStudent());
+		} catch(EmptyBagException e) {
+			//TODO: the game is finished
 		}
 	}
 }

@@ -14,8 +14,10 @@ public class Character2 extends CharacterCard {
         if (instance == null) instance = new Character2();
         return instance;
     }
+
     @Override
     public void playCard(Player player) {
+        super.playCard(player);
         player.getTurnEffect().setProfessorPrecedence(true);
     }
 }
