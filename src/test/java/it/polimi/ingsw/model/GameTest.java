@@ -25,15 +25,6 @@ public class GameTest extends TestCase {
         assertEquals(4,game.getNumPlayers());
     }
 
-    public void testIsStarted() {
-        Game game = new Game(null, null);
-        if(game.isCheckIfStartMethodIsLounched()){
-            assertTrue(game.isStarted());
-        }
-        else {
-            assertFalse(game.isStarted());
-        }
-    }
 
     public void testMoveMotherNature() throws EmptyBagException {
         InitController initcontr = new InitController();
@@ -89,18 +80,5 @@ public class GameTest extends TestCase {
     }
 
     public void testUpdateIslandUnification() {
-    }
-
-    @ParameterizedTest
-    @ValueSource (ints = {2,3,4,5,1})
-    public void testSetNumPlayers(int ints) {
-        Game game = new Game(null, null );
-        game.setNumPlayers(ints);
-        if(ints<5 && ints>1){
-            assertEquals(ints,game.getNumPlayers());
-        }
-        else{
-            assertEquals(0,game.getNumPlayers());
-        }
     }
 }
