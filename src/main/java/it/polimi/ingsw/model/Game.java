@@ -21,6 +21,7 @@ public class Game implements ModelObserver{
 	private final CharacterCard[] characterCards;
 	private int indexActivePlayer;
 	private final static int NUM_STUDENTS = 130;
+	private int numStudents=NUM_STUDENTS;
 
 	public Game(List<Island> islands,Cloud[] clouds){
 		numPlayers = 0;
@@ -110,6 +111,26 @@ public class Game implements ModelObserver{
 	public void setIndexActivePlayer(Player player) {
 		this.indexActivePlayer = players.indexOf(player);
 	}
+
+	public void createAllStudentsForBag(){
+		for(RealmType r: RealmType.values()){
+			for(int i = 0; i<24;i++){
+				bag.insertStudent(new Student(r));
+				numStudents--;
+			}
+		}
+	}
+
+	public void genStudentForBeginning(){
+		for(int i = 0; i< 2; i++) {
+			for (RealmType r : RealmType.values()) {
+				bag.insertStudent(new Student(r));
+				numStudents--;
+			}
+		}
+	}
+
+
 
 	//This method maybe can be done in a better way
 	@Override
