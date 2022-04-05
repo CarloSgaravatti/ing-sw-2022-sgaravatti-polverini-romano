@@ -15,6 +15,7 @@ public class Player {
 	private List<Assistant> assistants;
 	private final TurnEffect turnEffect;
 	private boolean selected;
+	private WizardType wizardType;
 
 	public Player(String nickName){
 		numCoins = 1;
@@ -22,6 +23,7 @@ public class Player {
 		this.nickName = nickName;
 		turnEffect = new TurnEffect();
 		assistants = new ArrayList<>();
+		wizardType = null;
 	}
 
 	public void pickFromCloud(Cloud cloud) throws EmptyCloudException{
@@ -105,5 +107,11 @@ public class Player {
 
 	public void setSelected() {
 		this.selected = true;
+	}
+	public void setWizardType(WizardType type){
+		this.wizardType = wizardType;
+	}
+	public WizardType getWizardType(){
+		return this.wizardType;
 	}
 }

@@ -16,10 +16,11 @@ public class Assistant {
 	 * @param cardValue the value of the card
 	 * @param motherNatureMovement maximum mother nature movement
 	 */
-	public Assistant(int cardValue, int motherNatureMovement){
+	public Assistant(int cardValue, int motherNatureMovement, WizardType wizard){
 		this.cardValue = cardValue;
 		this.motherNatureMovement = motherNatureMovement;
 		played = false;
+		this.wizard = wizard;
 	}
 
 	/**

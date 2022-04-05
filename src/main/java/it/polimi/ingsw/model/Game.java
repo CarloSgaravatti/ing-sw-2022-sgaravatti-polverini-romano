@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.EmptyBagException;
-import it.polimi.ingsw.exceptions.SchoolWithoutTowersException;
 import it.polimi.ingsw.model.effects.StudentContainer;
 
 import java.util.ArrayList;
@@ -56,7 +55,7 @@ public class Game implements ModelObserver{
 		return started;
 	}
 
-	public void moveMotherNature(int movement){
+	public void moveMotherNature(int movement /*Movement inteso gia la scelta del giocatore di quanto muovere madre natura*/){
 		int i=0;
 		while(!islands.get(i).isMotherNaturePresent() && i<islands.size()) {
 			i++;
@@ -130,9 +129,21 @@ public class Game implements ModelObserver{
 			}
 		}
 	}
-
-	public void insertCoinsInGeneralSupply(int coins) {
+	public void insertCoinsInGeneralSupply(int coins){
 		coinGeneralSupply += coins;
+	}
+
+	public void assignDeck(Player player, WizardType type){
+		List<Assistant> assistants = new ArrayList<>();
+		int j=0;
+		for(int i = 1; i <= 5; i++){
+			j++;
+			assistants.add(new Assistant(j,i,type));
+			j++;
+			assistants.add(new Assistant(j,i,type));
+		}
+		player.setAssistants(assistants);
+		player.setWizardType(type);
 	}
 
 
@@ -183,11 +194,8 @@ public class Game implements ModelObserver{
 		}
 		Player playerMaxInfluence = players.get(playerInfluences.indexOf(maxInfluence));
 		if (maxInfluenceOcc == 1 && island.getTowerType() != playerMaxInfluence.getSchool().getTowerType()) {
-			if (island.getTowerType() != null) {
-				getPlayerByTowerType(island.getTowerType()).getSchool().insertTower(island.getNumTowers());
-			}
+			getPlayerByTowerType(island.getTowerType()).getSchool().insertTower(island.getNumTowers());
 			playerMaxInfluence.getSchool().sendTowerToIsland(island);
-			updateIslandUnification(island);
 		}
 	}
 
@@ -195,13 +203,10 @@ public class Game implements ModelObserver{
 	public void updateIslandUnification(Island island) {
 		List<Island> islandToUnify = new ArrayList<>();
 		int islandIndex = islands.indexOf(island);
-		//need to add islands.size() before calculate in (mod islands.size()) because of possible
-		//negative value if islandIndex is 0
-		int leftIndex = (islandIndex + islands.size() - 1) % islands.size();
+		int leftIndex = (islandIndex - 1) % islands.size();
 		int rightIndex = (islandIndex + 1) % islands.size();
 		int indexToReplace = islandIndex;
 		TowerType towerType = island.getTowerType();
-		if (towerType == null) return;
 		if (islands.get(leftIndex).getTowerType() == towerType) {
 			islandToUnify.add(islands.get(leftIndex));
 			indexToReplace = Integer.min(indexToReplace, leftIndex);
@@ -224,14 +229,5 @@ public class Game implements ModelObserver{
 		} catch(EmptyBagException e) {
 			//TODO: the game is finished
 		}
-	}
-
-	//For testing
-	public int motherNaturePositionIndex() {
-		int i = 0;
-		while (!islands.get(i).isMotherNaturePresent()) {
-			i++;
-		}
-		return i;
 	}
 }

@@ -17,7 +17,7 @@ public class Cloud {
 	}
 
 	public Student[] pickStudents() throws EmptyCloudException {
-		if (students[0] == null) throw new EmptyCloudException();
+		if (!studentsPresents) throw new EmptyCloudException();
 		studentsPresents = false;
 		return students;
 	}
@@ -25,6 +25,7 @@ public class Cloud {
 	public void insertStudents(Student ... students) throws StudentsNumberInCloudException {
 		if (students.length != this.students.length) throw new StudentsNumberInCloudException();
 		this.students = students;
+		this.studentsPresents = true;
 	}
 
 }

@@ -32,7 +32,7 @@ class PlayerTest extends TestCase {
     void playAssistantTest(int assistant, boolean expected, int[] assistants) {
         List<Assistant> assistantsPlayer = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            assistantsPlayer.add(new Assistant(i, 0)); //MNM not important
+            assistantsPlayer.add(new Assistant(i, 0, null)); //MNM not important
         }
         playerToTest.setAssistants(assistantsPlayer);
         List<Integer> assistantPlayed = new ArrayList<>();
