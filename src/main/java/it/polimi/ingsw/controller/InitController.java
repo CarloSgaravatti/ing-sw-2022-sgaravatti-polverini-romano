@@ -12,7 +12,7 @@ public class InitController {
 	private int numPlayers;
 
 	public void setNumPlayers(int numPlayers){
-		this.numPlayers = numPlayers;
+		this.numPlayers=numPlayers;
 	}
 
 	public void initializeGameComponents() throws EmptyBagException {
@@ -43,10 +43,15 @@ public class InitController {
 		game.addPlayer(nick);
 	}
 
-	public void setupPlayers(TowerType type, Player player) {
+	public void setupPlayers(TowerType type, Player player, WizardType type2) {
 		int towerPerSchool = (numPlayers==3) ? 6 : 8;
 		player.setSchool(new School(towerPerSchool,type));
-		//player.setTowerType(type); deleted tower type in player because not useful
+		if(!player.getWizardType().equals(type2)) {
+			game.assignDeck(player, type2);
+		}
+		else{
+			//TODO: must create an exception when  player.getWizardType().equals(type2) is true
+		}
 	}
 	public Cloud[] createClouds(){
 		int studentsPerCloud = (numPlayers == 3) ? 4 : 3;
