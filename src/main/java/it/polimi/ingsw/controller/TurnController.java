@@ -2,6 +2,8 @@ package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.model.*;
 
+import java.util.Arrays;
+
 public class TurnController {
 	private RoundPhase currentPhase;
 	private int numPlayersDone;
@@ -10,39 +12,58 @@ public class TurnController {
 	private int activePlayerIndex;
 	private boolean turnActive;
 	private PhaseOrder phaseOrder;
-	private Game game;
+	private final Game game;
 
+	public TurnController(Player[] players, Game game) {
+		playerOrder = Arrays.copyOf(players, players.length);
+		orderCalculated = false;
+		currentPhase = RoundPhase.PLANNING;
+		phaseOrder = PlanningPhaseOrder.getInstance();
+		this.game = game;
+	}
 
 	private void calculateOrder() {
-
+		playerOrder = phaseOrder.calculateOrder(playerOrder);
+		activePlayerIndex = 0;
 	}
 
-	public Player setNextPlayer() {
-		return null;
-	}
-
-	public void changePhase(RoundPhase r) {
-
+	public void changePhase() {
+		currentPhase = RoundPhase.values()[(currentPhase.ordinal() + 1) % RoundPhase.values().length];
 	}
 
 	public void endTurn() {
-
+		if (activePlayerIndex == playerOrder.length - 1) {
+			if (currentPhase == RoundPhase.PLANNING) {
+				phaseOrder = ActionPhaseOrder.getInstance();
+			} else {
+				phaseOrder = PlanningPhaseOrder.getInstance();
+			}
+			changePhase();
+			orderCalculated = false;
+			return;
+		}
+		activePlayerIndex++;
 	}
 
 	public Player getActivePlayer() {
-		return null;
+		if (!orderCalculated) calculateOrder();
+		return playerOrder[activePlayerIndex];
 	}
 
 	public Player[] getPlayerOrder() {
 		return playerOrder;
 	}
+
+	public RoundPhase getCurrentPhase() {
+		return currentPhase;
+	}
+
 	public Player getPosition(int i) {
 		return playerOrder[i];
 	}
+
 	public void setNextPlayer(Player player, int i) {
-
-			this.playerOrder[i] = player;
-
+		this.playerOrder[i] = player;
 	}
 }
 

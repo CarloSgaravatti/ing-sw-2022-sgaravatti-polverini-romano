@@ -1,10 +1,7 @@
 package it.polimi.ingsw.controller;
 
 import com.google.gson.JsonObject;
-import it.polimi.ingsw.exceptions.AssistantAlreadyPlayedException;
-import it.polimi.ingsw.exceptions.EmptyCloudException;
-import it.polimi.ingsw.exceptions.NoSuchAssistantException;
-import it.polimi.ingsw.exceptions.StudentNotFoundException;
+import it.polimi.ingsw.exceptions.*;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.utils.JsonUtils;
 
@@ -16,24 +13,31 @@ import java.util.List;
 
 public class ActionController {
 	private TurnPhase turnPhase;
-	private TurnController turnController;
-	private GameController gameController;
+	private final TurnController turnController;
+	private final GameController gameController;
+
+	public ActionController(GameController gameController, TurnController turnController) {
+		this.gameController = gameController;
+		this.turnController = turnController;
+		turnPhase = TurnPhase.FILL_CLOUDS;
+	}
 
 	//TODO: these methods should return a message to the client and not an exception
 	//TODO: change in the turn phase after a conventional action is requested
 	public void doAction(String message) throws IllegalArgumentException, AssistantAlreadyPlayedException,
 			StudentNotFoundException, NoSuchAssistantException, ClassNotFoundException, NoSuchMethodException,
-			InvocationTargetException, IllegalAccessException, EmptyCloudException {
+			InvocationTargetException, IllegalAccessException, EmptyCloudException, FullDiningRoomException,
+			NotEnoughCoinsException {
 		List<String> args = Arrays.asList(message.split(" "));
 		String action = args.get(0);
 		args.remove(0);
 		switch (action) {
-			case "A" -> playAssistant(args);
-			case "M" -> motherNatureMovement(args);
-			case "S" -> studentMovement(args);
-			case "C" -> pickStudentsFillClouds(args);
-			case "CP" -> playCharacter(args);
-			case "CE" -> characterEffect(args);
+			case "Assistant" -> playAssistant(args);
+			case "MotherNature" -> motherNatureMovement(args);
+			case "Students" -> studentMovement(args);
+			case "Cloud" -> pickStudentsFillClouds(args);
+			case "PlayCharacter" -> playCharacter(args);
+			case "CharacterEffect" -> characterEffect(args);
 			default -> throw new IllegalArgumentException();
 		}
 	}
@@ -53,13 +57,16 @@ public class ActionController {
 		}
 		if (!turnController.getActivePlayer().playAssistant(assistantIdx, assistantAlreadyPlayed))
 			throw new AssistantAlreadyPlayedException();
+		turnPhase = TurnPhase.TURN_ENDED; //planning phase is ended for this player
 	}
 
-	public void studentMovement(List<String> args) throws IllegalArgumentException, StudentNotFoundException {
+	public void studentMovement(List<String> args) throws IllegalArgumentException, StudentNotFoundException,
+			FullDiningRoomException {
 		RealmType studentType;
 		int islandIndex;
+		if (args.size() > 9) throw new IllegalArgumentException();
 		for (int i = 0; i < args.size(); i+=2) {
-			getStudentType(args.get(i)); //make sure that the argument is correct
+			studentType = getStudentType(args.get(i)); //make sure that the argument is correct
 			if (!args.get(i + 1).equals("D") && !args.get(i + 1).equals("I")) {
 				throw new IllegalArgumentException();
 			}
@@ -69,7 +76,6 @@ public class ActionController {
 				i++;
 			}
 		}
-		if (args.size() > 9) throw new IllegalArgumentException();
 		School school = turnController.getActivePlayer().getSchool();
 		for (int i = 0; i < args.size(); i+=2) {
 			studentType = getStudentType(args.get(i));
@@ -87,6 +93,7 @@ public class ActionController {
 				}
 			}
 		}
+		changeTurnPhase();
 	}
 
 	public void motherNatureMovement(List<String> args) throws IllegalArgumentException {
@@ -96,6 +103,7 @@ public class ActionController {
 		if (motherNatureMovement <= 0 || motherNatureMovement > legalMotherNatureMovement)
 			throw new IllegalArgumentException(); //TODO: create a specific exception
 		gameController.getModel().moveMotherNature(motherNatureMovement);
+		changeTurnPhase();
 	}
 
 	//Is this useful?
@@ -106,20 +114,28 @@ public class ActionController {
 	public void pickStudentsFillClouds(List<String> args) throws EmptyCloudException, IllegalArgumentException {
 		if (args.size() != 1) throw new IllegalArgumentException();
 		Cloud cloud = gameController.getModel().getClouds()[Integer.parseInt(args.get(0))];
-		Student[] students = cloud.pickStudents();
+		turnController.getActivePlayer().pickFromCloud(cloud);
+		/*Student[] students = cloud.pickStudents();
 		School school = turnController.getActivePlayer().getSchool();
-		school.insertEntrance(students);
+		school.insertEntrance(students);*/
+		changeTurnPhase();
 	}
 
 	public void playCharacter(List<String> args) throws IllegalArgumentException, ClassNotFoundException, NoSuchMethodException,
-			InvocationTargetException, IllegalAccessException {
+			InvocationTargetException, IllegalAccessException, NotEnoughCoinsException {
+		//TODO: illegal argument exception is too general
+		if (turnController.getActivePlayer().getTurnEffect().isCharacterPlayed()) throw new IllegalArgumentException();
 		int characterId = Integer.parseInt(args.get(0));
 		if (!isValidCharacter(characterId)) throw new IllegalArgumentException();
+		int coinToGeneralSupply;
 		CharacterCreator characterCreator = CharacterCreator.getInstance();
 		CharacterCard characterCard = characterCreator.getCharacter(characterId);
+		coinToGeneralSupply = characterCard.getPrice();
+		if (!characterCard.isCoinPresent()) coinToGeneralSupply--;
 		characterCard.playCard(turnController.getActivePlayer());
 		turnController.getActivePlayer().getTurnEffect().setCharacterPlayed(true);
 		turnController.getActivePlayer().getTurnEffect().setCharacterEffectConsumed(false);
+		gameController.getModel().insertCoinsInGeneralSupply(coinToGeneralSupply);
 		//If the character effect is active and the player calls the effect immediately
 		if (args.size() > 1) {
 			characterEffect(args);
@@ -129,7 +145,9 @@ public class ActionController {
 	//TODO: add a method to have a better reuse of code from playCharacter and characterEffect
 	//Character effect is ok to be called only for characters that have some active effects,
 	//these are characters 1,3,7,9,10,11,12
-	public void characterEffect(List<String> args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+	public void characterEffect(List<String> args) throws ClassNotFoundException, NoSuchMethodException,
+			InvocationTargetException, IllegalAccessException {
+		if (turnController.getActivePlayer().getTurnEffect().isCharacterEffectConsumed()) throw new IllegalArgumentException();
 		int characterId = Integer.parseInt(args.get(0));
 		if (!isValidCharacter(characterId)) throw new IllegalArgumentException();
 		JsonObject characterJsonObject = JsonUtils.getCharacterJsonObject(characterId);
@@ -192,5 +210,9 @@ public class ActionController {
 			argIndex += 2;
 		}
 		return parameters;
+	}
+
+	private void changeTurnPhase() {
+		turnPhase = TurnPhase.values()[(turnPhase.ordinal() + 1) % TurnPhase.values().length];
 	}
 }
