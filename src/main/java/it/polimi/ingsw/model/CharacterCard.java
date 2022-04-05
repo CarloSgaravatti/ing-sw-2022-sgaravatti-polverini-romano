@@ -1,9 +1,12 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.exceptions.IllegalCharacterActionRequestedException;
 import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
 
+import java.util.List;
 import java.util.Objects;
 
+//TODO: all additional methods in subclasses has to be private (after change in tests)
 public abstract class CharacterCard {
 	private final int id;
 	private int coinPrice;
@@ -40,6 +43,9 @@ public abstract class CharacterCard {
 			putCoin();
 		}
 	}
+
+	//TODO: all the IllegalActionRequestedException must have a message
+	public abstract void useEffect(List<String> args) throws IllegalCharacterActionRequestedException;
 
 	public Player getPlayerActive() {
 		return playerActive;

@@ -1,7 +1,10 @@
 package it.polimi.ingsw.model.characters;
 
+import it.polimi.ingsw.exceptions.IllegalCharacterActionRequestedException;
 import it.polimi.ingsw.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.model.*;
+
+import java.util.List;
 
 public class Character12 extends CharacterCard {
     private static Character12 instance;
@@ -19,7 +22,16 @@ public class Character12 extends CharacterCard {
         return instance;
     }
 
-    @SuppressWarnings("unused") //accessed with reflection
+    @Override
+    public void useEffect(List<String> args) throws IllegalCharacterActionRequestedException {
+        RealmType studentType = RealmType.getRealmByAbbreviation(args.get(0));
+        try {
+            removeStudentsFromDiningRoom(studentType);
+        } catch (StudentNotFoundException e) {
+            throw new IllegalCharacterActionRequestedException();
+        }
+    }
+
     public void removeStudentsFromDiningRoom(RealmType studentType) throws StudentNotFoundException {
         School school;
         for (Player p: game.getPlayers()) {

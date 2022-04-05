@@ -1,22 +1,39 @@
 package it.polimi.ingsw.model.characters;
 
+import it.polimi.ingsw.exceptions.IllegalCharacterActionRequestedException;
 import it.polimi.ingsw.model.CharacterCard;
+import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Island;
 import it.polimi.ingsw.model.effects.NoEntryTileManager;
+
+import java.util.List;
 
 public class Character5 extends CharacterCard implements NoEntryTileManager {
     private int noEntryTiles;
     private static Character5 instance;
     private final static int NUM_NO_ENTRY_TILES_MAX = 4;
+    private final List<Island> islands;
 
-    protected Character5() {
+    protected Character5(Game game) {
         super(2, 5);
         noEntryTiles = NUM_NO_ENTRY_TILES_MAX;
+        islands = game.getIslands();
     }
 
-    public static Character5 getInstance() {
-        if (instance == null) instance = new Character5();
+    public static Character5 getInstance(Game game) {
+        if (instance == null) instance = new Character5(game);
         return instance;
+    }
+
+    @Override
+    public void useEffect(List<String> args) throws IllegalCharacterActionRequestedException {
+        Island island;
+        try {
+            island = islands.get(Integer.parseInt(args.get(0)));
+        } catch (NumberFormatException e) {
+            throw new IllegalCharacterActionRequestedException();
+        }
+        putNoEntryTileInIsland(island);
     }
 
     @Override

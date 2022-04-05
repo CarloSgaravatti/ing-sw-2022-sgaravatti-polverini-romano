@@ -1,9 +1,12 @@
 package it.polimi.ingsw.model.characters;
 
+import it.polimi.ingsw.exceptions.IllegalCharacterActionRequestedException;
 import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
 import it.polimi.ingsw.model.CharacterCard;
 import it.polimi.ingsw.model.effects.GainInfluenceStrategy;
 import it.polimi.ingsw.model.Player;
+
+import java.util.List;
 
 public class Character8 extends CharacterCard {
     private static Character8 instance;
@@ -23,5 +26,10 @@ public class Character8 extends CharacterCard {
         super.playCard(player);
         player.getTurnEffect().setInfluenceStrategy(new GainInfluenceStrategy(player.getTurnEffect().getInfluenceStrategy()));
         player.getTurnEffect().setAdditionalInfluence(ADDITIONAL_INFLUENCE);
+    }
+
+    @Override
+    public void useEffect(List<String> args) throws IllegalCharacterActionRequestedException {
+        throw new IllegalCharacterActionRequestedException();
     }
 }

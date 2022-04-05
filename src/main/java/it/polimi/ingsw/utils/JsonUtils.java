@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+@Deprecated
 public class JsonUtils {
     public static JsonObject getCharacterJsonObject(int characterId) throws NoSuchElementException, NullPointerException {
         InputStream stream = JsonUtils.class.getResourceAsStream("/jsonConfigFiles/CharacterCardsEffectInfo.json");
@@ -30,11 +31,6 @@ public class JsonUtils {
         }
         throw new NoSuchElementException();
     }
-
-    /*public static Class<?> getCharacterClass(JsonObject characterJsonObject) {
-        CharacterCreator characterCreator = CharacterCreator.getInstance();
-        return characterCreator.getCharacter(characterJsonObject.get("characterId").getAsInt()).getClass();
-    }*/
 
     //TODO: handle characters without effect methods
     public static Method getCharacterMethod(JsonObject characterJsonObject) throws ClassNotFoundException, NoSuchMethodException {
