@@ -2,6 +2,10 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.characters.*;
 
+/**
+ * Class CharacterCreator is used to obtain a character card instance using
+ * factory method pattern. This is a Singleton class.
+ */
 public class CharacterCreator {
     private Game game;
     private static CharacterCreator instance;
@@ -10,13 +14,25 @@ public class CharacterCreator {
     private CharacterCreator() {
     }
 
+    /**
+     * Static method getInstance returns an instance of CharacterCreator, if the instance doesn't exist
+     * this method creates it.
+     * @return the CharacterCreator instance
+     */
     public static CharacterCreator getInstance() {
         if (instance == null) instance =  new CharacterCreator();
         return instance;
     }
 
-    public CharacterCard getCharacter(int numCharacter) throws IllegalArgumentException {
-        return switch (numCharacter) {
+    /**
+     * Method getCharacter is the factory method which returns the character card that have the
+     * specified character id.
+     * @param characterId the character card id
+     * @return the character card instance of the specified id
+     * @throws IllegalArgumentException if it doesn't exist a character card with the specified id
+     */
+    public CharacterCard getCharacter(int characterId) throws IllegalArgumentException {
+        return switch (characterId) {
             case 1 -> Character1.getInstance(game);
             case 2 -> Character2.getInstance();
             case 3 -> Character3.getInstance(game);
@@ -33,6 +49,11 @@ public class CharacterCreator {
         };
     }
 
+    /**
+     * Method setGame sets the game which the CharacterCreator refers to, this is useful
+     * because some character cards needs to associated to the game in order to accomplish their task
+     * @param game the game to be set
+     */
     public void setGame(Game game) {
         this.game = game;
     }

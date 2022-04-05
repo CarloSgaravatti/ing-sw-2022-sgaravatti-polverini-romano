@@ -12,10 +12,10 @@ public class InitController {
 	private int numPlayers;
 
 	public void setNumPlayers(int numPlayers){
-		this.numPlayers=numPlayers;
+		this.numPlayers = numPlayers;
 	}
 
-	public void inizializeGameComponents() throws EmptyBagException {
+	public void initializeGameComponents() throws EmptyBagException {
 		List <Island> islands = new ArrayList<>();
 		for(int i=0; i<Island.NUM_ISLANDS;i++){
 			islands.add(new SingleIsland());
@@ -46,7 +46,7 @@ public class InitController {
 	public void setupPlayers(TowerType type, Player player) {
 		int towerPerSchool = (numPlayers==3) ? 6 : 8;
 		player.setSchool(new School(towerPerSchool,type));
-		player.setTowerType(type);
+		//player.setTowerType(type); deleted tower type in player because not useful
 	}
 	public Cloud[] createClouds(){
 		int studentsPerCloud = (numPlayers == 3) ? 4 : 3;

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.exceptions.CoinAlreadyPresentException;
+import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
 
 import java.util.Objects;
 
@@ -22,18 +22,23 @@ public abstract class CharacterCard {
 		return coinPrice;
 	}
 
+	public boolean isCoinPresent() {
+		return coinPresent;
+	}
+
 	//only the first time the card is played it is allowed to put a coin
-	public void putCoin() /*throws CoinAlreadyPresentException*/ {
-		//if (coinPresent) throw new CoinAlreadyPresentException();
+	public void putCoin() {
 		coinPresent = true;
 		coinPrice++;
 	}
 
 	//default implementation
-	public void playCard(Player player) {
+	public void playCard(Player player) throws NotEnoughCoinsException {
+		player.removeCoins(this.coinPrice);
 		playerActive = player;
-		if (!coinPresent) putCoin();
-		//TODO: handle player coin supply
+		if (!coinPresent) {
+			putCoin();
+		}
 	}
 
 	public Player getPlayerActive() {
@@ -47,8 +52,7 @@ public abstract class CharacterCard {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (!(o instanceof CharacterCard)) return false;
-		CharacterCard that = (CharacterCard) o;
+		if (!(o instanceof CharacterCard that)) return false;
 		return id == that.id;
 	}
 

@@ -1,6 +1,8 @@
 package it.polimi.ingsw.model.characters;
 
+import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
 import it.polimi.ingsw.model.CharacterCreator;
+import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.effects.NoTowerInfluenceStrategy;
 import junit.framework.TestCase;
@@ -16,16 +18,19 @@ class Character6Test extends TestCase {
     Character6 character6;
 
     @BeforeEach
-    void setupCharacter4() {
+    void setupCharacter6() {
         character6 = (Character6) CharacterCreator.getInstance().getCharacter(6);
     }
 
-    @ParameterizedTest
-    @ValueSource(ints = {0, 5})
-    void playCard(int motherNatureMovement) {
+    @Test
+    void playCardTest() {
         Player player = new Player("player");
-        player.getTurnEffect().incrementMotherNatureMovement(motherNatureMovement);
-        character6.playCard(player);
+        for (int i = 0; i < character6.getPrice(); i++) player.insertCoin();
+        try {
+            character6.playCard(player);
+        } catch (NotEnoughCoinsException e) {
+            Assertions.fail();
+        }
         Assertions.assertTrue(player.getTurnEffect().getInfluenceStrategy() instanceof NoTowerInfluenceStrategy);
     }
 }

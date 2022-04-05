@@ -87,12 +87,10 @@ class SingleIslandTest extends TestCase {
     }
 
     @Test
-    //TODO
     void insertNoEntryTile() {
         NoEntryTileManager character5 = (Character5) CharacterCreator.getInstance().getCharacter(5);
         islandToTest.insertNoEntryTile(character5);
         islandToTest.insertNoEntryTile(character5);
-        islandToTest.setMotherNaturePresent(true);
-        Assertions.assertEquals(1, islandToTest.getNoEntryTilePresents());
+        Assertions.assertEquals(2, islandToTest.getNoEntryTilePresents());
     }
 }

@@ -2,14 +2,14 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.EmptyCloudException;
 import it.polimi.ingsw.exceptions.NoSuchAssistantException;
+import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
-	private TowerType towerType; //useless
 	private int numCoins;
-	private boolean starter;
+	//private boolean starter;
 	private final String nickName;
 	private School school;
 	private List<Assistant> assistants;
@@ -18,7 +18,7 @@ public class Player {
 
 	public Player(String nickName){
 		numCoins = 1;
-		starter = false;
+		//starter = false;
 		this.nickName = nickName;
 		turnEffect = new TurnEffect();
 		assistants = new ArrayList<>();
@@ -28,13 +28,14 @@ public class Player {
 		school.insertEntrance(cloud.pickStudents());
 	}
 
-	public boolean isStarter() {
+	//TODO: decide if these are useful (and also the attribute)
+	/*public boolean isStarter() {
 		return starter;
 	}
 
 	public void setStarter(boolean starter){
 		this.starter = starter;
-	}
+	}*/
 
 	public void setSchool(School s){
 		this.school = s;
@@ -77,10 +78,6 @@ public class Player {
 		return nickName;
 	}
 
-	public void setTowerType(TowerType type){
-		this.towerType = type;
-	}
-
 	public TurnEffect getTurnEffect() {
 		return turnEffect;
 	}
@@ -93,9 +90,8 @@ public class Player {
 		numCoins++;
 	}
 
-	//TODO: handle the case in which the player doesn't have enough coins
-	//TODO: put coins in game general supply
-	public void removeCoins(int coins) {
+	public void removeCoins(int coins) throws NotEnoughCoinsException{
+		if (numCoins < coins) throw new NotEnoughCoinsException();
 		numCoins -= coins;
 	}
 
@@ -106,6 +102,7 @@ public class Player {
 	public boolean getSelected() {
 		return selected;
 	}
+
 	public void setSelected() {
 		this.selected = true;
 	}

@@ -14,6 +14,12 @@ public class StudentContainer extends StudentContainerObservable {
     private final List<Student> students;
     private final int maxStudents;
 
+    //For testing
+    public StudentContainer() {
+        students = new ArrayList<>();
+        maxStudents = 4;
+    }
+
     public StudentContainer(int maxStudents, ModelObserver observer) {
         this.maxStudents = maxStudents;
         super.addObserver(observer);
@@ -32,6 +38,7 @@ public class StudentContainer extends StudentContainerObservable {
                 .findAny();
         if (student.isEmpty()) throw new StudentNotFoundException();
         if (notify) notifyObservers(this);
+        students.remove(student.get());
         return student.get();
     }
 

@@ -21,14 +21,18 @@ public class Character5 extends CharacterCard implements NoEntryTileManager {
 
     @Override
     public void putNoEntryTileInIsland (Island island) {
+        if (noEntryTiles == 0) throw new IllegalStateException();
         island.insertNoEntryTile(this);
         noEntryTiles--;
-        //TODO: handle the case of 0 no entry tiles ready to be placed
     }
 
     @Override
     public void insertNoEntryTile() {
+        if (noEntryTiles == NUM_NO_ENTRY_TILES_MAX) throw new IllegalStateException();
         noEntryTiles++;
-        //TODO: handle the case of reaching the maximum number of no entry tiles
+    }
+
+    public int getNoEntryTiles() {
+        return noEntryTiles;
     }
 }

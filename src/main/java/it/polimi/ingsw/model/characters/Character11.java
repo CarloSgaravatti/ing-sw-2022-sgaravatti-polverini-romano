@@ -5,6 +5,8 @@ import it.polimi.ingsw.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.effects.StudentContainer;
 
+import java.util.List;
+
 public class Character11 extends CharacterCard {
     private static Character11 instance;
     private final int MAX_NUM_STUDENTS = 4;
@@ -24,6 +26,11 @@ public class Character11 extends CharacterCard {
     public void pickAndSendToDiningRoom(RealmType studentType) throws StudentNotFoundException, FullDiningRoomException {
         School school = super.getPlayerActive().getSchool();
         school.insertDiningRoom(studentContainer.pickStudent(studentType, true));
+    }
+
+    //For testing
+    public List<Student> getStudents() {
+        return studentContainer.getStudents();
     }
 }
 

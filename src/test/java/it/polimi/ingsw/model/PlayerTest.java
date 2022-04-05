@@ -1,7 +1,9 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.VariableSource;
+import it.polimi.ingsw.exceptions.EmptyCloudException;
 import it.polimi.ingsw.exceptions.NoSuchAssistantException;
+import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
+import it.polimi.ingsw.exceptions.StudentsNumberInCloudException;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,9 +13,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -25,14 +27,7 @@ class PlayerTest extends TestCase {
         playerToTest = new Player("");
     }
 
-    /*static Stream<Arguments> arguments = Stream.of(
-          Arguments.of(1, true, new int[]{2, 3}),
-            Arguments.of(2, false, new int[]{2, 3}),
-            Arguments.of(5, true, new int[]{7, 10})
-    );*/
-
     @ParameterizedTest
-    //@VariableSource("arguments")
     @ArgumentsSource(AssistantArgumentProvider.class)
     void playAssistantTest(int assistant, boolean expected, int[] assistants) {
         List<Assistant> assistantsPlayer = new ArrayList<>();
@@ -50,6 +45,25 @@ class PlayerTest extends TestCase {
     }
 
     @Test
+    void pickFromCloudTest() {
+        Cloud cloud = new Cloud(3);
+        Student[] students = new Student[3];
+        Arrays.fill(students, new Student(RealmType.YELLOW_GNOMES));
+        try {
+            cloud.insertStudents(students);
+        } catch (StudentsNumberInCloudException e) {
+            Assertions.fail();
+        }
+        playerToTest.setSchool(new School(8, TowerType.BLACK));
+        try {
+            playerToTest.pickFromCloud(cloud);
+        } catch (EmptyCloudException e) {
+            Assertions.fail();
+        }
+        Assertions.assertEquals(3, playerToTest.getSchool().getStudentsEntrance(RealmType.YELLOW_GNOMES));
+    }
+
+    @Test
     void resetTurnEffectTest() {
         playerToTest.getTurnEffect().incrementMotherNatureMovement(5);
         playerToTest.getTurnEffect().setOrderPrecedence(7);
@@ -61,8 +75,22 @@ class PlayerTest extends TestCase {
     }
 
     @Test
-    //TODO
     void coinsTest() {
+        Assertions.assertEquals(1, playerToTest.getNumCoins());
+        playerToTest.insertCoin();
+        Assertions.assertEquals(2, playerToTest.getNumCoins());
+        try {
+            playerToTest.removeCoins(2);
+            Assertions.assertEquals(0, playerToTest.getNumCoins());
+        } catch (NotEnoughCoinsException e) {
+            Assertions.fail();
+        }
+        try {
+            playerToTest.removeCoins(2);
+            Assertions.fail();
+        } catch (NotEnoughCoinsException e) {
+            //test passed
+        }
     }
 }
 

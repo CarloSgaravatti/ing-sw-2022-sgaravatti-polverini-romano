@@ -5,7 +5,7 @@ import it.polimi.ingsw.model.*;
 
 public class Character12 extends CharacterCard {
     private static Character12 instance;
-    private static final int MAX_STUDENTS_TO_RMEOVE = 3;
+    private static final int MAX_STUDENTS_TO_REMOVE = 3;
     //Temporary solution, maybe it can be done with less brute force
     private final Game game;
 
@@ -24,7 +24,7 @@ public class Character12 extends CharacterCard {
         School school;
         for (Player p: game.getPlayers()) {
             school = p.getSchool();
-            int numStudentsToRemove = Integer.min(school.getNumStudentsDiningRoom(studentType), MAX_STUDENTS_TO_RMEOVE);
+            int numStudentsToRemove = Integer.min(school.getNumStudentsDiningRoom(studentType), MAX_STUDENTS_TO_REMOVE);
             for (int i = 0; i < numStudentsToRemove; i++) {
                 game.getBag().insertStudent(school.removeFromDiningRoom(studentType));
             }

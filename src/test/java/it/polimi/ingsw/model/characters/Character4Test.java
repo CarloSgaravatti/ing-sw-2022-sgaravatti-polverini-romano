@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.characters;
 
+import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
 import it.polimi.ingsw.model.CharacterCreator;
 import it.polimi.ingsw.model.Player;
 import junit.framework.TestCase;
@@ -20,10 +21,15 @@ class Character4Test extends TestCase {
 
     @ParameterizedTest
     @ValueSource(ints = {0, 5})
-    void playCard(int motherNatureMovement) {
+    void playCardTest(int motherNatureMovement) {
         Player player = new Player("player");
         player.getTurnEffect().incrementMotherNatureMovement(motherNatureMovement);
-        character4.playCard(player);
+        for (int i = 0; i < character4.getPrice(); i++) player.insertCoin();
+        try {
+            character4.playCard(player);
+        } catch (NotEnoughCoinsException e) {
+            Assertions.fail();
+        }
         Assertions.assertEquals(motherNatureMovement + 2, player.getTurnEffect().getMotherNatureMovement());
     }
 }

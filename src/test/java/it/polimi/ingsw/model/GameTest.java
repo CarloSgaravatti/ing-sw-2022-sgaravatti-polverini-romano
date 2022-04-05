@@ -3,8 +3,6 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.controller.InitController;
 import it.polimi.ingsw.exceptions.EmptyBagException;
 import junit.framework.TestCase;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Random;
 
@@ -22,7 +20,7 @@ public class GameTest extends TestCase {
 
     public void testMoveMotherNature() throws EmptyBagException {
         InitController initcontr = new InitController();
-        initcontr.inizializeGameComponents();
+        initcontr.initializeGameComponents();
         Game game = initcontr.getGame();
         Random rnd = new Random();
         int index = rnd.nextInt(game.getIslands().size());
@@ -44,7 +42,7 @@ public class GameTest extends TestCase {
 
     public void testCreateAllStudentsForBag() throws EmptyBagException{
         InitController initcontr = new InitController();
-        initcontr.inizializeGameComponents();
+        initcontr.initializeGameComponents();
         Game game = initcontr.getGame();
         assertEquals(120,game.getBag().getStudent().size());
     }

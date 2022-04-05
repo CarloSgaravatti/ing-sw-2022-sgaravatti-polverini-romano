@@ -33,7 +33,7 @@ class Character3Test extends TestCase {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {2})
+    @ValueSource(ints = {0})
     void chooseIslandToUpdate(int islandIndex) {
         List<Island> islands = game.getIslands();
         game.addPlayer("player1");

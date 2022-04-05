@@ -1,6 +1,7 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.EmptyBagException;
+import it.polimi.ingsw.exceptions.SchoolWithoutTowersException;
 import it.polimi.ingsw.model.effects.StudentContainer;
 
 import java.util.ArrayList;
@@ -130,6 +131,9 @@ public class Game implements ModelObserver{
 		}
 	}
 
+	public void insertCoinsInGeneralSupply(int coins) {
+		coinGeneralSupply += coins;
+	}
 
 
 	//This method maybe can be done in a better way
@@ -179,8 +183,11 @@ public class Game implements ModelObserver{
 		}
 		Player playerMaxInfluence = players.get(playerInfluences.indexOf(maxInfluence));
 		if (maxInfluenceOcc == 1 && island.getTowerType() != playerMaxInfluence.getSchool().getTowerType()) {
-			getPlayerByTowerType(island.getTowerType()).getSchool().insertTower();
+			if (island.getTowerType() != null) {
+				getPlayerByTowerType(island.getTowerType()).getSchool().insertTower(island.getNumTowers());
+			}
 			playerMaxInfluence.getSchool().sendTowerToIsland(island);
+			updateIslandUnification(island);
 		}
 	}
 
@@ -188,10 +195,13 @@ public class Game implements ModelObserver{
 	public void updateIslandUnification(Island island) {
 		List<Island> islandToUnify = new ArrayList<>();
 		int islandIndex = islands.indexOf(island);
-		int leftIndex = (islandIndex - 1) % islands.size();
+		//need to add islands.size() before calculate in (mod islands.size()) because of possible
+		//negative value if islandIndex is 0
+		int leftIndex = (islandIndex + islands.size() - 1) % islands.size();
 		int rightIndex = (islandIndex + 1) % islands.size();
 		int indexToReplace = islandIndex;
 		TowerType towerType = island.getTowerType();
+		if (towerType == null) return;
 		if (islands.get(leftIndex).getTowerType() == towerType) {
 			islandToUnify.add(islands.get(leftIndex));
 			indexToReplace = Integer.min(indexToReplace, leftIndex);

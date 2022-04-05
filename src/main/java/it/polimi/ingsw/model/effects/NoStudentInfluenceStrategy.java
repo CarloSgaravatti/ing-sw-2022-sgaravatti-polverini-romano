@@ -18,4 +18,9 @@ public class NoStudentInfluenceStrategy implements InfluenceStrategy {
         int toSubtract = island.getNumStudentsOfType(studentType);
         return influenceStrategy.getInfluence(island, player) - toSubtract;
     }
+
+    //For testing
+    public RealmType getStudentType() {
+        return studentType;
+    }
 }

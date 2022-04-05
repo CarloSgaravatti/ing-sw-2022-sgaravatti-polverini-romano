@@ -4,6 +4,8 @@ import it.polimi.ingsw.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.effects.StudentContainer;
 
+import java.util.List;
+
 public class Character7 extends CharacterCard {
     private final int MAX_NUM_STUDENTS = 6;
     private static Character7 instance;
@@ -21,6 +23,9 @@ public class Character7 extends CharacterCard {
 
     @SuppressWarnings("unused") //accessed with reflection
     public void pickAndSwapStudents(RealmType[] toPick, RealmType[] fromEntrance) throws StudentNotFoundException {
+        if (toPick.length != fromEntrance.length || toPick.length > 3 || toPick.length <= 0) {
+            throw new IllegalArgumentException();
+        }
         Student[] toEntrance = new Student[toPick.length];
         School school = super.getPlayerActive().getSchool();
         for (int i = 0; i < toPick.length; i++) {
@@ -30,5 +35,10 @@ public class Character7 extends CharacterCard {
             studentContainer.insertStudent(school.removeStudentEntrance(s));
         }
         school.insertEntrance(toEntrance);
+    }
+
+    //For testing
+    public List<Student> getStudents() {
+        return studentContainer.getStudents();
     }
 }
