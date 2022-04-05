@@ -56,7 +56,7 @@ public class Game implements ModelObserver{
 		return started;
 	}
 
-	public void moveMotherNature(int movement /*Movement inteso gia la scelta del giocatore di quanto muovere madre natura*/){
+	public void moveMotherNature(int movement){
 		int i=0;
 		while(!islands.get(i).isMotherNaturePresent() && i<islands.size()) {
 			i++;
@@ -224,5 +224,14 @@ public class Game implements ModelObserver{
 		} catch(EmptyBagException e) {
 			//TODO: the game is finished
 		}
+	}
+
+	//For testing
+	public int motherNaturePositionIndex() {
+		int i = 0;
+		while (!islands.get(i).isMotherNaturePresent()) {
+			i++;
+		}
+		return i;
 	}
 }
