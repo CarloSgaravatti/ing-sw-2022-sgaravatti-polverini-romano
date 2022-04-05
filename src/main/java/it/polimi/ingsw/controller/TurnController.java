@@ -18,7 +18,7 @@ public class TurnController {
 		playerOrder = Arrays.copyOf(players, players.length);
 		orderCalculated = false;
 		currentPhase = RoundPhase.PLANNING;
-		phaseOrder = PlanningPhaseOrder.getInstance();
+		phaseOrder = new PlanningPhaseOrder(game);
 		this.game = game;
 	}
 
@@ -34,9 +34,9 @@ public class TurnController {
 	public void endTurn() {
 		if (activePlayerIndex == playerOrder.length - 1) {
 			if (currentPhase == RoundPhase.PLANNING) {
-				phaseOrder = ActionPhaseOrder.getInstance();
+				phaseOrder = new ActionPhaseOrder(game);
 			} else {
-				phaseOrder = PlanningPhaseOrder.getInstance();
+				phaseOrder = new PlanningPhaseOrder(game);
 			}
 			changePhase();
 			orderCalculated = false;

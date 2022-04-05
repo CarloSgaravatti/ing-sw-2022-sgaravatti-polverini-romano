@@ -2,9 +2,16 @@ package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.model.*;
 
+import java.util.List;
+
 public class ActionPhaseOrder implements PhaseOrder {
 	private Game game;
 	private TurnController turnController;
+	private Player[] order;
+	private List<Player> players;
+	public ActionPhaseOrder (Game game){
+		players = game.getPlayers();
+	}
 
 	public Player[] calculateOrder(Player[] players) {
 		int[] min = new int[0];
@@ -18,7 +25,7 @@ public class ActionPhaseOrder implements PhaseOrder {
 
 					if (players[i].getCardValue() < min[k]) {
 						min[k] = players[i].getCardValue();
-						turnController.setNextPlayer(players[i], k);
+						order[k] = players[i];//turnController.setNextPlayer(players[i], k);
 					}
 					turnController.getPosition(k).setSelected();
 				}
@@ -26,8 +33,7 @@ public class ActionPhaseOrder implements PhaseOrder {
 
 
 		}
-
-		return null;
+        return order;
 	}
 
 }
