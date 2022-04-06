@@ -230,4 +230,13 @@ public class Game implements ModelObserver{
 			//TODO: the game is finished
 		}
 	}
+
+	//For testing
+	public int motherNaturePositionIndex() {
+		int i = 0;
+		while (!islands.get(i).isMotherNaturePresent()) {
+			i++;
+		}
+		return i;
+	}
 }
