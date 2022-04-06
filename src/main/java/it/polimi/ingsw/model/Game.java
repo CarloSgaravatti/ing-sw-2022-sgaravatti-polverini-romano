@@ -194,8 +194,11 @@ public class Game implements ModelObserver{
 		}
 		Player playerMaxInfluence = players.get(playerInfluences.indexOf(maxInfluence));
 		if (maxInfluenceOcc == 1 && island.getTowerType() != playerMaxInfluence.getSchool().getTowerType()) {
-			getPlayerByTowerType(island.getTowerType()).getSchool().insertTower(island.getNumTowers());
+			if (island.getTowerType() != null) {
+				getPlayerByTowerType(island.getTowerType()).getSchool().insertTower(island.getNumTowers());
+			}
 			playerMaxInfluence.getSchool().sendTowerToIsland(island);
+			updateIslandUnification(island);
 		}
 	}
 
@@ -203,7 +206,7 @@ public class Game implements ModelObserver{
 	public void updateIslandUnification(Island island) {
 		List<Island> islandToUnify = new ArrayList<>();
 		int islandIndex = islands.indexOf(island);
-		int leftIndex = (islandIndex - 1) % islands.size();
+		int leftIndex = (islandIndex + islands.size() - 1) % islands.size();
 		int rightIndex = (islandIndex + 1) % islands.size();
 		int indexToReplace = islandIndex;
 		TowerType towerType = island.getTowerType();

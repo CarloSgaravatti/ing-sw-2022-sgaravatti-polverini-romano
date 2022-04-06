@@ -63,7 +63,7 @@ public class ActionController {
 		int islandIndex;
 		if (args.size() > 9) throw new IllegalArgumentException();
 		for (int i = 0; i < args.size(); i+=2) {
-			studentType = getStudentType(args.get(i)); //make sure that the argument is correct
+			studentType = RealmType.getRealmByAbbreviation(args.get(i)); //make sure that the argument is correct
 			if (!args.get(i + 1).equals("D") && !args.get(i + 1).equals("I")) {
 				throw new IllegalArgumentException();
 			}
@@ -75,7 +75,7 @@ public class ActionController {
 		}
 		School school = turnController.getActivePlayer().getSchool();
 		for (int i = 0; i < args.size(); i+=2) {
-			studentType = getStudentType(args.get(i));
+			studentType = RealmType.getRealmByAbbreviation(args.get(i));
 			switch (args.get(i + 1)) {
 				case "D" ->	{
 					if (school.moveFromEntranceToDiningRoom(studentType)) {
@@ -139,9 +139,6 @@ public class ActionController {
 		}
 	}
 
-	//TODO: add a method to have a better reuse of code from playCharacter and characterEffect
-	//Character effect is ok to be called only for characters that have some active effects,
-	//these are characters 1,3,7,9,10,11,12
 	public void characterEffect(List<String> args) throws IllegalCharacterActionRequestedException {
 		if (turnController.getActivePlayer().getTurnEffect().isCharacterEffectConsumed()) throw new IllegalArgumentException();
 		int characterId = Integer.parseInt(args.get(0));
@@ -149,17 +146,6 @@ public class ActionController {
 		CharacterCreator characterCreator = CharacterCreator.getInstance();
 		CharacterCard characterCard = characterCreator.getCharacter(characterId);
 		characterCard.useEffect(args.subList(1, args.size()));
-	}
-
-	private RealmType getStudentType(String abbreviation) throws IllegalArgumentException {
-		return switch (abbreviation) {
-			case "Y" -> RealmType.YELLOW_GNOMES;
-			case "B" -> RealmType.BLUE_UNICORNS;
-			case "G" -> RealmType.GREEN_FROGS;
-			case "R" -> RealmType.RED_DRAGONS;
-			case "P" -> RealmType.PINK_FAIRES;
-			default -> throw new IllegalArgumentException();
-		};
 	}
 
 	private Island getIslandFromNumber(int islandId) {
@@ -179,31 +165,6 @@ public class ActionController {
 			if (characterRequested.equals(c)) return true;
 		}
 		return false;
-	}
-
-	@Deprecated
-	private Object[] getParameters(List<String> args, int numMethodParameters) throws IllegalArgumentException {
-		Object[] parameters = new Object[numMethodParameters];
-		int argIndex = 0;
-		if (args.size() != 2 * numMethodParameters) throw new IllegalArgumentException();
-		for (int i = 0; i < numMethodParameters; i++) {
-			if (args.get(argIndex).equals("S")) {
-				if (args.get(argIndex).length() == 1) {
-					parameters[i] = getStudentType(args.get((argIndex) + 1));
-				}
-				else {
-					Object[] studentTypes = new RealmType[Integer.parseInt(args.get(argIndex).substring(1))];
-					for (int k = 0; k < studentTypes.length; k++) {
-						studentTypes[k] = getStudentType(args.get((argIndex) + k + 1));
-					}
-					parameters[i] = studentTypes;
-				}
-			} else if (args.get(argIndex).equals("I")){
-				parameters[i] = getIslandFromNumber(Integer.parseInt(args.get(argIndex + 1)));
-			} else throw new IllegalArgumentException();
-			argIndex += 2;
-		}
-		return parameters;
 	}
 
 	private void changeTurnPhase() {

@@ -39,6 +39,9 @@ public class Character7 extends CharacterCard {
     }
 
     public void pickAndSwapStudents(RealmType[] toPick, RealmType[] fromEntrance) throws StudentNotFoundException {
+        if (toPick.length != fromEntrance.length || toPick.length > 3 || toPick.length <= 0) {
+            throw new IllegalArgumentException();
+        }
         Student[] toEntrance = new Student[toPick.length];
         School school = super.getPlayerActive().getSchool();
         for (int i = 0; i < toPick.length; i++) {

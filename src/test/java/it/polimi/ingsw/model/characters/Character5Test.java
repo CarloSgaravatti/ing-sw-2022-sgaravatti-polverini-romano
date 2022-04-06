@@ -1,12 +1,17 @@
 package it.polimi.ingsw.model.characters;
 
+import it.polimi.ingsw.controller.InitController;
+import it.polimi.ingsw.exceptions.EmptyBagException;
 import it.polimi.ingsw.model.CharacterCreator;
+import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Island;
 import it.polimi.ingsw.model.SingleIsland;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,8 +21,16 @@ class Character5Test extends TestCase {
 
     @BeforeEach
     void setupCharacter5() {
+        InitController initController = new InitController();
+        try {
+            initController.initializeGameComponents();
+        } catch (EmptyBagException e) {
+            Assertions.fail();
+        }
+        Game game = initController.getGame();
+        CharacterCreator.getInstance().setGame(game);
         character5 = (Character5) CharacterCreator.getInstance().getCharacter(5);
-        island = new SingleIsland();
+        island = game.getIslands().get(new Random().nextInt(12));
     }
 
     @Test

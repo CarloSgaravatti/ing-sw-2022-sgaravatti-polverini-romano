@@ -38,6 +38,9 @@ public class Character10 extends CharacterCard {
 
     public void swap(RealmType[] entrance, RealmType[] diningRoom) throws StudentNotFoundException,
             FullDiningRoomException {
+        if (entrance.length != diningRoom.length || entrance.length <= 0 || entrance.length > 2) {
+            throw new IllegalArgumentException();
+        }
         School school = super.getPlayerActive().getSchool();
         List<Student> removedFromDiningRoom = new ArrayList<>();
         for (RealmType s: diningRoom) {

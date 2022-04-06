@@ -47,6 +47,8 @@ class SingleIslandTest extends TestCase {
             else islands.add(new SingleIsland());
         }
         Game game = new Game(islands, null); //clouds are not important
+        CharacterCreator characterCreator = CharacterCreator.getInstance();
+        characterCreator.setGame(game);
         game.addPlayer("player1");
         game.addPlayer("player2");
         islandToTest.addObserver(game);
