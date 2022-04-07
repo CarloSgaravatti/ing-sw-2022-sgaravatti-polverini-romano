@@ -9,17 +9,11 @@ import java.util.List;
 
 public class Character7 extends CharacterCard {
     private final int MAX_NUM_STUDENTS = 6;
-    private static Character7 instance;
     private final StudentContainer studentContainer;
 
-    protected Character7(ModelObserver observer) {
+    public Character7(ModelObserver observer) {
         super(1, 7);
         studentContainer = new StudentContainer(MAX_NUM_STUDENTS, observer);
-    }
-
-    public static Character7 getInstance(ModelObserver observer) {
-        if (instance == null) instance = new Character7(observer);
-        return instance;
     }
 
     @Override

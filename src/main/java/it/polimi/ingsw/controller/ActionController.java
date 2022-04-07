@@ -123,11 +123,10 @@ public class ActionController {
 		//TODO: illegal argument exception is too general
 		if (turnController.getActivePlayer().getTurnEffect().isCharacterPlayed()) throw new IllegalArgumentException();
 		int characterId = Integer.parseInt(args.get(0));
-		if (!isValidCharacter(characterId)) throw new IllegalArgumentException();
-		int coinToGeneralSupply;
-		CharacterCreator characterCreator = CharacterCreator.getInstance();
-		CharacterCard characterCard = characterCreator.getCharacter(characterId);
-		coinToGeneralSupply = characterCard.getPrice();
+		CharacterCard characterCard = gameController.getModel().getCharacterById(characterId);
+		if (characterCard == null) throw new IllegalArgumentException();
+		int coinToGeneralSupply = characterCard.getPrice();
+		//TODO: if player does not have enough coins this is not correct
 		if (!characterCard.isCoinPresent()) coinToGeneralSupply--;
 		characterCard.playCard(turnController.getActivePlayer());
 		turnController.getActivePlayer().getTurnEffect().setCharacterPlayed(true);
@@ -142,9 +141,8 @@ public class ActionController {
 	public void characterEffect(List<String> args) throws IllegalCharacterActionRequestedException {
 		if (turnController.getActivePlayer().getTurnEffect().isCharacterEffectConsumed()) throw new IllegalArgumentException();
 		int characterId = Integer.parseInt(args.get(0));
-		if (!isValidCharacter(characterId)) throw new IllegalArgumentException();
-		CharacterCreator characterCreator = CharacterCreator.getInstance();
-		CharacterCard characterCard = characterCreator.getCharacter(characterId);
+		CharacterCard characterCard = gameController.getModel().getCharacterById(characterId);
+		if (characterCard == null) throw new IllegalArgumentException();
 		characterCard.useEffect(args.subList(1, args.size()));
 	}
 
@@ -159,10 +157,8 @@ public class ActionController {
 
 	private boolean isValidCharacter(int characterId) {
 		CharacterCard[] characterCards = gameController.getModel().getCharacterCards();
-		CharacterCreator characterCreator = CharacterCreator.getInstance();
-		CharacterCard characterRequested = characterCreator.getCharacter(characterId);
 		for (CharacterCard c: characterCards) {
-			if (characterRequested.equals(c)) return true;
+			if (characterId == c.getId()) return true;
 		}
 		return false;
 	}

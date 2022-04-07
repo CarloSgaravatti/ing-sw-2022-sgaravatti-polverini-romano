@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class Character8Test extends TestCase {
     @Test
     void playCardTest() {
-        Character8 character8 = (Character8) CharacterCreator.getInstance().getCharacter(8);
+        Character8 character8 = (Character8) new CharacterCreator(null).getCharacter(8);
         Player player = new Player("player");
         for (int i = 0; i < character8.getPrice(); i++) player.insertCoin();
         try {

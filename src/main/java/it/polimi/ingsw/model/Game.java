@@ -14,18 +14,16 @@ public class Game implements ModelObserver{
 	private final Bag bag;
 	private final List<Island> islands;
 	private int numPlayers;
-	private int numRound;
 	private final Cloud[] clouds;
 	private int studentsPerCloud;
 	private int coinGeneralSupply;
 	private final CharacterCard[] characterCards;
 	private int indexActivePlayer;
 	private final static int NUM_STUDENTS = 130;
-	private int numStudents=NUM_STUDENTS;
+	private int numStudents = NUM_STUDENTS;
 
 	public Game(List<Island> islands,Cloud[] clouds){
 		numPlayers = 0;
-		numRound = 0;
 		started = false;
 		bag = new Bag();
 		coinGeneralSupply = 20;
@@ -55,7 +53,7 @@ public class Game implements ModelObserver{
 		return started;
 	}
 
-	public void moveMotherNature(int movement /*Movement inteso gia la scelta del giocatore di quanto muovere madre natura*/){
+	public void moveMotherNature(int movement){
 		int i=0;
 		while(!islands.get(i).isMotherNaturePresent() && i<islands.size()) {
 			i++;
@@ -85,8 +83,7 @@ public class Game implements ModelObserver{
 		Random rnd = new Random();
 		List<Integer> charactersCreated = new ArrayList<>();
 		int characterToCreate;
-		CharacterCreator characterCreator = CharacterCreator.getInstance();
-		characterCreator.setGame(this);
+		CharacterCreator characterCreator = new CharacterCreator(this);
 		for (int i = 0; i < CharacterCard.NUM_CHARACTERS_PER_GAME; i++) {
 			do {
 				characterToCreate = rnd.nextInt(CharacterCard.NUM_CHARACTERS);
@@ -192,6 +189,7 @@ public class Game implements ModelObserver{
 		for (Integer i: playerInfluences) {
 			if (i == maxInfluence) maxInfluenceOcc++;
 		}
+		if (maxInfluenceOcc == 0) return;
 		Player playerMaxInfluence = players.get(playerInfluences.indexOf(maxInfluence));
 		if (maxInfluenceOcc == 1 && island.getTowerType() != playerMaxInfluence.getSchool().getTowerType()) {
 			if (island.getTowerType() != null) {
@@ -241,5 +239,12 @@ public class Game implements ModelObserver{
 			i++;
 		}
 		return i;
+	}
+
+	public CharacterCard getCharacterById(int characterId) {
+		for (CharacterCard c: characterCards) {
+			if (characterId == c.getId()) return c;
+		}
+		return null;
 	}
 }

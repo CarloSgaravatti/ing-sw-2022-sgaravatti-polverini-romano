@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.characters;
 
+import it.polimi.ingsw.exceptions.IllegalCharacterActionRequestedException;
 import it.polimi.ingsw.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.model.*;
 import junit.framework.TestCase;
@@ -25,9 +26,8 @@ class Character1Test extends TestCase {
         List<Island> islands = new ArrayList<>();
         for (int i = 0; i < 12; i++) islands.add(new SingleIsland());
         game = new Game(islands, null); //clouds are not important for this class
-        for (int i = 0; i < 120; i++) game.getBag().insertStudent(new Student(RealmType.values()[i /25]));
-        characterCreator = CharacterCreator.getInstance();
-        characterCreator.setGame(game);
+        for (int i = 0; i < 120; i++) game.getBag().insertStudent(new Student(RealmType.values()[i /24]));
+        characterCreator = new CharacterCreator(game);
         character1 = (Character1) characterCreator.getCharacter(1);
     }
 
@@ -36,6 +36,25 @@ class Character1Test extends TestCase {
         Assertions.assertEquals(1, character1.getId());
         Assertions.assertEquals(1, character1.getPrice());
     }
+
+    /*
+    @ParameterizedTest
+    @EnumSource(RealmType.class)
+    void useEffectTest(RealmType studentType) {
+        int islandIndex = new Random().nextInt(game.getIslands().size());
+        Island island = game.getIslands().get(islandIndex);
+        int previousStudents = island.getNumStudentsOfType(studentType);
+        String realmTypeAbbreviation = studentType.getAbbreviation();
+        List<String> args = new ArrayList<>();
+        args.add(realmTypeAbbreviation);
+        args.add(Integer.toString(islandIndex));
+        try {
+            character1.useEffect(args);
+            Assertions.assertEquals(previousStudents + 1, island.getNumStudentsOfType(studentType));
+        } catch (IllegalCharacterActionRequestedException e) {
+            //it's ok, because the student container initialization is random
+        }
+    }*/
 
     @ParameterizedTest
     @EnumSource(RealmType.class)

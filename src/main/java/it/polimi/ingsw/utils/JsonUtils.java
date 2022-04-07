@@ -33,7 +33,7 @@ public class JsonUtils {
     }
 
     //TODO: handle characters without effect methods
-    public static Method getCharacterMethod(JsonObject characterJsonObject) throws ClassNotFoundException, NoSuchMethodException {
+    /*public static Method getCharacterMethod(JsonObject characterJsonObject) throws ClassNotFoundException, NoSuchMethodException {
         CharacterCreator characterCreator = CharacterCreator.getInstance();
         Class<?> characterClass = characterCreator.getCharacter(characterJsonObject.get("characterId").getAsInt()).getClass();
         List<Class<?>> parametersClass = new ArrayList<>();
@@ -43,5 +43,5 @@ public class JsonUtils {
         }
         String methodName = characterJsonObject.get("effectMethod").getAsString();
         return characterClass.getMethod(methodName, parametersClass.toArray(new Class<?>[0]));
-    }
+    }*/
 }

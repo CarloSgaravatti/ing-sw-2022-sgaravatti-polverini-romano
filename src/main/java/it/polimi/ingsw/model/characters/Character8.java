@@ -9,16 +9,10 @@ import it.polimi.ingsw.model.Player;
 import java.util.List;
 
 public class Character8 extends CharacterCard {
-    private static Character8 instance;
     private static final int ADDITIONAL_INFLUENCE = 2;
 
-    protected Character8() {
+    public Character8() {
         super(2, 8);
-    }
-
-    public static Character8 getInstance() {
-        if (instance == null) instance = new Character8();
-        return instance;
     }
 
     @Override

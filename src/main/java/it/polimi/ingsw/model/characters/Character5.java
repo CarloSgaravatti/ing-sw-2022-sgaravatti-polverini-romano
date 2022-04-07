@@ -10,19 +10,13 @@ import java.util.List;
 
 public class Character5 extends CharacterCard implements NoEntryTileManager {
     private int noEntryTiles;
-    private static Character5 instance;
     private final static int NUM_NO_ENTRY_TILES_MAX = 4;
     private final List<Island> islands;
 
-    protected Character5(Game game) {
+    public Character5(Game game) {
         super(2, 5);
         noEntryTiles = NUM_NO_ENTRY_TILES_MAX;
         islands = game.getIslands();
-    }
-
-    public static Character5 getInstance(Game game) {
-        if (instance == null) instance = new Character5(game);
-        return instance;
     }
 
     @Override

@@ -16,7 +16,7 @@ class Character4Test extends TestCase {
 
     @BeforeEach
     void setupCharacter4() {
-        character4 = (Character4) CharacterCreator.getInstance().getCharacter(4);
+        character4 = (Character4) new CharacterCreator(null).getCharacter(4);
     }
 
     @ParameterizedTest

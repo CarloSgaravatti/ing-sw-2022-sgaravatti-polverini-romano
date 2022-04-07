@@ -9,15 +9,9 @@ import java.util.List;
 
 public class Character4 extends CharacterCard {
     private static final int MOTHER_NATURE_INCREMENT = 2;
-    private static Character4 instance;
 
-    protected Character4() {
+    public Character4() {
         super(1, 4);
-    }
-
-    public static Character4 getInstance() {
-        if (instance == null) instance = new Character4();
-        return instance;
     }
 
     @Override

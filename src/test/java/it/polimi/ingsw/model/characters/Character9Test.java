@@ -19,7 +19,7 @@ class Character9Test extends TestCase {
 
     @BeforeEach
     void setupCharacter9() {
-        character9 = (Character9) CharacterCreator.getInstance().getCharacter(9);
+        character9 = (Character9) new CharacterCreator(null).getCharacter(9);
     }
 
     @ParameterizedTest

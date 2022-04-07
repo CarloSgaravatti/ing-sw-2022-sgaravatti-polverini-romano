@@ -10,15 +10,9 @@ import it.polimi.ingsw.model.effects.NoStudentInfluenceStrategy;
 import java.util.List;
 
 public class Character9 extends CharacterCard {
-    private static Character9 instance;
 
-    protected Character9() {
+    public Character9() {
         super(3, 9);
-    }
-
-    public static Character9 getInstance() {
-        if (instance == null) instance = new Character9();
-        return instance;
     }
 
     @Override

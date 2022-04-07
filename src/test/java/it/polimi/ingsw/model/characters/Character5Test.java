@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,15 +23,16 @@ class Character5Test extends TestCase {
 
     @BeforeEach
     void setupCharacter5() {
-        InitController initController = new InitController();
-        try {
-            initController.initializeGameComponents();
-        } catch (EmptyBagException e) {
-            Assertions.fail();
+        List<Island> islands = new ArrayList<>();
+        for (int i = 0; i < Island.NUM_ISLANDS; i++) {
+            islands.add(new SingleIsland());
         }
-        Game game = initController.getGame();
-        CharacterCreator.getInstance().setGame(game);
-        character5 = (Character5) CharacterCreator.getInstance().getCharacter(5);
+        Game game = new Game(islands, null);
+        for (int i = 0; i < Island.NUM_ISLANDS; i++) {
+            islands.get(i).addObserver(game);
+        }
+        CharacterCreator characterCreator = new CharacterCreator(game);
+        character5 = (Character5) characterCreator.getCharacter(5);
         island = game.getIslands().get(new Random().nextInt(12));
     }
 

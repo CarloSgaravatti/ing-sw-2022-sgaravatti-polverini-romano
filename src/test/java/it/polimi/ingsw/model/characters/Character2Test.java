@@ -12,9 +12,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class Character2Test extends TestCase {
     Character2 character2;
+
     @BeforeEach
     void setupCharacter2() {
-        character2 = (Character2) CharacterCreator.getInstance().getCharacter(2);
+        character2 = (Character2) new CharacterCreator(null).getCharacter(2);
     }
 
     @Test

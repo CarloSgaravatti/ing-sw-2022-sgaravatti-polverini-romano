@@ -21,9 +21,8 @@ class Character11Test extends TestCase {
 
     @BeforeEach
     void setupCharacter11() {
-        CharacterCreator characterCreator = CharacterCreator.getInstance();
         Game game = new Game(null, null);
-        characterCreator.setGame(game);
+        CharacterCreator characterCreator = new CharacterCreator(game);
         game.createAllStudentsForBag();
         character11 = (Character11) characterCreator.getCharacter(11);
     }

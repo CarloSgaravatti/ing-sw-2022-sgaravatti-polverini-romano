@@ -47,8 +47,6 @@ class SingleIslandTest extends TestCase {
             else islands.add(new SingleIsland());
         }
         Game game = new Game(islands, null); //clouds are not important
-        CharacterCreator characterCreator = CharacterCreator.getInstance();
-        characterCreator.setGame(game);
         game.addPlayer("player1");
         game.addPlayer("player2");
         islandToTest.addObserver(game);
@@ -90,7 +88,9 @@ class SingleIslandTest extends TestCase {
 
     @Test
     void insertNoEntryTile() {
-        NoEntryTileManager character5 = (Character5) CharacterCreator.getInstance().getCharacter(5);
+        Game game = new Game(null, null);
+        CharacterCreator characterCreator = new CharacterCreator(game);
+        NoEntryTileManager character5 = (Character5) characterCreator.getCharacter(5);
         islandToTest.insertNoEntryTile(character5);
         islandToTest.insertNoEntryTile(character5);
         Assertions.assertEquals(2, islandToTest.getNoEntryTilePresents());

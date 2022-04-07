@@ -19,7 +19,7 @@ class Character6Test extends TestCase {
 
     @BeforeEach
     void setupCharacter6() {
-        character6 = (Character6) CharacterCreator.getInstance().getCharacter(6);
+        character6 = (Character6) new CharacterCreator(null).getCharacter(6);
     }
 
     @Test

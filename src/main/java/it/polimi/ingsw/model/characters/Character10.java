@@ -9,15 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Character10 extends CharacterCard {
-    private static Character10 instance;
 
-    protected Character10() {
+    public Character10() {
         super(1, 10);
-    }
-
-    public static Character10 getInstance() {
-        if (instance == null) instance = new Character10();
-        return instance;
     }
 
     @Override

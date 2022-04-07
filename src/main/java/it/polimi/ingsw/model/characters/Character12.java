@@ -7,19 +7,13 @@ import it.polimi.ingsw.model.*;
 import java.util.List;
 
 public class Character12 extends CharacterCard {
-    private static Character12 instance;
     private static final int MAX_STUDENTS_TO_REMOVE = 3;
     //Temporary solution, maybe it can be done with less brute force
     private final Game game;
 
-    protected Character12(Game game) {
+    public Character12(Game game) {
         super(3, 12);
         this.game = game;
-    }
-
-    public static Character12 getInstance(Game game) {
-        if (instance == null) instance = new Character12(game);
-        return instance;
     }
 
     @Override

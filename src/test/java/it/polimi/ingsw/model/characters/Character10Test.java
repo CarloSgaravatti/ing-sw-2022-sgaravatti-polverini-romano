@@ -18,7 +18,8 @@ class Character10Test extends TestCase {
 
     @BeforeEach
     void setupCharacter10() {
-        character10 = (Character10) CharacterCreator.getInstance().getCharacter(10);
+        CharacterCreator characterCreator = new CharacterCreator(null);
+        character10 = (Character10) characterCreator.getCharacter(10);
     }
 
     @Test

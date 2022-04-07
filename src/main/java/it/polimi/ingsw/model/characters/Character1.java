@@ -8,21 +8,15 @@ import it.polimi.ingsw.model.effects.StudentContainer;
 import java.util.List;
 
 public class Character1 extends CharacterCard {
-    private static Character1 instance;
     private final int MAX_NUM_STUDENTS = 4;
     private final StudentContainer studentContainer;
     //TODO: decide if this is necessary or it can be done better
     private final List<Island> islands;
 
-    protected Character1(Game game) {
+    public Character1(Game game) {
         super(1, 1);
         studentContainer = new StudentContainer(MAX_NUM_STUDENTS, game);
         this.islands = game.getIslands();
-    }
-
-    public static Character1 getInstance(Game game) {
-        if (instance == null) instance = new Character1(game);
-        return instance;
     }
 
     //To call this character you need to pass an RT abbreviation and an island index
