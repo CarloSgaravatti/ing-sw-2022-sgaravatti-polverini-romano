@@ -41,11 +41,11 @@ public class Assistant {
 		return motherNatureMovement;
 	}
 
-	public boolean getPlayed() {
+	/*public boolean getPlayed() {
 		return played;
 	}
 
 	public void setPlayed(boolean played) {
 		this.played = played;
-	}
+	}*/
 }

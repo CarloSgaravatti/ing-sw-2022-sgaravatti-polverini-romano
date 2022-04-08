@@ -3,6 +3,7 @@ package it.polimi.ingsw.controller;
 import it.polimi.ingsw.exceptions.NoSuchAssistantException;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.model.WizardType;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,8 +60,9 @@ class TurnControllerTest extends TestCase {
         Player[] players = new Player[3];
         for (int i = 0; i < 3; i++) {
             players[i] = turnController.getActivePlayer();
+            gameController.getModel().assignDeck(players[i], WizardType.values()[i]);
             try {
-                players[i].playAssistant(i, new ArrayList<>());
+                players[i].playAssistant(i + 1, new ArrayList<>());
             } catch (NoSuchAssistantException e) {
                 Assertions.fail();
             }

@@ -58,6 +58,7 @@ public abstract class CharacterCard {
 		return id;
 	}
 
+	/*
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -68,5 +69,5 @@ public abstract class CharacterCard {
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
-	}
+	}*/
 }

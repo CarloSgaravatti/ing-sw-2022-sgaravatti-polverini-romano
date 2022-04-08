@@ -26,8 +26,8 @@ class ActionControllerTest extends TestCase {
     @BeforeEach
     void setup() {
         gameController = new GameController();
-        gameController.initializeTurnController();
         InitController initController = gameController.getInitController();
+        initController.setNumPlayers(2);
         try {
             initController.initializeGameComponents();
         } catch (EmptyBagException e) {
@@ -36,12 +36,17 @@ class ActionControllerTest extends TestCase {
         initController.setNumPlayers(2);
         initController.addPlayer("player1");
         initController.addPlayer("player2");
+        gameController.setGame();
+        gameController.initializeTurnController();
+        initController.setupPlayers(TowerType.BLACK, gameController.getModel().getPlayers().get(0), WizardType.values()[0]);
+        initController.setupPlayers(TowerType.WHITE, gameController.getModel().getPlayers().get(1), WizardType.values()[1]);
         actionController = new ActionController(gameController, gameController.getTurnController());
         activePlayer = gameController.getTurnController().getActivePlayer();
     }
 
     @Test
     void playAssistantTest() {
+        actionController.setTurnPhase(TurnPhase.PLAY_ASSISTANT);
         try {
             actionController.doAction("Assistant 3");
         } catch (Exception e) {
@@ -52,6 +57,7 @@ class ActionControllerTest extends TestCase {
 
     @Test
     void studentMovementOnlyToDiningRoomTest() {
+        actionController.setTurnPhase(TurnPhase.MOVE_STUDENTS);
         Student[] students = new Student[3];
         for (int i = 0; i < 3; i++) {
             students[i] = new Student(RealmType.values()[i]);
@@ -72,6 +78,7 @@ class ActionControllerTest extends TestCase {
     @ParameterizedTest
     @ValueSource(ints = {0, 5, 11})
     void studentMovementAlsoToIslandTest(int islandIndex) {
+        actionController.setTurnPhase(TurnPhase.MOVE_STUDENTS);
         Island island = gameController.getModel().getIslands().get(islandIndex);
         int initialYellowsInIsland = island.getNumStudentsOfType(RealmType.YELLOW_GNOMES);
         Student[] students = new Student[3];
@@ -81,8 +88,9 @@ class ActionControllerTest extends TestCase {
         activePlayer.setSchool(new School(8, TowerType.BLACK));
         activePlayer.getSchool().insertEntrance(students);
         try {
-            actionController.doAction("Students Y D Y D Y I" + islandIndex);
+            actionController.doAction("Students Y D Y D Y I " + islandIndex);
         } catch (Exception e) {
+            e.printStackTrace();
             Assertions.fail();
         }
         Assertions.assertEquals(2, activePlayer.getSchool().getNumStudentsDiningRoom(RealmType.YELLOW_GNOMES));
@@ -92,6 +100,7 @@ class ActionControllerTest extends TestCase {
 
     @Test
     void motherNatureMovementTest() {
+        actionController.setTurnPhase(TurnPhase.MOVE_MOTHER_NATURE);
         int currMotherNature = gameController.getModel().motherNaturePositionIndex();
         try {
             activePlayer.playAssistant(5, new ArrayList<>());
@@ -104,12 +113,12 @@ class ActionControllerTest extends TestCase {
             Assertions.fail();
         }
         int newMotherNature = gameController.getModel().motherNaturePositionIndex();
-        Assertions.assertEquals(currMotherNature + 3, newMotherNature);
-
+        Assertions.assertEquals((currMotherNature + 3) % gameController.getModel().getIslands().size(), newMotherNature);
     }
 
     @Test
     void chooseCloudPickStudentsTest() {
+        actionController.setTurnPhase(TurnPhase.SELECT_CLOUD);
         Cloud cloud = gameController.getModel().getClouds()[1];
         Student[] students = new Student[3];
         Arrays.fill(students, new Student(RealmType.YELLOW_GNOMES));
@@ -124,13 +133,14 @@ class ActionControllerTest extends TestCase {
         } catch (Exception e) {
             Assertions.fail();
         }
-        Assertions.assertEquals(3, activePlayer.getSchool().getNumStudentsDiningRoom(RealmType.YELLOW_GNOMES));
+        Assertions.assertEquals(3, activePlayer.getSchool().getStudentsEntrance(RealmType.YELLOW_GNOMES));
     }
 
     @RepeatedTest(3)
     void playCharacterTest() {
         CharacterCard characterCard = gameController.getModel().getCharacterCards()[new Random().nextInt(3)];
         int characterToPlay = characterCard.getId();
+        for (int i = 0; i < characterCard.getPrice(); i++) activePlayer.insertCoin();
         try {
             actionController.doAction("PlayCharacter " + characterToPlay);
         } catch (Exception e) {
@@ -140,7 +150,7 @@ class ActionControllerTest extends TestCase {
     }
 
     @Test
-    //TODO: one test for all characters that have an active effect
+    //TODO: one test for all characters that have an active effect?
     void characterEffect() {
 
     }

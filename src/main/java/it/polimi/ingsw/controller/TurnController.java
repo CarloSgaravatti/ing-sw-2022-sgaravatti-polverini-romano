@@ -11,20 +11,25 @@ public class TurnController {
 	private boolean orderCalculated;
 	private int activePlayerIndex;
 	private boolean turnActive;
-	private PhaseOrder phaseOrder;
+	private PhaseOrder currPhaseOrder;
+	private PhaseOrder[] phaseOrderStrategy;
 	private final Game game;
 
 	public TurnController(Player[] players, Game game) {
 		playerOrder = Arrays.copyOf(players, players.length);
 		orderCalculated = false;
 		currentPhase = RoundPhase.PLANNING;
-		phaseOrder = new PlanningPhaseOrder(game);
+		phaseOrderStrategy = new PhaseOrder[RoundPhase.values().length];
+		phaseOrderStrategy[0] = new PlanningPhaseOrder(game);
+		phaseOrderStrategy[1] = new ActionPhaseOrder(game);
+		currPhaseOrder = phaseOrderStrategy[0];
 		this.game = game;
 	}
 
 	private void calculateOrder() {
-		playerOrder = phaseOrder.calculateOrder(playerOrder);
+		playerOrder = currPhaseOrder.calculateOrder(playerOrder);
 		activePlayerIndex = 0;
+		orderCalculated = true;
 	}
 
 	public void changePhase() {
@@ -34,9 +39,9 @@ public class TurnController {
 	public void endTurn() {
 		if (activePlayerIndex == playerOrder.length - 1) {
 			if (currentPhase == RoundPhase.PLANNING) {
-				phaseOrder = new ActionPhaseOrder(game);
+				currPhaseOrder = phaseOrderStrategy[1];
 			} else {
-				phaseOrder = new PlanningPhaseOrder(game);
+				currPhaseOrder = phaseOrderStrategy[0];
 			}
 			changePhase();
 			orderCalculated = false;

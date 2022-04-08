@@ -108,9 +108,11 @@ public class Player {
 	public void setSelected() {
 		this.selected = true;
 	}
-	public void setWizardType(WizardType type){
+
+	public void setWizardType(WizardType wizardType){
 		this.wizardType = wizardType;
 	}
+
 	public WizardType getWizardType(){
 		return this.wizardType;
 	}

@@ -23,14 +23,14 @@ public class ActionController {
 	public void doAction(String message) throws IllegalArgumentException, AssistantAlreadyPlayedException,
 			StudentNotFoundException, NoSuchAssistantException, EmptyCloudException, FullDiningRoomException,
 			NotEnoughCoinsException, IllegalCharacterActionRequestedException, WrongTurnActionRequestedException {
-		List<String> args = Arrays.asList(message.split(" "));
+		List<String> args = new ArrayList<>(Arrays.asList(message.split(" ")));
 		String action = args.get(0);
 		args.remove(0);
 		switch (action) {
 			case "Assistant" -> playAssistant(args);
 			case "MotherNature" -> motherNatureMovement(args);
 			case "Students" -> studentMovement(args);
-			case "Cloud" -> pickStudentsFillClouds(args);
+			case "Cloud" -> pickStudentsFromClouds(args);
 			case "PlayCharacter" -> playCharacter(args);
 			case "CharacterEffect" -> characterEffect(args);
 			default -> throw new IllegalArgumentException();
@@ -53,7 +53,7 @@ public class ActionController {
 		}
 		if (!turnController.getActivePlayer().playAssistant(assistantIdx, assistantAlreadyPlayed))
 			throw new AssistantAlreadyPlayedException();
-		turnPhase = TurnPhase.TURN_ENDED; //planning phase is ended for this player
+		setTurnPhase(TurnPhase.TURN_ENDED); //planning phase is ended for this player
 	}
 
 	public void studentMovement(List<String> args) throws IllegalArgumentException, StudentNotFoundException,
@@ -90,7 +90,7 @@ public class ActionController {
 				}
 			}
 		}
-		changeTurnPhase();
+		setTurnPhase(TurnPhase.MOVE_MOTHER_NATURE);
 	}
 
 	public void motherNatureMovement(List<String> args) throws IllegalArgumentException, WrongTurnActionRequestedException {
@@ -101,7 +101,7 @@ public class ActionController {
 		if (motherNatureMovement <= 0 || motherNatureMovement > legalMotherNatureMovement)
 			throw new IllegalArgumentException(); //TODO: create a specific exception
 		gameController.getModel().moveMotherNature(motherNatureMovement);
-		changeTurnPhase();
+		setTurnPhase(TurnPhase.SELECT_CLOUD);
 	}
 
 	//Is this useful?
@@ -109,13 +109,13 @@ public class ActionController {
 
 	}
 
-	public void pickStudentsFillClouds(List<String> args) throws EmptyCloudException, IllegalArgumentException,
+	public void pickStudentsFromClouds(List<String> args) throws EmptyCloudException, IllegalArgumentException,
 			WrongTurnActionRequestedException {
 		if (turnPhase != TurnPhase.SELECT_CLOUD) throw new WrongTurnActionRequestedException();
 		if (args.size() != 1) throw new IllegalArgumentException();
 		Cloud cloud = gameController.getModel().getClouds()[Integer.parseInt(args.get(0))];
 		turnController.getActivePlayer().pickFromCloud(cloud);
-		changeTurnPhase();
+		setTurnPhase(TurnPhase.TURN_ENDED);
 	}
 
 	public void playCharacter(List<String> args) throws IllegalArgumentException,
@@ -155,6 +155,7 @@ public class ActionController {
 		return islandIndex < islandNumber && islandIndex >= 0;
 	}
 
+	@Deprecated
 	private boolean isValidCharacter(int characterId) {
 		CharacterCard[] characterCards = gameController.getModel().getCharacterCards();
 		for (CharacterCard c: characterCards) {
@@ -163,7 +164,7 @@ public class ActionController {
 		return false;
 	}
 
-	private void changeTurnPhase() {
-		turnPhase = TurnPhase.values()[(turnPhase.ordinal() + 1) % TurnPhase.values().length];
+	public void setTurnPhase(TurnPhase turnPhase) {
+		this.turnPhase = turnPhase;
 	}
 }

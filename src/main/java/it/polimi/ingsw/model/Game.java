@@ -22,7 +22,7 @@ public class Game implements ModelObserver{
 	private final static int NUM_STUDENTS = 130;
 	private int numStudents = NUM_STUDENTS;
 
-	public Game(List<Island> islands,Cloud[] clouds){
+	public Game(List<Island> islands, Cloud[] clouds){
 		numPlayers = 0;
 		started = false;
 		bag = new Bag();
@@ -37,12 +37,24 @@ public class Game implements ModelObserver{
 
 	}
 
+	//TODO: this has to be done at the beginning of the match
+	public void setNumPlayers(int numPlayers) {
+		this.numPlayers = numPlayers;
+	}
+
 	public void addPlayer(String nickname) {
+		//TODO: needs to change
 		if(numPlayers <= 4) {
 			numPlayers++;
 			coinGeneralSupply--;
 			players.add(new Player(nickname));
+			coinGeneralSupply--;
 		}
+		/*if (players.size() < numPlayers) {
+			players.add(new Player(nickname));
+			coinGeneralSupply--;
+		}*/
+		//else exception
 	}
 
 	public int getNumPlayers(){
@@ -79,7 +91,7 @@ public class Game implements ModelObserver{
 		return islands;
 	}
 
-	public void createCharacterCard(){
+	public void createCharacterCard() {
 		Random rnd = new Random();
 		List<Integer> charactersCreated = new ArrayList<>();
 		int characterToCreate;
@@ -246,5 +258,16 @@ public class Game implements ModelObserver{
 			if (characterId == c.getId()) return c;
 		}
 		return null;
+	}
+
+	public void setupIslands() throws EmptyBagException {
+		Random rnd = new Random();
+		int indexOfMotherNature = rnd.nextInt(Island.NUM_ISLANDS);
+		islands.get(indexOfMotherNature).setMotherNaturePresent(true);
+		for(int i=0; i<Island.NUM_ISLANDS;i++){
+			if(i != (indexOfMotherNature+(Island.NUM_ISLANDS/2))%Island.NUM_ISLANDS  && i != indexOfMotherNature) {
+				islands.get(i).addStudent(bag.pickStudent());
+			}
+		}
 	}
 }

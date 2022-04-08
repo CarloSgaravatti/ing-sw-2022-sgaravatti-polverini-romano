@@ -12,7 +12,7 @@ public class InitController {
 	private int numPlayers;
 
 	public void setNumPlayers(int numPlayers){
-		this.numPlayers=numPlayers;
+		this.numPlayers = numPlayers;
 	}
 
 	public void initializeGameComponents() throws EmptyBagException {
@@ -20,13 +20,14 @@ public class InitController {
 		for(int i=0; i<Island.NUM_ISLANDS;i++){
 			islands.add(new SingleIsland());
 		}
-		School[] schools = new School[numPlayers];
+		School[] schools = new School[numPlayers]; //?
 		game = new Game(islands,createClouds());
-		game.createCharacterCard();
 		game.genStudentForBeginning();
-		setupIslands();
+		game.setupIslands(); //TODO: put this method in the game class
 		game.createAllStudentsForBag();
+		game.createCharacterCard();
 	}
+	@Deprecated
 	//perche devo fare il throws dell'effetto dentro qua ? se non lo faccio mi segna errore
 	public void setupIslands() throws EmptyBagException {
 		Random rnd = new Random();
@@ -46,13 +47,18 @@ public class InitController {
 	public void setupPlayers(TowerType type, Player player, WizardType type2) {
 		int towerPerSchool = (numPlayers==3) ? 6 : 8;
 		player.setSchool(new School(towerPerSchool,type));
-		if(!player.getWizardType().equals(type2)) {
+		//TODO: control other players assistant to check if it is already played
+		if(player.getWizardType() == null) {
 			game.assignDeck(player, type2);
 		}
 		else{
 			//TODO: must create an exception when  player.getWizardType().equals(type2) is true
+			//TODO: no, the exception have to be thrown when a player different
+			//	from the current one have already this wizard
 		}
 	}
+
+	//TODO: before doing this you have always to set the number of players
 	public Cloud[] createClouds(){
 		int studentsPerCloud = (numPlayers == 3) ? 4 : 3;
 		Cloud[] clouds = new Cloud[numPlayers];
@@ -61,6 +67,7 @@ public class InitController {
 		}
 		return clouds;
 	}
+
 	public Game getGame(){
 		return this.game;
 	}
