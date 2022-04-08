@@ -79,12 +79,8 @@ class SchoolTest extends TestCase {
                 Assertions.fail();
             }
         }
-        try {
-            schoolTest.insertDiningRoom(new Student(RealmType.YELLOW_GNOMES));
-            Assertions.fail();
-        } catch (FullDiningRoomException e) {
-            Assertions.assertTrue(true);
-        }
+        Assertions.assertThrows(FullDiningRoomException.class,
+                () -> schoolTest.insertDiningRoom(new Student(RealmType.YELLOW_GNOMES)));
     }
 
     @ParameterizedTest
@@ -133,12 +129,8 @@ class SchoolTest extends TestCase {
         } catch (StudentNotFoundException e){
             Assertions.fail();
         }
-        try {
-            schoolTest.removeStudentEntrance(RealmType.YELLOW_GNOMES);
-            Assertions.fail();
-        } catch (StudentNotFoundException e) {
-            Assertions.assertTrue(true);
-        }
+        Assertions.assertThrows(StudentNotFoundException.class,
+                () -> schoolTest.removeStudentEntrance(RealmType.YELLOW_GNOMES));
     }
 
     @Test
@@ -155,11 +147,7 @@ class SchoolTest extends TestCase {
         } catch (StudentNotFoundException e){
             Assertions.fail();
         }
-        try {
-            schoolTest.removeFromDiningRoom(RealmType.YELLOW_GNOMES);
-            Assertions.fail();
-        } catch (StudentNotFoundException e) {
-            Assertions.assertTrue(true);
-        }
+        Assertions.assertThrows(StudentNotFoundException.class,
+                () -> schoolTest.removeFromDiningRoom(RealmType.YELLOW_GNOMES));
     }
 }

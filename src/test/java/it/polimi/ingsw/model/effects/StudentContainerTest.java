@@ -31,10 +31,8 @@ class StudentContainerTest extends TestCase {
         } catch (StudentNotFoundException e) {
             Assertions.fail();
         }
-        try {
-            Student student = studentContainerToTest.pickStudent(realmType, false);
-            Assertions.fail();
-        } catch (StudentNotFoundException e) {/*Test passed*/}
+        Assertions.assertThrows(StudentNotFoundException.class,
+                () -> studentContainerToTest.pickStudent(realmType, false));
     }
 
     @ParameterizedTest

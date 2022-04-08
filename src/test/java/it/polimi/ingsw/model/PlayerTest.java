@@ -85,12 +85,7 @@ class PlayerTest extends TestCase {
         } catch (NotEnoughCoinsException e) {
             Assertions.fail();
         }
-        try {
-            playerToTest.removeCoins(2);
-            Assertions.fail();
-        } catch (NotEnoughCoinsException e) {
-            //test passed
-        }
+        Assertions.assertThrows(NotEnoughCoinsException.class, () -> playerToTest.removeCoins(2));
     }
 }
 

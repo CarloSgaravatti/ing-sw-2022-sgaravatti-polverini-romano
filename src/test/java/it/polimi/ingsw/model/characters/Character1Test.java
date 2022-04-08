@@ -37,7 +37,6 @@ class Character1Test extends TestCase {
         Assertions.assertEquals(1, character1.getPrice());
     }
 
-    /*
     @ParameterizedTest
     @EnumSource(RealmType.class)
     void useEffectTest(RealmType studentType) {
@@ -54,7 +53,15 @@ class Character1Test extends TestCase {
         } catch (IllegalCharacterActionRequestedException e) {
             //it's ok, because the student container initialization is random
         }
-    }*/
+    }
+
+    @Test
+    void useEffectWithExceptionTest() {
+        List<String> args = new ArrayList<>();
+        args.add("A"); //Not a valid realm type abbreviation
+        Assertions.assertThrows(IllegalCharacterActionRequestedException.class,
+                () -> character1.useEffect(args));
+    }
 
     @ParameterizedTest
     @EnumSource(RealmType.class)

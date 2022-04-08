@@ -21,9 +21,4 @@ public class Character8 extends CharacterCard {
         player.getTurnEffect().setInfluenceStrategy(new GainInfluenceStrategy(player.getTurnEffect().getInfluenceStrategy()));
         player.getTurnEffect().setAdditionalInfluence(ADDITIONAL_INFLUENCE);
     }
-
-    @Override
-    public void useEffect(List<String> args) throws IllegalCharacterActionRequestedException {
-        throw new IllegalCharacterActionRequestedException();
-    }
 }

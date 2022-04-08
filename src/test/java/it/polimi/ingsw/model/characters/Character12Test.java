@@ -1,6 +1,7 @@
 package it.polimi.ingsw.model.characters;
 
 import it.polimi.ingsw.exceptions.FullDiningRoomException;
+import it.polimi.ingsw.exceptions.IllegalCharacterActionRequestedException;
 import it.polimi.ingsw.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.model.*;
 import junit.framework.TestCase;
@@ -11,6 +12,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,8 +35,47 @@ class Character12Test extends TestCase {
         }
     }
 
+    @Test
+    void useEffectTest() {
+        List<String> args = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            try {
+                game.getPlayers().get(0).getSchool().insertDiningRoom(new Student(RealmType.YELLOW_GNOMES));
+            } catch (FullDiningRoomException e) {
+                Assertions.fail();
+            }
+        }
+        for (int i = 0; i < 1; i++) {
+            try {
+                game.getPlayers().get(1).getSchool().insertDiningRoom(new Student(RealmType.YELLOW_GNOMES));
+            } catch (FullDiningRoomException e) {
+                Assertions.fail();
+            }
+        }
+        args.add("Y");
+        try {
+            character12.useEffect(args);
+        } catch (IllegalCharacterActionRequestedException e) {
+            Assertions.fail();
+        }
+        Assertions.assertEquals(0,
+                game.getPlayers().get(0).getSchool().getNumStudentsDiningRoom(RealmType.YELLOW_GNOMES));
+        Assertions.assertEquals(0,
+                game.getPlayers().get(1).getSchool().getNumStudentsDiningRoom(RealmType.YELLOW_GNOMES));
+        Assertions.assertEquals(0,
+                game.getPlayers().get(2).getSchool().getNumStudentsDiningRoom(RealmType.YELLOW_GNOMES));
+    }
+
+    @Test
+    void useEffectExceptionTest() {
+        List<String> args = new ArrayList<>();
+        args.add("A"); //Not a valid realm type abbreviation
+        Assertions.assertThrows(IllegalCharacterActionRequestedException.class,
+                () -> character12.useEffect(args));
+    }
+
     @ParameterizedTest
-    @CsvSource({"4, 3, 0"})
+    @CsvSource({"4, 3, 0", "7, 2, 2", "0, 0, 0", "3, 3, 3"})
     void removeStudentsFromDiningRoomTest(int numStudents1, int numStudents2, int numStudents3) {
         for (int i = 0; i < numStudents1; i++) {
             try {

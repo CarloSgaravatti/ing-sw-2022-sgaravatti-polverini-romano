@@ -45,7 +45,10 @@ public abstract class CharacterCard {
 	}
 
 	//TODO: all the IllegalActionRequestedException must have a message
-	public abstract void useEffect(List<String> args) throws IllegalCharacterActionRequestedException;
+	//Default implementation
+	public void useEffect(List<String> args) throws IllegalCharacterActionRequestedException {
+		throw new IllegalCharacterActionRequestedException();
+	}
 
 	public Player getPlayerActive() {
 		return playerActive;

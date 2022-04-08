@@ -8,7 +8,6 @@ import it.polimi.ingsw.model.Player;
 import java.util.List;
 
 public class Character2 extends CharacterCard {
-
     public Character2() {
         super(2, 2);
     }
@@ -17,10 +16,5 @@ public class Character2 extends CharacterCard {
     public void playCard(Player player) throws NotEnoughCoinsException {
         super.playCard(player);
         player.getTurnEffect().setProfessorPrecedence(true);
-    }
-
-    @Override
-    public void useEffect(List<String> args) throws IllegalCharacterActionRequestedException {
-        throw new IllegalCharacterActionRequestedException();
     }
 }

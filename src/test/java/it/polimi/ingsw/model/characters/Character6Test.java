@@ -16,16 +16,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class Character6Test extends TestCase {
     Character6 character6;
+    Player player;
 
     @BeforeEach
     void setupCharacter6() {
         character6 = (Character6) new CharacterCreator(null).getCharacter(6);
+        player = new Player("player");
+        for (int i = 0; i < character6.getPrice(); i++) player.insertCoin();
     }
 
     @Test
     void playCardTest() {
-        Player player = new Player("player");
-        for (int i = 0; i < character6.getPrice(); i++) player.insertCoin();
         try {
             character6.playCard(player);
         } catch (NotEnoughCoinsException e) {

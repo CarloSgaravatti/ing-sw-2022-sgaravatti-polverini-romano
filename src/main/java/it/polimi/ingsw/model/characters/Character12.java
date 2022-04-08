@@ -18,7 +18,12 @@ public class Character12 extends CharacterCard {
 
     @Override
     public void useEffect(List<String> args) throws IllegalCharacterActionRequestedException {
-        RealmType studentType = RealmType.getRealmByAbbreviation(args.get(0));
+        RealmType studentType;
+        try {
+            studentType = RealmType.getRealmByAbbreviation(args.get(0));
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new IllegalCharacterActionRequestedException();
+        }
         try {
             removeStudentsFromDiningRoom(studentType);
         } catch (StudentNotFoundException e) {

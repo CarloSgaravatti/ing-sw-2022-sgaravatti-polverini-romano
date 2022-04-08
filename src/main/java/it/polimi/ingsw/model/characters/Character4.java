@@ -19,9 +19,4 @@ public class Character4 extends CharacterCard {
         super.playCard(player);
         player.getTurnEffect().incrementMotherNatureMovement(MOTHER_NATURE_INCREMENT);
     }
-
-    @Override
-    public void useEffect(List<String> args) throws IllegalCharacterActionRequestedException {
-        throw new IllegalCharacterActionRequestedException();
-    }
 }

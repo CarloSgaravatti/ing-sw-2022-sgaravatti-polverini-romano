@@ -19,9 +19,4 @@ public class Character6 extends CharacterCard {
         super.playCard(player);
         player.getTurnEffect().setInfluenceStrategy(new NoTowerInfluenceStrategy(player.getTurnEffect().getInfluenceStrategy()));
     }
-
-    @Override
-    public void useEffect(List<String> args) throws IllegalCharacterActionRequestedException {
-        throw new IllegalCharacterActionRequestedException();
-    }
 }

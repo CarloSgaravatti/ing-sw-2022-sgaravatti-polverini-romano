@@ -34,7 +34,7 @@ class Character3Test extends TestCase {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {0})
+    @ValueSource(ints = {0, 5, 11})
     void chooseIslandToUpdate(int islandIndex) {
         List<Island> islands = game.getIslands();
         game.addPlayer("player1");
@@ -86,5 +86,17 @@ class Character3Test extends TestCase {
         Assertions.assertEquals(10, islands.size());
         Assertions.assertEquals(3, islands.get(0).getNumTowers());
         Assertions.assertEquals(TowerType.BLACK, islands.get(0).getTowerType());
+    }
+
+    @Test
+    void useEffectExceptionTest() {
+        List<String> args = new ArrayList<>();
+        args.add("15");
+        Assertions.assertThrows(IllegalCharacterActionRequestedException.class,
+                () -> character3.useEffect(args));
+        args.clear();
+        args.add("X");
+        Assertions.assertThrows(IllegalCharacterActionRequestedException.class,
+                () -> character3.useEffect(args));
     }
 }

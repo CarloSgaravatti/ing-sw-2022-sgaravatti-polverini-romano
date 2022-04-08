@@ -7,8 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class MotherNatureMovementObservable {
+    /**
+     * The list of observers
+     */
     List<ModelObserver> observers = new ArrayList<>();
 
+    /**
+     * Add an observer to the observer list
+     * @param observer the observer to add
+     */
     public void addObserver(ModelObserver observer) {
         observers.add(observer);
     }

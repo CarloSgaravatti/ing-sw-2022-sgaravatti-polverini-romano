@@ -13,18 +13,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class Character4Test extends TestCase {
     Character4 character4;
+    Player player;
 
     @BeforeEach
     void setupCharacter4() {
         character4 = (Character4) new CharacterCreator(null).getCharacter(4);
+        player = new Player("player");
+        for (int i = 0; i < character4.getPrice(); i++) player.insertCoin();
     }
 
     @ParameterizedTest
     @ValueSource(ints = {0, 5})
     void playCardTest(int motherNatureMovement) {
-        Player player = new Player("player");
         player.getTurnEffect().incrementMotherNatureMovement(motherNatureMovement);
-        for (int i = 0; i < character4.getPrice(); i++) player.insertCoin();
         try {
             character4.playCard(player);
         } catch (NotEnoughCoinsException e) {

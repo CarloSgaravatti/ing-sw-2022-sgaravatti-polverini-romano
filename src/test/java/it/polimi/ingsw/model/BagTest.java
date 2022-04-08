@@ -40,11 +40,6 @@ class BagTest extends TestCase {
         for (int i = 0; i < RealmType.values().length; i++) {
             Assertions.assertEquals(numPerType[i], numPerTypeExtracted[i]);
         }
-        try {
-            Student student = bagToTest.pickStudent();
-            Assertions.fail();
-        } catch (EmptyBagException e) {
-            //Test passed
-        }
+        Assertions.assertThrows(EmptyBagException.class, () -> bagToTest.pickStudent());
     }
 }

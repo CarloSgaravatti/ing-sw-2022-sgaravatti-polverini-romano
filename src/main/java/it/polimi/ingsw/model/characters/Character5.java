@@ -22,12 +22,19 @@ public class Character5 extends CharacterCard implements NoEntryTileManager {
     @Override
     public void useEffect(List<String> args) throws IllegalCharacterActionRequestedException {
         Island island;
+        int islandIndex;
         try {
-            island = islands.get(Integer.parseInt(args.get(0)));
+            islandIndex = Integer.parseInt(args.get(0));
         } catch (NumberFormatException e) {
             throw new IllegalCharacterActionRequestedException();
         }
-        putNoEntryTileInIsland(island);
+        if (islandIndex < 0 || islandIndex >= islands.size()) throw new IllegalCharacterActionRequestedException();
+        island = islands.get(islandIndex);
+        try {
+            putNoEntryTileInIsland(island);
+        } catch (IllegalStateException e) {
+            throw new IllegalCharacterActionRequestedException();
+        }
     }
 
     @Override
