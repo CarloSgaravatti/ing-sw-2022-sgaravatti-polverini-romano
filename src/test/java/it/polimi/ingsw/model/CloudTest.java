@@ -1,12 +1,9 @@
 package it.polimi.ingsw.model;
 
 import junit.framework.TestCase;
-import org.junit.Assert;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 class CloudTest extends TestCase {
     Cloud cloud;
