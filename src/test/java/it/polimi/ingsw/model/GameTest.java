@@ -11,10 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-//TODO: setup method
+
 class GameTest extends TestCase {
     Game game;
-    //TODO: don't use controller in model tests
+
     @BeforeEach
     void setup() {
         List<Island> islands = new ArrayList<>();
@@ -28,7 +28,7 @@ class GameTest extends TestCase {
         game = new Game(islands, clouds);
     }
 
-    /*
+
     @Test
     void addPlayerTest() {
         Game game = new Game(null, null);
@@ -41,17 +41,10 @@ class GameTest extends TestCase {
         for (Player p: game.getPlayers()) {
             Assertions.assertEquals("generic player", p.getNickName());
         }
-    }*/
+    }
 
     @Test
     void moveMotherNatureTest() {
-        /*InitController initcontr = new InitController();
-        try {
-            initcontr.initializeGameComponents(); //TODO: all the tests that do this doesn't end or have errors
-        } catch (EmptyBagException e) {
-            Assertions.fail();
-        }
-        Game game = initcontr.getGame();*/
         Random rnd = new Random();
         int index = rnd.nextInt(game.getIslands().size());
         game.getIslands().get(index).setMotherNaturePresent(true);
@@ -79,14 +72,7 @@ class GameTest extends TestCase {
 
     @Test
     void createAllStudentsForBagTest() {
-        /*InitController initcontr = new InitController();
-        try {
-            initcontr.initializeGameComponents();
-        } catch (EmptyBagException e) {
-            Assertions.fail();
-        }*/
         game.createAllStudentsForBag();
-        //Game game = initcontr.getGame();
         Assertions.assertEquals(120,game.getBag().getStudent().size());
     }
 

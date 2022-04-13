@@ -5,10 +5,9 @@ package it.polimi.ingsw.model;
  * the beginning of the game.
  */
 public class Assistant {
-	private WizardType wizard;//Is this useful? If yes, it has to be final
+	private final WizardType wizard;
 	private final int cardValue;
 	private final int motherNatureMovement;
-	private boolean played;//Is it useful?
 	public static final int NUM_ASSISTANTS = 10;
 
 	/**
@@ -19,7 +18,6 @@ public class Assistant {
 	public Assistant(int cardValue, int motherNatureMovement, WizardType wizard){
 		this.cardValue = cardValue;
 		this.motherNatureMovement = motherNatureMovement;
-		played = false;
 		this.wizard = wizard;
 	}
 
@@ -40,12 +38,4 @@ public class Assistant {
 	public int getMotherNatureMovement() {
 		return motherNatureMovement;
 	}
-
-	/*public boolean getPlayed() {
-		return played;
-	}
-
-	public void setPlayed(boolean played) {
-		this.played = played;
-	}*/
 }

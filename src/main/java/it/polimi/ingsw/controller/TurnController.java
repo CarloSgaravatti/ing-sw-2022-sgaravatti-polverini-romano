@@ -12,8 +12,7 @@ public class TurnController {
 	private int activePlayerIndex;
 	private boolean turnActive;
 	private PhaseOrder currPhaseOrder;
-	private PhaseOrder[] phaseOrderStrategy;
-	private final Game game;
+	private final PhaseOrder[] phaseOrderStrategy;
 
 	public TurnController(Player[] players, Game game) {
 		playerOrder = Arrays.copyOf(players, players.length);
@@ -23,7 +22,6 @@ public class TurnController {
 		phaseOrderStrategy[0] = new PlanningPhaseOrder(game);
 		phaseOrderStrategy[1] = new ActionPhaseOrder(game);
 		currPhaseOrder = phaseOrderStrategy[0];
-		this.game = game;
 	}
 
 	private void calculateOrder() {
@@ -55,20 +53,13 @@ public class TurnController {
 		return playerOrder[activePlayerIndex];
 	}
 
+	//Don't know if it is useful
 	public Player[] getPlayerOrder() {
 		return playerOrder;
 	}
 
 	public RoundPhase getCurrentPhase() {
 		return currentPhase;
-	}
-
-	public Player getPosition(int i) {
-		return playerOrder[i];
-	}
-
-	public void setNextPlayer(Player player, int i) {
-		this.playerOrder[i] = player;
 	}
 }
 

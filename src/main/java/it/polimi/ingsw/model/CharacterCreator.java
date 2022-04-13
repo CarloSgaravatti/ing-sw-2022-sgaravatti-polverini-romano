@@ -3,12 +3,16 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.characters.*;
 
 /**
- * Class CharacterCreator is used to obtain a character card instance using
+ * Class CharacterCreator is used to create a character card  instance using
  * factory method pattern.
  */
 public class CharacterCreator {
     private final Game game;
 
+    /**
+     * Construct a CharacterCreator that is associated to the specified game
+     * @param game the game on which the CharacterCreator will create the character card
+     */
     public CharacterCreator(Game game) {
         this.game = game;
     }

@@ -21,6 +21,7 @@ class TurnControllerTest extends TestCase {
     void setup() {
         gameController = new GameController();
         Game game = new Game(null, null);
+        game.setNumPlayers(3);
         game.addPlayer("player1");
         game.addPlayer("player2");
         game.addPlayer("player3");

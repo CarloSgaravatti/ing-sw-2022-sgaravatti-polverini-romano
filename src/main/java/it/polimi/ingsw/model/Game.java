@@ -43,17 +43,10 @@ public class Game implements ModelObserver{
 	}
 
 	public void addPlayer(String nickname) {
-		//TODO: needs to change
-		if(numPlayers <= 4) {
-			numPlayers++;
-			coinGeneralSupply--;
+		if (players.size() < numPlayers) {
 			players.add(new Player(nickname));
 			coinGeneralSupply--;
 		}
-		/*if (players.size() < numPlayers) {
-			players.add(new Player(nickname));
-			coinGeneralSupply--;
-		}*/
 		//else exception
 	}
 

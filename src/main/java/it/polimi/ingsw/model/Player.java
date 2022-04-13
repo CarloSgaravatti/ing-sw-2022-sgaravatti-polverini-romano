@@ -9,12 +9,10 @@ import java.util.List;
 
 public class Player {
 	private int numCoins;
-	//private boolean starter;
 	private final String nickName;
 	private School school;
 	private List<Assistant> assistants;
 	private final TurnEffect turnEffect;
-	private boolean selected;
 	private WizardType wizardType;
 
 	public Player(String nickName){
@@ -30,15 +28,6 @@ public class Player {
 		school.insertEntrance(cloud.pickStudents());
 	}
 
-	//TODO: decide if these are useful (and also the attribute)
-	/*public boolean isStarter() {
-		return starter;
-	}
-
-	public void setStarter(boolean starter){
-		this.starter = starter;
-	}*/
-
 	public void setSchool(School s){
 		this.school = s;
 	}
@@ -48,16 +37,19 @@ public class Player {
 	}
 
 	public boolean playAssistant(int assistant, List<Integer> assistantPlayed) throws NoSuchAssistantException {
+		boolean isFirstPlayedAssistant = true;
 		if (assistantPlayed.contains(assistant)) {
+			isFirstPlayedAssistant = false;
 			for (Assistant a: assistants) {
 				if (!assistantPlayed.contains(a.getCardValue())) return false;
 			}
 		}
 		for (int i = 0; i < assistants.size(); i++) {
 			if (assistants.get(i).getCardValue() == assistant) {
-				assistants.remove(i);
 				turnEffect.setOrderPrecedence(assistant);
 				turnEffect.incrementMotherNatureMovement(assistants.get(i).getMotherNatureMovement());
+				turnEffect.setFirstPlayedAssistant(isFirstPlayedAssistant);
+				assistants.remove(i);
 				return true;
 			}
 		}
@@ -95,18 +87,6 @@ public class Player {
 	public void removeCoins(int coins) throws NotEnoughCoinsException{
 		if (numCoins < coins) throw new NotEnoughCoinsException();
 		numCoins -= coins;
-	}
-
-	public int getCardValue() {
-		return turnEffect.getOrderPrecedence();
-	}
-
-	public boolean getSelected() {
-		return selected;
-	}
-
-	public void setSelected() {
-		this.selected = true;
 	}
 
 	public void setWizardType(WizardType wizardType){

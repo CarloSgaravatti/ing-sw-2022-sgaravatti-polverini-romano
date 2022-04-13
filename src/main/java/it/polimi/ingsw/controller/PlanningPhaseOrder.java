@@ -25,17 +25,13 @@ public class PlanningPhaseOrder implements PhaseOrder {
 	//I have replaced game.getNumPlayers with numPlayers
 	//There was a misunderstanding, players array is the last action phase order (with the exception of round 0)
 	public Player[] calculateOrder(Player[] players) {
-		int o;
 		Random r;
 		int a;
 		Player[] order = new Player[numPlayers]; //This field is better if it is a local variable
-
 		if (numRound == 0) {
 			//Random generator
 			r = new Random();
-			o = numPlayers - 1;
-			//a = r.nextInt() % o;//a can be negative, why not doing r.nextInt(int bound)?
-			a = r.nextInt(o); //a possible way to do it
+			a = r.nextInt(numPlayers - 1);
 			//end Random generator
 			order[0] = players[a];//turnController.setNextPlayer(players[a],0);
 			for(int i = 1; i < numPlayers; i++) {
@@ -46,30 +42,11 @@ public class PlanningPhaseOrder implements PhaseOrder {
 			return order;
 		}
 		else {
-			/*int min;
-			int firstPlayerNumber = 0;
-			int position = 1;
-			min = 1000;
-			for(int i = 0; i < numPlayers; i++) {
-				if (players[i].getCardValue() < min) {
-					min = players[i].getCardValue();
-					order[0] = players[i];//turnController.setNextPlayer(players[i], 0);
-					firstPlayerNumber = i;
-				}
-			}
-			//turnController.getPosition(0).setSelected(); //What is setSelected?
-			for(int k = firstPlayerNumber; k < numPlayers; k++) {
-				order[position] = players[k];//turnController.setNextPlayer(players[k], position);
-				position++;
-			}
-			for(int k = 0; k < firstPlayerNumber; k++) {
-				order[position] = players[k];//turnController.setNextPlayer(players[k],position);
-			}*/
 			List<Player> orderList = new ArrayList<>();
 			orderList.add(players[0]);
 			int firstIndexOrderClockwise = playersClockOrder.indexOf(players[0]);
 			for (int i = 1; i < numPlayers; i++) {
-				orderList.add(playersClockOrder.get(i + firstIndexOrderClockwise));
+				orderList.add(playersClockOrder.get((i + firstIndexOrderClockwise) % numPlayers));
 			}
         	return orderList.toArray(new Player[0]);
 		}

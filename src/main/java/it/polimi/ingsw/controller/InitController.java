@@ -22,6 +22,7 @@ public class InitController {
 		}
 		School[] schools = new School[numPlayers]; //?
 		game = new Game(islands,createClouds());
+		game.setNumPlayers(numPlayers);
 		game.genStudentForBeginning();
 		game.setupIslands(); //TODO: put this method in the game class
 		game.createAllStudentsForBag();

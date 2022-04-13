@@ -27,6 +27,7 @@ class Character12Test extends TestCase {
         game = new Game(null, null);
         CharacterCreator characterCreator = new CharacterCreator(game);
         character12 = (Character12) characterCreator.getCharacter(12);
+        game.setNumPlayers(3);
         game.addPlayer("player1");
         game.addPlayer("player2");
         game.addPlayer("player3");

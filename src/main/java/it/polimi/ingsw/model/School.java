@@ -49,6 +49,10 @@ public class School extends ProfessorPresenceObservable {
 		//TODO: pick students from bag to initialize school
 	}
 
+	/**
+	 * Insert all the specified students in the school entrance
+	 * @param students the students to insert in entrance
+	 */
 	public void insertEntrance (Student ... students){
 		studentEntrance.addAll(Arrays.asList(students));
 		for(Student s: students)
@@ -209,6 +213,12 @@ public class School extends ProfessorPresenceObservable {
 	}
 
 	//for testing, but maybe not only (for example for the view observation of model in MVC pattern)
+
+	/**
+	 * Returns the number of students of the specified Realm Type that are present in the entrance
+	 * @param studentType the Realm Type of the students
+	 * @return the number of students in the entrance having the specified Realm Type
+	 */
 	public int getStudentsEntrance (RealmType studentType) {
 		return entrance[studentType.ordinal()];
 	}

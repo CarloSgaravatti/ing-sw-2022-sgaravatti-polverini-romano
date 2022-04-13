@@ -37,6 +37,7 @@ class Character3Test extends TestCase {
     @ValueSource(ints = {0, 5, 11})
     void chooseIslandToUpdate(int islandIndex) {
         List<Island> islands = game.getIslands();
+        game.setNumPlayers(2);
         game.addPlayer("player1");
         game.addPlayer("player2");
         game.getPlayers().get(0).setSchool(new School(8, TowerType.BLACK));
@@ -62,6 +63,7 @@ class Character3Test extends TestCase {
     @Test
     void useEffectTest() {
         List<Island> islands = game.getIslands();
+        game.setNumPlayers(2);
         game.addPlayer("player1");
         game.addPlayer("player2");
         game.getPlayers().get(0).setSchool(new School(8, TowerType.BLACK));

@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.effects.NormalInfluenceStrategy;
 public class TurnEffect {
     private int motherNatureMovement;
     private int orderPrecedence;
+    private boolean isFirstPlayedAssistant; //for when a player plays an assistant which is already played in the round
     private boolean professorPrecedence;
     private InfluenceStrategy influenceStrategy;
     private int additionalInfluence;
@@ -25,6 +26,7 @@ public class TurnEffect {
         influenceStrategy = new NormalInfluenceStrategy();
         characterPlayed = false;
         characterEffectConsumed = true;
+        isFirstPlayedAssistant = true;
     }
 
     public int getOrderPrecedence() {
@@ -85,5 +87,13 @@ public class TurnEffect {
 
     public void setAdditionalInfluence(int additionalInfluence) {
         this.additionalInfluence = additionalInfluence;
+    }
+
+    public boolean isFirstPlayedAssistant() {
+        return isFirstPlayedAssistant;
+    }
+
+    public void setFirstPlayedAssistant(boolean firstPlayedAssistant) {
+        isFirstPlayedAssistant = firstPlayedAssistant;
     }
 }
