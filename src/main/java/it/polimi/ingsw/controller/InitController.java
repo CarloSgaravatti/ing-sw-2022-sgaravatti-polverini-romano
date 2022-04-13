@@ -45,11 +45,17 @@ public class InitController {
 		game.addPlayer(nick);
 	}
 
-	public void setupPlayers(TowerType type, Player player, WizardType type2) {
+	public void setupPlayers(TowerType type, Player player, WizardType type2) throws WizardTypeAlreadyTakenException {
 		int towerPerSchool = (numPlayers==3) ? 6 : 8;
 		player.setSchool(new School(towerPerSchool,type));
 		//TODO: control other players assistant to check if it is already played
+		int controller = 0;
 		if(player.getWizardType() == null) {
+			for(int i = 0; i < game.getNumPlayers(); i++){
+				if(game.getPlayers().get(i).getWizardType() == type2) {
+					throw new WizardTypeAlreadyTakenException();
+				}
+			}
 			game.assignDeck(player, type2);
 		}
 		else{

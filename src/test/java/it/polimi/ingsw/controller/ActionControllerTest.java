@@ -3,6 +3,7 @@ package it.polimi.ingsw.controller;
 import it.polimi.ingsw.exceptions.EmptyBagException;
 import it.polimi.ingsw.exceptions.NoSuchAssistantException;
 import it.polimi.ingsw.exceptions.StudentsNumberInCloudException;
+import it.polimi.ingsw.exceptions.WizardTypeAlreadyTakenException;
 import it.polimi.ingsw.model.*;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
@@ -38,8 +39,12 @@ class ActionControllerTest extends TestCase {
         initController.addPlayer("player2");
         gameController.setGame();
         gameController.initializeTurnController();
-        initController.setupPlayers(TowerType.BLACK, gameController.getModel().getPlayers().get(0), WizardType.values()[0]);
-        initController.setupPlayers(TowerType.WHITE, gameController.getModel().getPlayers().get(1), WizardType.values()[1]);
+        try {
+            initController.setupPlayers(TowerType.BLACK, gameController.getModel().getPlayers().get(0), WizardType.values()[0]);
+            initController.setupPlayers(TowerType.WHITE, gameController.getModel().getPlayers().get(1), WizardType.values()[1]);
+        } catch (WizardTypeAlreadyTakenException e) {
+            Assertions.fail();
+        }
         actionController = new ActionController(gameController, gameController.getTurnController());
         activePlayer = gameController.getTurnController().getActivePlayer();
     }
