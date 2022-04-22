@@ -27,6 +27,7 @@ public class InitController {
 		game.setupIslands(); //TODO: put this method in the game class
 		game.createAllStudentsForBag();
 		game.createCharacterCard();
+		setupSchools();
 	}
 	@Deprecated
 	//perche devo fare il throws dell'effetto dentro qua ? se non lo faccio mi segna errore
@@ -48,8 +49,6 @@ public class InitController {
 	public void setupPlayers(TowerType type, Player player, WizardType type2) throws WizardTypeAlreadyTakenException {
 		int towerPerSchool = (numPlayers==3) ? 6 : 8;
 		player.setSchool(new School(towerPerSchool,type));
-		//TODO: control other players assistant to check if it is already played
-		int controller = 0;
 		if(player.getWizardType() == null) {
 			for(int i = 0; i < game.getNumPlayers(); i++){
 				if(game.getPlayers().get(i).getWizardType() == type2) {
@@ -58,11 +57,15 @@ public class InitController {
 			}
 			game.assignDeck(player, type2);
 		}
-		else{
-			//TODO: must create an exception when  player.getWizardType().equals(type2) is true
-			//TODO: no, the exception have to be thrown when a player different
-			//	from the current one have already this wizard
+	}
+	public void setupSchools() throws EmptyBagException {
+		for(int i = 0; i< game.getNumPlayers(); i++){
+			int studentPerSchool = (numPlayers==3) ? 9 : 7;
+			for(int j=0; j<studentPerSchool;j++){
+				game.getPlayers().get(i).getSchool().insertEntrance(game.getBag().pickStudent());
+			}
 		}
+
 	}
 
 	//TODO: before doing this you have always to set the number of players
