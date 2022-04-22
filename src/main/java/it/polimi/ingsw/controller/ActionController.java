@@ -1,8 +1,10 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.exceptions.*;
+import it.polimi.ingsw.listeners.CloudListener;
 import it.polimi.ingsw.model.*;
 
+import javax.swing.event.EventListenerList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +13,7 @@ public class ActionController {
 	private TurnPhase turnPhase;
 	private final TurnController turnController;
 	private final GameController gameController;
+	protected EventListenerList listenerList = new EventListenerList();
 
 	public ActionController(GameController gameController, TurnController turnController) {
 		this.gameController = gameController;
@@ -113,8 +116,10 @@ public class ActionController {
 			WrongTurnActionRequestedException {
 		if (turnPhase != TurnPhase.SELECT_CLOUD) throw new WrongTurnActionRequestedException();
 		if (args.size() != 1) throw new IllegalArgumentException();
-		Cloud cloud = gameController.getModel().getClouds()[Integer.parseInt(args.get(0))];
+		int cloudindex = Integer.parseInt(args.get(0));
+		Cloud cloud = gameController.getModel().getClouds()[cloudindex];
 		turnController.getActivePlayer().pickFromCloud(cloud);
+		fireMyEvent(cloudindex,turnController.getActivePlayer().getNickName());
 		setTurnPhase(TurnPhase.TURN_ENDED);
 	}
 
@@ -167,4 +172,16 @@ public class ActionController {
 	public void setTurnPhase(TurnPhase turnPhase) {
 		this.turnPhase = turnPhase;
 	}
+
+	//TODO: invoke addEventListner method into InitController after making RemoteView
+	public void addEventListener(CloudListener listener) {
+		listenerList.add(CloudListener.class, listener);
+	}
+
+	void fireMyEvent(int cloudIndex, String namePlayer) {
+		for(CloudListener event : listenerList.getListeners(CloudListener.class)){
+			event.eventPerformed(cloudIndex,namePlayer);
+		}
+	}
+
 }

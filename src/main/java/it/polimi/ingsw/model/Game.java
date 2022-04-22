@@ -1,8 +1,10 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.EmptyBagException;
+import it.polimi.ingsw.listeners.IslandListener;
 import it.polimi.ingsw.model.effects.StudentContainer;
 
+import javax.swing.event.EventListenerList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +23,12 @@ public class Game implements ModelObserver{
 	private int indexActivePlayer;
 	private final static int NUM_STUDENTS = 130;
 	private int numStudents = NUM_STUDENTS;
+	private EventListenerList listenerList = new EventListenerList();
+
+	//TODO: invoke addEventListner method into InitController after making RemoteView
+	public void addEventListener(IslandListener listener) {
+		listenerList.add(IslandListener.class, listener);
+	}
 
 	public Game(List<Island> islands, Cloud[] clouds){
 		numPlayers = 0;
@@ -201,6 +209,7 @@ public class Game implements ModelObserver{
 				getPlayerByTowerType(island.getTowerType()).getSchool().insertTower(island.getNumTowers());
 			}
 			playerMaxInfluence.getSchool().sendTowerToIsland(island);
+			fireMyEvent(playerMaxInfluence.getSchool().getTowerType(), islands.indexOf(island));
 			updateIslandUnification(island);
 		}
 	}
@@ -208,6 +217,7 @@ public class Game implements ModelObserver{
 	@Override
 	public void updateIslandUnification(Island island) {
 		List<Island> islandToUnify = new ArrayList<>();
+		List<Integer> islandIndexes = new ArrayList<>();
 		int islandIndex = islands.indexOf(island);
 		int leftIndex = (islandIndex + islands.size() - 1) % islands.size();
 		int rightIndex = (islandIndex + 1) % islands.size();
@@ -216,15 +226,19 @@ public class Game implements ModelObserver{
 		if (islands.get(leftIndex).getTowerType() == towerType) {
 			islandToUnify.add(islands.get(leftIndex));
 			indexToReplace = Integer.min(indexToReplace, leftIndex);
+			islandIndexes.add(leftIndex);
 		}
 		if (islands.get(rightIndex).getTowerType() == towerType) {
 			islandToUnify.add(islands.get(rightIndex));
 			indexToReplace = Integer.min(indexToReplace, rightIndex);
+			islandIndexes.add(rightIndex);
 		}
 		if (!islandToUnify.isEmpty()) {
 			islandToUnify.add(island);
+			islandIndexes.add(islandIndex);
 			islands.removeAll(islandToUnify);
 			islands.add(indexToReplace, new IslandGroup(islandToUnify.toArray(new Island[0])));
+			fireMyEvent(islandIndexes);
 		}
 	}
 
@@ -261,6 +275,16 @@ public class Game implements ModelObserver{
 			if(i != (indexOfMotherNature+(Island.NUM_ISLANDS/2))%Island.NUM_ISLANDS  && i != indexOfMotherNature) {
 				islands.get(i).addStudent(bag.pickStudent());
 			}
+		}
+	}
+	void fireMyEvent(TowerType type, int indexIslands) {
+		for(IslandListener event : listenerList.getListeners(IslandListener.class)){
+			event.eventPerformed(type, indexIslands);
+		}
+	}
+	void fireMyEvent(List<Integer> islandIndexList ) {
+		for(IslandListener event : listenerList.getListeners(IslandListener.class)){
+			event.eventPerformed(islandIndexList);
 		}
 	}
 }
