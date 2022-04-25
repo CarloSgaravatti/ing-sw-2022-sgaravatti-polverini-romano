@@ -4,7 +4,7 @@ import it.polimi.ingsw.messages.MessageFromClient;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.exceptions.*;
 import it.polimi.ingsw.model.enumerations.*;
-import org.w3c.dom.events.EventListener;
+import java.util.EventListener;
 
 import javax.swing.event.EventListenerList;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.Random;
 public class InitController implements EventListener {
 	private Game game;
 	private int numPlayers;
-	private EventListenerList listenerList = new EventListenerList();
+	private final EventListenerList listenerList = new EventListenerList();
 
 	public void setNumPlayers(int numPlayers){
 		this.numPlayers = numPlayers;
@@ -60,9 +60,10 @@ public class InitController implements EventListener {
 
 	public void setupPlayers(TowerType type, Player player, WizardType type2) throws WizardTypeAlreadyTakenException, TowerTypeAlreadyTakenException {
 		int towerPerSchool = (numPlayers==3) ? 6 : 8;
-		if(player.getSchool().getTowerType() == null) {
+		if(player.getSchool() == null) {
 			for(int j=0; j< game.getNumPlayers();j++){
-				if(game.getPlayers().get(j).getSchool().getTowerType() == type){
+				School school = game.getPlayers().get(j).getSchool();
+				if(school != null && school.getTowerType() == type){
 					throw new TowerTypeAlreadyTakenException();
 				}
 			}
@@ -78,6 +79,7 @@ public class InitController implements EventListener {
 			game.assignDeck(player, type2);
 		}
 	}
+
 	public void setupSchools() throws EmptyBagException {
 		for(int i = 0; i< game.getNumPlayers(); i++){
 			int studentPerSchool = (numPlayers==3) ? 9 : 7;
