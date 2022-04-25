@@ -2,14 +2,14 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.FullDiningRoomException;
 import it.polimi.ingsw.exceptions.StudentNotFoundException;
+import it.polimi.ingsw.model.enumerations.RealmType;
+import it.polimi.ingsw.model.enumerations.TowerType;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class SchoolTest extends TestCase {
     School schoolTest;

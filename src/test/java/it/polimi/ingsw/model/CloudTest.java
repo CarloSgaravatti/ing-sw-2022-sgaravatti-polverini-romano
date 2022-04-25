@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.enumerations.RealmType;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +18,7 @@ class CloudTest extends TestCase {
     void pickStudentsTest() {
         Student[] students = new Student[3];
         for(int i = 0; i< 3; i++){
-            students[i]=new Student(RealmType.RED_DRAGONS);
+            students[i] = new Student(RealmType.RED_DRAGONS);
         }
         try {
             cloud.insertStudents(students);

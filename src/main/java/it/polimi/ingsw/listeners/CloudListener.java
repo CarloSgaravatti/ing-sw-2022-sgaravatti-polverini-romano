@@ -1,7 +1,7 @@
 package it.polimi.ingsw.listeners;
 
-import it.polimi.ingsw.messages.MessageFromServer;
 import it.polimi.ingsw.messages.MessagePayload;
+import it.polimi.ingsw.messages.ServerMessageType;
 import it.polimi.ingsw.server.RemoteView;
 
 
@@ -12,12 +12,10 @@ public class CloudListener implements ModelListener{
         this.remoteView = remoteView;
     }
 
-    //TODO: missing method of remot view for sending the message
-    //  and missing header name
-
     public void eventPerformed(int cloudIndex, String namePlayer){
         MessagePayload messagePayload = new MessagePayload();
         messagePayload.setAttribute("CloudIndex", cloudIndex);
         messagePayload.setAttribute("Name Player",namePlayer);
+        remoteView.sendMessage(messagePayload, "PickFromCloud", ServerMessageType.GAME_UPDATE);
     }
 }

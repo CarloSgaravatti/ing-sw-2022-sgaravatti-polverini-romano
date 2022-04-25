@@ -1,16 +1,21 @@
 package it.polimi.ingsw.controller;
 
+import it.polimi.ingsw.messages.MessageFromClient;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
 
-public class GameController {
+import java.util.EventListener;
+
+public class GameController implements EventListener {
 	private TurnController turnController;
 	private ActionController actionController;
-	private InitController initController;
+	private final InitController initController;
 	private Game game;
+	private final int gameId;
 
-	public GameController() {
+	public GameController(int gameId) {
 		initController = new InitController();
+		this.gameId = gameId;
 	}
 
 	public void startGame() {
@@ -21,8 +26,8 @@ public class GameController {
 
 	}
 
-	public void declareWinner() {
-
+	public String declareWinner() {
+		return null;
 	}
 
 	public Game getModel() {
@@ -41,7 +46,7 @@ public class GameController {
 		return initController;
 	}
 
-	public void setGame(){
+	public void setGame() {
 		this.game = initController.getGame();
 	}
 
@@ -53,4 +58,27 @@ public class GameController {
 		turnController = new TurnController(game.getPlayers().toArray(new Player[0]), game);
 	}
 
+	//TODO: event performed
+	//TODO: set index active player in game
+	public void eventPerformed(MessageFromClient message) {
+		//Message have to be ACTION
+		String nicknamePlayer = message.getClientMessageHeader().getNicknameSender();
+		if (!nicknamePlayer.equals(turnController.getActivePlayer().getNickName())) {
+			//TODO: error message (invalid action request)
+			return;
+		}
+		//Message start turn?
+		if (message.getClientMessageHeader().getMessageName().equals("EndTurn")) {
+			turnController.endTurn();
+			game.setIndexActivePlayer(turnController.getActivePlayer());
+			//TODO: notify new turn or round
+			return;
+		}
+		try {
+			actionController.doAction(message);
+		} catch (Exception e) {
+			//TODO: decide if it has to handled here or directly in the action controller class;
+			//	the exception will be transformed in an error message
+		}
+	}
 }

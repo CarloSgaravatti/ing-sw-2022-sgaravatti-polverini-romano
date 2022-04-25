@@ -2,7 +2,7 @@ package it.polimi.ingsw.model.effects;
 
 import it.polimi.ingsw.model.Island;
 import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.RealmType;
+import it.polimi.ingsw.model.enumerations.RealmType;
 
 public class NormalInfluenceStrategy implements InfluenceStrategy {
     public int getInfluence (Island island, Player player) {

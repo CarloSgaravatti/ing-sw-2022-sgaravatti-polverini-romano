@@ -2,7 +2,7 @@ package it.polimi.ingsw.model.characters;
 
 import it.polimi.ingsw.exceptions.IllegalCharacterActionRequestedException;
 import it.polimi.ingsw.model.CharacterCard;
-import it.polimi.ingsw.model.RealmType;
+import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.TurnEffect;
 import it.polimi.ingsw.model.effects.InfluenceStrategy;
 import it.polimi.ingsw.model.effects.NoStudentInfluenceStrategy;

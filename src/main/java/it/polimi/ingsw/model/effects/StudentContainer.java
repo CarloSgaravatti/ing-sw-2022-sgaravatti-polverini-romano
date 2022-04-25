@@ -2,7 +2,7 @@ package it.polimi.ingsw.model.effects;
 
 import it.polimi.ingsw.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.model.ModelObserver;
-import it.polimi.ingsw.model.RealmType;
+import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.Student;
 import it.polimi.ingsw.model.modelObservables.StudentContainerObservable;
 

@@ -3,6 +3,7 @@ package it.polimi.ingsw.model.characters;
 import it.polimi.ingsw.exceptions.IllegalCharacterActionRequestedException;
 import it.polimi.ingsw.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.enumerations.RealmType;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +14,6 @@ import org.junit.jupiter.params.provider.EnumSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class Character1Test extends TestCase {
     Game game;

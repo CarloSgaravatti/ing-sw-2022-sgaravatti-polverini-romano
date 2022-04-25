@@ -1,10 +1,10 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.enumerations.RealmType;
+import it.polimi.ingsw.model.enumerations.TowerType;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class IslandGroupTest extends TestCase {
     @Test

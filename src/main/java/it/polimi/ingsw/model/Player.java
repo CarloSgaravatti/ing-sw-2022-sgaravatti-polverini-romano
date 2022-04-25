@@ -3,9 +3,11 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.exceptions.EmptyCloudException;
 import it.polimi.ingsw.exceptions.NoSuchAssistantException;
 import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
+import it.polimi.ingsw.model.enumerations.WizardType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Player {
 	private int numCoins;
@@ -95,5 +97,17 @@ public class Player {
 
 	public WizardType getWizardType(){
 		return this.wizardType;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Player player)) return false;
+		return Objects.equals(nickName, player.nickName);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(nickName);
 	}
 }

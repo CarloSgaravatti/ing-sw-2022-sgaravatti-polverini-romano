@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model.modelObservables;
 
 import it.polimi.ingsw.model.ModelObserver;
-import it.polimi.ingsw.model.RealmType;
+import it.polimi.ingsw.model.enumerations.RealmType;
 
 import java.util.ArrayList;
 import java.util.List;

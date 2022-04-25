@@ -1,6 +1,7 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.exceptions.IllegalIslandGroupException;
+import it.polimi.ingsw.model.enumerations.RealmType;
+import it.polimi.ingsw.model.enumerations.TowerType;
 
 import java.util.ArrayList;
 import java.util.List;

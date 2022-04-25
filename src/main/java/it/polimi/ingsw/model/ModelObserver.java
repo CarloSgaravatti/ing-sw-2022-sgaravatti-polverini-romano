@@ -1,6 +1,7 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.effects.StudentContainer;
+import it.polimi.ingsw.model.enumerations.RealmType;
 
 /**
  * Interface ModelObserver defines some methods to automatically update some game aspects

@@ -2,9 +2,10 @@ package it.polimi.ingsw.model.effects;
 
 import it.polimi.ingsw.exceptions.FullDiningRoomException;
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.enumerations.RealmType;
+import it.polimi.ingsw.model.enumerations.TowerType;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -12,8 +13,6 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class InfluenceStrategyTest extends TestCase {
 

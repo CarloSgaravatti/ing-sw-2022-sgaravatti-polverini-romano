@@ -4,7 +4,7 @@ import it.polimi.ingsw.exceptions.NoSuchAssistantException;
 import it.polimi.ingsw.model.Assistant;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.WizardType;
+import it.polimi.ingsw.model.enumerations.WizardType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,8 +1,9 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.FullDiningRoomException;
-import it.polimi.ingsw.exceptions.SchoolWithoutTowersException;
 import it.polimi.ingsw.exceptions.StudentNotFoundException;
+import it.polimi.ingsw.model.enumerations.RealmType;
+import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.modelObservables.ProfessorPresenceObservable;
 
 import java.util.ArrayList;

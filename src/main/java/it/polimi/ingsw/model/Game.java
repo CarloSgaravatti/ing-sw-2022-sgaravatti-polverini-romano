@@ -3,6 +3,9 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.exceptions.EmptyBagException;
 import it.polimi.ingsw.listeners.IslandListener;
 import it.polimi.ingsw.model.effects.StudentContainer;
+import it.polimi.ingsw.model.enumerations.RealmType;
+import it.polimi.ingsw.model.enumerations.TowerType;
+import it.polimi.ingsw.model.enumerations.WizardType;
 
 import javax.swing.event.EventListenerList;
 import java.util.ArrayList;
@@ -22,8 +25,8 @@ public class Game implements ModelObserver{
 	private final CharacterCard[] characterCards;
 	private int indexActivePlayer;
 	private final static int NUM_STUDENTS = 130;
-	private int numStudents = NUM_STUDENTS;
-	private EventListenerList listenerList = new EventListenerList();
+	private int numStudents = NUM_STUDENTS; //Is this useful?
+	private final EventListenerList listenerList = new EventListenerList();
 
 	//TODO: invoke addEventListner method into InitController after making RemoteView
 	public void addEventListener(IslandListener listener) {
@@ -139,6 +142,7 @@ public class Game implements ModelObserver{
 			}
 		}
 	}
+
 	public void insertCoinsInGeneralSupply(int coins){
 		coinGeneralSupply += coins;
 	}
@@ -155,6 +159,8 @@ public class Game implements ModelObserver{
 		player.setAssistants(assistants);
 		player.setWizardType(type);
 	}
+
+	//TODO: assign also school
 
 
 	//This method maybe can be done in a better way
@@ -271,7 +277,8 @@ public class Game implements ModelObserver{
 		Random rnd = new Random();
 		int indexOfMotherNature = rnd.nextInt(Island.NUM_ISLANDS);
 		islands.get(indexOfMotherNature).setMotherNaturePresent(true);
-		for(int i=0; i<Island.NUM_ISLANDS;i++){
+		for(int i = 0; i < Island.NUM_ISLANDS;i++){
+			islands.get(i).addObserver(this);
 			if(i != (indexOfMotherNature+(Island.NUM_ISLANDS/2))%Island.NUM_ISLANDS  && i != indexOfMotherNature) {
 				islands.get(i).addStudent(bag.pickStudent());
 			}

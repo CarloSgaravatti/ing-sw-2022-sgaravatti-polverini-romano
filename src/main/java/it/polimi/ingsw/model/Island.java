@@ -1,6 +1,8 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.effects.NoEntryTileManager;
+import it.polimi.ingsw.model.enumerations.RealmType;
+import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.modelObservables.MotherNatureMovementObservable;
 
 import java.util.List;
@@ -17,8 +19,6 @@ public abstract class Island extends MotherNatureMovementObservable {
 	private int noEntryTilePresents;
 	private NoEntryTileManager noEntryTileManager = null;
 	public static final int NUM_ISLANDS = 12;
-
-	//TODO: add an observer
 
 	/**
 	 * Constructs an empty Island with no students, no entry tiles and mother nature in it
@@ -82,7 +82,6 @@ public abstract class Island extends MotherNatureMovementObservable {
 		if (this.noEntryTileManager == null) this.noEntryTileManager = noEntryTileManager;
 	}
 
-	//TODO: handle the case with 0 no entry tiles
 	//This method is private because a no entry tile can be removed only when mother nature
 	//comes to this island
 	private void removeNoEntryTile () {

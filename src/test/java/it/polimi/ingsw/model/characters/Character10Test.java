@@ -3,8 +3,9 @@ package it.polimi.ingsw.model.characters;
 import it.polimi.ingsw.exceptions.FullDiningRoomException;
 import it.polimi.ingsw.exceptions.IllegalCharacterActionRequestedException;
 import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
-import it.polimi.ingsw.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.enumerations.RealmType;
+import it.polimi.ingsw.model.enumerations.TowerType;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,8 +16,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class Character10Test extends TestCase {
     Character10 character10;

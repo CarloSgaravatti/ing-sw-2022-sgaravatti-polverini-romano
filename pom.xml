@@ -17,7 +17,7 @@
     <sonar.language>java</sonar.language>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
-    <sonar.exclusions>**/client/**/*,**/server/**,**/listeners/**,**/observer/**,**/exceptions/**/*,**/utils/**,**/server/**,**/Eriantys.java</sonar.exclusions>
+    <sonar.exclusions>**/client/**,**/listeners/**,**/messages/**,**/exceptions/**/*,**/utils/**,**/server/**,**/Eriantys.java</sonar.exclusions>
   </properties>
 
   <dependencies>

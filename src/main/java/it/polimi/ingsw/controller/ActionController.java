@@ -2,11 +2,14 @@ package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.exceptions.*;
 import it.polimi.ingsw.listeners.CloudListener;
+import it.polimi.ingsw.messages.MessageFromClient;
+import it.polimi.ingsw.messages.MessagePayload;
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.enumerations.RealmType;
+import it.polimi.ingsw.utils.Pair;
 
 import javax.swing.event.EventListenerList;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ActionController {
@@ -23,28 +26,26 @@ public class ActionController {
 
 	//TODO: these methods should return a message to the client and not an exception
 	//TODO: change in the turn phase after a conventional action is requested
-	public void doAction(String message) throws IllegalArgumentException, AssistantAlreadyPlayedException,
+	public void doAction(MessageFromClient message) throws IllegalArgumentException, AssistantAlreadyPlayedException,
 			StudentNotFoundException, NoSuchAssistantException, EmptyCloudException, FullDiningRoomException,
 			NotEnoughCoinsException, IllegalCharacterActionRequestedException, WrongTurnActionRequestedException {
-		List<String> args = new ArrayList<>(Arrays.asList(message.split(" ")));
-		String action = args.get(0);
-		args.remove(0);
-		switch (action) {
-			case "Assistant" -> playAssistant(args);
-			case "MotherNature" -> motherNatureMovement(args);
-			case "Students" -> studentMovement(args);
-			case "Cloud" -> pickStudentsFromClouds(args);
-			case "PlayCharacter" -> playCharacter(args);
-			case "CharacterEffect" -> characterEffect(args);
+		String messageName = message.getClientMessageHeader().getMessageName();
+		MessagePayload payload = message.getMessagePayload();
+		switch (messageName) {
+			case "PlayAssistant" -> playAssistant(payload);
+			case "MoveMotherNature" -> motherNatureMovement(payload);
+			case "MoveStudents" -> studentMovement(payload);
+			case "PickFromCloud" -> pickStudentsFromClouds(payload);
+			case "PlayCharacter" -> playCharacter(payload);
+			case "CharacterEffect" -> characterEffect(payload);
 			default -> throw new IllegalArgumentException();
 		}
 	}
 
-	public void playAssistant(List<String> args) throws IllegalArgumentException, AssistantAlreadyPlayedException,
-			NoSuchAssistantException, WrongTurnActionRequestedException {
+	public void playAssistant(MessagePayload payload) throws AssistantAlreadyPlayedException,
+			NoSuchAssistantException, WrongTurnActionRequestedException, ClassCastException {
 		if (turnPhase != TurnPhase.PLAY_ASSISTANT) throw new WrongTurnActionRequestedException();
-		if (args.size() != 1) throw new IllegalArgumentException();
-		int assistantIdx = Integer.parseInt(args.get(0));
+		int assistantIdx = payload.getAttribute("Assistant").getAsInt();
 		List<Player> players = gameController.getModel().getPlayers();
 		List<Integer> assistantAlreadyPlayed = new ArrayList<>();
 		for (Player p: players) {
@@ -59,47 +60,10 @@ public class ActionController {
 		setTurnPhase(TurnPhase.TURN_ENDED); //planning phase is ended for this player
 	}
 
-	public void studentMovement(List<String> args) throws IllegalArgumentException, StudentNotFoundException,
-			FullDiningRoomException, WrongTurnActionRequestedException {
-		if (turnPhase != TurnPhase.MOVE_STUDENTS) throw new WrongTurnActionRequestedException();
-		RealmType studentType;
-		int islandIndex;
-		if (args.size() > 9) throw new IllegalArgumentException();
-		for (int i = 0; i < args.size(); i+=2) {
-			studentType = RealmType.getRealmByAbbreviation(args.get(i)); //make sure that the argument is correct
-			if (!args.get(i + 1).equals("D") && !args.get(i + 1).equals("I")) {
-				throw new IllegalArgumentException();
-			}
-			if (args.get(i + 1).equals("I")) {
-				islandIndex = Integer.parseInt(args.get(i + 2));
-				if (!isValidIsland(islandIndex)) throw new IllegalArgumentException();
-				i++;
-			}
-		}
-		School school = turnController.getActivePlayer().getSchool();
-		for (int i = 0; i < args.size(); i+=2) {
-			studentType = RealmType.getRealmByAbbreviation(args.get(i));
-			switch (args.get(i + 1)) {
-				case "D" ->	{
-					if (school.moveFromEntranceToDiningRoom(studentType)) {
-						turnController.getActivePlayer().insertCoin();
-					}
-				}
-				case "I" -> {
-					islandIndex = Integer.parseInt(args.get(i + 2));
-					Island island = gameController.getModel().getIslands().get(islandIndex);
-					school.sendStudentToIsland(island, studentType);
-					i++;
-				}
-			}
-		}
-		setTurnPhase(TurnPhase.MOVE_MOTHER_NATURE);
-	}
-
-	public void motherNatureMovement(List<String> args) throws IllegalArgumentException, WrongTurnActionRequestedException {
+	public void motherNatureMovement(MessagePayload payload) throws IllegalArgumentException,
+			WrongTurnActionRequestedException, ClassCastException {
 		if (turnPhase != TurnPhase.MOVE_MOTHER_NATURE) throw new WrongTurnActionRequestedException();
-		if (args.size() != 1) throw new IllegalArgumentException();
-		int motherNatureMovement = Integer.parseInt(args.get(0));
+		int motherNatureMovement = payload.getAttribute("MotherNature").getAsInt();
 		int legalMotherNatureMovement = turnController.getActivePlayer().getTurnEffect().getMotherNatureMovement();
 		if (motherNatureMovement <= 0 || motherNatureMovement > legalMotherNatureMovement)
 			throw new IllegalArgumentException(); //TODO: create a specific exception
@@ -107,27 +71,44 @@ public class ActionController {
 		setTurnPhase(TurnPhase.SELECT_CLOUD);
 	}
 
-	//Is this useful?
-	public void chooseCloudPickStudents(List<String> args) {
-
+	//Use of ? to not have unchecked warning (maybe we should change the message format to not use generics)
+	public void studentMovement(MessagePayload payload) throws IllegalArgumentException, StudentNotFoundException,
+			FullDiningRoomException, WrongTurnActionRequestedException, ClassCastException {
+		if (turnPhase != TurnPhase.MOVE_STUDENTS) throw new WrongTurnActionRequestedException();
+		List<?> toDiningRoom = (List<?>) payload.getAttribute("StudentsToDR").getAsObject();
+		List<?> toIslands = (List<?>) payload.getAttribute("StudentsToIslands").getAsObject();
+		if (toDiningRoom.size() + toIslands.size() > 3) throw new IllegalArgumentException();
+		School school = turnController.getActivePlayer().getSchool();
+		for (Object studentType: toDiningRoom) {
+			if (school.moveFromEntranceToDiningRoom((RealmType) studentType)) {
+				turnController.getActivePlayer().insertCoin();
+			}
+		}
+		for (Object pair: toIslands) {
+			Pair<?, ?> pairStudentIsland = (Pair<?, ?>) pair;
+			int islandIndex = (Integer) pairStudentIsland.getSecond();
+			if (!isValidIsland(islandIndex)) throw new IllegalArgumentException();
+			Island island = gameController.getModel().getIslands().get(islandIndex);
+			RealmType studentType = (RealmType) pairStudentIsland.getFirst();
+			school.sendStudentToIsland(island, studentType);
+		}
+		setTurnPhase(TurnPhase.MOVE_MOTHER_NATURE);
 	}
 
-	public void pickStudentsFromClouds(List<String> args) throws EmptyCloudException, IllegalArgumentException,
-			WrongTurnActionRequestedException {
+	public void pickStudentsFromClouds(MessagePayload payload) throws EmptyCloudException, WrongTurnActionRequestedException {
 		if (turnPhase != TurnPhase.SELECT_CLOUD) throw new WrongTurnActionRequestedException();
-		if (args.size() != 1) throw new IllegalArgumentException();
-		int cloudindex = Integer.parseInt(args.get(0));
-		Cloud cloud = gameController.getModel().getClouds()[cloudindex];
+		int cloudIndex = payload.getAttribute("Cloud").getAsInt();
+		Cloud cloud = gameController.getModel().getClouds()[cloudIndex];
 		turnController.getActivePlayer().pickFromCloud(cloud);
-		fireMyEvent(cloudindex,turnController.getActivePlayer().getNickName());
+		fireMyEvent(cloudIndex,turnController.getActivePlayer().getNickName());
 		setTurnPhase(TurnPhase.TURN_ENDED);
 	}
 
-	public void playCharacter(List<String> args) throws IllegalArgumentException,
-			NotEnoughCoinsException, IllegalCharacterActionRequestedException {
+	public void playCharacter(MessagePayload payload) throws IllegalArgumentException,
+			NotEnoughCoinsException, IllegalCharacterActionRequestedException, ClassCastException {
 		//TODO: illegal argument exception is too general
 		if (turnController.getActivePlayer().getTurnEffect().isCharacterPlayed()) throw new IllegalArgumentException();
-		int characterId = Integer.parseInt(args.get(0));
+		int characterId = payload.getAttribute("CharacterId").getAsInt();
 		CharacterCard characterCard = gameController.getModel().getCharacterById(characterId);
 		if (characterCard == null) throw new IllegalArgumentException();
 		int coinToGeneralSupply = characterCard.getPrice();
@@ -137,13 +118,16 @@ public class ActionController {
 		turnController.getActivePlayer().getTurnEffect().setCharacterPlayed(true);
 		turnController.getActivePlayer().getTurnEffect().setCharacterEffectConsumed(false);
 		gameController.getModel().insertCoinsInGeneralSupply(coinToGeneralSupply);
-		//If the character effect is active and the player calls the effect immediately
-		if (args.size() > 1) {
-			characterEffect(args);
-		}
+		characterEffect(payload);
 	}
 
-	public void characterEffect(List<String> args) throws IllegalCharacterActionRequestedException {
+	public void characterEffect(MessagePayload payload) throws IllegalCharacterActionRequestedException {
+		List<?> payloadArgs = (List<?>) payload.getAttribute("Arguments").getAsObject();
+		if (payloadArgs.size() == 0) return;
+		List<String> args = new ArrayList<>();
+		for (Object payloadArg : payloadArgs) {
+			args.add((String) payloadArg);
+		}
 		if (turnController.getActivePlayer().getTurnEffect().isCharacterEffectConsumed()) throw new IllegalArgumentException();
 		int characterId = Integer.parseInt(args.get(0));
 		CharacterCard characterCard = gameController.getModel().getCharacterById(characterId);
@@ -151,22 +135,14 @@ public class ActionController {
 		characterCard.useEffect(args.subList(1, args.size()));
 	}
 
-	private Island getIslandFromNumber(int islandId) {
-		return gameController.getModel().getIslands().get(islandId);
+	//Is this useful?
+	public void chooseCloudPickStudents(List<String> args) {
+
 	}
 
 	private boolean isValidIsland(int islandIndex) {
 		int islandNumber = gameController.getModel().getIslands().size();
 		return islandIndex < islandNumber && islandIndex >= 0;
-	}
-
-	@Deprecated
-	private boolean isValidCharacter(int characterId) {
-		CharacterCard[] characterCards = gameController.getModel().getCharacterCards();
-		for (CharacterCard c: characterCards) {
-			if (characterId == c.getId()) return true;
-		}
-		return false;
 	}
 
 	public void setTurnPhase(TurnPhase turnPhase) {

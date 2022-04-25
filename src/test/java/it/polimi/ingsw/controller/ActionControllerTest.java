@@ -4,7 +4,15 @@ import it.polimi.ingsw.exceptions.EmptyBagException;
 import it.polimi.ingsw.exceptions.NoSuchAssistantException;
 import it.polimi.ingsw.exceptions.StudentsNumberInCloudException;
 import it.polimi.ingsw.exceptions.WizardTypeAlreadyTakenException;
+import it.polimi.ingsw.messages.ClientMessageHeader;
+import it.polimi.ingsw.messages.ClientMessageType;
+import it.polimi.ingsw.messages.MessageFromClient;
+import it.polimi.ingsw.messages.MessagePayload;
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.enumerations.RealmType;
+import it.polimi.ingsw.model.enumerations.TowerType;
+import it.polimi.ingsw.model.enumerations.WizardType;
+import it.polimi.ingsw.utils.Pair;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,9 +23,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ActionControllerTest extends TestCase {
     ActionController actionController;
@@ -26,7 +33,7 @@ class ActionControllerTest extends TestCase {
 
     @BeforeEach
     void setup() {
-        gameController = new GameController();
+        gameController = new GameController(1);
         InitController initController = gameController.getInitController();
         initController.setNumPlayers(2);
         try {
@@ -52,8 +59,14 @@ class ActionControllerTest extends TestCase {
     @Test
     void playAssistantTest() {
         actionController.setTurnPhase(TurnPhase.PLAY_ASSISTANT);
+        ClientMessageHeader header =
+                new ClientMessageHeader("PlayAssistant", activePlayer.getNickName(), ClientMessageType.ACTION);
+        MessagePayload payload = new MessagePayload();
+        payload.setAttribute("Assistant", 3);
+        MessageFromClient message = new MessageFromClient(header, payload);
         try {
-            actionController.doAction("Assistant 3");
+            //actionController.doAction("Assistant 3");
+            actionController.doAction(message);
         } catch (Exception e) {
             Assertions.fail();
         }
@@ -64,15 +77,26 @@ class ActionControllerTest extends TestCase {
     void studentMovementOnlyToDiningRoomTest() {
         actionController.setTurnPhase(TurnPhase.MOVE_STUDENTS);
         Student[] students = new Student[3];
+        List<RealmType> toDiningRoom = new ArrayList<>();
+        List<Pair<RealmType, Integer>> toIslands = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             students[i] = new Student(RealmType.values()[i]);
+            toDiningRoom.add(RealmType.values()[i]);
         }
         activePlayer.setSchool(new School(8, TowerType.BLACK));
         activePlayer.getSchool().insertEntrance(students);
         //Now in the entrance there are: 1 Y, 1 B, 1 G
+        ClientMessageHeader header =
+                new ClientMessageHeader("MoveStudents", activePlayer.getNickName(), ClientMessageType.ACTION);
+        MessagePayload payload = new MessagePayload();
+        payload.setAttribute("StudentsToDR", toDiningRoom);
+        payload.setAttribute("StudentsToIslands", toIslands);
+        MessageFromClient message = new MessageFromClient(header, payload);
         try {
-            actionController.doAction("Students Y D B D G D");
+            //actionController.doAction("Students Y D B D G D");
+            actionController.doAction(message);
         } catch (Exception e) {
+            e.printStackTrace();
             Assertions.fail();
         }
         for (Student s: students) {
@@ -87,13 +111,24 @@ class ActionControllerTest extends TestCase {
         Island island = gameController.getModel().getIslands().get(islandIndex);
         int initialYellowsInIsland = island.getNumStudentsOfType(RealmType.YELLOW_GNOMES);
         Student[] students = new Student[3];
+        List<RealmType> toDiningRoom = new ArrayList<>();
+        List<Pair<RealmType, Integer>> toIslands = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             students[i] = new Student(RealmType.YELLOW_GNOMES);
+            if (i < 2) toDiningRoom.add(RealmType.YELLOW_GNOMES);
+            if (i == 2) toIslands.add(new Pair<>(RealmType.YELLOW_GNOMES, islandIndex));
         }
         activePlayer.setSchool(new School(8, TowerType.BLACK));
         activePlayer.getSchool().insertEntrance(students);
+        ClientMessageHeader header =
+                new ClientMessageHeader("MoveStudents", activePlayer.getNickName(), ClientMessageType.ACTION);
+        MessagePayload payload = new MessagePayload();
+        MessageFromClient message = new MessageFromClient(header, payload);
+        payload.setAttribute("StudentsToDR", toDiningRoom);
+        payload.setAttribute("StudentsToIslands", toIslands);
         try {
-            actionController.doAction("Students Y D Y D Y I " + islandIndex);
+            //actionController.doAction("Students Y D Y D Y I " + islandIndex);
+            actionController.doAction(message);
         } catch (Exception e) {
             e.printStackTrace();
             Assertions.fail();
@@ -112,8 +147,14 @@ class ActionControllerTest extends TestCase {
         } catch (NoSuchAssistantException e) {
             Assertions.fail();
         }
+        ClientMessageHeader header =
+                new ClientMessageHeader("MoveMotherNature", activePlayer.getNickName(), ClientMessageType.ACTION);
+        MessagePayload payload = new MessagePayload();
+        payload.setAttribute("MotherNature", 3);
+        MessageFromClient message = new MessageFromClient(header, payload);
         try {
-            actionController.doAction("MotherNature 3");
+            //actionController.doAction("MotherNature 3");
+            actionController.doAction(message);
         } catch (Exception e) {
             Assertions.fail();
         }
@@ -133,8 +174,14 @@ class ActionControllerTest extends TestCase {
             Assertions.fail();
         }
         activePlayer.setSchool(new School(8, TowerType.BLACK));
+        ClientMessageHeader header =
+                new ClientMessageHeader("PickFromCloud", activePlayer.getNickName(), ClientMessageType.ACTION);
+        MessagePayload payload = new MessagePayload();
+        payload.setAttribute("Cloud", 1);
+        MessageFromClient message = new MessageFromClient(header, payload);
         try {
-            actionController.doAction("Cloud 1");
+            //actionController.doAction("Cloud 1");
+            actionController.doAction(message);
         } catch (Exception e) {
             Assertions.fail();
         }
@@ -145,10 +192,19 @@ class ActionControllerTest extends TestCase {
     void playCharacterTest() {
         CharacterCard characterCard = gameController.getModel().getCharacterCards()[new Random().nextInt(3)];
         int characterToPlay = characterCard.getId();
+        List<String> arguments = new ArrayList<>();
         for (int i = 0; i < characterCard.getPrice(); i++) activePlayer.insertCoin();
+        ClientMessageHeader header =
+                new ClientMessageHeader("PlayCharacter", activePlayer.getNickName(), ClientMessageType.ACTION);
+        MessagePayload payload = new MessagePayload();
+        payload.setAttribute("CharacterId", characterToPlay);
+        payload.setAttribute("Arguments", arguments);
+        MessageFromClient message = new MessageFromClient(header, payload);
         try {
-            actionController.doAction("PlayCharacter " + characterToPlay);
+            //actionController.doAction("PlayCharacter " + characterToPlay);
+            actionController.doAction(message);
         } catch (Exception e) {
+            e.printStackTrace();
             Assertions.fail();
         }
         Assertions.assertEquals(activePlayer, characterCard.getPlayerActive());

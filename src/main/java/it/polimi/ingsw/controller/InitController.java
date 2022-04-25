@@ -1,18 +1,26 @@
 package it.polimi.ingsw.controller;
 
+import it.polimi.ingsw.messages.MessageFromClient;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.exceptions.*;
+import it.polimi.ingsw.model.enumerations.TowerType;
+import it.polimi.ingsw.model.enumerations.WizardType;
 
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.List;
 import java.util.Random;
 
-public class InitController {
+public class InitController implements EventListener {
 	private Game game;
 	private int numPlayers;
 
-	public void setNumPlayers(int numPlayers){
+	public void setNumPlayers(int numPlayers) {
 		this.numPlayers = numPlayers;
+	}
+
+	public int getNumPlayers() {
+		return numPlayers;
 	}
 
 	public void initializeGameComponents() throws EmptyBagException {
@@ -82,4 +90,8 @@ public class InitController {
 		return this.game;
 	}
 
+	//TODO: handle player setup message
+	public void eventPerformed(MessageFromClient message) {
+
+	}
 }

@@ -4,6 +4,8 @@ import it.polimi.ingsw.exceptions.EmptyCloudException;
 import it.polimi.ingsw.exceptions.NoSuchAssistantException;
 import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
 import it.polimi.ingsw.exceptions.StudentsNumberInCloudException;
+import it.polimi.ingsw.model.enumerations.RealmType;
+import it.polimi.ingsw.model.enumerations.TowerType;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

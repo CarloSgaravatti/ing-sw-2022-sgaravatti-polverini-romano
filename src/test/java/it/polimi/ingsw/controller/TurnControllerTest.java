@@ -3,7 +3,7 @@ package it.polimi.ingsw.controller;
 import it.polimi.ingsw.exceptions.NoSuchAssistantException;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.WizardType;
+import it.polimi.ingsw.model.enumerations.WizardType;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,15 +11,13 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class TurnControllerTest extends TestCase {
     TurnController turnController;
     GameController gameController;
 
     @BeforeEach
     void setup() {
-        gameController = new GameController();
+        gameController = new GameController(1);
         Game game = new Game(null, null);
         game.setNumPlayers(3);
         game.addPlayer("player1");

@@ -13,7 +13,6 @@ public class TurnEffect {
     private boolean characterPlayed;
     private boolean characterEffectConsumed; //for those characters who have an active effect for all turn
 
-    //TODO: there has to be a way to distinguish who has played an assistant first if they have the same value
     public TurnEffect() {
         reset();
     }

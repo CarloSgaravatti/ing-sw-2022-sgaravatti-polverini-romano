@@ -4,6 +4,7 @@ import it.polimi.ingsw.exceptions.FullDiningRoomException;
 import it.polimi.ingsw.exceptions.IllegalCharacterActionRequestedException;
 import it.polimi.ingsw.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.enumerations.RealmType;
 
 import java.util.ArrayList;
 import java.util.List;
