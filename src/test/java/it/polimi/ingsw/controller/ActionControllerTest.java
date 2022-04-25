@@ -1,9 +1,6 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.exceptions.EmptyBagException;
-import it.polimi.ingsw.exceptions.NoSuchAssistantException;
-import it.polimi.ingsw.exceptions.StudentsNumberInCloudException;
-import it.polimi.ingsw.exceptions.WizardTypeAlreadyTakenException;
+import it.polimi.ingsw.exceptions.*;
 import it.polimi.ingsw.messages.ClientMessageHeader;
 import it.polimi.ingsw.messages.ClientMessageType;
 import it.polimi.ingsw.messages.MessageFromClient;
@@ -49,7 +46,7 @@ class ActionControllerTest extends TestCase {
         try {
             initController.setupPlayers(TowerType.BLACK, gameController.getModel().getPlayers().get(0), WizardType.values()[0]);
             initController.setupPlayers(TowerType.WHITE, gameController.getModel().getPlayers().get(1), WizardType.values()[1]);
-        } catch (WizardTypeAlreadyTakenException e) {
+        } catch (WizardTypeAlreadyTakenException | TowerTypeAlreadyTakenException e) {
             Assertions.fail();
         }
         actionController = new ActionController(gameController, gameController.getTurnController());

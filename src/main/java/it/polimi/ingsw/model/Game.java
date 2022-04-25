@@ -2,6 +2,8 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.EmptyBagException;
 import it.polimi.ingsw.listeners.IslandListener;
+import it.polimi.ingsw.listeners.MotherNatureListener;
+import it.polimi.ingsw.listeners.SchoolListener;
 import it.polimi.ingsw.model.effects.StudentContainer;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
@@ -28,9 +30,17 @@ public class Game implements ModelObserver{
 	private int numStudents = NUM_STUDENTS; //Is this useful?
 	private final EventListenerList listenerList = new EventListenerList();
 
-	//TODO: invoke addEventListner method into InitController after making RemoteView
+	//TODO: invoke addEventListener method into InitController after making RemoteView
 	public void addEventListener(IslandListener listener) {
 		listenerList.add(IslandListener.class, listener);
+	}
+
+	public void addEventListener(SchoolListener listener){
+		listenerList.add(SchoolListener.class, listener);
+	}
+
+	public void addEventListener(MotherNatureListener listener){
+		listenerList.add(MotherNatureListener.class,listener);
 	}
 
 	public Game(List<Island> islands, Cloud[] clouds){
@@ -75,8 +85,10 @@ public class Game implements ModelObserver{
 			i++;
 		}
 		islands.get(i).setMotherNaturePresent(false);
+		int initialPosition = i;
 		i = (i + movement) % islands.size();
 		islands.get(i).setMotherNaturePresent(true);
+		fireMyEvent(initialPosition+1,i+1);
 	}
 
 	public Cloud[] getClouds (){
@@ -191,6 +203,7 @@ public class Game implements ModelObserver{
 		if (playerTakeProfessor != null) {
 			currPlayerProfessor.ifPresent(p -> p.getSchool().removeProfessor(studentType));
 			playerTakeProfessor.getSchool().insertProfessor(studentType);
+			fireMyEvent(studentType,playerTakeProfessor.getNickName());
 		}
 	}
 
@@ -284,14 +297,29 @@ public class Game implements ModelObserver{
 			}
 		}
 	}
+
 	void fireMyEvent(TowerType type, int indexIslands) {
 		for(IslandListener event : listenerList.getListeners(IslandListener.class)){
 			event.eventPerformed(type, indexIslands);
 		}
 	}
+
 	void fireMyEvent(List<Integer> islandIndexList ) {
 		for(IslandListener event : listenerList.getListeners(IslandListener.class)){
 			event.eventPerformed(islandIndexList);
 		}
 	}
+
+	void fireMyEvent(RealmType type, String namePlayer){
+		for(SchoolListener event : listenerList.getListeners(SchoolListener.class)){
+			event.eventPerformed(type,namePlayer);
+		}
+	}
+
+	void fireMyEvent(int initialPosition, int finalPosition){
+		for(MotherNatureListener event : listenerList.getListeners(MotherNatureListener.class)){
+			event.eventPerformed(initialPosition,finalPosition);
+		}
+	}
+
 }

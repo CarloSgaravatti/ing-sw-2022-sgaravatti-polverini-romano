@@ -1,26 +1,31 @@
 package it.polimi.ingsw.controller;
-
+import it.polimi.ingsw.listeners.PlayerListener;
 import it.polimi.ingsw.messages.MessageFromClient;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.exceptions.*;
-import it.polimi.ingsw.model.enumerations.TowerType;
-import it.polimi.ingsw.model.enumerations.WizardType;
+import it.polimi.ingsw.model.enumerations.*;
+import org.w3c.dom.events.EventListener;
 
+import javax.swing.event.EventListenerList;
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.List;
 import java.util.Random;
 
 public class InitController implements EventListener {
 	private Game game;
 	private int numPlayers;
+	private EventListenerList listenerList = new EventListenerList();
 
-	public void setNumPlayers(int numPlayers) {
+	public void setNumPlayers(int numPlayers){
 		this.numPlayers = numPlayers;
 	}
 
-	public int getNumPlayers() {
-		return numPlayers;
+	public int getNumPlayers(){
+		return this.numPlayers;
+	}
+
+	public void addEventListener(PlayerListener listener) {
+		listenerList.add(PlayerListener.class, listener);
 	}
 
 	public void initializeGameComponents() throws EmptyBagException {
@@ -38,7 +43,6 @@ public class InitController implements EventListener {
 		setupSchools();
 	}
 	@Deprecated
-	//perche devo fare il throws dell'effetto dentro qua ? se non lo faccio mi segna errore
 	public void setupIslands() throws EmptyBagException {
 		Random rnd = new Random();
 		int indexOfMatherNature = rnd.nextInt(Island.NUM_ISLANDS);
@@ -54,9 +58,17 @@ public class InitController implements EventListener {
 		game.addPlayer(nick);
 	}
 
-	public void setupPlayers(TowerType type, Player player, WizardType type2) throws WizardTypeAlreadyTakenException {
+	public void setupPlayers(TowerType type, Player player, WizardType type2) throws WizardTypeAlreadyTakenException, TowerTypeAlreadyTakenException {
 		int towerPerSchool = (numPlayers==3) ? 6 : 8;
-		player.setSchool(new School(towerPerSchool,type));
+		if(player.getSchool().getTowerType() == null) {
+			for(int j=0; j< game.getNumPlayers();j++){
+				if(game.getPlayers().get(j).getSchool().getTowerType() == type){
+					throw new TowerTypeAlreadyTakenException();
+				}
+			}
+			player.setSchool(new School(towerPerSchool, type));
+			fireMyEvent(type,player.getNickName());
+		}
 		if(player.getWizardType() == null) {
 			for(int i = 0; i < game.getNumPlayers(); i++){
 				if(game.getPlayers().get(i).getWizardType() == type2) {
@@ -90,8 +102,15 @@ public class InitController implements EventListener {
 		return this.game;
 	}
 
+	public void fireMyEvent(TowerType type, String playerName){
+		for(PlayerListener event : listenerList.getListeners(PlayerListener.class)){
+			event.eventPerformed(type,playerName);
+		}
+	}
+
 	//TODO: handle player setup message
 	public void eventPerformed(MessageFromClient message) {
 
 	}
+
 }
