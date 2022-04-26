@@ -1,7 +1,9 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.exceptions.*;
+import it.polimi.ingsw.listeners.CharacterListener;
 import it.polimi.ingsw.listeners.CloudListener;
+import it.polimi.ingsw.listeners.PlayerListener;
 import it.polimi.ingsw.messages.MessageFromClient;
 import it.polimi.ingsw.messages.MessagePayload;
 import it.polimi.ingsw.model.*;
@@ -58,6 +60,7 @@ public class ActionController {
 		if (!turnController.getActivePlayer().playAssistant(assistantIdx, assistantAlreadyPlayed))
 			throw new AssistantAlreadyPlayedException();
 		setTurnPhase(TurnPhase.TURN_ENDED); //planning phase is ended for this player
+		fireMyEventAssistant(assistantIdx); //assistantIdx è l'indice dell'assistant?
 	}
 
 	public void motherNatureMovement(MessagePayload payload) throws IllegalArgumentException,
@@ -115,6 +118,7 @@ public class ActionController {
 		//TODO: if player does not have enough coins this is not correct
 		if (!characterCard.isCoinPresent()) coinToGeneralSupply--;
 		characterCard.playCard(turnController.getActivePlayer());
+		fireMyEventCharacter(characterId, turnController.getActivePlayer().getNickName());
 		turnController.getActivePlayer().getTurnEffect().setCharacterPlayed(true);
 		turnController.getActivePlayer().getTurnEffect().setCharacterEffectConsumed(false);
 		gameController.getModel().insertCoinsInGeneralSupply(coinToGeneralSupply);
@@ -153,10 +157,22 @@ public class ActionController {
 	public void addEventListener(CloudListener listener) {
 		listenerList.add(CloudListener.class, listener);
 	}
-
+    public void addEventListener(CharacterListener listener) { listenerList.add(CharacterListener.class, listener);}
+	public void addEventListener(PlayerListener listener) {listenerList.add(PlayerListener.class, listener);}
 	void fireMyEvent(int cloudIndex, String namePlayer) {
 		for(CloudListener event : listenerList.getListeners(CloudListener.class)){
 			event.eventPerformed(cloudIndex,namePlayer);
+		}
+	}
+
+	void fireMyEventCharacter(int characterId, String namePlayer) {
+		for(CharacterListener event : listenerList.getListeners(CharacterListener.class)) {
+			event.eventPerformed(characterId, namePlayer);
+		}
+	}
+	void fireMyEventAssistant(int assistantIdx) {
+		for (PlayerListener event : listenerList.getListeners(PlayerListener.class)) {
+			event.eventPerformedAssistant((assistantIdx));
 		}
 	}
 
