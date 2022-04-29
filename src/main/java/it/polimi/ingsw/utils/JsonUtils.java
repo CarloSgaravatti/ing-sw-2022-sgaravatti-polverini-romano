@@ -15,33 +15,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-@Deprecated
+
 public class JsonUtils {
-    public static JsonObject getCharacterJsonObject(int characterId) throws NoSuchElementException, NullPointerException {
-        InputStream stream = JsonUtils.class.getResourceAsStream("/jsonConfigFiles/CharacterCardsEffectInfo.json");
+    public static List<String> getRulesByDifficulty(boolean difficulty) throws NoSuchElementException, NullPointerException {
+        InputStream stream = JsonUtils.class.getResourceAsStream("/jsonConfigFiles/RulesConfig.json");
         if (stream == null) throw new NullPointerException();
         JsonReader jsonReader = new JsonReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
         JsonElement obj = JsonParser.parseReader(jsonReader);
         JsonArray jsonArray = obj.getAsJsonArray();
-        for (JsonElement jsonElement : jsonArray) {
+        String difficultyName = (difficulty)? "hard" : "simple" ;
+        List<String> actions = new ArrayList<>();
+        for (JsonElement jsonElement : jsonArray){ //FOR cicle for Difficulty
             JsonObject jsonObject = jsonElement.getAsJsonObject();
-            if(jsonObject.get("characterId").getAsInt() == characterId) {
-                return jsonObject;
+            if(jsonObject.get("Difficulty").getAsString().equals(difficultyName)){
+                JsonArray actionList = jsonObject.get("Rules").getAsJsonArray();
+                for(JsonElement jsonElement1 : actionList){ //FOR cicle for ActionType
+                    JsonObject jsonObject1 = jsonElement.getAsJsonObject();
+                    actions.add(jsonObject1.get("ActionType").getAsString());
+                }
+                return actions;
             }
         }
         throw new NoSuchElementException();
     }
-
-    //TODO: handle characters without effect methods
-    /*public static Method getCharacterMethod(JsonObject characterJsonObject) throws ClassNotFoundException, NoSuchMethodException {
-        CharacterCreator characterCreator = CharacterCreator.getInstance();
-        Class<?> characterClass = characterCreator.getCharacter(characterJsonObject.get("characterId").getAsInt()).getClass();
-        List<Class<?>> parametersClass = new ArrayList<>();
-        JsonArray parametersJsonArray = characterJsonObject.get("parameters").getAsJsonArray();
-        for (JsonElement j: parametersJsonArray) {
-            parametersClass.add(Class.forName(j.getAsJsonObject().get("paramType").getAsString()));
-        }
-        String methodName = characterJsonObject.get("effectMethod").getAsString();
-        return characterClass.getMethod(methodName, parametersClass.toArray(new Class<?>[0]));
-    }*/
 }
