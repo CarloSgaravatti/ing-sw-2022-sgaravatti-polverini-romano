@@ -19,11 +19,9 @@ public class Player {
 
 	public Player(String nickName){
 		numCoins = 1;
-		//starter = false;
 		this.nickName = nickName;
 		turnEffect = new TurnEffect();
 		assistants = new ArrayList<>();
-		wizardType = null;
 	}
 
 	public void pickFromCloud(Cloud cloud) throws EmptyCloudException{

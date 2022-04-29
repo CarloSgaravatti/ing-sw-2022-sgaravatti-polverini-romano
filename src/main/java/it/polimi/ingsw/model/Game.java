@@ -133,6 +133,13 @@ public class Game implements ModelObserver{
 		return null;
 	}
 
+	public Player getPlayerByNickname(String nickname) {
+		for (Player p: players) {
+			if (p.getNickName().equals(nickname)) return p;
+		}
+		return null;
+	}
+
 	public void setIndexActivePlayer(Player player) {
 		this.indexActivePlayer = players.indexOf(player);
 	}
@@ -141,7 +148,7 @@ public class Game implements ModelObserver{
 		for(RealmType r: RealmType.values()){
 			for(int i = 0; i<24;i++){
 				bag.insertStudent(new Student(r));
-				numStudents--;
+				numStudents--; //Not needed
 			}
 		}
 	}
@@ -150,13 +157,18 @@ public class Game implements ModelObserver{
 		for(int i = 0; i< 2; i++) {
 			for (RealmType r : RealmType.values()) {
 				bag.insertStudent(new Student(r));
-				numStudents--;
+				numStudents--; //Not needed
 			}
 		}
 	}
 
 	public void insertCoinsInGeneralSupply(int coins){
 		coinGeneralSupply += coins;
+	}
+
+	public void takeCoinFromGeneralSupply() {
+		coinGeneralSupply --;
+		//TODO: exception if coins are finished
 	}
 
 	public void assignDeck(Player player, WizardType type){

@@ -2,6 +2,8 @@ package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.controller.InitController;
+import it.polimi.ingsw.exceptions.TowerTypeAlreadyTakenException;
+import it.polimi.ingsw.exceptions.WizardTypeAlreadyTakenException;
 import it.polimi.ingsw.messages.MessageFromClient;
 
 import javax.swing.event.EventListenerList;
@@ -22,7 +24,8 @@ public abstract class View {
         controllerListeners.add(GameController.class, gameController);
     }
 
-    protected void fireSetupMessageEvent(MessageFromClient message) {
+    protected void fireSetupMessageEvent(MessageFromClient message)
+            throws WizardTypeAlreadyTakenException, TowerTypeAlreadyTakenException {
         for (InitController initController: controllerListeners.getListeners(InitController.class)) {
             initController.eventPerformed(message);
         }

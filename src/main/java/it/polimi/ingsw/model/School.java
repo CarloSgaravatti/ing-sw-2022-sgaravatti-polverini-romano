@@ -66,8 +66,7 @@ public class School extends ProfessorPresenceObservable {
 	 * @return true if the player can take a coin, otherwise false
 	 * @throws FullDiningRoomException if the dining room if full for the student's Realm Type
 	 */
-	//These two methods return true if the player puts a student in a place which gives him a coin.
-	//The first method is useful because a character card can give the opportunity to put a student
+	//This method is useful because a character card can give the opportunity to put a student
 	//directly in the dining room, without passing from the entrance.
 	public boolean insertDiningRoom (Student student) throws FullDiningRoomException {
 		if (diningRoom[student.getStudentType().ordinal()] >= MAX_STUDENTS_DINING_ROOM) {
@@ -212,8 +211,6 @@ public class School extends ProfessorPresenceObservable {
 				.findFirst()
 				.orElseThrow(); //this should never be thrown
 	}
-
-	//for testing, but maybe not only (for example for the view observation of model in MVC pattern)
 
 	/**
 	 * Returns the number of students of the specified Realm Type that are present in the entrance

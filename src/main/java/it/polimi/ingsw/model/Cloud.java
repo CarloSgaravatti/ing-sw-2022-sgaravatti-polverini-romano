@@ -28,4 +28,7 @@ public class Cloud {
 		this.studentsPresents = true;
 	}
 
+	public Student[] getStudents() {
+		return students;
+	}
 }

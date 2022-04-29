@@ -53,11 +53,11 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         }
     }
 
-    public synchronized void readMessage() throws IOException, ClassNotFoundException {
+    public void readMessage() throws IOException, ClassNotFoundException {
         MessageFromClient message = (MessageFromClient) in.readObject();
         if (message.getClientMessageHeader().getMessageType() != ClientMessageType.GAME_SETUP) {
             if (!setupDone) {
-                //TODO: send error (player don't have a game)
+                sendError(ErrorMessageType.CLIENT_WITHOUT_GAME);
             }else {
                 fireMessageEvent(message);
             }
@@ -69,12 +69,12 @@ public class SocketClientConnection implements Runnable, ClientConnection {
     private void close() {
         closeConnection();
         System.out.println("Deregistering client...");
-        server.deregisterConnection(this);
+        server.deregisterConnection(nickname);
         System.out.println("Done!");
     }
 
     public synchronized void closeConnection() {
-        ServerMessageHeader header = new ServerMessageHeader("ConnectionClosed", ServerMessageType.SERVER_ANSWER);
+        ServerMessageHeader header = new ServerMessageHeader("ConnectionClosed", ServerMessageType.CLIENT_SETUP);
         MessageFromServer message = new MessageFromServer(header, null);
         send(message);
         try {
@@ -110,7 +110,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
     }
 
     public void initializeClient() throws IOException, ClassNotFoundException, ClassCastException {
-        ServerMessageHeader header = new ServerMessageHeader("NicknameRequest", ServerMessageType.GAME_SETUP);
+        ServerMessageHeader header = new ServerMessageHeader("NicknameRequest", ServerMessageType.CLIENT_SETUP);
         MessagePayload payload = new MessagePayload();
         String messageInfo = "Welcome to Eriantys!\nInsert a username";
         payload.setAttribute("MessageInfo", messageInfo);
@@ -124,17 +124,13 @@ public class SocketClientConnection implements Runnable, ClientConnection {
             server.globalLobby(this, nickname);
             this.nickname = nickname;
         } catch (DuplicateNicknameException e) {
-            header = new ServerMessageHeader("Error", ServerMessageType.SERVER_ANSWER);
-            payload = new MessagePayload();
-            payload.setAttribute("ErrorType", ErrorMessageType.DUPLICATE_NICKNAME);
-            message = new MessageFromServer(header, payload);
-            send(message);
+            sendError(ErrorMessageType.DUPLICATE_NICKNAME);
         }
     }
 
     public void handleGameSetup(MessageFromClient message) {
         if (isSetupDone()) {
-            //TODO: send error (player already in a game)
+            sendError(ErrorMessageType.SETUP_ALREADY_DONE);
             return;
         }
         String messageName = message.getClientMessageHeader().getMessageName();
@@ -146,10 +142,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
             }
             case "GameToPlay" -> gameId = message.getMessagePayload().getAttribute("GameId").getAsInt();
             default -> {
-                ServerMessageHeader header = new ServerMessageHeader("Error", ServerMessageType.SERVER_ANSWER);
-                MessagePayload payload = new MessagePayload();
-                payload.setAttribute("ErrorType", ErrorMessageType.UNRECOGNIZE_MESSAGE);
-                send(new MessageFromServer(header, payload));
+                sendError(ErrorMessageType.UNRECOGNIZE_MESSAGE);
                 return;
             }
         }
@@ -163,5 +156,12 @@ public class SocketClientConnection implements Runnable, ClientConnection {
 
     public synchronized void setSetupDone(boolean setupDone) {
         this.setupDone = setupDone;
+    }
+
+    public void sendError(ErrorMessageType error) {
+        ServerMessageHeader header = new ServerMessageHeader("Error", ServerMessageType.CLIENT_SETUP);
+        MessagePayload payload = new MessagePayload();
+        payload.setAttribute("ErrorType", error);
+        asyncSend(new MessageFromServer(header, payload));
     }
 }

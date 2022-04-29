@@ -85,6 +85,7 @@ public class ActionController {
 		for (Object studentType: toDiningRoom) {
 			if (school.moveFromEntranceToDiningRoom((RealmType) studentType)) {
 				turnController.getActivePlayer().insertCoin();
+				gameController.getModel().takeCoinFromGeneralSupply();
 			}
 		}
 		for (Object pair: toIslands) {

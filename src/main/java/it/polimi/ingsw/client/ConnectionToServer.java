@@ -1,17 +1,22 @@
 package it.polimi.ingsw.client;
 
+import it.polimi.ingsw.messages.MessageFromServer;
+
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class ConnectionToServer implements Runnable {
-    private MessageReceiver messageReceiver;
     private ObjectOutputStream outputStream;
+    private ObjectInputStream inputStream;
+    private MessageHandler messageHandler;
 
-    public ConnectionToServer(Socket socket) {
+    public ConnectionToServer(Socket socket, UserInterface view) {
         try {
             outputStream = new ObjectOutputStream(socket.getOutputStream());
-            messageReceiver = new MessageReceiver(socket.getInputStream(), this);
+            inputStream = new ObjectInputStream(socket.getInputStream());
+            messageHandler = new MessageHandler(this, view);
         } catch (IOException e) {
             //TODO
             e.printStackTrace();
@@ -20,12 +25,29 @@ public class ConnectionToServer implements Runnable {
 
     @Override
     public void run() {
-        //...
-        new Thread(messageReceiver).start();
-        //...
+        try {
+            while (true) { //while(isActive())
+                MessageFromServer message = (MessageFromServer) inputStream.readObject();
+                messageHandler.handleMessage(message);
+            }
+        }  catch (IOException e) {
+            System.err.println(e.getMessage());
+        } catch (ClassNotFoundException e) {
+            System.err.println(e.getMessage());
+        } catch (ClassCastException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+            }
+        }
     }
 
     public Thread asyncWriteToServer(Object message) {
+        //Debug
+        System.out.println("Writing message");
         Thread t = new Thread(() -> {
             try {
                 outputStream.writeObject(message);

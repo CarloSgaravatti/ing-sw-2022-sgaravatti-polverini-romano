@@ -2,22 +2,22 @@ package it.polimi.ingsw.client;
 
 import java.io.*;
 
+@Deprecated
 public class MessageReceiver implements Runnable{
     private ObjectInputStream inputStream;
     private MessageHandler messageHandler;
 
-    public MessageReceiver(InputStream inputStream, ConnectionToServer connection) throws IOException {
+    public MessageReceiver(InputStream inputStream, ConnectionToServer connection, UserInterface view) throws IOException {
         this.inputStream = new ObjectInputStream(inputStream);
-        this.messageHandler = new MessageHandler(connection); //Maybe we will need to change the MessageHandler constructor
+        this.messageHandler = new MessageHandler(connection, view); //Maybe we will need to change the MessageHandler constructor
     }
 
     @Override
     public void run() {
         /*try {
             while (true) { //while(isActive())
-                //MessageFromServer message = (MessageFromServer) inputStream.readObject();
-
-                //messageHandler.handleMessage(message);
+                MessageFromServer message = (MessageFromServer) inputStream.readObject();
+                messageHandler.handleMessage(message);
             }
         }  catch (IOException e) {
             System.err.println(e.getMessage());
