@@ -30,26 +30,27 @@ class ActionControllerTest extends TestCase {
 
     @BeforeEach
     void setup() {
-        gameController = new GameController(1);
+        gameController = new GameController(1, 2, true);
         InitController initController = gameController.getInitController();
-        initController.setNumPlayers(2);
         try {
             initController.initializeGameComponents();
         } catch (EmptyBagException e) {
             Assertions.fail();
         }
-        initController.setNumPlayers(2);
         initController.addPlayer("player1");
         initController.addPlayer("player2");
         gameController.setGame();
-        gameController.initializeTurnController();
+        gameController.initializeControllers();
         try {
-            initController.setupPlayers(TowerType.BLACK, gameController.getModel().getPlayers().get(0), WizardType.values()[0]);
-            initController.setupPlayers(TowerType.WHITE, gameController.getModel().getPlayers().get(1), WizardType.values()[1]);
+            initController.setupPlayerTower(gameController.getModel().getPlayers().get(0), TowerType.BLACK);
+            initController.setupPlayerWizard(gameController.getModel().getPlayers().get(0), WizardType.values()[0]);
+            initController.setupPlayerTower(gameController.getModel().getPlayers().get(1), TowerType.WHITE);
+            initController.setupPlayerWizard(gameController.getModel().getPlayers().get(1), WizardType.values()[1]);
         } catch (WizardTypeAlreadyTakenException | TowerTypeAlreadyTakenException e) {
             Assertions.fail();
         }
-        actionController = new ActionController(gameController, gameController.getTurnController());
+        gameController.initializeControllers();
+        actionController = gameController.getActionController();
         activePlayer = gameController.getTurnController().getActivePlayer();
     }
 

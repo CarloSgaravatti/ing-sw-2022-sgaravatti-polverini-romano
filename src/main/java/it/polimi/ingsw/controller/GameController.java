@@ -12,10 +12,16 @@ public class GameController implements EventListener {
 	private final InitController initController;
 	private Game game;
 	private final int gameId;
+	private final boolean isExpertGame;
 
-	public GameController(int gameId) {
-		initController = new InitController();
+	public GameController(int gameId, int numPlayers, boolean isExpertGame) {
+		initController = new InitController(numPlayers, isExpertGame);
 		this.gameId = gameId;
+		this.isExpertGame = isExpertGame;
+	}
+
+	public boolean isExpertGame() {
+		return isExpertGame;
 	}
 
 	public void startGame() {
@@ -54,8 +60,9 @@ public class GameController implements EventListener {
 		this.game = game;
 	}
 
-	public void initializeTurnController() {
+	public void initializeControllers() {
 		turnController = new TurnController(game.getPlayers().toArray(new Player[0]), game);
+		actionController = new ActionController(this, turnController);
 	}
 
 	//TODO: event performed

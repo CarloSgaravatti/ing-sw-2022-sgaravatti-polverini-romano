@@ -151,12 +151,12 @@ public class Server implements Runnable{
         globalLobby(client, clientName); //TODO: don'y know if this is necessary
     }
 
-    public synchronized int createGame(int numPlayers) {
+    public synchronized int createGame(int numPlayers, boolean isExpertGame) {
         //creates a new game of numPlayers number of players, assigns it a unique identifier, adds it to the games map
         //and to the waiting players per game map (it also creates the corresponding empty hash map) but not to the
         //games participants map
         int id = assignNewGameId().orElse(1); //if optional is empty it means that there are no games in the server
-        gamesMap.put(id, new GameLobby(id, numPlayers));
+        gamesMap.put(id, new GameLobby(id, numPlayers, isExpertGame));
         waitingPlayersPerGameMap.put(id, new HashMap<>());
         return id;
     }

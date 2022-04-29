@@ -17,7 +17,7 @@ class TurnControllerTest extends TestCase {
 
     @BeforeEach
     void setup() {
-        gameController = new GameController(1);
+        gameController = new GameController(1, 3, true);
         Game game = new Game(null, null);
         game.setNumPlayers(3);
         game.addPlayer("player1");

@@ -21,5 +21,9 @@ public class MessageAttribute implements Serializable {
         return (String) attribute;
     }
 
+    public boolean getAsBoolean() throws ClassCastException {
+        return (Boolean) attribute;
+    }
+
     //TODO: maybe there are other getters with different type of objects
 }

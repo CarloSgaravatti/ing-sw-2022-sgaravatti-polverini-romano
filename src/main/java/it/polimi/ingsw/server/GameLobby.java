@@ -25,9 +25,9 @@ public class GameLobby {
 
     private final Object setupLock = new Object();
 
-    public GameLobby(int gameId, int numPlayers) {
+    public GameLobby(int gameId, int numPlayers, boolean isExpertGame) {
         this.gameId = gameId;
-        gameController = new GameController(gameId);
+        gameController = new GameController(gameId, numPlayers, isExpertGame);
         gameController.getInitController().setNumPlayers(numPlayers);
         this.numPlayers = numPlayers;
     }
@@ -118,6 +118,7 @@ public class GameLobby {
             setupTowersDone = gameController.getInitController().getPlayersWithTower().size() == numPlayers;
             setupWizardsDone = gameController.getInitController().getPlayersWithWizard().size() == numPlayers;
         }
+        gameController.initializeControllers();
         sendInitializations();
     }
 

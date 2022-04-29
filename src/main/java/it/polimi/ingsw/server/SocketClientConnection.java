@@ -138,7 +138,8 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         switch (messageName) {
             case "NumPlayers" -> {
                 int numPlayers = message.getMessagePayload().getAttribute("NumPlayers").getAsInt();
-                gameId = server.createGame(numPlayers);
+                boolean isExpertGame = message.getMessagePayload().getAttribute("GameRules").getAsBoolean();
+                gameId = server.createGame(numPlayers, isExpertGame);
             }
             case "GameToPlay" -> gameId = message.getMessagePayload().getAttribute("GameId").getAsInt();
             default -> {

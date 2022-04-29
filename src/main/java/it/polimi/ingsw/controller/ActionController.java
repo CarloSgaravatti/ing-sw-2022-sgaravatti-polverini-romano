@@ -19,11 +19,13 @@ public class ActionController {
 	private final TurnController turnController;
 	private final GameController gameController;
 	protected EventListenerList listenerList = new EventListenerList();
+	private final List<String> possibleActions;
 
 	public ActionController(GameController gameController, TurnController turnController) {
 		this.gameController = gameController;
 		this.turnController = turnController;
 		turnPhase = TurnPhase.FILL_CLOUDS;
+		possibleActions = new ArrayList<>();
 	}
 
 	//TODO: these methods should return a message to the client and not an exception
