@@ -8,6 +8,7 @@ import it.polimi.ingsw.messages.MessageFromClient;
 import it.polimi.ingsw.messages.MessagePayload;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.enumerations.RealmType;
+import it.polimi.ingsw.utils.JsonUtils;
 import it.polimi.ingsw.utils.Pair;
 
 import javax.swing.event.EventListenerList;
@@ -25,7 +26,7 @@ public class ActionController {
 		this.gameController = gameController;
 		this.turnController = turnController;
 		turnPhase = TurnPhase.FILL_CLOUDS;
-		possibleActions = new ArrayList<>();
+		possibleActions = JsonUtils.getRulesByDifficulty(gameController.isExpertGame());
 	}
 
 	//TODO: these methods should return a message to the client and not an exception
@@ -35,6 +36,7 @@ public class ActionController {
 			NotEnoughCoinsException, IllegalCharacterActionRequestedException, WrongTurnActionRequestedException {
 		String messageName = message.getClientMessageHeader().getMessageName();
 		MessagePayload payload = message.getMessagePayload();
+		if (!possibleActions.contains(messageName)) throw new IllegalArgumentException();
 		switch (messageName) {
 			case "PlayAssistant" -> playAssistant(payload);
 			case "MoveMotherNature" -> motherNatureMovement(payload);
