@@ -1,6 +1,7 @@
 package it.polimi.ingsw.listeners;
 
 import it.polimi.ingsw.messages.MessagePayload;
+import it.polimi.ingsw.messages.ServerMessageType;
 import it.polimi.ingsw.server.RemoteView;
 
 public class MotherNatureListener implements ModelListener {
@@ -14,5 +15,6 @@ public class MotherNatureListener implements ModelListener {
         MessagePayload messagePayload = new MessagePayload();
         messagePayload.setAttribute("initialPosition", initialPosition);
         messagePayload.setAttribute("finalPosition", finalPosition);
+        remoteView.sendMessage(messagePayload,"MotherNatureMovement", ServerMessageType.GAME_UPDATE);
     }
 }
