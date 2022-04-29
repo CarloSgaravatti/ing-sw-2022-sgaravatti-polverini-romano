@@ -1,0 +1,39 @@
+[
+  {
+    "Difficulty" : "simple",
+    "Rules" : [
+      {
+        "ActionType" : "PlayAssistant"
+      },
+      {
+        "ActionType" : "MoveStudents"
+      },
+      {
+        "ActionType" : "MoveMotherNature"
+      },
+      {
+        "ActionType" : "PickFromCloud"
+      }
+    ]
+  },
+  {
+    "Difficulty" : "hard",
+    "Rules" : [
+      {
+        "ActionType" : "PlayAssistant"
+      },
+      {
+        "ActionType" : "MoveStudents"
+      },
+      {
+        "ActionType" : "MoveMotherNature"
+      },
+      {
+        "ActionType" : "PickFromCloud"
+      },
+      {
+        "ActionType" : "PlayCharacter"
+      }
+    ]
+  }
+]
