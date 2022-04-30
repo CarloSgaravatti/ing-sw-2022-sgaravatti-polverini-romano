@@ -31,7 +31,7 @@ public class JsonUtils {
             if(jsonObject.get("Difficulty").getAsString().equals(difficultyName)){
                 JsonArray actionList = jsonObject.get("Rules").getAsJsonArray();
                 for(JsonElement jsonElement1 : actionList){ //FOR cicle for ActionType
-                    JsonObject jsonObject1 = jsonElement.getAsJsonObject();
+                    JsonObject jsonObject1 = jsonElement1.getAsJsonObject();
                     actions.add(jsonObject1.get("ActionType").getAsString());
                 }
                 return actions;

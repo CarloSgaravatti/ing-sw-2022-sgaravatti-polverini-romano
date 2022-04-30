@@ -8,6 +8,7 @@ import it.polimi.ingsw.model.effects.StudentContainer;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.enumerations.WizardType;
+import it.polimi.ingsw.model.gameConstants.GameConstants;
 
 import javax.swing.event.EventListenerList;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class Game implements ModelObserver{
 	private final static int NUM_STUDENTS = 130;
 	private int numStudents = NUM_STUDENTS; //Is this useful?
 	private final EventListenerList listenerList = new EventListenerList();
+	private final GameConstants gameConstants;
 
 	//TODO: invoke addEventListener method into InitController after making RemoteView
 	public void addEventListener(IslandListener listener) {
@@ -43,15 +45,16 @@ public class Game implements ModelObserver{
 		listenerList.add(MotherNatureListener.class,listener);
 	}
 
-	public Game(List<Island> islands, Cloud[] clouds){
+	public Game(List<Island> islands, Cloud[] clouds, GameConstants gameConstants){
+		this.gameConstants = gameConstants;
 		numPlayers = 0;
 		started = false;
 		bag = new Bag();
-		coinGeneralSupply = 20;
-		characterCards = new CharacterCard[CharacterCard.NUM_CHARACTERS_PER_GAME];
+		characterCards = new CharacterCard[gameConstants.getNumCharacterPerGame()];
 		this.islands = islands;
 		players = new ArrayList<>();
 		this.clouds = clouds;
+		coinGeneralSupply = gameConstants.getNumCoins();
 	}
 
 	public void start() {
@@ -112,9 +115,9 @@ public class Game implements ModelObserver{
 		List<Integer> charactersCreated = new ArrayList<>();
 		int characterToCreate;
 		CharacterCreator characterCreator = new CharacterCreator(this);
-		for (int i = 0; i < CharacterCard.NUM_CHARACTERS_PER_GAME; i++) {
+		for (int i = 0; i < gameConstants.getNumCharacterPerGame(); i++) {
 			do {
-				characterToCreate = rnd.nextInt(CharacterCard.NUM_CHARACTERS);
+				characterToCreate = rnd.nextInt(gameConstants.getNumCharacters());
 			} while(charactersCreated.contains(characterToCreate));
 			charactersCreated.add(characterToCreate);
 			characterCards[i] = characterCreator.getCharacter(characterToCreate + 1);
