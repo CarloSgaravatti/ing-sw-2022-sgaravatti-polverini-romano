@@ -1,0 +1,22 @@
+{
+  "TotalNumOfStudents" : "120",
+  "NumOfCharacters" : "12",
+  "NumIslands" : "12",
+  "NumOfAssistantsPerWizard" : "10",
+  "NumOfCoins" : "20",
+  "NumOfCharacterPerGame" : "3",
+  "DifferencesByNumPlayer" : [
+    {
+      "NumPlayer" : "2",
+      "NumTower" : "8",
+      "NumStudentsInEntrance" : "7",
+      "NumStudentsPerCloud" : "3"
+    },
+    {
+      "NumPlayer" : "3",
+      "NumTower" : "6",
+      "NumStudentsInEntrance" : "9",
+      "NumStudentsPerCloud" : "4"
+    }
+  ]
+}

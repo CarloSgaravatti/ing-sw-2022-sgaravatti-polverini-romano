@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 import it.polimi.ingsw.model.CharacterCreator;
+import it.polimi.ingsw.model.gameConstants.GameConstants;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -38,4 +39,30 @@ public class JsonUtils {
         }
         throw new NoSuchElementException();
     }
+
+    public static GameConstants constantsByNumPlayer(int numPlayer){
+        InputStream stream = JsonUtils.class.getResourceAsStream("/jsonConfigFiles/ConstantsByPlayers.json");
+        if (stream == null) throw new NullPointerException();
+        JsonReader jsonReader = new JsonReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+        JsonElement obj = JsonParser.parseReader(jsonReader);
+        JsonObject jsonObject = obj.getAsJsonObject();
+        GameConstants gameConstants = new GameConstants();
+        gameConstants.setNumTotalStudents( jsonObject.get("TotalNumOfStudents").getAsInt());
+        gameConstants.setNumCharacters( jsonObject.get("NumOfCharacters").getAsInt());
+        gameConstants.setNumIslands(jsonObject.get("NumIslands").getAsInt());
+        gameConstants.setNumCoins(jsonObject.get("NumOfCoins").getAsInt());
+        gameConstants.setNumCharacterPerGame(jsonObject.get("NumOfCharacterPerGame").getAsInt());
+        gameConstants.setNumAssistantsPerWizard(jsonObject.get("NumOfAssistantsPerWizard").getAsInt());
+        JsonArray jsonArray = jsonObject.get("DifferencesByNumPlayer").getAsJsonArray();
+        for(JsonElement jsonElement : jsonArray){
+            JsonObject differentConstantsByNumPlayer = jsonElement.getAsJsonObject();
+            if(differentConstantsByNumPlayer.get("NumPlayer").getAsInt() == numPlayer){
+                gameConstants.setNumTowers(differentConstantsByNumPlayer.get("NumTower").getAsInt());
+                gameConstants.setNumStudentsInEntrance(differentConstantsByNumPlayer.get("NumStudentsInEntrance").getAsInt());
+                gameConstants.setNumStudentsPerCloud(differentConstantsByNumPlayer.get("NumStudentsPerCloud").getAsInt());
+            }
+        }
+        return gameConstants;
+    }
+
 }

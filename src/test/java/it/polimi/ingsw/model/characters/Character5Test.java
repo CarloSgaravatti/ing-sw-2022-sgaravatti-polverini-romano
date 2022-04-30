@@ -7,6 +7,8 @@ import it.polimi.ingsw.model.CharacterCreator;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Island;
 import it.polimi.ingsw.model.SingleIsland;
+import it.polimi.ingsw.model.gameConstants.GameConstants;
+import it.polimi.ingsw.utils.JsonUtils;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +24,7 @@ class Character5Test extends TestCase {
     Character5 character5;
     Island island;
     Game game;
+    GameConstants gameConstants;
 
     @BeforeEach
     void setupCharacter5() {
@@ -29,7 +32,8 @@ class Character5Test extends TestCase {
         for (int i = 0; i < Island.NUM_ISLANDS; i++) {
             islands.add(new SingleIsland());
         }
-        game = new Game(islands, null);
+        gameConstants = JsonUtils.constantsByNumPlayer(3);
+        game = new Game(islands, null, gameConstants);
         for (int i = 0; i < Island.NUM_ISLANDS; i++) {
             islands.get(i).addObserver(game);
         }

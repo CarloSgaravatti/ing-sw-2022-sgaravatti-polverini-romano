@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.gameConstants.GameConstants;
+import it.polimi.ingsw.utils.JsonUtils;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,10 +13,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CharacterCreatorTest extends TestCase {
     CharacterCreator characterCreator;
+    GameConstants gameConstants;
 
     @BeforeEach
     void setup() {
-        Game game = new Game(null, null);
+        gameConstants = JsonUtils.constantsByNumPlayer(3);
+        Game game = new Game(null, null, gameConstants);
         characterCreator = new CharacterCreator(game);
         game.createAllStudentsForBag();
     }

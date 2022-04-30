@@ -5,6 +5,8 @@ import it.polimi.ingsw.model.Assistant;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.enumerations.WizardType;
+import it.polimi.ingsw.model.gameConstants.GameConstants;
+import it.polimi.ingsw.utils.JsonUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,10 +27,12 @@ class PhaseOrderTest {
     PlanningPhaseOrder planningPhaseOrder;
     ActionPhaseOrder actionPhaseOrder;
     Game game;
+    GameConstants gameConstants;
 
     @BeforeEach
     void setUp() {
-        game = new Game(null, null);
+        gameConstants = JsonUtils.constantsByNumPlayer(3);
+        game = new Game(null, null, gameConstants);
         game.setNumPlayers(3);
         for (int i = 0; i < 3; i++) {
             game.addPlayer("generic player");

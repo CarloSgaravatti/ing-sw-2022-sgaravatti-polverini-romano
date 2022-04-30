@@ -28,7 +28,6 @@ public class GameLobby {
     public GameLobby(int gameId, int numPlayers, boolean isExpertGame) {
         this.gameId = gameId;
         gameController = new GameController(gameId, numPlayers, isExpertGame);
-        gameController.getInitController().setNumPlayers(numPlayers);
         this.numPlayers = numPlayers;
     }
 

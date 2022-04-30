@@ -2,6 +2,8 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.controller.InitController;
 import it.polimi.ingsw.exceptions.EmptyBagException;
+import it.polimi.ingsw.model.gameConstants.GameConstants;
+import it.polimi.ingsw.utils.JsonUtils;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,9 +16,11 @@ import java.util.Random;
 
 class GameTest extends TestCase {
     Game game;
+    GameConstants gameConstants;
 
     @BeforeEach
     void setup() {
+        gameConstants = JsonUtils.constantsByNumPlayer(3);
         List<Island> islands = new ArrayList<>();
         Cloud[] clouds = new Cloud[3];
         for (int i = 0; i < 12; i++) {
@@ -25,13 +29,12 @@ class GameTest extends TestCase {
         for (int i = 0; i < 3; i ++) {
             clouds[i] = new Cloud(3);
         }
-        game = new Game(islands, clouds);
+        game = new Game(islands, clouds, gameConstants);
     }
 
 
     @Test
-    void addPlayerTest() {
-        Game game = new Game(null, null);
+    void addPlayerTest() { //TODO: need to check if is a correct way to test this method
         game.setNumPlayers(4);
         for(int i = 0; i < 4; i++){
             game.addPlayer("generic player");
@@ -73,7 +76,7 @@ class GameTest extends TestCase {
     @Test
     void createAllStudentsForBagTest() {
         game.createAllStudentsForBag();
-        Assertions.assertEquals(120,game.getBag().getStudent().size());
+        Assertions.assertEquals(gameConstants.getNumTotalStudents(),game.getBag().getStudent().size());
     }
 
     @Test

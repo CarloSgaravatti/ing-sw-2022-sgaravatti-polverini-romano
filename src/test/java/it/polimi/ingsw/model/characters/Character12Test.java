@@ -6,6 +6,8 @@ import it.polimi.ingsw.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
+import it.polimi.ingsw.model.gameConstants.GameConstants;
+import it.polimi.ingsw.utils.JsonUtils;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,10 +21,12 @@ import java.util.List;
 class Character12Test extends TestCase {
     Character12 character12;
     Game game;
+    GameConstants gameConstants;
 
     @BeforeEach
     void setupCharacter12() {
-        game = new Game(null, null);
+        gameConstants = JsonUtils.constantsByNumPlayer(3);
+        game = new Game(null, null, gameConstants);
         CharacterCreator characterCreator = new CharacterCreator(game);
         character12 = (Character12) characterCreator.getCharacter(12);
         game.setNumPlayers(3);

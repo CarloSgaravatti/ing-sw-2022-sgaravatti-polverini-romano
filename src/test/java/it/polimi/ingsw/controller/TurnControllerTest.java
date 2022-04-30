@@ -4,6 +4,8 @@ import it.polimi.ingsw.exceptions.NoSuchAssistantException;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.enumerations.WizardType;
+import it.polimi.ingsw.model.gameConstants.GameConstants;
+import it.polimi.ingsw.utils.JsonUtils;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,11 +16,13 @@ import java.util.ArrayList;
 class TurnControllerTest extends TestCase {
     TurnController turnController;
     GameController gameController;
+    GameConstants gameConstants;
 
     @BeforeEach
     void setup() {
+        gameConstants = JsonUtils.constantsByNumPlayer(3);
         gameController = new GameController(1, 3, true);
-        Game game = new Game(null, null);
+        Game game = new Game(null, null, gameConstants);
         game.setNumPlayers(3);
         game.addPlayer("player1");
         game.addPlayer("player2");

@@ -4,6 +4,8 @@ import it.polimi.ingsw.messages.MessageFromClient;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.exceptions.*;
 import it.polimi.ingsw.model.enumerations.*;
+import it.polimi.ingsw.model.gameConstants.GameConstants;
+import it.polimi.ingsw.utils.JsonUtils;
 
 import java.util.*;
 
@@ -14,6 +16,7 @@ public class InitController implements EventListener {
 	private int numPlayers;
 	private final boolean isExpertGame;
 	private final EventListenerList listenerList = new EventListenerList();
+	private final GameConstants gameConstants;
 
 	private final Map<String, WizardType> playersWithWizard = new HashMap<>();
 	private final Map<String, TowerType> playersWithTower = new HashMap<>();
@@ -21,6 +24,7 @@ public class InitController implements EventListener {
 	public InitController(int numPlayers, boolean isExpertGame) {
 		this.numPlayers = numPlayers;
 		this.isExpertGame = isExpertGame;
+		this.gameConstants = JsonUtils.constantsByNumPlayer(numPlayers);
 	}
 
 	public int getNumPlayers(){
@@ -33,11 +37,11 @@ public class InitController implements EventListener {
 
 	public void initializeGameComponents() throws EmptyBagException {
 		List <Island> islands = new ArrayList<>();
-		for(int i=0; i<Island.NUM_ISLANDS;i++){
+		for(int i=0; i<gameConstants.getNumIslands();i++){
 			islands.add(new SingleIsland());
 		}
 		School[] schools = new School[numPlayers]; //?
-		game = new Game(islands,createClouds());
+		game = new Game(islands,createClouds(),gameConstants);
 		game.setNumPlayers(numPlayers);
 		game.genStudentForBeginning();
 		game.setupIslands();
@@ -88,10 +92,9 @@ public class InitController implements EventListener {
 
 	//TODO: before doing this you have always to set the number of players
 	public Cloud[] createClouds(){
-		int studentsPerCloud = (numPlayers == 3) ? 4 : 3;
 		Cloud[] clouds = new Cloud[numPlayers];
 		for (int i = 0; i < numPlayers; i++) {
-			clouds[i] = new Cloud(studentsPerCloud);
+			clouds[i] = new Cloud(gameConstants.getNumStudentsPerCloud());
 		}
 		return clouds;
 	}

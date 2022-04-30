@@ -4,6 +4,8 @@ import it.polimi.ingsw.exceptions.IllegalCharacterActionRequestedException;
 import it.polimi.ingsw.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.enumerations.RealmType;
+import it.polimi.ingsw.model.gameConstants.GameConstants;
+import it.polimi.ingsw.utils.JsonUtils;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,12 +21,14 @@ class Character1Test extends TestCase {
     Game game;
     CharacterCreator characterCreator;
     Character1 character1;
+    GameConstants gameConstants;
 
     @BeforeEach
     void setup() {
+        gameConstants = JsonUtils.constantsByNumPlayer(3);
         List<Island> islands = new ArrayList<>();
         for (int i = 0; i < 12; i++) islands.add(new SingleIsland());
-        game = new Game(islands, null); //clouds are not important for this class
+        game = new Game(islands, null, gameConstants); //clouds are not important for this class
         for (int i = 0; i < 120; i++) game.getBag().insertStudent(new Student(RealmType.values()[i /24]));
         characterCreator = new CharacterCreator(game);
         character1 = (Character1) characterCreator.getCharacter(1);

@@ -5,6 +5,8 @@ import it.polimi.ingsw.model.characters.Character5;
 import it.polimi.ingsw.model.effects.NoEntryTileManager;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
+import it.polimi.ingsw.model.gameConstants.GameConstants;
+import it.polimi.ingsw.utils.JsonUtils;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +50,8 @@ class SingleIslandTest extends TestCase {
             if (i == islandToTestIndex) islands.add(islandToTest);
             else islands.add(new SingleIsland());
         }
-        Game game = new Game(islands, null); //clouds are not important
+        GameConstants gameConstants = JsonUtils.constantsByNumPlayer(2);
+        Game game = new Game(islands, null, gameConstants ); //clouds are not important
         game.setNumPlayers(2);
         game.addPlayer("player1");
         game.addPlayer("player2");
@@ -91,7 +94,8 @@ class SingleIslandTest extends TestCase {
 
     @Test
     void insertNoEntryTile() {
-        Game game = new Game(null, null);
+        GameConstants gameConstants = JsonUtils.constantsByNumPlayer(2);
+        Game game = new Game(null, null, gameConstants);
         CharacterCreator characterCreator = new CharacterCreator(game);
         NoEntryTileManager character5 = (Character5) characterCreator.getCharacter(5);
         islandToTest.insertNoEntryTile(character5);

@@ -4,6 +4,8 @@ import it.polimi.ingsw.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.Student;
+import it.polimi.ingsw.model.gameConstants.GameConstants;
+import it.polimi.ingsw.utils.JsonUtils;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +15,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 class StudentContainerTest extends TestCase {
     StudentContainer studentContainerToTest;
+    GameConstants gameConstants;
 
     @BeforeEach
     void setupStudentContainerToTest() {
@@ -43,7 +46,8 @@ class StudentContainerTest extends TestCase {
 
     @Test
     void initializationTest() {
-        Game game = new Game(null, null);
+        gameConstants = JsonUtils.constantsByNumPlayer(2);
+        Game game = new Game(null, null, gameConstants);
         game.createAllStudentsForBag();
         studentContainerToTest = new StudentContainer(4, game);
         Assertions.assertEquals(4, studentContainerToTest.getStudents().size());

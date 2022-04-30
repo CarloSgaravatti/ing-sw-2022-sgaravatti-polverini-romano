@@ -5,6 +5,8 @@ import it.polimi.ingsw.exceptions.IllegalCharacterActionRequestedException;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
+import it.polimi.ingsw.model.gameConstants.GameConstants;
+import it.polimi.ingsw.utils.JsonUtils;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,14 +20,16 @@ import java.util.List;
 class Character3Test extends TestCase {
     Character3 character3;
     Game game;
+    GameConstants gameConstants;
 
     @BeforeEach
     void setupCharacter3() {
+        gameConstants = JsonUtils.constantsByNumPlayer(3);
         List<Island> islands = new ArrayList<>();
         for (int i = 0; i < Island.NUM_ISLANDS; i++) {
             islands.add(new SingleIsland());
         }
-        game = new Game(islands, null);
+        game = new Game(islands, null, gameConstants);
         for (int i = 0; i < Island.NUM_ISLANDS; i++) {
             islands.get(i).addObserver(game);
         }
