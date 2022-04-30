@@ -1,6 +1,5 @@
 package it.polimi.ingsw.listeners;
 
-import it.polimi.ingsw.messages.ErrorMessageType;
 import it.polimi.ingsw.messages.MessagePayload;
 import it.polimi.ingsw.messages.ServerMessageType;
 import it.polimi.ingsw.model.enumerations.*;
@@ -20,4 +19,5 @@ public class SchoolListener implements ModelListener {
         remoteView.sendMessage(messagePayload,"ProfessorUpdate", ServerMessageType.GAME_UPDATE);
     }
 
+    //TODO: student in school update
 }

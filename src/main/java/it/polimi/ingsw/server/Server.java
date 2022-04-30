@@ -110,7 +110,7 @@ public class Server implements Runnable{
         //for a game and creates a new game.
         //If there are games that aren't started, server requests to client what game he wants to play or
         //if he wants to create a new game (and set the number of players)
-        ServerMessageHeader header = new ServerMessageHeader("GeneralLobby", ServerMessageType.CLIENT_SETUP);
+        ServerMessageHeader header = new ServerMessageHeader("GeneralLobby", ServerMessageType.SERVER_MESSAGE);
         MessagePayload payload = new MessagePayload();
         if (waitingPlayersPerGameMap.isEmpty()) {
             payload.setAttribute("NotStartedGames", 0);

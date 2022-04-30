@@ -13,7 +13,7 @@ import javax.swing.event.EventListenerList;
 
 public class InitController implements EventListener {
 	private Game game;
-	private int numPlayers;
+	private final int numPlayers;
 	private final boolean isExpertGame;
 	private final EventListenerList listenerList = new EventListenerList();
 	private final GameConstants gameConstants;
@@ -46,7 +46,7 @@ public class InitController implements EventListener {
 		game.genStudentForBeginning();
 		game.setupIslands();
 		game.createAllStudentsForBag();
-		if (isExpertGame) game.createCharacterCard();
+		if (isExpertGame) game.createCharacterCards();
 		//setupSchools(); At this time it can't be done (players don't have schools)
 	}
 
@@ -56,7 +56,7 @@ public class InitController implements EventListener {
 
 	public void setupPlayerTower(Player player, TowerType tower) throws TowerTypeAlreadyTakenException {
 		if (player.getSchool() != null) return; //TODO: player has already made the choice (exception?)
-		int towerPerSchool = (numPlayers == 3) ? 6 : 8;
+		int towerPerSchool = gameConstants.getNumTowers();
 		for(int j = 0; j < numPlayers;j++){
 			School school = game.getPlayers().get(j).getSchool();
 			if(school != null && school.getTowerType() == tower){
@@ -82,9 +82,9 @@ public class InitController implements EventListener {
 
 	//TODO: we can move this in the setupPlayerTower method
 	public void setupSchools() throws EmptyBagException {
-		for(int i = 0; i< game.getNumPlayers(); i++){
-			int studentPerSchool = (numPlayers == 3) ? 9 : 7; //Can be parametric
-			for(int j=0; j<studentPerSchool;j++){
+		for(int i = 0; i < game.getNumPlayers(); i++){
+			int studentPerSchool = gameConstants.getNumStudentsInEntrance();
+			for(int j = 0; j < studentPerSchool;j++){
 				game.getPlayers().get(i).getSchool().insertEntrance(game.getBag().pickStudent());
 			}
 		}
@@ -117,8 +117,8 @@ public class InitController implements EventListener {
 		return playersWithTower;
 	}
 
-	public void eventPerformed(MessageFromClient message)
-			throws WizardTypeAlreadyTakenException, TowerTypeAlreadyTakenException {
+	public void eventPerformed(MessageFromClient message) throws WizardTypeAlreadyTakenException,
+			TowerTypeAlreadyTakenException, IllegalArgumentException {
 		String messageName = message.getClientMessageHeader().getMessageName();
 		switch (messageName) {
 			case "TowerChoice" -> {
@@ -131,7 +131,7 @@ public class InitController implements EventListener {
 				Player player = game.getPlayerByNickname(message.getClientMessageHeader().getNicknameSender());
 				setupPlayerWizard(player, wizard);
 			}
-			//TODO: default (exception?)
+			default -> throw new IllegalArgumentException();
 		}
 	}
 

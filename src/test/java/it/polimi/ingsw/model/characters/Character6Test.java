@@ -2,17 +2,12 @@ package it.polimi.ingsw.model.characters;
 
 import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
 import it.polimi.ingsw.model.CharacterCreator;
-import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.effects.NoTowerInfluenceStrategy;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class Character6Test extends TestCase {
     Character6 character6;

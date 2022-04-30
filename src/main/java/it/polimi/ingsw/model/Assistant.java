@@ -10,7 +10,6 @@ public class Assistant {
 	private final WizardType wizard;
 	private final int cardValue;
 	private final int motherNatureMovement;
-	public static final int NUM_ASSISTANTS = 10;
 
 	/**
 	 * Creates an assistant with the specified card value and mother nature movement

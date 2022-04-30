@@ -60,7 +60,7 @@ public class GameLobby {
             //are reading messages to update setup choices.
             new Thread(this::setupGame).start();
         } else {
-            header = new ServerMessageHeader("GameLobby", ServerMessageType.CLIENT_SETUP);
+            header = new ServerMessageHeader("GameLobby", ServerMessageType.SERVER_MESSAGE);
             payload.setAttribute("GameNumPlayers", numPlayers);
             payload.setAttribute("WaitingPlayers", participants.size());
             //The last attribute can be replaced with players nicknames

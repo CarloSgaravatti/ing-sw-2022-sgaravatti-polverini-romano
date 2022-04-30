@@ -2,6 +2,7 @@ package it.polimi.ingsw.model.modelObservables;
 
 import it.polimi.ingsw.model.ModelObserver;
 import it.polimi.ingsw.model.enumerations.RealmType;
+import it.polimi.ingsw.model.School;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
  * observed by a ModelObserver. The observer is notified whenever a student is putted on a school
  * dining room of a player, in order to update the professor presence at the professor table.
  * @see ModelObserver
- * @see it.polimi.ingsw.model.School
+ * @see School
  */
 public abstract class ProfessorPresenceObservable {
     /**

@@ -6,6 +6,8 @@ import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
+import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.model.School;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

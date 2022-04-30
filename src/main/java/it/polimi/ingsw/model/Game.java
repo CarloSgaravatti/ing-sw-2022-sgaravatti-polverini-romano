@@ -1,6 +1,7 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.EmptyBagException;
+import it.polimi.ingsw.listeners.EndGameListener;
 import it.polimi.ingsw.listeners.IslandListener;
 import it.polimi.ingsw.listeners.MotherNatureListener;
 import it.polimi.ingsw.listeners.SchoolListener;
@@ -11,11 +12,10 @@ import it.polimi.ingsw.model.enumerations.WizardType;
 import it.polimi.ingsw.model.gameConstants.GameConstants;
 
 import javax.swing.event.EventListenerList;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
+//TODO: this class is becoming way too big
 public class Game implements ModelObserver{
 	private boolean started;
 	private final List<Player> players;
@@ -28,9 +28,21 @@ public class Game implements ModelObserver{
 	private final CharacterCard[] characterCards;
 	private int indexActivePlayer;
 	private final static int NUM_STUDENTS = 130;
-	private int numStudents = NUM_STUDENTS; //Is this useful?
 	private final EventListenerList listenerList = new EventListenerList();
 	private final GameConstants gameConstants;
+	private boolean isLastRound = false;
+
+	public Game(List<Island> islands, Cloud[] clouds, GameConstants gameConstants){
+		this.gameConstants = gameConstants;
+		numPlayers = 0;
+		started = false;
+		bag = new Bag();
+		characterCards = new CharacterCard[gameConstants.getNumCharacterPerGame()];
+		this.islands = islands;
+		players = new ArrayList<>();
+		this.clouds = clouds;
+		coinGeneralSupply = gameConstants.getNumCoins();
+	}
 
 	//TODO: invoke addEventListener method into InitController after making RemoteView
 	public void addEventListener(IslandListener listener) {
@@ -45,16 +57,8 @@ public class Game implements ModelObserver{
 		listenerList.add(MotherNatureListener.class,listener);
 	}
 
-	public Game(List<Island> islands, Cloud[] clouds, GameConstants gameConstants){
-		this.gameConstants = gameConstants;
-		numPlayers = 0;
-		started = false;
-		bag = new Bag();
-		characterCards = new CharacterCard[gameConstants.getNumCharacterPerGame()];
-		this.islands = islands;
-		players = new ArrayList<>();
-		this.clouds = clouds;
-		coinGeneralSupply = gameConstants.getNumCoins();
+	public void addEventListener(EndGameListener listener) {
+		listenerList.add(EndGameListener.class, listener);
 	}
 
 	public void start() {
@@ -83,7 +87,7 @@ public class Game implements ModelObserver{
 	}
 
 	public void moveMotherNature(int movement){
-		int i=0;
+		int i = 0;
 		while(!islands.get(i).isMotherNaturePresent() && i<islands.size()) {
 			i++;
 		}
@@ -91,7 +95,7 @@ public class Game implements ModelObserver{
 		int initialPosition = i;
 		i = (i + movement) % islands.size();
 		islands.get(i).setMotherNaturePresent(true);
-		fireMyEvent(initialPosition+1,i+1);
+		fireMyEvent(initialPosition+1,i+1); //why +1 ?
 	}
 
 	public Cloud[] getClouds (){
@@ -110,7 +114,7 @@ public class Game implements ModelObserver{
 		return islands;
 	}
 
-	public void createCharacterCard() {
+	public void createCharacterCards() {
 		Random rnd = new Random();
 		List<Integer> charactersCreated = new ArrayList<>();
 		int characterToCreate;
@@ -148,19 +152,18 @@ public class Game implements ModelObserver{
 	}
 
 	public void createAllStudentsForBag(){
+		int numPerType = gameConstants.getNumTotalStudents() / RealmType.values().length;
 		for(RealmType r: RealmType.values()){
-			for(int i = 0; i<24;i++){
+			for(int i = 0; i < numPerType;i++){
 				bag.insertStudent(new Student(r));
-				numStudents--; //Not needed
 			}
 		}
 	}
 
 	public void genStudentForBeginning(){
-		for(int i = 0; i< 2; i++) {
+		for(int i = 0; i < 2; i++) {
 			for (RealmType r : RealmType.values()) {
 				bag.insertStudent(new Student(r));
-				numStudents--; //Not needed
 			}
 		}
 	}
@@ -176,8 +179,8 @@ public class Game implements ModelObserver{
 
 	public void assignDeck(Player player, WizardType type){
 		List<Assistant> assistants = new ArrayList<>();
-		int j=0;
-		for(int i = 1; i <= 5; i++){
+		int j = 0;
+		for(int i = 1; i <= gameConstants.getNumAssistantsPerWizard() / 2; i++){
 			j++;
 			assistants.add(new Assistant(j,i,type));
 			j++;
@@ -303,38 +306,82 @@ public class Game implements ModelObserver{
 
 	public void setupIslands() throws EmptyBagException {
 		Random rnd = new Random();
-		int indexOfMotherNature = rnd.nextInt(Island.NUM_ISLANDS);
+		int numIslands = gameConstants.getNumIslands();
+		int indexOfMotherNature = rnd.nextInt(numIslands);
 		islands.get(indexOfMotherNature).setMotherNaturePresent(true);
-		for(int i = 0; i < Island.NUM_ISLANDS;i++){
+		for(int i = 0; i < numIslands;i++){
 			islands.get(i).addObserver(this);
-			if(i != (indexOfMotherNature+(Island.NUM_ISLANDS/2))%Island.NUM_ISLANDS  && i != indexOfMotherNature) {
+			if(i != (indexOfMotherNature + (numIslands / 2)) % numIslands  && i != indexOfMotherNature) {
 				islands.get(i).addStudent(bag.pickStudent());
 			}
 		}
 	}
 
-	void fireMyEvent(TowerType type, int indexIslands) {
+	protected void fireMyEvent(TowerType type, int indexIslands) {
 		for(IslandListener event : listenerList.getListeners(IslandListener.class)){
 			event.eventPerformed(type, indexIslands);
 		}
 	}
 
-	void fireMyEvent(List<Integer> islandIndexList ) {
+	protected void fireMyEvent(List<Integer> islandIndexList ) {
 		for(IslandListener event : listenerList.getListeners(IslandListener.class)){
 			event.eventPerformed(islandIndexList);
 		}
 	}
 
-	void fireMyEvent(RealmType type, String namePlayer){
+	protected void fireMyEvent(RealmType type, String namePlayer){
 		for(SchoolListener event : listenerList.getListeners(SchoolListener.class)){
 			event.eventPerformed(type,namePlayer);
 		}
 	}
 
-	void fireMyEvent(int initialPosition, int finalPosition){
+	protected void fireMyEvent(int initialPosition, int finalPosition){
 		for(MotherNatureListener event : listenerList.getListeners(MotherNatureListener.class)){
 			event.eventPerformed(initialPosition,finalPosition);
 		}
 	}
 
+	public GameConstants getGameConstants() {
+		return gameConstants;
+	}
+
+	protected List<Player> onGameEndEvent() {
+		List<Player> winnersOrTies = new ArrayList<>();
+		checkPlayerZeroTower().ifPresent(winnersOrTies::add);
+		if (!winnersOrTies.isEmpty()) return winnersOrTies;
+		winnersOrTies = getPlayersWithLessTowers();
+		if (winnersOrTies.size() == 1) return winnersOrTies;
+		return getPlayersWithMostProfessors(winnersOrTies);
+	}
+
+	private Optional<Player> checkPlayerZeroTower() {
+		for (Player p: players) {
+			if (p.getSchool().getNumTowers() == 0) {
+				return Optional.of(p);
+			}
+		}
+		return Optional.empty();
+	}
+
+	private List<Player> getPlayersWithLessTowers() {
+		int minTowers = players.stream().map(player -> player.getSchool().getNumTowers())
+				.min(Comparator.comparingInt(n -> n)).orElseGet(gameConstants::getNumTowers);
+		return players.stream().filter(player -> player.getSchool().getNumTowers() == minTowers)
+				.collect(Collectors.toList());
+	}
+
+	private List<Player> getPlayersWithMostProfessors(List<Player> players) {
+		int maxProfessors = players.stream().map(player -> player.getSchool().getProfessorNumber())
+				.max(Comparator.comparingInt(n -> n)).orElse(0);
+		return players.stream().filter(player -> player.getSchool().getProfessorNumber() == maxProfessors)
+				.collect(Collectors.toList());
+	}
+
+	public boolean isLastRound() {
+		return isLastRound;
+	}
+
+	public void setLastRound(boolean isLastRound) {
+		this.isLastRound = isLastRound;
+	}
 }

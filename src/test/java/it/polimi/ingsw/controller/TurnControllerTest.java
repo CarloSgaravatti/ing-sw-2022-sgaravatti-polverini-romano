@@ -41,14 +41,14 @@ class TurnControllerTest extends TestCase {
     }
 
     @Test
-    void endTurnWithChangePhaseTest() {
+    void endTurnWithoutChangePhaseTest() {
         Assertions.assertEquals(RoundPhase.PLANNING, turnController.getCurrentPhase());
         turnController.endTurn();
         Assertions.assertEquals(RoundPhase.PLANNING, turnController.getCurrentPhase());
     }
 
     @Test
-    void endTurnWithoutChangePhaseTest() {
+    void endTurnWithChangePhaseTest() {
         Assertions.assertEquals(RoundPhase.PLANNING, turnController.getCurrentPhase());
         turnController.endTurn();
         turnController.endTurn();

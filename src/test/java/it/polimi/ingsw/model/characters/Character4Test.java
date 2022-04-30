@@ -9,8 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class Character4Test extends TestCase {
     Character4 character4;
     Player player;

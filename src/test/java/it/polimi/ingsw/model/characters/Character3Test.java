@@ -26,11 +26,11 @@ class Character3Test extends TestCase {
     void setupCharacter3() {
         gameConstants = JsonUtils.constantsByNumPlayer(3);
         List<Island> islands = new ArrayList<>();
-        for (int i = 0; i < Island.NUM_ISLANDS; i++) {
+        for (int i = 0; i < gameConstants.getNumIslands(); i++) {
             islands.add(new SingleIsland());
         }
         game = new Game(islands, null, gameConstants);
-        for (int i = 0; i < Island.NUM_ISLANDS; i++) {
+        for (int i = 0; i < gameConstants.getNumIslands(); i++) {
             islands.get(i).addObserver(game);
         }
         CharacterCreator characterCreator = new CharacterCreator(game);

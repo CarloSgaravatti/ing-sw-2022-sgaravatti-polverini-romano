@@ -24,8 +24,8 @@ public abstract class View {
         controllerListeners.add(GameController.class, gameController);
     }
 
-    protected void fireSetupMessageEvent(MessageFromClient message)
-            throws WizardTypeAlreadyTakenException, TowerTypeAlreadyTakenException {
+    protected void fireSetupMessageEvent(MessageFromClient message) throws WizardTypeAlreadyTakenException,
+            TowerTypeAlreadyTakenException, IllegalArgumentException {
         for (InitController initController: controllerListeners.getListeners(InitController.class)) {
             initController.eventPerformed(message);
         }

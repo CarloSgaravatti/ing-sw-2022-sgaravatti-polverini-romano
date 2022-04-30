@@ -4,16 +4,9 @@ import it.polimi.ingsw.model.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 public class ActionPhaseOrder implements PhaseOrder {
-	private final List<Player> players;
-
-	public ActionPhaseOrder (Game game){
-		players = game.getPlayers();
-	}
-
 	public Player[] calculateOrder(Player[] players) {
 		List<Player> order = new ArrayList<>(Arrays.asList(players));
 		//Comparator.comparingInt is equal to do
@@ -29,5 +22,4 @@ public class ActionPhaseOrder implements PhaseOrder {
 		});
 		return order.toArray(new Player[0]);
 	}
-
 }

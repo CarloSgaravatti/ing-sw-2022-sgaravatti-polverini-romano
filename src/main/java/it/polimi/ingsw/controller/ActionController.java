@@ -1,9 +1,8 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.exceptions.*;
-import it.polimi.ingsw.listeners.CharacterListener;
-import it.polimi.ingsw.listeners.CloudListener;
-import it.polimi.ingsw.listeners.PlayerListener;
+import it.polimi.ingsw.listeners.*;
+import it.polimi.ingsw.messages.ErrorMessageType;
 import it.polimi.ingsw.messages.MessageFromClient;
 import it.polimi.ingsw.messages.MessagePayload;
 import it.polimi.ingsw.model.*;
@@ -65,6 +64,9 @@ public class ActionController {
 			throw new AssistantAlreadyPlayedException();
 		setTurnPhase(TurnPhase.TURN_ENDED); //planning phase is ended for this player
 		fireMyEventAssistant(assistantIdx); //assistantIdx è l'indice dell'assistant?
+		if (turnController.getActivePlayer().getAssistants().size() == 0) {
+			gameController.getModel().setLastRound(true);
+		}
 	}
 
 	public void motherNatureMovement(MessagePayload payload) throws IllegalArgumentException,
@@ -138,15 +140,25 @@ public class ActionController {
 			args.add((String) payloadArg);
 		}
 		if (turnController.getActivePlayer().getTurnEffect().isCharacterEffectConsumed()) throw new IllegalArgumentException();
-		int characterId = Integer.parseInt(args.get(0));
+		int characterId = payload.getAttribute("CharacterId").getAsInt();
 		CharacterCard characterCard = gameController.getModel().getCharacterById(characterId);
 		if (characterCard == null) throw new IllegalArgumentException();
 		characterCard.useEffect(args.subList(1, args.size()));
 	}
 
-	//Is this useful?
-	public void chooseCloudPickStudents(List<String> args) {
-
+	public void refillClouds() {
+		Cloud[] clouds = gameController.getModel().getClouds();
+		try {
+			for (Cloud c : clouds) {
+				Student[] students = new Student[gameController.getModel().getGameConstants().getNumStudentsPerCloud()];
+				for (int i = 0; i < students.length; i++) {
+					students[i] = gameController.getModel().getBag().pickStudent();
+				}
+				c.insertStudents(students);
+			}
+		}  catch (EmptyBagException | StudentsNumberInCloudException e) {
+			gameController.getModel().setLastRound(true);
+		}
 	}
 
 	private boolean isValidIsland(int islandIndex) {
@@ -158,27 +170,50 @@ public class ActionController {
 		this.turnPhase = turnPhase;
 	}
 
-	//TODO: invoke addEventListner method into InitController after making RemoteView
+	//TODO: invoke addEventListener method into InitController after making RemoteView
 	public void addEventListener(CloudListener listener) {
 		listenerList.add(CloudListener.class, listener);
 	}
-    public void addEventListener(CharacterListener listener) { listenerList.add(CharacterListener.class, listener);}
-	public void addEventListener(PlayerListener listener) {listenerList.add(PlayerListener.class, listener);}
-	void fireMyEvent(int cloudIndex, String namePlayer) {
+
+    public void addEventListener(CharacterListener listener) {
+		listenerList.add(CharacterListener.class, listener);
+	}
+
+	public void addEventListener(PlayerListener listener) {
+		listenerList.add(PlayerListener.class, listener);
+	}
+
+	public void fireMyEvent(int cloudIndex, String namePlayer) {
 		for(CloudListener event : listenerList.getListeners(CloudListener.class)){
-			event.eventPerformed(cloudIndex,namePlayer);
+			event.eventPerformed(cloudIndex, namePlayer);
 		}
 	}
 
-	void fireMyEventCharacter(int characterId, String namePlayer) {
+	public void fireMyEventCharacter(int characterId, String namePlayer) {
 		for(CharacterListener event : listenerList.getListeners(CharacterListener.class)) {
 			event.eventPerformed(characterId, namePlayer);
 		}
 	}
-	void fireMyEventAssistant(int assistantIdx) {
+
+	public void fireMyEventAssistant(int assistantIdx) {
 		for (PlayerListener event : listenerList.getListeners(PlayerListener.class)) {
-			event.eventPerformedAssistant((assistantIdx));
+			event.eventPerformedAssistant(assistantIdx, turnController.getActivePlayer().getNickName());
 		}
 	}
 
+	public boolean checkIfTurnIsEnded() {
+		return turnPhase == TurnPhase.TURN_ENDED;
+	}
+
+	//-------------------------------------------------------
+	//Not sure of doing these things
+	public void addListener(ErrorDispatcher errorListener) {
+		listenerList.add(ErrorDispatcher.class, errorListener);
+	}
+
+	public void fireErrorEvent(ErrorMessageType error, String nickname) {
+		for (ErrorDispatcher errorDispatcher: listenerList.getListeners(ErrorDispatcher.class)) {
+			errorDispatcher.onErrorEvent(error, nickname);
+		}
+	}
 }

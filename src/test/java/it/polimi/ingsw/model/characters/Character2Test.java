@@ -1,6 +1,5 @@
 package it.polimi.ingsw.model.characters;
 
-import it.polimi.ingsw.exceptions.IllegalCharacterActionRequestedException;
 import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
 import it.polimi.ingsw.model.CharacterCreator;
 import it.polimi.ingsw.model.Player;
@@ -8,8 +7,6 @@ import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class Character2Test extends TestCase {
     Character2 character2;

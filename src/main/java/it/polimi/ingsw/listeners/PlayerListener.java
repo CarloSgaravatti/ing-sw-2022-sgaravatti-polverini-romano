@@ -1,6 +1,5 @@
 package it.polimi.ingsw.listeners;
 
-import it.polimi.ingsw.messages.ClientMessageType;
 import it.polimi.ingsw.messages.MessagePayload;
 import it.polimi.ingsw.messages.ServerMessageType;
 import it.polimi.ingsw.model.enumerations.*;
@@ -26,8 +25,11 @@ public class PlayerListener implements ModelListener {
         messagePayload.setAttribute("playerName", playerName);
         remoteView.sendMessage(messagePayload,"WizardTaken", ServerMessageType.GAME_SETUP);
     }
-    public void eventPerformedAssistant(int assistantIdx) {
+
+    public void eventPerformedAssistant(int assistantIdx, String playerName) {
         MessagePayload messagePayload = new MessagePayload();
         messagePayload.setAttribute("assistantId", assistantIdx);
+        messagePayload.setAttribute("playerName", playerName);
+        remoteView.sendMessage(messagePayload,"AssistantPlayed", ServerMessageType.GAME_SETUP);
     }
 }

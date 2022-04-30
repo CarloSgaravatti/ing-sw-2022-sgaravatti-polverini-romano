@@ -6,9 +6,12 @@ import it.polimi.ingsw.messages.ClientMessageType;
 import it.polimi.ingsw.messages.MessageFromClient;
 import it.polimi.ingsw.messages.MessagePayload;
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.CharacterCard;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.enumerations.WizardType;
+import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.model.School;
 import it.polimi.ingsw.utils.Pair;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
@@ -63,7 +66,6 @@ class ActionControllerTest extends TestCase {
         payload.setAttribute("Assistant", 3);
         MessageFromClient message = new MessageFromClient(header, payload);
         try {
-            //actionController.doAction("Assistant 3");
             actionController.doAction(message);
         } catch (Exception e) {
             Assertions.fail();
@@ -91,7 +93,6 @@ class ActionControllerTest extends TestCase {
         payload.setAttribute("StudentsToIslands", toIslands);
         MessageFromClient message = new MessageFromClient(header, payload);
         try {
-            //actionController.doAction("Students Y D B D G D");
             actionController.doAction(message);
         } catch (Exception e) {
             e.printStackTrace();
@@ -125,7 +126,6 @@ class ActionControllerTest extends TestCase {
         payload.setAttribute("StudentsToDR", toDiningRoom);
         payload.setAttribute("StudentsToIslands", toIslands);
         try {
-            //actionController.doAction("Students Y D Y D Y I " + islandIndex);
             actionController.doAction(message);
         } catch (Exception e) {
             e.printStackTrace();
@@ -151,7 +151,6 @@ class ActionControllerTest extends TestCase {
         payload.setAttribute("MotherNature", 3);
         MessageFromClient message = new MessageFromClient(header, payload);
         try {
-            //actionController.doAction("MotherNature 3");
             actionController.doAction(message);
         } catch (Exception e) {
             Assertions.fail();
@@ -178,7 +177,6 @@ class ActionControllerTest extends TestCase {
         payload.setAttribute("Cloud", 1);
         MessageFromClient message = new MessageFromClient(header, payload);
         try {
-            //actionController.doAction("Cloud 1");
             actionController.doAction(message);
         } catch (Exception e) {
             Assertions.fail();
@@ -199,7 +197,6 @@ class ActionControllerTest extends TestCase {
         payload.setAttribute("Arguments", arguments);
         MessageFromClient message = new MessageFromClient(header, payload);
         try {
-            //actionController.doAction("PlayCharacter " + characterToPlay);
             actionController.doAction(message);
         } catch (Exception e) {
             e.printStackTrace();
@@ -209,8 +206,21 @@ class ActionControllerTest extends TestCase {
     }
 
     @Test
-    //TODO: one test for all characters that have an active effect?
-    void characterEffect() {
-
+    void notValidCharacterEffectTest() {
+        CharacterCard characterCard = gameController.getModel().getCharacterCards()[new Random().nextInt(3)];
+        int characterToPlay = characterCard.getId();
+        List<String> arguments = new ArrayList<>();
+        arguments.add("Y"); //totally random argument, because it is not important, but arguments must be not empty
+        ClientMessageHeader header =
+                new ClientMessageHeader("CharacterEffect", activePlayer.getNickName(), ClientMessageType.ACTION);
+        MessagePayload payload = new MessagePayload();
+        payload.setAttribute("CharacterId", characterToPlay);
+        payload.setAttribute("Arguments", arguments);
+        MessageFromClient message = new MessageFromClient(header, payload);
+        activePlayer.getTurnEffect().setCharacterEffectConsumed(false);
+        //Character is already consumed, so it cannot be played anymore
+        Assertions.assertThrows(IllegalArgumentException.class, () -> actionController.doAction(message));
     }
+
+    //TODO: one test for all characters that have an active effect?
 }

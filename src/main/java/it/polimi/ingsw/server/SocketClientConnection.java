@@ -74,7 +74,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
     }
 
     public synchronized void closeConnection() {
-        ServerMessageHeader header = new ServerMessageHeader("ConnectionClosed", ServerMessageType.CLIENT_SETUP);
+        ServerMessageHeader header = new ServerMessageHeader("ConnectionClosed", ServerMessageType.SERVER_MESSAGE);
         MessageFromServer message = new MessageFromServer(header, null);
         send(message);
         try {
@@ -110,7 +110,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
     }
 
     public void initializeClient() throws IOException, ClassNotFoundException, ClassCastException {
-        ServerMessageHeader header = new ServerMessageHeader("NicknameRequest", ServerMessageType.CLIENT_SETUP);
+        ServerMessageHeader header = new ServerMessageHeader("NicknameRequest", ServerMessageType.SERVER_MESSAGE);
         MessagePayload payload = new MessagePayload();
         String messageInfo = "Welcome to Eriantys!\nInsert a username";
         payload.setAttribute("MessageInfo", messageInfo);
@@ -160,7 +160,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
     }
 
     public void sendError(ErrorMessageType error) {
-        ServerMessageHeader header = new ServerMessageHeader("Error", ServerMessageType.CLIENT_SETUP);
+        ServerMessageHeader header = new ServerMessageHeader("Error", ServerMessageType.SERVER_MESSAGE);
         MessagePayload payload = new MessagePayload();
         payload.setAttribute("ErrorType", error);
         asyncSend(new MessageFromServer(header, payload));

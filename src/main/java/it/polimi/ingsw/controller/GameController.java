@@ -1,10 +1,16 @@
 package it.polimi.ingsw.controller;
 
+import it.polimi.ingsw.listeners.*;
+import it.polimi.ingsw.messages.ErrorMessageType;
 import it.polimi.ingsw.messages.MessageFromClient;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.server.GameLobby;
+import it.polimi.ingsw.server.RemoteView;
 
+import javax.swing.event.EventListenerList;
 import java.util.EventListener;
+import java.util.List;
 
 public class GameController implements EventListener {
 	private TurnController turnController;
@@ -13,6 +19,7 @@ public class GameController implements EventListener {
 	private Game game;
 	private final int gameId;
 	private final boolean isExpertGame;
+	private final EventListenerList listenerList = new EventListenerList();
 
 	public GameController(int gameId, int numPlayers, boolean isExpertGame) {
 		initController = new InitController(numPlayers, isExpertGame);
@@ -67,25 +74,69 @@ public class GameController implements EventListener {
 
 	//TODO: event performed
 	//TODO: set index active player in game
-	public void eventPerformed(MessageFromClient message) {
+	public synchronized void eventPerformed(MessageFromClient message) {
 		//Message have to be ACTION
 		String nicknamePlayer = message.getClientMessageHeader().getNicknameSender();
 		if (!nicknamePlayer.equals(turnController.getActivePlayer().getNickName())) {
-			//TODO: error message (invalid action request)
-			return;
+			fireErrorEvent(ErrorMessageType.ILLEGAL_TURN, nicknamePlayer);
 		}
 		//Message start turn?
-		if (message.getClientMessageHeader().getMessageName().equals("EndTurn")) {
-			turnController.endTurn();
+		else if (message.getClientMessageHeader().getMessageName().equals("EndTurn")) {
+			boolean isTurnEnded = actionController.checkIfTurnIsEnded();
+			if (!isTurnEnded) {
+				fireErrorEvent(ErrorMessageType.TURN_NOT_FINISHED, nicknamePlayer);
+				return;
+			}
+			boolean isPhaseEnded = turnController.endTurn();
 			game.setIndexActivePlayer(turnController.getActivePlayer());
-			//TODO: notify new turn or round
-			return;
+			if (isPhaseEnded) {
+				if (turnController.getCurrentPhase() == RoundPhase.ACTION) {
+					actionController.refillClouds();
+				}
+				//TODO: Notify change phase (if is last round or game is finished notify also these things)
+				return;
+			}
+			//TODO: notify new turn
+		} else {
+			try {
+				actionController.doAction(message);
+			} catch (Exception e) {
+				//TODO: decide if it has to handled here or directly in the action controller class;
+				//	the exception will be transformed in an error message
+			}
 		}
-		try {
-			actionController.doAction(message);
-		} catch (Exception e) {
-			//TODO: decide if it has to handled here or directly in the action controller class;
-			//	the exception will be transformed in an error message
+	}
+
+	public void addListener(ErrorDispatcher errorListener) {
+		listenerList.add(ErrorDispatcher.class, errorListener);
+	}
+
+	public void fireErrorEvent(ErrorMessageType error, String nickname) {
+		for (ErrorDispatcher errorDispatcher: listenerList.getListeners(ErrorDispatcher.class)) {
+			errorDispatcher.onErrorEvent(error, nickname);
 		}
+	}
+
+	public void createListeners(List<RemoteView> views) {
+		ErrorDispatcher errorDispatcher = new ErrorDispatcher(views);
+		EndGameListener endGameListener = new EndGameListener(views);
+		addListener(errorDispatcher);
+		addListener(endGameListener);
+		actionController.addListener(errorDispatcher);
+		game.addEventListener(endGameListener);
+		for(RemoteView view: views) {
+			PlayerListener playerListener = new PlayerListener(view);
+			initController.addEventListener(playerListener);
+			actionController.addEventListener(playerListener);
+			actionController.addEventListener(new CloudListener(view));
+			actionController.addEventListener(new CharacterListener(view));
+			game.addEventListener(new IslandListener(view));
+			game.addEventListener(new SchoolListener(view));
+			game.addEventListener(new MotherNatureListener(view));
+		}
+	}
+
+	public void addListener(EndGameListener endGameListener) {
+		listenerList.add(EndGameListener.class, endGameListener);
 	}
 }

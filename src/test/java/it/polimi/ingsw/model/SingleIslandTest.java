@@ -45,12 +45,12 @@ class SingleIslandTest extends TestCase {
     Game setupGameSimulationEnvironment(int player1Students, int player2Students) {
         List<Island> islands = new ArrayList<>();
         Random rnd = new Random();
-        int islandToTestIndex = rnd.nextInt(Island.NUM_ISLANDS);
-        for (int i = 0; i < Island.NUM_ISLANDS; i++) {
+        GameConstants gameConstants = JsonUtils.constantsByNumPlayer(2);
+        int islandToTestIndex = rnd.nextInt(gameConstants.getNumIslands());
+        for (int i = 0; i < gameConstants.getNumIslands(); i++) {
             if (i == islandToTestIndex) islands.add(islandToTest);
             else islands.add(new SingleIsland());
         }
-        GameConstants gameConstants = JsonUtils.constantsByNumPlayer(2);
         Game game = new Game(islands, null, gameConstants ); //clouds are not important
         game.setNumPlayers(2);
         game.addPlayer("player1");

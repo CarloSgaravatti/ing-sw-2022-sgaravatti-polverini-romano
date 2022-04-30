@@ -18,7 +18,7 @@ public class MessageHandler {
     public void handleMessage(MessageFromServer message) {
         ServerMessageType messageType = message.getServerMessageHeader().getMessageType();
         switch (messageType) {
-            case CLIENT_SETUP -> handleSetupMessage(message);
+            case SERVER_MESSAGE -> handleSetupMessage(message);
             case GAME_UPDATE -> handleGameUpdateMessage(message);
             case GAME_SETUP -> handleGameSetupMessage(message);
         }

@@ -220,4 +220,16 @@ public class School extends ProfessorPresenceObservable {
 	public int getStudentsEntrance (RealmType studentType) {
 		return entrance[studentType.ordinal()];
 	}
+
+	/**
+	 * Returns the number of professor that the professor table of this school have
+	 * @return the number of professor owned by this school
+	 */
+	protected int getProfessorNumber() {
+		int numProfessor = 0;
+		for (int i = 0; i < RealmType.values().length; i++) {
+			if (isProfessorPresent(RealmType.values()[i])) numProfessor++;
+		}
+		return numProfessor;
+	}
 }

@@ -20,7 +20,7 @@ public class TurnController {
 		currentPhase = RoundPhase.PLANNING;
 		phaseOrderStrategy = new PhaseOrder[RoundPhase.values().length];
 		phaseOrderStrategy[0] = new PlanningPhaseOrder(game);
-		phaseOrderStrategy[1] = new ActionPhaseOrder(game);
+		phaseOrderStrategy[1] = new ActionPhaseOrder();
 		currPhaseOrder = phaseOrderStrategy[0];
 	}
 
@@ -34,7 +34,7 @@ public class TurnController {
 		currentPhase = RoundPhase.values()[(currentPhase.ordinal() + 1) % RoundPhase.values().length];
 	}
 
-	public void endTurn() {
+	public boolean endTurn() {
 		if (activePlayerIndex == playerOrder.length - 1) {
 			if (currentPhase == RoundPhase.PLANNING) {
 				currPhaseOrder = phaseOrderStrategy[1];
@@ -43,9 +43,10 @@ public class TurnController {
 			}
 			changePhase();
 			orderCalculated = false;
-			return;
+			return true;
 		}
 		activePlayerIndex++;
+		return false;
 	}
 
 	public Player getActivePlayer() {
@@ -54,9 +55,9 @@ public class TurnController {
 	}
 
 	//Don't know if it is useful
-	public Player[] getPlayerOrder() {
+	/*public Player[] getPlayerOrder() {
 		return playerOrder;
-	}
+	}*/
 
 	public RoundPhase getCurrentPhase() {
 		return currentPhase;

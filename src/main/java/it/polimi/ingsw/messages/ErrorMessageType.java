@@ -1,5 +1,6 @@
 package it.polimi.ingsw.messages;
 
+//TODO: all errors must have a message associated (a String attribute with the message)
 public enum ErrorMessageType {
     DUPLICATE_NICKNAME,
     UNRECOGNIZE_MESSAGE,
@@ -9,6 +10,7 @@ public enum ErrorMessageType {
     CLIENT_WITHOUT_GAME, //if a client sends an action/setup message when he doesn't have a game
     ILLEGAL_TURN,
     ILLEGAL_TURN_ACTION,
+    TURN_NOT_FINISHED, //if a client send EndTurn, but he has to do something more before
     WIZARD_ALREADY_TAKEN,
     TOWER_ALREADY_TAKEN //...
 }

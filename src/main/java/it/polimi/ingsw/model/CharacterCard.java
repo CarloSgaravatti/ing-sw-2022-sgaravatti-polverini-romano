@@ -4,7 +4,6 @@ import it.polimi.ingsw.exceptions.IllegalCharacterActionRequestedException;
 import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
 
 import java.util.List;
-import java.util.Objects;
 
 //TODO: all additional methods in subclasses has to be private (after change in tests)
 
@@ -17,7 +16,6 @@ public abstract class CharacterCard {
 	private int coinPrice;
 	private boolean coinPresent;
 	private Player playerActive;
-	public static final int NUM_CHARACTERS_PER_GAME = 3;
 	public static final int NUM_CHARACTERS = 12;
 
 	/**

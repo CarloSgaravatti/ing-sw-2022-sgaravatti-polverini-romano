@@ -1,6 +1,5 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.controller.InitController;
 import it.polimi.ingsw.exceptions.EmptyBagException;
 import it.polimi.ingsw.model.gameConstants.GameConstants;
 import it.polimi.ingsw.utils.JsonUtils;
@@ -59,7 +58,7 @@ class GameTest extends TestCase {
     @Test
     void createCharacterCardTest() {
         game.createAllStudentsForBag();
-        game.createCharacterCard();
+        game.createCharacterCards();
         Assertions.assertEquals(3, game.getCharacterCards().length);
         for (int i = 0; i < 3; i++) {
             Assertions.assertTrue(game.getCharacterCards()[i].getId() > 0

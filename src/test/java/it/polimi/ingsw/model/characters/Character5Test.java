@@ -1,7 +1,5 @@
 package it.polimi.ingsw.model.characters;
 
-import it.polimi.ingsw.controller.InitController;
-import it.polimi.ingsw.exceptions.EmptyBagException;
 import it.polimi.ingsw.exceptions.IllegalCharacterActionRequestedException;
 import it.polimi.ingsw.model.CharacterCreator;
 import it.polimi.ingsw.model.Game;
@@ -18,8 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class Character5Test extends TestCase {
     Character5 character5;
     Island island;
@@ -28,13 +24,13 @@ class Character5Test extends TestCase {
 
     @BeforeEach
     void setupCharacter5() {
+        gameConstants = JsonUtils.constantsByNumPlayer(3);
         List<Island> islands = new ArrayList<>();
-        for (int i = 0; i < Island.NUM_ISLANDS; i++) {
+        for (int i = 0; i < gameConstants.getNumIslands(); i++) {
             islands.add(new SingleIsland());
         }
-        gameConstants = JsonUtils.constantsByNumPlayer(3);
         game = new Game(islands, null, gameConstants);
-        for (int i = 0; i < Island.NUM_ISLANDS; i++) {
+        for (int i = 0; i < gameConstants.getNumIslands(); i++) {
             islands.get(i).addObserver(game);
         }
         CharacterCreator characterCreator = new CharacterCreator(game);
