@@ -33,6 +33,7 @@ public class GameController implements EventListener {
 
 	public void startGame() {
 		game.start();
+		//TODO
 	}
 
 	public Game getModel() {
@@ -67,11 +68,13 @@ public class GameController implements EventListener {
 	public synchronized void eventPerformed(MessageFromClient message) {
 		//Message have to be ACTION
 		String nicknamePlayer = message.getClientMessageHeader().getNicknameSender();
+		String actionName = message.getClientMessageHeader().getMessageName();
 		if (!nicknamePlayer.equals(turnController.getActivePlayer().getNickName())) {
 			fireErrorEvent(ErrorMessageType.ILLEGAL_TURN, nicknamePlayer);
+			return;
 		}
 		//Message start turn?
-		else if (message.getClientMessageHeader().getMessageName().equals("EndTurn")) {
+		if (actionName.equals("EndTurn")) {
 			boolean isTurnEnded = actionController.checkIfTurnIsEnded();
 			if (!isTurnEnded) {
 				fireErrorEvent(ErrorMessageType.TURN_NOT_FINISHED, nicknamePlayer);
@@ -89,6 +92,7 @@ public class GameController implements EventListener {
 		} else {
 			try {
 				actionController.doAction(message);
+				fireAckEvent(nicknamePlayer, actionName);
 			} catch (Exception e) {
 				//TODO: decide if it has to handled here or directly in the action controller class;
 				//	the exception will be transformed in an error message
@@ -115,19 +119,29 @@ public class GameController implements EventListener {
 		listenerList.add(TurnListener.class, listener);
 	}
 
-	public void fireErrorEvent(ErrorMessageType error, String nickname) {
+	public void addListener(AcknowledgementDispatcher dispatcher) {
+		listenerList.add(AcknowledgementDispatcher.class, dispatcher);
+	}
+
+	protected void fireAckEvent(String nicknameToAcknowledge, String actionName) {
+		for (AcknowledgementDispatcher ackDispatcher: listenerList.getListeners(AcknowledgementDispatcher.class)) {
+			ackDispatcher.confirmActionPerformed(nicknameToAcknowledge, actionName);
+		}
+	}
+
+	protected void fireErrorEvent(ErrorMessageType error, String nickname) {
 		for (ErrorDispatcher errorDispatcher: listenerList.getListeners(ErrorDispatcher.class)) {
 			errorDispatcher.onErrorEvent(error, nickname);
 		}
 	}
 
-	public void fireEndPhaseEvent(RoundPhase newPhase, String starter) {
+	protected void fireEndPhaseEvent(RoundPhase newPhase, String starter) {
 		for (TurnListener listener: listenerList.getListeners(TurnListener.class)) {
 			listener.endPhaseEventPerformed(newPhase, starter);
 		}
 	}
 
-	public void fireEndTurnEvent(String turnEnder, String turnStarter) {
+	protected void fireEndTurnEvent(String turnEnder, String turnStarter) {
 		for (TurnListener listener: listenerList.getListeners(TurnListener.class)) {
 			listener.endTurnEventPerformed(turnEnder, turnStarter);
 		}
@@ -135,8 +149,11 @@ public class GameController implements EventListener {
 
 	public void createListeners(List<RemoteView> views, GameLobby lobby) {
 		ErrorDispatcher errorDispatcher = new ErrorDispatcher(views);
+		AcknowledgementDispatcher ackDispatcher = new AcknowledgementDispatcher(views);
 		addListener(errorDispatcher);
 		actionController.addListener(errorDispatcher);
+		addListener(ackDispatcher);
+		initController.addListener(ackDispatcher);
 		game.addEventListener(new EndGameListener(lobby));
 		for(RemoteView view: views) {
 			addListener(new TurnListener(view));

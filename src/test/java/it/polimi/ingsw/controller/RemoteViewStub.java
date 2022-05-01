@@ -3,12 +3,13 @@ package it.polimi.ingsw.controller;
 import it.polimi.ingsw.messages.*;
 import it.polimi.ingsw.server.GameLobby;
 import it.polimi.ingsw.server.RemoteView;
+import it.polimi.ingsw.server.SocketClientConnection;
 
 public class RemoteViewStub extends RemoteView {
     MessageFromServer message;
 
     public RemoteViewStub(int gameId, String playerNickname, GameController controller) {
-        super(null, gameId, playerNickname, null, controller);
+        super(new SocketClientConnection(null, null), gameId, playerNickname, null, controller);
     }
 
     @Override

@@ -1,4 +1,5 @@
 package it.polimi.ingsw.controller;
+import it.polimi.ingsw.listeners.AcknowledgementDispatcher;
 import it.polimi.ingsw.listeners.PlayerListener;
 import it.polimi.ingsw.messages.MessageFromClient;
 import it.polimi.ingsw.model.*;
@@ -33,6 +34,10 @@ public class InitController implements EventListener {
 
 	public void addEventListener(PlayerListener listener) {
 		listenerList.add(PlayerListener.class, listener);
+	}
+
+	public void addListener(AcknowledgementDispatcher dispatcher) {
+		listenerList.add(AcknowledgementDispatcher.class, dispatcher);
 	}
 
 	public void initializeGameComponents() throws EmptyBagException {
@@ -91,7 +96,7 @@ public class InitController implements EventListener {
 	}
 
 	//TODO: before doing this you have always to set the number of players
-	public Cloud[] createClouds(){
+	private Cloud[] createClouds(){
 		Cloud[] clouds = new Cloud[numPlayers];
 		for (int i = 0; i < numPlayers; i++) {
 			clouds[i] = new Cloud(gameConstants.getNumStudentsPerCloud());
@@ -99,13 +104,19 @@ public class InitController implements EventListener {
 		return clouds;
 	}
 
-	public Game getGame(){
+	public Game getGame() {
 		return this.game;
 	}
 
-	public void fireMyEvent(TowerType type, String playerName){
+	protected void fireMyEvent(TowerType type, String playerName){
 		for(PlayerListener event : listenerList.getListeners(PlayerListener.class)){
 			event.eventPerformed(type, playerName);
+		}
+	}
+
+	protected void fireAckEvent(String nicknameToAck, String setupType) {
+		for(AcknowledgementDispatcher dispatcher : listenerList.getListeners(AcknowledgementDispatcher.class)){
+			dispatcher.confirmSetupChoice(nicknameToAck, setupType);
 		}
 	}
 
@@ -120,19 +131,21 @@ public class InitController implements EventListener {
 	public void eventPerformed(MessageFromClient message) throws WizardTypeAlreadyTakenException,
 			TowerTypeAlreadyTakenException, IllegalArgumentException {
 		String messageName = message.getClientMessageHeader().getMessageName();
+		String nicknameSender = message.getClientMessageHeader().getNicknameSender();
 		switch (messageName) {
 			case "TowerChoice" -> {
 				TowerType tower = (TowerType) message.getMessagePayload().getAttribute("TowerChosen").getAsObject();
-				Player player = game.getPlayerByNickname(message.getClientMessageHeader().getNicknameSender());
+				Player player = game.getPlayerByNickname(nicknameSender);
 				setupPlayerTower(player, tower);
 			}
 			case "WizardChoice" -> {
 				WizardType wizard = (WizardType) message.getMessagePayload().getAttribute("WizardChosen").getAsObject();
-				Player player = game.getPlayerByNickname(message.getClientMessageHeader().getNicknameSender());
+				Player player = game.getPlayerByNickname(nicknameSender);
 				setupPlayerWizard(player, wizard);
 			}
 			default -> throw new IllegalArgumentException();
 		}
+		fireAckEvent(nicknameSender, messageName);
 	}
 
 }

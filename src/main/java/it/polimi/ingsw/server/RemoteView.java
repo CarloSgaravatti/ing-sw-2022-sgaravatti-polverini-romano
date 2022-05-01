@@ -16,6 +16,7 @@ public class RemoteView extends View implements EventListener {
     public RemoteView(ClientConnection connection, int gameId, String playerNickname, GameLobby gameLobby, GameController controller) {
         super(controller);
         this.connection = connection;
+        connection.addListener(this);
         this.gameId = gameId;
         this.playerNickname = playerNickname;
         this.gameLobby = gameLobby;

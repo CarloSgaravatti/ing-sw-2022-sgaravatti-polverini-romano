@@ -72,7 +72,7 @@ public class GameLobby {
     private List<RemoteView> assignRemoteViews() {
         List<RemoteView> views = new ArrayList<>();
         for (String participant: participants.keySet()) {
-           views.add(new RemoteView(participants.get(participant), gameId, participant, this, gameController));
+            views.add(new RemoteView(participants.get(participant), gameId, participant, this, gameController));
         }
         return  views;
     }
