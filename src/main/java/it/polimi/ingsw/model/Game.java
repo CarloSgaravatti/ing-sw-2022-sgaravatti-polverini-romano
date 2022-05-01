@@ -248,6 +248,7 @@ public class Game implements ModelObserver{
 			playerMaxInfluence.getSchool().sendTowerToIsland(island);
 			fireMyEvent(playerMaxInfluence.getSchool().getTowerType(), islands.indexOf(island));
 			updateIslandUnification(island);
+			if (playerMaxInfluence.getSchool().getNumTowers() == 0) fireEndGameEvent();
 		}
 	}
 
@@ -276,6 +277,7 @@ public class Game implements ModelObserver{
 			islands.removeAll(islandToUnify);
 			islands.add(indexToReplace, new IslandGroup(islandToUnify.toArray(new Island[0])));
 			fireMyEvent(islandIndexes);
+			if (islands.size() <= 3) fireEndGameEvent();
 		}
 	}
 
@@ -284,7 +286,7 @@ public class Game implements ModelObserver{
 		try {
 			studentContainer.insertStudent(bag.pickStudent());
 		} catch(EmptyBagException e) {
-			//TODO: the game is finished
+			setLastRound(true);
 		}
 	}
 
@@ -340,6 +342,18 @@ public class Game implements ModelObserver{
 			event.eventPerformed(initialPosition,finalPosition);
 		}
 	}
+
+	public void fireEndGameEvent() {
+		List<Player> winnerOrTies = onGameEndEvent();
+		for(EndGameListener listener : listenerList.getListeners(EndGameListener.class)){
+			if (winnerOrTies.size() == 1) {
+				listener.onWinnerEvent(winnerOrTies.get(0).getNickName());
+			} else {
+				listener.onTieEvent(winnerOrTies.stream().map(Player::getNickName).collect(Collectors.toList()));
+			}
+		}
+	}
+
 
 	public GameConstants getGameConstants() {
 		return gameConstants;

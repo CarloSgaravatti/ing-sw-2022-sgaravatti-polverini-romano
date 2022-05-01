@@ -44,7 +44,7 @@ class PhaseOrderTest {
             }
         }
         planningPhaseOrder = new PlanningPhaseOrder(game);
-        actionPhaseOrder = new ActionPhaseOrder(game);
+        actionPhaseOrder = new ActionPhaseOrder();
         //skip first round random order
         Player[] order = planningPhaseOrder.calculateOrder(game.getPlayers().toArray(new Player[0]));
     }

@@ -35,14 +35,6 @@ public class GameController implements EventListener {
 		game.start();
 	}
 
-	public void endGame() {
-
-	}
-
-	public String declareWinner() {
-		return null;
-	}
-
 	public Game getModel() {
 		return game;
 	}
@@ -72,8 +64,6 @@ public class GameController implements EventListener {
 		actionController = new ActionController(this, turnController);
 	}
 
-	//TODO: event performed
-	//TODO: set index active player in game
 	public synchronized void eventPerformed(MessageFromClient message) {
 		//Message have to be ACTION
 		String nicknamePlayer = message.getClientMessageHeader().getNicknameSender();
@@ -90,13 +80,12 @@ public class GameController implements EventListener {
 			boolean isPhaseEnded = turnController.endTurn();
 			game.setIndexActivePlayer(turnController.getActivePlayer());
 			if (isPhaseEnded) {
-				if (turnController.getCurrentPhase() == RoundPhase.ACTION) {
-					actionController.refillClouds();
-				}
-				//TODO: Notify change phase (if is last round or game is finished notify also these things)
+				handleEndPhase();
 				return;
 			}
-			//TODO: notify new turn
+			//notify new turn
+			String turnStarter = turnController.getActivePlayer().getNickName();
+			fireEndTurnEvent(nicknamePlayer, turnStarter);
 		} else {
 			try {
 				actionController.doAction(message);
@@ -107,8 +96,23 @@ public class GameController implements EventListener {
 		}
 	}
 
+	private void handleEndPhase() {
+		if (turnController.getCurrentPhase() == RoundPhase.ACTION) {
+			actionController.refillClouds();
+		} else if (game.isLastRound()) {
+			//notify game finished
+			game.fireEndGameEvent();
+		}
+		//Notify change phase
+		fireEndPhaseEvent(turnController.getCurrentPhase(), turnController.getActivePlayer().getNickName());
+	}
+
 	public void addListener(ErrorDispatcher errorListener) {
 		listenerList.add(ErrorDispatcher.class, errorListener);
+	}
+
+	public void addListener(TurnListener listener) {
+		listenerList.add(TurnListener.class, listener);
 	}
 
 	public void fireErrorEvent(ErrorMessageType error, String nickname) {
@@ -117,14 +121,25 @@ public class GameController implements EventListener {
 		}
 	}
 
-	public void createListeners(List<RemoteView> views) {
+	public void fireEndPhaseEvent(RoundPhase newPhase, String starter) {
+		for (TurnListener listener: listenerList.getListeners(TurnListener.class)) {
+			listener.endPhaseEventPerformed(newPhase, starter);
+		}
+	}
+
+	public void fireEndTurnEvent(String turnEnder, String turnStarter) {
+		for (TurnListener listener: listenerList.getListeners(TurnListener.class)) {
+			listener.endTurnEventPerformed(turnEnder, turnStarter);
+		}
+	}
+
+	public void createListeners(List<RemoteView> views, GameLobby lobby) {
 		ErrorDispatcher errorDispatcher = new ErrorDispatcher(views);
-		EndGameListener endGameListener = new EndGameListener(views);
 		addListener(errorDispatcher);
-		addListener(endGameListener);
 		actionController.addListener(errorDispatcher);
-		game.addEventListener(endGameListener);
+		game.addEventListener(new EndGameListener(lobby));
 		for(RemoteView view: views) {
+			addListener(new TurnListener(view));
 			PlayerListener playerListener = new PlayerListener(view);
 			initController.addEventListener(playerListener);
 			actionController.addEventListener(playerListener);
@@ -134,9 +149,5 @@ public class GameController implements EventListener {
 			game.addEventListener(new SchoolListener(view));
 			game.addEventListener(new MotherNatureListener(view));
 		}
-	}
-
-	public void addListener(EndGameListener endGameListener) {
-		listenerList.add(EndGameListener.class, endGameListener);
 	}
 }

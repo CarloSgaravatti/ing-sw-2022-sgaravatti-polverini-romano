@@ -32,7 +32,7 @@ public class GameControllerTest {
         views.add(view1);
         views.add(view2);
         controller.initializeControllers();
-        controller.createListeners(views);
+        controller.createListeners(views, null);
         this.view1 = (RemoteViewStub) view1;
         this.view2 = (RemoteViewStub) view2;
     }

@@ -55,6 +55,7 @@ public class GameLobby {
             } catch (EmptyBagException e) {
                 //At this point it shouldn't be thrown, maybe it should be handled before
             }
+            gameController.createListeners(assignRemoteViews(), this);
             //Need to create a new thread because this method is done by the thread that reads messages in
             //SocketClientConnection, we want that when the setupGame method is running all the SocketClientConnections
             //are reading messages to update setup choices.
@@ -66,6 +67,14 @@ public class GameLobby {
             //The last attribute can be replaced with players nicknames
             clientConnection.asyncSend(new MessageFromServer(header, payload));
         }
+    }
+
+    private List<RemoteView> assignRemoteViews() {
+        List<RemoteView> views = new ArrayList<>();
+        for (String participant: participants.keySet()) {
+           views.add(new RemoteView(participants.get(participant), gameId, participant, this, gameController));
+        }
+        return  views;
     }
 
     public synchronized boolean isStarted() {
@@ -195,5 +204,9 @@ public class GameLobby {
 
     public Map<String, ClientConnection> getParticipants() {
         return participants;
+    }
+
+    public void doEndGameOperations() {
+        //TODO
     }
 }
