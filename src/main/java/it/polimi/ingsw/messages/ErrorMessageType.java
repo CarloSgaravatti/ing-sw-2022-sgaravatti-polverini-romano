@@ -12,5 +12,10 @@ public enum ErrorMessageType {
     ILLEGAL_TURN_ACTION,
     TURN_NOT_FINISHED, //if a client send EndTurn, but he has to do something more before
     WIZARD_ALREADY_TAKEN,
-    TOWER_ALREADY_TAKEN //...
+    TOWER_ALREADY_TAKEN,
+    ASSISTANT_ALREADY_PLAYED,
+    ILLEGAL_MOTHER_NATURE_MOVEMENT,
+    TO_MUCH_STUDENT_MOVED,
+    ILLEGAL_ARGUMENT,
+    CHARACTER_ALREADY_PLAYED//...
 }

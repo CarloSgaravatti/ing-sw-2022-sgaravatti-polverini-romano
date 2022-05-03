@@ -49,7 +49,11 @@ public class ActionController {
 
 	public void playAssistant(MessagePayload payload) throws AssistantAlreadyPlayedException,
 			NoSuchAssistantException, WrongTurnActionRequestedException, ClassCastException {
-		if (turnPhase != TurnPhase.PLAY_ASSISTANT) throw new WrongTurnActionRequestedException();
+		if (turnPhase != TurnPhase.PLAY_ASSISTANT) {
+			fireErrorEvent(ErrorMessageType.ILLEGAL_TURN_ACTION, turnController.getActivePlayer().getNickName());
+			//TODO: remove the exception
+			throw new WrongTurnActionRequestedException();
+		}
 		int assistantIdx = payload.getAttribute("Assistant").getAsInt();
 		List<Player> players = gameController.getModel().getPlayers();
 		List<Integer> assistantAlreadyPlayed = new ArrayList<>();
@@ -60,8 +64,10 @@ public class ActionController {
 				assistantAlreadyPlayed.add(assistant);
 			}
 		}
-		if (!turnController.getActivePlayer().playAssistant(assistantIdx, assistantAlreadyPlayed))
+		if (!turnController.getActivePlayer().playAssistant(assistantIdx, assistantAlreadyPlayed)){
+			fireErrorEvent(ErrorMessageType.ILLEGAL_ARGUMENT,turnController.getActivePlayer().getNickName());
 			throw new AssistantAlreadyPlayedException();
+		}
 		setTurnPhase(TurnPhase.TURN_ENDED); //planning phase is ended for this player
 		fireMyEventAssistant(assistantIdx); //assistantIdx è l'indice dell'assistant?
 		if (turnController.getActivePlayer().getAssistants().size() == 0) {
@@ -71,11 +77,16 @@ public class ActionController {
 
 	public void motherNatureMovement(MessagePayload payload) throws IllegalArgumentException,
 			WrongTurnActionRequestedException, ClassCastException {
-		if (turnPhase != TurnPhase.MOVE_MOTHER_NATURE) throw new WrongTurnActionRequestedException();
+		if (turnPhase != TurnPhase.MOVE_MOTHER_NATURE) {
+			fireErrorEvent(ErrorMessageType.ILLEGAL_TURN_ACTION, turnController.getActivePlayer().getNickName());
+			throw new WrongTurnActionRequestedException();
+		}
 		int motherNatureMovement = payload.getAttribute("MotherNature").getAsInt();
 		int legalMotherNatureMovement = turnController.getActivePlayer().getTurnEffect().getMotherNatureMovement();
-		if (motherNatureMovement <= 0 || motherNatureMovement > legalMotherNatureMovement)
+		if (motherNatureMovement <= 0 || motherNatureMovement > legalMotherNatureMovement) {
+			fireErrorEvent(ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
 			throw new IllegalArgumentException(); //TODO: create a specific exception
+		}
 		gameController.getModel().moveMotherNature(motherNatureMovement);
 		setTurnPhase(TurnPhase.SELECT_CLOUD);
 	}
@@ -83,10 +94,16 @@ public class ActionController {
 	//Use of ? to not have unchecked warning (maybe we should change the message format to not use generics)
 	public void studentMovement(MessagePayload payload) throws IllegalArgumentException, StudentNotFoundException,
 			FullDiningRoomException, WrongTurnActionRequestedException, ClassCastException {
-		if (turnPhase != TurnPhase.MOVE_STUDENTS) throw new WrongTurnActionRequestedException();
+		if (turnPhase != TurnPhase.MOVE_STUDENTS){
+			fireErrorEvent(ErrorMessageType.ILLEGAL_TURN_ACTION, turnController.getActivePlayer().getNickName());
+			throw new WrongTurnActionRequestedException();
+		}
 		List<?> toDiningRoom = (List<?>) payload.getAttribute("StudentsToDR").getAsObject();
 		List<?> toIslands = (List<?>) payload.getAttribute("StudentsToIslands").getAsObject();
-		if (toDiningRoom.size() + toIslands.size() > 3) throw new IllegalArgumentException();
+		if (toDiningRoom.size() + toIslands.size() > 3){
+			fireErrorEvent(ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+			throw new IllegalArgumentException();
+		}
 		School school = turnController.getActivePlayer().getSchool();
 		for (Object studentType: toDiningRoom) {
 			if (school.moveFromEntranceToDiningRoom((RealmType) studentType)) {
@@ -97,7 +114,10 @@ public class ActionController {
 		for (Object pair: toIslands) {
 			Pair<?, ?> pairStudentIsland = (Pair<?, ?>) pair;
 			int islandIndex = (Integer) pairStudentIsland.getSecond();
-			if (!isValidIsland(islandIndex)) throw new IllegalArgumentException();
+			if (!isValidIsland(islandIndex)){
+				fireErrorEvent(ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+				throw new IllegalArgumentException();
+			}
 			Island island = gameController.getModel().getIslands().get(islandIndex);
 			RealmType studentType = (RealmType) pairStudentIsland.getFirst();
 			school.sendStudentToIsland(island, studentType);
@@ -117,10 +137,16 @@ public class ActionController {
 	public void playCharacter(MessagePayload payload) throws IllegalArgumentException,
 			NotEnoughCoinsException, IllegalCharacterActionRequestedException, ClassCastException {
 		//TODO: illegal argument exception is too general
-		if (turnController.getActivePlayer().getTurnEffect().isCharacterPlayed()) throw new IllegalArgumentException();
+		if (turnController.getActivePlayer().getTurnEffect().isCharacterPlayed()) {
+            fireErrorEvent(ErrorMessageType.CHARACTER_ALREADY_PLAYED, turnController.getActivePlayer().getNickName());
+            throw new IllegalArgumentException();
+        }
 		int characterId = payload.getAttribute("CharacterId").getAsInt();
 		CharacterCard characterCard = gameController.getModel().getCharacterById(characterId);
-		if (characterCard == null) throw new IllegalArgumentException();
+		if (characterCard == null) {
+            fireErrorEvent(ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+            throw new IllegalArgumentException();
+        }
 		int coinToGeneralSupply = characterCard.getPrice();
 		//TODO: if player does not have enough coins this is not correct
 		if (!characterCard.isCoinPresent()) coinToGeneralSupply--;
@@ -139,10 +165,17 @@ public class ActionController {
 		for (Object payloadArg : payloadArgs) {
 			args.add((String) payloadArg);
 		}
-		if (turnController.getActivePlayer().getTurnEffect().isCharacterEffectConsumed()) throw new IllegalArgumentException();
+		if (turnController.getActivePlayer().getTurnEffect().isCharacterEffectConsumed()) {
+            //TODO: check if "ILLEGAL ARGUMENT" is correct in this case
+            fireErrorEvent(ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+            throw new IllegalArgumentException();
+        }
 		int characterId = payload.getAttribute("CharacterId").getAsInt();
 		CharacterCard characterCard = gameController.getModel().getCharacterById(characterId);
-		if (characterCard == null) throw new IllegalArgumentException();
+		if (characterCard == null) {
+            fireErrorEvent(ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+            throw new IllegalArgumentException();
+        }
 		characterCard.useEffect(args.subList(1, args.size()));
 	}
 
