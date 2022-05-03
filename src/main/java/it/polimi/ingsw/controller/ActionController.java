@@ -137,10 +137,16 @@ public class ActionController {
 	public void playCharacter(MessagePayload payload) throws IllegalArgumentException,
 			NotEnoughCoinsException, IllegalCharacterActionRequestedException, ClassCastException {
 		//TODO: illegal argument exception is too general
-		if (turnController.getActivePlayer().getTurnEffect().isCharacterPlayed()) throw new IllegalArgumentException();
+		if (turnController.getActivePlayer().getTurnEffect().isCharacterPlayed()) {
+            fireErrorEvent(ErrorMessageType.CHARACTER_ALREADY_PLAYED, turnController.getActivePlayer().getNickName());
+            throw new IllegalArgumentException();
+        }
 		int characterId = payload.getAttribute("CharacterId").getAsInt();
 		CharacterCard characterCard = gameController.getModel().getCharacterById(characterId);
-		if (characterCard == null) throw new IllegalArgumentException();
+		if (characterCard == null) {
+            fireErrorEvent(ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+            throw new IllegalArgumentException();
+        }
 		int coinToGeneralSupply = characterCard.getPrice();
 		//TODO: if player does not have enough coins this is not correct
 		if (!characterCard.isCoinPresent()) coinToGeneralSupply--;
@@ -159,10 +165,17 @@ public class ActionController {
 		for (Object payloadArg : payloadArgs) {
 			args.add((String) payloadArg);
 		}
-		if (turnController.getActivePlayer().getTurnEffect().isCharacterEffectConsumed()) throw new IllegalArgumentException();
+		if (turnController.getActivePlayer().getTurnEffect().isCharacterEffectConsumed()) {
+            //TODO: check if "ILLEGAL ARGUMENT" is correct in this case
+            fireErrorEvent(ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+            throw new IllegalArgumentException();
+        }
 		int characterId = payload.getAttribute("CharacterId").getAsInt();
 		CharacterCard characterCard = gameController.getModel().getCharacterById(characterId);
-		if (characterCard == null) throw new IllegalArgumentException();
+		if (characterCard == null) {
+            fireErrorEvent(ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+            throw new IllegalArgumentException();
+        }
 		characterCard.useEffect(args.subList(1, args.size()));
 	}
 
