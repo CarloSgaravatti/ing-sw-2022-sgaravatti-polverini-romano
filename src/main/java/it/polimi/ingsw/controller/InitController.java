@@ -134,12 +134,12 @@ public class InitController implements EventListener {
 		String nicknameSender = message.getClientMessageHeader().getNicknameSender();
 		switch (messageName) {
 			case "TowerChoice" -> {
-				TowerType tower = (TowerType) message.getMessagePayload().getAttribute("TowerChosen").getAsObject();
+				TowerType tower = (TowerType) message.getMessagePayload().getAttribute("Tower").getAsObject();
 				Player player = game.getPlayerByNickname(nicknameSender);
 				setupPlayerTower(player, tower);
 			}
 			case "WizardChoice" -> {
-				WizardType wizard = (WizardType) message.getMessagePayload().getAttribute("WizardChosen").getAsObject();
+				WizardType wizard = (WizardType) message.getMessagePayload().getAttribute("Wizard").getAsObject();
 				Player player = game.getPlayerByNickname(nicknameSender);
 				setupPlayerWizard(player, wizard);
 			}

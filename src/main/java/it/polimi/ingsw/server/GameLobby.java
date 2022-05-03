@@ -43,18 +43,19 @@ public class GameLobby {
         if (participants.size() == numPlayers) {
             setStarted(true);
             header = new ServerMessageHeader("GameStarted", ServerMessageType.GAME_UPDATE);
-            payload.setAttribute("Players", participants.keySet());
-            MessageFromServer message = new MessageFromServer(header, payload);
-            broadcast(message);
+            payload.setAttribute("Players", participants.keySet().toArray(new String[0]));
+            broadcast(new MessageFromServer(header, payload));
             InitController initController = gameController.getInitController();
-            for (String name: participants.keySet()) {
-                initController.addPlayer(name);
-            }
             try {
                 initController.initializeGameComponents();
             } catch (EmptyBagException e) {
                 //At this point it shouldn't be thrown, maybe it should be handled before
             }
+            for (String name: participants.keySet()) {
+                initController.addPlayer(name);
+            }
+            gameController.setGame();
+            gameController.initializeControllers();
             gameController.createListeners(assignRemoteViews(), this);
             //Need to create a new thread because this method is done by the thread that reads messages in
             //SocketClientConnection, we want that when the setupGame method is running all the SocketClientConnections
@@ -74,7 +75,7 @@ public class GameLobby {
         for (String participant: participants.keySet()) {
             views.add(new RemoteView(participants.get(participant), gameId, participant, this, gameController));
         }
-        return  views;
+        return views;
     }
 
     public synchronized boolean isStarted() {
@@ -116,9 +117,11 @@ public class GameLobby {
                 }
             }
             try {
-                while (gameController.getInitController().getPlayersWithTower().size() == numPlayersWithTower &&
-                        gameController.getInitController().getPlayersWithWizard().size() == numPlayersWithWizard) {
-                    setupLock.wait();
+                synchronized (setupLock) {
+                    while (gameController.getInitController().getPlayersWithTower().size() == numPlayersWithTower &&
+                            gameController.getInitController().getPlayersWithWizard().size() == numPlayersWithWizard) {
+                        setupLock.wait();
+                    }
                 }
             } catch (InterruptedException e) {
                 //Don't know what to put here (maybe we can just ignore it?)
@@ -126,13 +129,14 @@ public class GameLobby {
             setupTowersDone = gameController.getInitController().getPlayersWithTower().size() == numPlayers;
             setupWizardsDone = gameController.getInitController().getPlayersWithWizard().size() == numPlayers;
         }
-        gameController.initializeControllers();
         sendInitializations();
     }
 
     //This method wake up the setupGame Thread because someone has chosen a tower or a wizard
-    public synchronized void notifySetupChanges() {
-        setupLock.notify();
+    public void notifySetupChanges() {
+        synchronized (setupLock) {
+            setupLock.notify();
+        }
     }
 
     private void setupTowers(Map<String, TowerType> playersWithTower) {

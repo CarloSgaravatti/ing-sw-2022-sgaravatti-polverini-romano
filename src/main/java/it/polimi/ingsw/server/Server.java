@@ -130,18 +130,27 @@ public class Server implements Runnable{
     }
 
     public void gameLobby(int gameId, ClientConnection client, String clientName) {
-        try {
-            gamesMap.get(gameId).insertInLobby(clientName, client);
-        } catch (GameAlreadyStartedException e) {
-            //game already started (when server sent global lobby message the game wasn't already started,
-            //but since them someone as already entered the game and so the game has started)
-            handleLobbyError(ErrorMessageType.INVALID_REQUEST_GAME_ALREADY_STARTED, client, clientName);
-            return;
-        } catch (NullPointerException e) {
-            //get(gameId) returns null if there isn't a game with that id (it is not created), so insertInLobby
-            //is called on a null object
+        if (!gamesMap.containsKey(gameId)) {
             handleLobbyError(ErrorMessageType.INVALID_REQUEST_GAME_NOT_FOUND, client, clientName);
-            return;
+        } else if(gamesMap.get(gameId).isStarted()) {
+            handleLobbyError(ErrorMessageType.INVALID_REQUEST_GAME_ALREADY_STARTED, client, clientName);
+        } else {
+            //Try catch will be deleted after I find the error
+            try {
+                gamesMap.get(gameId).insertInLobby(clientName, client);
+                client.setSetupDone(true);
+            } catch (GameAlreadyStartedException e) {
+                //game already started (when server sent global lobby message the game wasn't already started,
+                //but since them someone as already entered the game and so the game has started)
+                handleLobbyError(ErrorMessageType.INVALID_REQUEST_GAME_ALREADY_STARTED, client, clientName);
+                return;
+            } catch (NullPointerException e) {
+                //get(gameId) returns null if there isn't a game with that id (it is not created), so insertInLobby
+                //is called on a null object
+                e.printStackTrace();
+                handleLobbyError(ErrorMessageType.INVALID_REQUEST_GAME_NOT_FOUND, client, clientName);
+                return;
+            }
         }
         waitingPlayersWithNoGame.remove(clientName);
     }

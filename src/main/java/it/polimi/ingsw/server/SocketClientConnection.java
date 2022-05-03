@@ -48,7 +48,9 @@ public class SocketClientConnection implements Runnable, ClientConnection {
             }
         } catch (IOException | ClassNotFoundException | ClassCastException e) {
             System.err.println("Error!" + e.getMessage());
-        } finally{
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
             close();
         }
     }
@@ -92,11 +94,11 @@ public class SocketClientConnection implements Runnable, ClientConnection {
             out.flush();
         } catch(IOException e){
             System.err.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
     //Sending a message is a slow operation, it needs to be asynchronous from the caller of the method
-    //This method doesn't work
     public void asyncSend(final Object message){
         new Thread(() -> send(message)).start();
     }
@@ -136,7 +138,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         String messageName = message.getClientMessageHeader().getMessageName();
         int gameId;
         switch (messageName) {
-            case "NumPlayers" -> {
+            case "NewGame" -> {
                 int numPlayers = message.getMessagePayload().getAttribute("NumPlayers").getAsInt();
                 boolean isExpertGame = message.getMessagePayload().getAttribute("GameRules").getAsBoolean();
                 gameId = server.createGame(numPlayers, isExpertGame);
@@ -148,7 +150,6 @@ public class SocketClientConnection implements Runnable, ClientConnection {
             }
         }
         server.gameLobby(gameId, this, nickname);
-        setSetupDone(true);
     }
 
     public synchronized boolean isSetupDone() {

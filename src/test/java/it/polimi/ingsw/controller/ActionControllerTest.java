@@ -222,5 +222,14 @@ class ActionControllerTest extends TestCase {
         Assertions.assertThrows(IllegalArgumentException.class, () -> actionController.doAction(message));
     }
 
+    @Test
+    void refillCloudsTest() {
+        actionController.refillClouds();
+        for (Cloud cloud: gameController.getModel().getClouds()) {
+            Assertions.assertEquals(gameController.getModel().getGameConstants().getNumStudentsPerCloud(),
+                    cloud.getStudentsNumber());
+        }
+    }
+
     //TODO: one test for all characters that have an active effect?
 }

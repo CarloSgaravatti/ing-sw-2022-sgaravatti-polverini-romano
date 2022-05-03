@@ -1,5 +1,5 @@
 package it.polimi.ingsw.messages;
 
 public enum ServerMessageType {
-    SERVER_MESSAGE, GAME_SETUP, GAME_UPDATE, ACK_MESSAGE
+    SERVER_MESSAGE, GAME_SETUP, GAME_UPDATE, ACK_MESSAGE, PING_MESSAGE
 }
