@@ -1,13 +1,17 @@
 package it.polimi.ingsw.client.CLI;
 
 import it.polimi.ingsw.messages.*;
+import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.enumerations.WizardType;
+import it.polimi.ingsw.utils.Pair;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class CLIStub implements Runnable{
@@ -24,7 +28,6 @@ public class CLIStub implements Runnable{
         Scanner sc = new Scanner(System.in);
         String serverAddress;
         int serverPort;
-        //Some visualization stuff ...
         System.out.println("Server ip address: ");
         serverAddress = sc.next();
         System.out.println("Server port: ");
@@ -73,6 +76,12 @@ public class CLIStub implements Runnable{
                     case "GameToPlay" -> getGameToPlayPayload(scanner, payload);
                     case "TowerChoice" -> getTowerChoicePayload(scanner, payload);
                     case "WizardChoice" -> getWizardChoicePayload(scanner, payload);
+                    case "PlayAssistant" -> getPlayAssistantPayload(scanner, payload);
+                    case "MoveStudents" -> getMoveStudentsPayload(scanner, payload);
+                    case "MoveMotherNature" -> getMoveMotherNaturePayload(scanner, payload);
+                    case "PickFromCloud" -> getPickFromCloudPayload(scanner, payload);
+                    case "EndTurn" -> payload = null;
+                    case "PlayCharacter" -> getPlayCharacterPayload(scanner, payload);
                     default -> {
                         System.err.println("Not valid name");
                         valid = false;
@@ -130,6 +139,54 @@ public class CLIStub implements Runnable{
         payload.setAttribute("Wizard", WizardType.values()[scanner.nextInt()]);
     }
 
+    public void getPlayAssistantPayload(Scanner scanner, MessagePayload payload) {
+        System.out.println("Insert assistant index");
+        payload.setAttribute("Assistant", scanner.nextInt());
+    }
+
+    public void getMoveStudentsPayload(Scanner scanner, MessagePayload payload) {
+        List<RealmType> studentsToDR = new ArrayList<>();
+        System.out.println("Insert realm types abbreviations to dining room");
+        while (scanner.hasNext()) {
+            studentsToDR.add(RealmType.getRealmByAbbreviation(scanner.next()));
+        }
+        payload.setAttribute("StudentsToDR", studentsToDR.toArray(new RealmType[0]));
+        System.out.println("Insert realm types abbreviations to island in this form: RealmType,Island");
+        List<Pair<RealmType,Integer>> studentsToIsland = new ArrayList<>();
+        while (scanner.hasNext()) {
+            String pair = scanner.next();
+            String[] pairElements = pair.split(",");
+            Pair<RealmType,Integer> pairObject = new Pair<>(RealmType.getRealmByAbbreviation(pairElements[0]),
+                    Integer.parseInt(pairElements[1]));
+            studentsToIsland.add(pairObject);
+        }
+        payload.setAttribute("StudentsToIsland", studentsToIsland);
+    }
+
+    public void getMoveMotherNaturePayload(Scanner scanner, MessagePayload payload) {
+        System.out.println("Insert mother nature movement");
+        payload.setAttribute("MotherNature", scanner.nextInt());
+    }
+
+    public void getPickFromCloudPayload(Scanner scanner, MessagePayload payload) {
+        System.out.println("Insert cloud index");
+        payload.setAttribute("Cloud", scanner.nextInt());
+    }
+
+    public void getPlayCharacterPayload(Scanner scanner, MessagePayload payload) {
+        System.out.println("Insert character id");
+        payload.setAttribute("CharacterId", scanner.nextInt());
+        System.out.println("Are there character arguments [y/n]");
+        if (scanner.next().equals("n")) return;
+        System.out.println("Insert character arguments");
+        String arguments = "";
+        arguments = arguments.concat(scanner.next());
+        while (scanner.hasNext()) {
+            arguments = arguments.concat(" " + scanner.next());
+        }
+        payload.setAttribute("Arguments", scanner.nextInt());
+    }
+
     public void readMessages(ObjectInputStream inputStream, Scanner scanner) {
         while(true) {
             try {
@@ -137,6 +194,16 @@ public class CLIStub implements Runnable{
                 String messageName = message.getServerMessageHeader().getMessageName();
                 System.out.println("Message name: " + messageName);
                 System.out.println("Message type: " + message.getServerMessageHeader().getMessageType());
+                switch(messageName) {
+                    case "Error" ->  System.out.println("ErrorType: "  + message.getMessagePayload().getAttribute("ErrorType").getAsObject());
+                    case "ChangePhase" -> {
+                        System.out.println("New phase: " + message.getMessagePayload().getAttribute("NewPhase").getAsObject());
+                        System.out.println("Starter: " + message.getMessagePayload().getAttribute("Starter").getAsString());
+                    }
+                    case "EndTurn" -> System.out.println(message.getMessagePayload().getAttribute("TurnEnder").getAsString() +
+                                " has finished. Now is " + message.getMessagePayload().getAttribute("TurnStarter").getAsString() +
+                                " turn");
+                }
                 if (messageName.equals("Error")) {
                     System.out.println("ErrorType: "  + message.getMessagePayload().getAttribute("ErrorType").getAsObject());
                 }

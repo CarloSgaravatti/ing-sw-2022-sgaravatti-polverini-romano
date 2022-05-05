@@ -34,6 +34,7 @@ public class GameController implements EventListener {
 	public void startGame() {
 		game.start();
 		//TODO
+		fireEndPhaseEvent(turnController.getCurrentPhase(), turnController.getActivePlayer().getNickName());
 	}
 
 	public Game getModel() {

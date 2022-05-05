@@ -21,8 +21,8 @@ public class TurnListener implements ModelListener{
 
     public void endPhaseEventPerformed(RoundPhase newPhase, String starter) {
         MessagePayload payload = new MessagePayload();
-        payload.setAttribute("PhaseType", newPhase);
+        payload.setAttribute("NewPhase", newPhase);
         payload.setAttribute("Starter", starter);
-        view.sendMessage(payload, "EndTurn", ServerMessageType.GAME_UPDATE);
+        view.sendMessage(payload, "ChangePhase", ServerMessageType.GAME_UPDATE);
     }
 }

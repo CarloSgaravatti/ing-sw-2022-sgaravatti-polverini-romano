@@ -110,7 +110,7 @@ public class Server implements Runnable{
         //for a game and creates a new game.
         //If there are games that aren't started, server requests to client what game he wants to play or
         //if he wants to create a new game (and set the number of players)
-        ServerMessageHeader header = new ServerMessageHeader("GeneralLobby", ServerMessageType.SERVER_MESSAGE);
+        ServerMessageHeader header = new ServerMessageHeader("GlobalLobby", ServerMessageType.SERVER_MESSAGE);
         MessagePayload payload = new MessagePayload();
         if (waitingPlayersPerGameMap.isEmpty()) {
             payload.setAttribute("NotStartedGames", 0);
@@ -135,29 +135,15 @@ public class Server implements Runnable{
         } else if(gamesMap.get(gameId).isStarted()) {
             handleLobbyError(ErrorMessageType.INVALID_REQUEST_GAME_ALREADY_STARTED, client, clientName);
         } else {
-            //Try catch will be deleted after I find the error
-            try {
-                gamesMap.get(gameId).insertInLobby(clientName, client);
-                client.setSetupDone(true);
-            } catch (GameAlreadyStartedException e) {
-                //game already started (when server sent global lobby message the game wasn't already started,
-                //but since them someone as already entered the game and so the game has started)
-                handleLobbyError(ErrorMessageType.INVALID_REQUEST_GAME_ALREADY_STARTED, client, clientName);
-                return;
-            } catch (NullPointerException e) {
-                //get(gameId) returns null if there isn't a game with that id (it is not created), so insertInLobby
-                //is called on a null object
-                e.printStackTrace();
-                handleLobbyError(ErrorMessageType.INVALID_REQUEST_GAME_NOT_FOUND, client, clientName);
-                return;
-            }
+            gamesMap.get(gameId).insertInLobby(clientName, client);
+            client.setSetupDone(true);
         }
         waitingPlayersWithNoGame.remove(clientName);
     }
 
     private void handleLobbyError(ErrorMessageType error,  ClientConnection client, String clientName) {
         client.sendError(error);
-        globalLobby(client, clientName); //TODO: don'y know if this is necessary
+        globalLobby(client, clientName);
     }
 
     public synchronized int createGame(int numPlayers, boolean isExpertGame) {

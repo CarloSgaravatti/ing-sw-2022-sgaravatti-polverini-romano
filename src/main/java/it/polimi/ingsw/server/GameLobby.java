@@ -31,9 +31,7 @@ public class GameLobby {
         this.numPlayers = numPlayers;
     }
 
-    public synchronized void insertInLobby(String nickname, ClientConnection clientConnection)
-            throws GameAlreadyStartedException {
-        if (isStarted()) throw new GameAlreadyStartedException();
+    public synchronized void insertInLobby(String nickname, ClientConnection clientConnection) {
         participants.putIfAbsent(nickname, clientConnection);
         ServerMessageHeader header = new ServerMessageHeader("PlayerJoined", ServerMessageType.GAME_SETUP);
         MessagePayload payload = new MessagePayload();
@@ -129,7 +127,9 @@ public class GameLobby {
             setupTowersDone = gameController.getInitController().getPlayersWithTower().size() == numPlayers;
             setupWizardsDone = gameController.getInitController().getPlayersWithWizard().size() == numPlayers;
         }
+        gameController.getActionController().refillClouds();
         sendInitializations();
+        gameController.startGame();
     }
 
     //This method wake up the setupGame Thread because someone has chosen a tower or a wizard
