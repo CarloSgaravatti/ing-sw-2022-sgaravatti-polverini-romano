@@ -1,6 +1,8 @@
 package it.polimi.ingsw.client;
 
-import it.polimi.ingsw.messages.MessageFromServer;
+import it.polimi.ingsw.client.messageHandlers.DefaultMessageHandler;
+import it.polimi.ingsw.client.messageHandlers.MessageHandler;
+import it.polimi.ingsw.messages.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -10,17 +12,23 @@ import java.net.Socket;
 public class ConnectionToServer implements Runnable {
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
-    private MessageHandler messageHandler;
+    private MessageHandler firstMessageHandler;
+    private String nicknameClient;
 
     public ConnectionToServer(Socket socket, UserInterface view) {
         try {
             outputStream = new ObjectOutputStream(socket.getOutputStream());
             inputStream = new ObjectInputStream(socket.getInputStream());
-            messageHandler = new MessageHandler(this, view);
+            firstMessageHandler = new DefaultMessageHandler(this, view, new ModelView());
         } catch (IOException e) {
             //TODO
             e.printStackTrace();
         }
+    }
+
+    public void addFirstMessageHandler(MessageHandler newHandler) {
+        newHandler.setNextHandler(firstMessageHandler);
+        firstMessageHandler = newHandler;
     }
 
     @Override
@@ -28,7 +36,11 @@ public class ConnectionToServer implements Runnable {
         try {
             while (true) { //while(isActive())
                 MessageFromServer message = (MessageFromServer) inputStream.readObject();
-                messageHandler.handleMessage(message);
+                if (message.getServerMessageHeader().getMessageType() != ServerMessageType.PING_MESSAGE) {
+                    firstMessageHandler.handleMessage(message);
+                } else {
+                    onPingMessage();
+                }
             }
         }  catch (IOException e) {
             System.err.println(e.getMessage());
@@ -41,13 +53,12 @@ public class ConnectionToServer implements Runnable {
             try {
                 inputStream.close();
             } catch (IOException e) {
+                //TODO
             }
         }
     }
 
     public Thread asyncWriteToServer(Object message) {
-        //Debug
-        System.out.println("Writing message");
         Thread t = new Thread(() -> {
             try {
                 outputStream.writeObject(message);
@@ -57,5 +68,11 @@ public class ConnectionToServer implements Runnable {
         });
         t.start();
         return t;
+    }
+
+    //TODO: pong
+    public void onPingMessage() {
+        ClientMessageHeader header = new ClientMessageHeader(null, nicknameClient, ClientMessageType.PING_ACK);
+        asyncWriteToServer(new MessageFromClient(header, null));
     }
 }
