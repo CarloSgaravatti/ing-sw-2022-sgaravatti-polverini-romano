@@ -1,7 +1,6 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.exceptions.DuplicateNicknameException;
-import it.polimi.ingsw.exceptions.GameAlreadyStartedException;
 import it.polimi.ingsw.messages.*;
 import it.polimi.ingsw.utils.Pair;
 
@@ -16,7 +15,7 @@ import java.util.concurrent.Executors;
 //Each game is identified by an integer
 public class Server implements Runnable{
     private final ServerSocket serverSocket;
-    private final ExecutorService executor = Executors.newFixedThreadPool(128);
+    private final ExecutorService executor = Executors.newCachedThreadPool();
     private final Map<Integer, GameLobby> gamesMap;
     private final Map<String, ClientConnection> waitingPlayersWithNoGame;
     //when a game is started, the key is deleted from here

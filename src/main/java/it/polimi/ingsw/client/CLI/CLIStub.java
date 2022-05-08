@@ -18,6 +18,8 @@ public class CLIStub implements Runnable{
     private final int serverPort;
     private final String serverAddress;
     private String nickname;
+    private ObjectInputStream inputStream;
+    private ObjectOutputStream outputStream;
 
     public CLIStub(String serverAddress, int serverPort) {
         this.serverAddress = serverAddress;
@@ -42,14 +44,16 @@ public class CLIStub implements Runnable{
             Scanner sc = new Scanner(System.in);
             new Thread(() -> {
                 try {
-                    sendMessages(new ObjectOutputStream(socket.getOutputStream()), sc);
+                    outputStream = new ObjectOutputStream(socket.getOutputStream());
+                    sendMessages(sc);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }).start();
             new Thread(() -> {
                 try {
-                    readMessages(new ObjectInputStream(socket.getInputStream()), sc);
+                    inputStream = new ObjectInputStream(socket.getInputStream());
+                    readMessages();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -59,7 +63,7 @@ public class CLIStub implements Runnable{
         }
     }
 
-    public void sendMessages(ObjectOutputStream outputStream, Scanner scanner) {
+    public void sendMessages(Scanner scanner) {
         while(true) {
             System.out.println("Message type");
             ClientMessageType messageType = ClientMessageType.valueOf(scanner.next());
@@ -96,14 +100,18 @@ public class CLIStub implements Runnable{
                 ClientMessageHeader header = new ClientMessageHeader(null, nickname, messageType);
                 message = new MessageFromClient(header, null);
             }
-            if (message != null) {
-                try {
-                    outputStream.reset();
-                    outputStream.writeObject(message);
-                    outputStream.flush();
-                } catch (IOException e) {
-                    System.err.println(e.getMessage());
-                }
+            send(message);
+        }
+    }
+
+    public synchronized void send(MessageFromClient message) {
+        if (message != null) {
+            try {
+                outputStream.reset();
+                outputStream.writeObject(message);
+                outputStream.flush();
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
             }
         }
     }
@@ -187,25 +195,27 @@ public class CLIStub implements Runnable{
         payload.setAttribute("Arguments", scanner.nextInt());
     }
 
-    public void readMessages(ObjectInputStream inputStream, Scanner scanner) {
+    public void readMessages() {
         while(true) {
             try {
                 MessageFromServer message = (MessageFromServer) inputStream.readObject();
-                String messageName = message.getServerMessageHeader().getMessageName();
-                System.out.println("Message name: " + messageName);
-                System.out.println("Message type: " + message.getServerMessageHeader().getMessageType());
-                switch(messageName) {
-                    case "Error" ->  System.out.println("ErrorType: "  + message.getMessagePayload().getAttribute("ErrorType").getAsObject());
-                    case "ChangePhase" -> {
-                        System.out.println("New phase: " + message.getMessagePayload().getAttribute("NewPhase").getAsObject());
-                        System.out.println("Starter: " + message.getMessagePayload().getAttribute("Starter").getAsString());
-                    }
-                    case "EndTurn" -> System.out.println(message.getMessagePayload().getAttribute("TurnEnder").getAsString() +
+                if (message.getServerMessageHeader().getMessageType() == ServerMessageType.PING_MESSAGE) {
+                    send(new MessageFromClient(
+                            new ClientMessageHeader(null, null, ClientMessageType.PING_ACK), null));
+                } else {
+                    String messageName = message.getServerMessageHeader().getMessageName();
+                    System.out.println("Message name: " + messageName);
+                    System.out.println("Message type: " + message.getServerMessageHeader().getMessageType());
+                    switch (messageName) {
+                        case "Error" -> System.out.println("ErrorType: " + message.getMessagePayload().getAttribute("ErrorType").getAsObject());
+                        case "ChangePhase" -> {
+                            System.out.println("New phase: " + message.getMessagePayload().getAttribute("NewPhase").getAsObject());
+                            System.out.println("Starter: " + message.getMessagePayload().getAttribute("Starter").getAsString());
+                        }
+                        case "EndTurn" -> System.out.println(message.getMessagePayload().getAttribute("TurnEnder").getAsString() +
                                 " has finished. Now is " + message.getMessagePayload().getAttribute("TurnStarter").getAsString() +
                                 " turn");
-                }
-                if (messageName.equals("Error")) {
-                    System.out.println("ErrorType: "  + message.getMessagePayload().getAttribute("ErrorType").getAsObject());
+                    }
                 }
             } catch (IOException | ClassNotFoundException e) {
                 System.out.println("CLI stub has quit");

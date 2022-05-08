@@ -33,7 +33,7 @@ public class IslandListener implements ModelListener {
     }
 
     public void eventPerformed(List<Integer> islandIndexes){
-        MessagePayload messagePayload= new MessagePayload();
+        MessagePayload messagePayload = new MessagePayload();
         messagePayload.setAttribute("islandIndexes", islandIndexes);
         remoteView.sendMessage(messagePayload, "IslandUnificationUpdate", ServerMessageType.GAME_UPDATE);
     }

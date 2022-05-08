@@ -8,12 +8,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ConnectionToServer implements Runnable {
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
     private MessageHandler firstMessageHandler;
     private String nicknameClient;
+    private final ExecutorService messageHandlerExecutor = Executors.newSingleThreadExecutor();
 
     public ConnectionToServer(Socket socket, UserInterface view) {
         try {
@@ -34,10 +37,12 @@ public class ConnectionToServer implements Runnable {
     @Override
     public void run() {
         try {
-            while (true) { //while(isActive())
+            while (true) { //while(isActive()) ?
                 MessageFromServer message = (MessageFromServer) inputStream.readObject();
                 if (message.getServerMessageHeader().getMessageType() != ServerMessageType.PING_MESSAGE) {
-                    firstMessageHandler.handleMessage(message);
+                    //executor is needed because a ping message can be received when the executor elaborates the
+                    //previous message, but the ping message requires a quick response
+                    messageHandlerExecutor.submit(() -> firstMessageHandler.handleMessage(message));
                 } else {
                     onPingMessage();
                 }
@@ -52,6 +57,7 @@ public class ConnectionToServer implements Runnable {
         } finally {
             try {
                 inputStream.close();
+                outputStream.close();
             } catch (IOException e) {
                 //TODO
             }
@@ -70,7 +76,6 @@ public class ConnectionToServer implements Runnable {
         return t;
     }
 
-    //TODO: pong
     public void onPingMessage() {
         ClientMessageHeader header = new ClientMessageHeader(null, nicknameClient, ClientMessageType.PING_ACK);
         asyncWriteToServer(new MessageFromClient(header, null));

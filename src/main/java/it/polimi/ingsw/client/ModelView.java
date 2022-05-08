@@ -20,6 +20,7 @@ public class ModelView {
     private int[] charactersIds;
     private int[] noEntryTilesPositions;
     private Map<Integer, Integer[]> characterStudents;
+    private boolean isExpert;
 
     public ModelView() {
 
@@ -43,5 +44,17 @@ public class ModelView {
 
     private void updateCloudStudents(int cloudId, RealmType[] studentsInserted) {
 
+    }
+
+    private void setupInitializations() {
+
+    }
+
+    public boolean isExpert() {
+        return isExpert;
+    }
+
+    public void setExpert(boolean expert) {
+        isExpert = expert;
     }
 }

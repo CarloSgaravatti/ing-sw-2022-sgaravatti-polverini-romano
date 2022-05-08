@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.concurrent.*;
 
 public class SocketClientConnection implements Runnable, ClientConnection {
     private final Socket socket;
@@ -18,6 +19,9 @@ public class SocketClientConnection implements Runnable, ClientConnection {
     private boolean setupDone = false; //If a player has a game, this is true
     private final EventListenerList listeners = new EventListenerList();
     private String nickname;
+    private final ScheduledExecutorService pingManager = Executors.newScheduledThreadPool(1);
+    private final ExecutorService messageExecutor = Executors.newSingleThreadExecutor();
+    private boolean isPingAckReceived = true;
 
     public SocketClientConnection(Socket socket, Server server) {
         this.socket = socket;
@@ -39,6 +43,19 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         try {
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
+
+            MessageFromServer pingMessage = new MessageFromServer(
+                    new ServerMessageHeader(null, ServerMessageType.PING_MESSAGE), null);
+            pingManager.scheduleAtFixedRate(() -> {
+                if (!isPingAckReceived()) {
+                    close(); //TODO: this is not correct
+                    return;
+                }
+                asyncSend(pingMessage);
+                setPingAckReceived(false);
+                System.out.println("Ping sent to " + nickname);
+            }, 1, 1, TimeUnit.MINUTES);
+
             //Send setup nickname message
             do {
                 initializeClient();
@@ -57,15 +74,18 @@ public class SocketClientConnection implements Runnable, ClientConnection {
 
     public void readMessage() throws IOException, ClassNotFoundException {
         MessageFromClient message = (MessageFromClient) in.readObject();
-        if (message.getClientMessageHeader().getMessageType() != ClientMessageType.GAME_SETUP) {
+        if (message.getClientMessageHeader().getMessageType() == ClientMessageType.PING_ACK) {
+            setPingAckReceived(true);
+            System.out.println("PingAck received by " + nickname);
+        } else if (message.getClientMessageHeader().getMessageType() != ClientMessageType.GAME_SETUP) {
             if (!setupDone) {
                 sendError(ErrorMessageType.CLIENT_WITHOUT_GAME);
-            }else {
-                fireMessageEvent(message);
+            } else {
+                messageExecutor.submit(() -> fireMessageEvent(message));
             }
-            return;
+        } else {
+            messageExecutor.submit(() -> handleGameSetup(message));
         }
-        handleGameSetup(message);
     }
 
     private void close() {
@@ -73,6 +93,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         System.out.println("Deregistering client...");
         server.deregisterConnection(nickname);
         System.out.println("Done!");
+        pingManager.shutdownNow();
     }
 
     public synchronized void closeConnection() {
@@ -158,6 +179,14 @@ public class SocketClientConnection implements Runnable, ClientConnection {
 
     public synchronized void setSetupDone(boolean setupDone) {
         this.setupDone = setupDone;
+    }
+
+    public synchronized boolean isPingAckReceived() {
+        return isPingAckReceived;
+    }
+
+    public synchronized void setPingAckReceived(boolean pingAckReceived) {
+        isPingAckReceived = pingAckReceived;
     }
 
     public void sendError(ErrorMessageType error) {

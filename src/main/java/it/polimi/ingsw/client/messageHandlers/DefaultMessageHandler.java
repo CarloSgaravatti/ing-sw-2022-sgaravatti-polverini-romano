@@ -30,14 +30,14 @@ public class DefaultMessageHandler extends BaseMessageHandler {
             return;
         }
         switch (header.getMessageName()) {
-            case "NicknameRequest" -> handleNicknameRequest(message);
-            case "GeneralLobby" -> handleGeneralLobby(message);
-            case "GameLobby" -> handleGameLobby(message);
-            case "Error" -> handleError(message);
+            case "NicknameRequest" -> onNicknameRequest(message);
+            case "GeneralLobby" -> onGeneralLobbyMessage(message);
+            case "GameLobby" -> onGameLobbyMessage(message);
+            case "Error" -> onErrorMessage(message);
         }
     }
 
-    private void handleNicknameRequest(MessageFromServer message) {
+    private void onNicknameRequest(MessageFromServer message) {
         getUserInterface().displayStringMessage(message.getMessagePayload().getAttribute("MessageInfo").getAsString());
         String nickname = getUserInterface().askNickname();
         MessagePayload payload = new MessagePayload();
@@ -45,7 +45,7 @@ public class DefaultMessageHandler extends BaseMessageHandler {
         sendResponse(ClientMessageType.GAME_SETUP, "NicknameMessage", payload);
     }
 
-    private void handleGeneralLobby(MessageFromServer message) {
+    private void onGeneralLobbyMessage(MessageFromServer message) {
         int numGames = message.getMessagePayload().getAttribute("NotStartedGames").getAsInt();
         MessagePayload payload = new MessagePayload();
         Map<?, ?> gamesInfo = (Map<?, ?>) message.getMessagePayload().getAttribute("GamesInfo").getAsObject();
@@ -69,14 +69,14 @@ public class DefaultMessageHandler extends BaseMessageHandler {
         }
     }
 
-    private void handleGameLobby(MessageFromServer message) {
+    private void onGameLobbyMessage(MessageFromServer message) {
         //TODO
         //...
 
         getConnection().addFirstMessageHandler(new GameSetupMessageHandler(getConnection(), getUserInterface(), getModelView()));
     }
 
-    private void handleError(MessageFromServer message) {
+    private void onErrorMessage(MessageFromServer message) {
         //display error and notify turn handler
     }
 }

@@ -84,16 +84,16 @@ public class Player {
 		numCoins++;
 	}
 
-	public void removeCoins(int coins) throws NotEnoughCoinsException{
+	public void removeCoins(int coins) throws NotEnoughCoinsException {
 		if (numCoins < coins) throw new NotEnoughCoinsException();
 		numCoins -= coins;
 	}
 
-	public void setWizardType(WizardType wizardType){
+	public void setWizardType(WizardType wizardType) {
 		this.wizardType = wizardType;
 	}
 
-	public WizardType getWizardType(){
+	public WizardType getWizardType() {
 		return this.wizardType;
 	}
 

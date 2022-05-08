@@ -83,6 +83,7 @@ public class GameController implements EventListener {
 			}
 			boolean isPhaseEnded = turnController.endTurn();
 			game.setIndexActivePlayer(turnController.getActivePlayer());
+			setStartingTurnPhase(turnController.getCurrentPhase());
 			if (isPhaseEnded) {
 				handleEndPhase();
 				return;
@@ -107,9 +108,18 @@ public class GameController implements EventListener {
 		} else if (game.isLastRound()) {
 			//notify game finished
 			game.fireEndGameEvent();
+			return;
 		}
 		//Notify change phase
 		fireEndPhaseEvent(turnController.getCurrentPhase(), turnController.getActivePlayer().getNickName());
+	}
+
+	public void setStartingTurnPhase(RoundPhase currentRoundPhase) {
+		if (currentRoundPhase == RoundPhase.ACTION) {
+			actionController.setTurnPhase(TurnPhase.MOVE_STUDENTS);
+		} else {
+			actionController.setTurnPhase(TurnPhase.PLAY_ASSISTANT);
+		}
 	}
 
 	public void addListener(ErrorDispatcher errorListener) {

@@ -18,13 +18,13 @@ public class ActionController {
 	private TurnPhase turnPhase;
 	private final TurnController turnController;
 	private final GameController gameController;
-	protected EventListenerList listenerList = new EventListenerList();
+	private final EventListenerList listenerList = new EventListenerList();
 	private final List<String> possibleActions;
 
 	public ActionController(GameController gameController, TurnController turnController) {
 		this.gameController = gameController;
 		this.turnController = turnController;
-		turnPhase = TurnPhase.FILL_CLOUDS;
+		turnPhase = TurnPhase.PLAY_ASSISTANT;
 		possibleActions = JsonUtils.getRulesByDifficulty(gameController.isExpertGame());
 	}
 
