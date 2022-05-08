@@ -5,3 +5,4 @@ target/
 *.class
 out/
 *.asta.lock
+backupGames/

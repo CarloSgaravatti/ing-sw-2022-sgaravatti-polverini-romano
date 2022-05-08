@@ -62,6 +62,14 @@ public class TurnController {
 	public RoundPhase getCurrentPhase() {
 		return currentPhase;
 	}
+
+	public boolean isOrderCalculated() {
+		return orderCalculated;
+	}
+
+	public Player[] getPlayerOrder() {
+		return playerOrder;
+	}
 }
 
 

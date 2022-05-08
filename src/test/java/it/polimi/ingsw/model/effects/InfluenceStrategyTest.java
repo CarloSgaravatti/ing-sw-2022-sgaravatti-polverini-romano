@@ -6,6 +6,8 @@ import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.School;
+import it.polimi.ingsw.model.gameConstants.GameConstants;
+import it.polimi.ingsw.utils.JsonUtils;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -21,12 +23,13 @@ class InfluenceStrategyTest extends TestCase {
     @ParameterizedTest
     @ArgumentsSource(InfluenceStrategyArgumentProvider.class)
     void getNormalInfluence(InfluenceStrategy influenceStrategy, RealmType realmType, int expected) {
+        GameConstants gameConstants = JsonUtils.constantsByNumPlayer(2);
         Player player = new Player("player");
         Island island = new SingleIsland();
         for (int i = 0; i < RealmType.values().length; i++) {
             island.addStudent(new Student(RealmType.values()[i]));
         }
-        player.setSchool(new School(8, TowerType.BLACK));
+        player.setSchool(new School(8, TowerType.BLACK, gameConstants));
         try {
             player.getSchool().insertDiningRoom(new Student(realmType));
         } catch (FullDiningRoomException e) {

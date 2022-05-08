@@ -34,7 +34,7 @@ class Character12Test extends TestCase {
         game.addPlayer("player2");
         game.addPlayer("player3");
         for (int i = 0; i < 3; i++) {
-            game.getPlayers().get(i).setSchool(new School(6, TowerType.values()[i]));
+            game.getPlayers().get(i).setSchool(new School(6, TowerType.values()[i], gameConstants));
         }
     }
 

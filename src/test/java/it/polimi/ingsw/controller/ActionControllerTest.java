@@ -12,6 +12,8 @@ import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.enumerations.WizardType;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.School;
+import it.polimi.ingsw.model.gameConstants.GameConstants;
+import it.polimi.ingsw.utils.JsonUtils;
 import it.polimi.ingsw.utils.Pair;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
@@ -30,9 +32,11 @@ class ActionControllerTest extends TestCase {
     ActionController actionController;
     GameController gameController;
     Player activePlayer; //Used to check values after the actions
+    GameConstants gameConstants;
 
     @BeforeEach
     void setup() {
+        gameConstants = JsonUtils.constantsByNumPlayer(2);
         gameController = new GameController(1, 2, true);
         InitController initController = gameController.getInitController();
         try {
@@ -83,7 +87,7 @@ class ActionControllerTest extends TestCase {
             students[i] = new Student(RealmType.values()[i]);
             toDiningRoom.add(RealmType.values()[i]);
         }
-        activePlayer.setSchool(new School(8, TowerType.BLACK));
+        activePlayer.setSchool(new School(8, TowerType.BLACK,gameConstants));
         activePlayer.getSchool().insertEntrance(students);
         //Now in the entrance there are: 1 Y, 1 B, 1 G
         ClientMessageHeader header =
@@ -117,7 +121,7 @@ class ActionControllerTest extends TestCase {
             if (i < 2) toDiningRoom.add(RealmType.YELLOW_GNOMES);
             if (i == 2) toIslands.add(new Pair<>(RealmType.YELLOW_GNOMES, islandIndex));
         }
-        activePlayer.setSchool(new School(8, TowerType.BLACK));
+        activePlayer.setSchool(new School(8, TowerType.BLACK,gameConstants));
         activePlayer.getSchool().insertEntrance(students);
         ClientMessageHeader header =
                 new ClientMessageHeader("MoveStudents", activePlayer.getNickName(), ClientMessageType.ACTION);
@@ -170,7 +174,7 @@ class ActionControllerTest extends TestCase {
         } catch (StudentsNumberInCloudException e) {
             Assertions.fail();
         }
-        activePlayer.setSchool(new School(8, TowerType.BLACK));
+        activePlayer.setSchool(new School(8, TowerType.BLACK,gameConstants));
         ClientMessageHeader header =
                 new ClientMessageHeader("PickFromCloud", activePlayer.getNickName(), ClientMessageType.ACTION);
         MessagePayload payload = new MessagePayload();

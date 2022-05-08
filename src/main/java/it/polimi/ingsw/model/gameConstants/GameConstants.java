@@ -10,6 +10,15 @@ public class GameConstants {
     private int numStudentsPerCloud;
     private int numCoins;
     private int numCharacterPerGame;
+    private int maxStudentPerDiningRoom;
+
+    public int getMaxStudentPerDiningRoom() {
+        return maxStudentPerDiningRoom;
+    }
+
+    public void setMaxStudentPerDiningRoom(int maxStudentPerDiningRoom) {
+        this.maxStudentPerDiningRoom = maxStudentPerDiningRoom;
+    }
 
     public int getNumCharacterPerGame() {
         return numCharacterPerGame;

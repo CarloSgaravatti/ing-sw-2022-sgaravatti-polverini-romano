@@ -5,6 +5,7 @@
   "NumOfAssistantsPerWizard" : "10",
   "NumOfCoins" : "20",
   "NumOfCharacterPerGame" : "3",
+  "MaxStudentPerDiningRoom" : "10",
   "DifferencesByNumPlayer" : [
     {
       "NumPlayer" : "2",

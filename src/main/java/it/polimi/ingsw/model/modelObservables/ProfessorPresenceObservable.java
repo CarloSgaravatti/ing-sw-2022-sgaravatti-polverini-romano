@@ -18,7 +18,7 @@ public abstract class ProfessorPresenceObservable {
     /**
      * The list of observers
      */
-    private final List<ModelObserver> observers = new ArrayList<>();
+    private final transient List<ModelObserver> observers = new ArrayList<>();
 
     /**
      * Add an observer to the observer list

@@ -6,6 +6,8 @@ import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
 import it.polimi.ingsw.exceptions.StudentsNumberInCloudException;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
+import it.polimi.ingsw.model.gameConstants.GameConstants;
+import it.polimi.ingsw.utils.JsonUtils;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,6 +50,7 @@ class PlayerTest extends TestCase {
 
     @Test
     void pickFromCloudTest() {
+        GameConstants gameConstants = JsonUtils.constantsByNumPlayer(2);
         Cloud cloud = new Cloud(3);
         Student[] students = new Student[3];
         Arrays.fill(students, new Student(RealmType.YELLOW_GNOMES));
@@ -56,7 +59,7 @@ class PlayerTest extends TestCase {
         } catch (StudentsNumberInCloudException e) {
             Assertions.fail();
         }
-        playerToTest.setSchool(new School(8, TowerType.BLACK));
+        playerToTest.setSchool(new School(8, TowerType.BLACK, gameConstants));
         try {
             playerToTest.pickFromCloud(cloud);
         } catch (EmptyCloudException e) {

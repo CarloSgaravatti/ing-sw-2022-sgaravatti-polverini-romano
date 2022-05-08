@@ -12,7 +12,7 @@ import java.util.List;
 public class Character12 extends CharacterCard {
     private static final int MAX_STUDENTS_TO_REMOVE = 3;
     //Temporary solution, maybe it can be done with less brute force
-    private final Game game;
+    private final transient Game game;
 
     public Character12(Game game) {
         super(3, 12);

@@ -8,6 +8,8 @@ import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.School;
+import it.polimi.ingsw.model.gameConstants.GameConstants;
+import it.polimi.ingsw.utils.JsonUtils;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,10 +27,11 @@ class Character10Test extends TestCase {
 
     @BeforeEach
     void setupCharacter10() {
+        GameConstants gameConstants = JsonUtils.constantsByNumPlayer(2);
         CharacterCreator characterCreator = new CharacterCreator(null);
         character10 = (Character10) characterCreator.getCharacter(10);
         player = new Player("player");
-        player.setSchool(new School(8, TowerType.BLACK));
+        player.setSchool(new School(8, TowerType.BLACK, gameConstants));
         for (int i = 0; i < character10.getPrice(); i++) player.insertCoin();
         try {
             character10.playCard(player);

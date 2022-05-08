@@ -53,6 +53,7 @@ public class JsonUtils {
         gameConstants.setNumCoins(jsonObject.get("NumOfCoins").getAsInt());
         gameConstants.setNumCharacterPerGame(jsonObject.get("NumOfCharacterPerGame").getAsInt());
         gameConstants.setNumAssistantsPerWizard(jsonObject.get("NumOfAssistantsPerWizard").getAsInt());
+        gameConstants.setMaxStudentPerDiningRoom(jsonObject.get("MaxStudentPerDiningRoom").getAsInt());
         JsonArray jsonArray = jsonObject.get("DifferencesByNumPlayer").getAsJsonArray();
         for(JsonElement jsonElement : jsonArray){
             JsonObject differentConstantsByNumPlayer = jsonElement.getAsJsonObject();

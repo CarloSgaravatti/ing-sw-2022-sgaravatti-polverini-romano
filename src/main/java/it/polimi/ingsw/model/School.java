@@ -4,6 +4,7 @@ import it.polimi.ingsw.exceptions.FullDiningRoomException;
 import it.polimi.ingsw.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
+import it.polimi.ingsw.model.gameConstants.GameConstants;
 import it.polimi.ingsw.model.modelObservables.ProfessorPresenceObservable;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class School extends ProfessorPresenceObservable {
 	private int numTowers;
 	private final List<Student> studentDiningRoom;
 	private final List<Student> studentEntrance;
-	private final int MAX_STUDENTS_DINING_ROOM = 10;
+	private final transient GameConstants gameConstants;
 
 	//TODO: add observer from game
 
@@ -37,7 +38,7 @@ public class School extends ProfessorPresenceObservable {
 	 * @param towerType the tower type associated to the school
 	 * @see TowerType
 	 */
-	public School (int numTower, TowerType towerType) {
+	public School (int numTower, TowerType towerType,GameConstants gameConstants) {
 		this.towerType = towerType;
 		this.numTowers = numTower;
 		this.entrance = new int[RealmType.values().length];
@@ -47,6 +48,7 @@ public class School extends ProfessorPresenceObservable {
 			professorTable[i] = false;
 		studentEntrance = new ArrayList<>();
 		studentDiningRoom = new ArrayList<>();
+		this.gameConstants = gameConstants;
 		//TODO: pick students from bag to initialize school
 	}
 
@@ -69,7 +71,7 @@ public class School extends ProfessorPresenceObservable {
 	//This method is useful because a character card can give the opportunity to put a student
 	//directly in the dining room, without passing from the entrance.
 	public boolean insertDiningRoom (Student student) throws FullDiningRoomException {
-		if (diningRoom[student.getStudentType().ordinal()] >= MAX_STUDENTS_DINING_ROOM) {
+		if (diningRoom[student.getStudentType().ordinal()] >= gameConstants.getMaxStudentPerDiningRoom()) {
 			throw new FullDiningRoomException();
 		}
 		studentDiningRoom.add(student);

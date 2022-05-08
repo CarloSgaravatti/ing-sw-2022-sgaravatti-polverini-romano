@@ -68,7 +68,7 @@ public class InitController implements EventListener {
 				throw new TowerTypeAlreadyTakenException();
 			}
 		}
-		player.setSchool(new School(towerPerSchool, tower));
+		player.setSchool(new School(towerPerSchool, tower, gameConstants));
 		fireMyEvent(tower, player.getNickName());
 		playersWithTower.put(player.getNickName(), tower);
 	}

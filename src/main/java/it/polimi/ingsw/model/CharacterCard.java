@@ -15,8 +15,7 @@ public abstract class CharacterCard {
 	private final int id;
 	private int coinPrice;
 	private boolean coinPresent;
-	private Player playerActive;
-	public static final int NUM_CHARACTERS = 12;
+	private transient Player playerActive;
 
 	/**
 	 * Construct a CharacterCard which has the specified id and the specified price

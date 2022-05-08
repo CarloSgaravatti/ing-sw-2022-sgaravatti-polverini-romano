@@ -8,7 +8,7 @@ import java.util.List;
 
 public class SingleIsland extends Island {
     private final List<Student> students;
-    private static final int NUM_TOWERS_PER_ISLAND = 1;
+    private static final transient int NUM_TOWERS_PER_ISLAND = 1;
 
     public SingleIsland() {
         super();

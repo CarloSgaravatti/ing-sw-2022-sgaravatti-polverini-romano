@@ -4,6 +4,8 @@ import it.polimi.ingsw.exceptions.FullDiningRoomException;
 import it.polimi.ingsw.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
+import it.polimi.ingsw.model.gameConstants.GameConstants;
+import it.polimi.ingsw.utils.JsonUtils;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +18,8 @@ class SchoolTest extends TestCase {
 
     @BeforeEach
     void setup() {
-        schoolTest = new School(8, TowerType.BLACK);
+        GameConstants gameConstants = JsonUtils.constantsByNumPlayer(2);
+        schoolTest = new School(8, TowerType.BLACK, gameConstants);
     }
 
     @ParameterizedTest

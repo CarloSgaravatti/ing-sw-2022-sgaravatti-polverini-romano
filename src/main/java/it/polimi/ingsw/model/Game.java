@@ -23,11 +23,9 @@ public class Game implements ModelObserver{
 	private final List<Island> islands;
 	private int numPlayers;
 	private final Cloud[] clouds;
-	private int studentsPerCloud;
 	private int coinGeneralSupply;
 	private final CharacterCard[] characterCards;
 	private int indexActivePlayer;
-	private final static int NUM_STUDENTS = 130;
 	private final EventListenerList listenerList = new EventListenerList();
 	private final GameConstants gameConstants;
 	private boolean isLastRound = false;
@@ -397,5 +395,9 @@ public class Game implements ModelObserver{
 
 	public void setLastRound(boolean isLastRound) {
 		this.isLastRound = isLastRound;
+	}
+
+	public int getCoinGeneralSupply() {
+		return coinGeneralSupply;
 	}
 }

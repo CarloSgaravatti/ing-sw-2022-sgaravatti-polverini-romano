@@ -126,7 +126,10 @@ public class ActionController {
 	}
 
 	public void pickStudentsFromClouds(MessagePayload payload) throws EmptyCloudException, WrongTurnActionRequestedException {
-		if (turnPhase != TurnPhase.SELECT_CLOUD) throw new WrongTurnActionRequestedException();
+		if (turnPhase != TurnPhase.SELECT_CLOUD){
+			fireErrorEvent(ErrorMessageType.ILLEGAL_TURN_ACTION, turnController.getActivePlayer().getNickName());
+			throw new WrongTurnActionRequestedException();
+		}
 		int cloudIndex = payload.getAttribute("Cloud").getAsInt();
 		Cloud cloud = gameController.getModel().getClouds()[cloudIndex];
 		turnController.getActivePlayer().pickFromCloud(cloud);
