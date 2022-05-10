@@ -2,6 +2,7 @@ package it.polimi.ingsw.client;
 
 import it.polimi.ingsw.client.messageHandlers.DefaultMessageHandler;
 import it.polimi.ingsw.client.messageHandlers.MessageHandler;
+import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.messages.*;
 
 import java.io.IOException;
@@ -15,14 +16,13 @@ public class ConnectionToServer implements Runnable {
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
     private MessageHandler firstMessageHandler;
-    private String nicknameClient;
     private final ExecutorService messageHandlerExecutor = Executors.newSingleThreadExecutor();
 
     public ConnectionToServer(Socket socket, UserInterface view) {
         try {
             outputStream = new ObjectOutputStream(socket.getOutputStream());
             inputStream = new ObjectInputStream(socket.getInputStream());
-            firstMessageHandler = new DefaultMessageHandler(this, view, new ModelView());
+            firstMessageHandler = new DefaultMessageHandler(this, view, null);
         } catch (IOException e) {
             //TODO
             e.printStackTrace();
@@ -77,7 +77,7 @@ public class ConnectionToServer implements Runnable {
     }
 
     public void onPingMessage() {
-        ClientMessageHeader header = new ClientMessageHeader(null, nicknameClient, ClientMessageType.PING_ACK);
+        ClientMessageHeader header = new ClientMessageHeader(null, null, ClientMessageType.PING_ACK);
         asyncWriteToServer(new MessageFromClient(header, null));
     }
 }

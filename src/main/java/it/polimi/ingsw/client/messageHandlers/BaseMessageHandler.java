@@ -1,7 +1,7 @@
 package it.polimi.ingsw.client.messageHandlers;
 
 import it.polimi.ingsw.client.ConnectionToServer;
-import it.polimi.ingsw.client.ModelView;
+import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.client.UserInterface;
 import it.polimi.ingsw.messages.ClientMessageHeader;
 import it.polimi.ingsw.messages.ClientMessageType;
@@ -12,7 +12,7 @@ public abstract class BaseMessageHandler implements MessageHandler{
     private MessageHandler nextHandler;
     private final ConnectionToServer connection;
     private final UserInterface userInterface;
-    private final ModelView modelView;
+    private ModelView modelView;
 
     public BaseMessageHandler(ConnectionToServer connection, UserInterface userInterface, ModelView modelView) {
         this.connection = connection;
@@ -39,6 +39,10 @@ public abstract class BaseMessageHandler implements MessageHandler{
 
     public ModelView getModelView() {
         return modelView;
+    }
+
+    public void setModelView(ModelView modelView) {
+        this.modelView = modelView;
     }
 
     public void sendResponse(ClientMessageType messageType, String messageName, MessagePayload payload) {

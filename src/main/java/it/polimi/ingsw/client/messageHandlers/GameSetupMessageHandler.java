@@ -1,13 +1,20 @@
 package it.polimi.ingsw.client.messageHandlers;
 
 import it.polimi.ingsw.client.ConnectionToServer;
-import it.polimi.ingsw.client.ModelView;
+import it.polimi.ingsw.client.modelView.FieldView;
+import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.client.PlayerSetupHandler;
 import it.polimi.ingsw.client.UserInterface;
+import it.polimi.ingsw.client.modelView.PlayerView;
 import it.polimi.ingsw.messages.MessageFromServer;
 import it.polimi.ingsw.messages.MessagePayload;
 import it.polimi.ingsw.messages.ServerMessageHeader;
 import it.polimi.ingsw.messages.ServerMessageType;
+import it.polimi.ingsw.messages.simpleModel.SimpleField;
+import it.polimi.ingsw.model.enumerations.TowerType;
+import it.polimi.ingsw.model.enumerations.WizardType;
+
+import java.util.Map;
 
 //Handles GAME_SETUP and SetupAck messages
 public class GameSetupMessageHandler extends BaseMessageHandler{
@@ -30,26 +37,42 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
             case "TowerTaken" -> onTowerTaken(payload);
             case "WizardTaken" -> onWizardTaken(payload);
             case "GameInitializations" -> onGameInitializationMessage(payload);
-            case "TowerTypeRequest", "WizardTypeRequest" -> onRequestMessage(message);
+            case "TowerTypeRequest", "WizardTypeRequest" -> onRequestMessage(message); //maybe two separate messages
             case "SetupAck" -> onSetupAck(payload);
         }
     }
 
     private void onPlayerJoin(MessagePayload payload) {
+        String playerName = payload.getAttribute("Nickname").getAsString();
+        getModelView().getPlayers().put(playerName, new PlayerView());
 
+        //TODO
     }
 
     private void onTowerTaken(MessagePayload payload) {
+        String playerName = payload.getAttribute("PlayerName").getAsString();
+        TowerType tower = (TowerType) payload.getAttribute("TowerType").getAsObject();
+        getModelView().getPlayers().get(playerName).setTower(tower);
 
+        //TODO
     }
 
     private void onWizardTaken(MessagePayload payload) {
+        String playerName = payload.getAttribute("PlayerName").getAsString();
+        WizardType wizard = (WizardType) payload.getAttribute("WizardType").getAsObject();
+        getModelView().getPlayers().get(playerName).setWizard(wizard);
 
+        //TODO
     }
 
     private void onGameInitializationMessage(MessagePayload payload) {
-        //... (initialize model view)
-
+        //...
+        FieldView fieldView = new FieldView((SimpleField) payload.getAttribute("Field").getAsObject());
+        getModelView().setField(fieldView);
+        Map<?,?> schoolEntrances = (Map<?, ?>) payload.getAttribute("Schools").getAsObject();
+        for (String player: getModelView().getPlayers().keySet()) {
+            getModelView().getPlayers().get(player).getSchoolStudents().setFirst((Integer[]) schoolEntrances.get(player));
+        }
         if (getModelView().isExpert()) {
             getConnection().addFirstMessageHandler(new CharacterMessageHandler(getConnection(), getUserInterface(), getModelView()));
         }
@@ -59,9 +82,10 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
 
     private void onRequestMessage(MessageFromServer message) {
         //notify player setup handler
+        //TODO
     }
 
     private void onSetupAck(MessagePayload payload) {
-
+        //TODO
     }
 }

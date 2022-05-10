@@ -1,7 +1,7 @@
 package it.polimi.ingsw.client.messageHandlers;
 
 import it.polimi.ingsw.client.ConnectionToServer;
-import it.polimi.ingsw.client.ModelView;
+import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.client.TurnHandler;
 import it.polimi.ingsw.client.UserInterface;
 import it.polimi.ingsw.messages.*;
@@ -73,6 +73,8 @@ public class DefaultMessageHandler extends BaseMessageHandler {
         //TODO
         //...
 
+        MessagePayload payload = message.getMessagePayload();
+        setModelView(new ModelView(payload.getAttribute("Rules").getAsBoolean()));
         getConnection().addFirstMessageHandler(new GameSetupMessageHandler(getConnection(), getUserInterface(), getModelView()));
     }
 

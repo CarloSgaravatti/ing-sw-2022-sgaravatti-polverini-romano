@@ -2,6 +2,8 @@ package it.polimi.ingsw.client.CLI;
 
 import it.polimi.ingsw.client.ConnectionToServer;
 import it.polimi.ingsw.client.UserInterface;
+import it.polimi.ingsw.model.enumerations.TowerType;
+import it.polimi.ingsw.model.enumerations.WizardType;
 import it.polimi.ingsw.utils.Pair;
 
 import java.io.IOException;
@@ -85,4 +87,16 @@ public class CLI implements Runnable, UserInterface {
     public void displayStringMessage(String message) {
         System.out.println(message);
     }
+
+    public TowerType askTowerChoice(List<TowerType> freeTowers){
+        return null;
+    }
+
+    public WizardType askWizardChoice(List<WizardType> freeWizards){
+        return null;
+    }
+
+    public void displayLobbyInfo(){}
+
+    public void askAction(){}
 }
