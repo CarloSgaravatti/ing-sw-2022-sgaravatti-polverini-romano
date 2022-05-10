@@ -5,7 +5,10 @@ import it.polimi.ingsw.messages.MessagePayload;
 import it.polimi.ingsw.messages.ServerMessageType;
 import it.polimi.ingsw.server.RemoteView;
 
-public class TurnListener implements ModelListener{
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+public class TurnListener implements PropertyChangeListener {
     private final RemoteView view;
 
     public TurnListener(RemoteView view) {
@@ -24,5 +27,13 @@ public class TurnListener implements ModelListener{
         payload.setAttribute("NewPhase", newPhase);
         payload.setAttribute("Starter", starter);
         view.sendMessage(payload, "ChangePhase", ServerMessageType.GAME_UPDATE);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case "EndTurn" -> endTurnEventPerformed((String) evt.getOldValue(), (String) evt.getNewValue());
+            case "EndPhase" -> endPhaseEventPerformed((RoundPhase) evt.getOldValue(), (String) evt.getNewValue());
+        }
     }
 }

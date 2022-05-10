@@ -1,6 +1,6 @@
 package it.polimi.ingsw.controller;
-import it.polimi.ingsw.listeners.AcknowledgementDispatcher;
-import it.polimi.ingsw.listeners.PlayerListener;
+
+import it.polimi.ingsw.messages.ErrorMessageType;
 import it.polimi.ingsw.messages.MessageFromClient;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.exceptions.*;
@@ -8,16 +8,17 @@ import it.polimi.ingsw.model.enumerations.*;
 import it.polimi.ingsw.model.gameConstants.GameConstants;
 import it.polimi.ingsw.utils.JsonUtils;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.*;
 
-import javax.swing.event.EventListenerList;
-
-public class InitController implements EventListener {
+public class InitController implements PropertyChangeListener {
 	private Game game;
 	private final int numPlayers;
 	private final boolean isExpertGame;
-	private final EventListenerList listenerList = new EventListenerList();
 	private final GameConstants gameConstants;
+	private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 
 	private final Map<String, WizardType> playersWithWizard = new HashMap<>();
 	private final Map<String, TowerType> playersWithTower = new HashMap<>();
@@ -32,12 +33,8 @@ public class InitController implements EventListener {
 		return this.numPlayers;
 	}
 
-	public void addEventListener(PlayerListener listener) {
-		listenerList.add(PlayerListener.class, listener);
-	}
-
-	public void addListener(AcknowledgementDispatcher dispatcher) {
-		listenerList.add(AcknowledgementDispatcher.class, dispatcher);
+	public void addListener(String propertyName, PropertyChangeListener listener) {
+		listeners.addPropertyChangeListener(propertyName, listener);
 	}
 
 	public void initializeGameComponents() throws EmptyBagException {
@@ -45,7 +42,6 @@ public class InitController implements EventListener {
 		for(int i=0; i < gameConstants.getNumIslands();i++){
 			islands.add(new SingleIsland());
 		}
-		School[] schools = new School[numPlayers]; //?
 		game = new Game(islands,createClouds(),gameConstants);
 		game.setNumPlayers(numPlayers);
 		game.genStudentForBeginning();
@@ -69,7 +65,7 @@ public class InitController implements EventListener {
 			}
 		}
 		player.setSchool(new School(towerPerSchool, tower, gameConstants));
-		fireMyEvent(tower, player.getNickName());
+		listeners.firePropertyChange("Tower", tower, player.getNickName());
 		playersWithTower.put(player.getNickName(), tower);
 	}
 
@@ -81,7 +77,7 @@ public class InitController implements EventListener {
 			}
 		}
 		game.assignDeck(player, wizard);
-		//TODO: fire event
+		listeners.firePropertyChange("Wizard", wizard, player.getNickName());
 		playersWithWizard.put(player.getNickName(), wizard);
 	}
 
@@ -107,18 +103,6 @@ public class InitController implements EventListener {
 		return this.game;
 	}
 
-	protected void fireMyEvent(TowerType type, String playerName){
-		for(PlayerListener event : listenerList.getListeners(PlayerListener.class)){
-			event.eventPerformed(type, playerName);
-		}
-	}
-
-	protected void fireAckEvent(String nicknameToAck, String setupType) {
-		for(AcknowledgementDispatcher dispatcher : listenerList.getListeners(AcknowledgementDispatcher.class)){
-			dispatcher.confirmSetupChoice(nicknameToAck, setupType);
-		}
-	}
-
 	public Map<String, WizardType> getPlayersWithWizard() {
 		return playersWithWizard;
 	}
@@ -127,24 +111,35 @@ public class InitController implements EventListener {
 		return playersWithTower;
 	}
 
-	public void eventPerformed(MessageFromClient message) throws WizardTypeAlreadyTakenException,
-			TowerTypeAlreadyTakenException, IllegalArgumentException {
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		MessageFromClient message = (MessageFromClient) evt.getNewValue();
 		String messageName = message.getClientMessageHeader().getMessageName();
 		String nicknameSender = message.getClientMessageHeader().getNicknameSender();
 		switch (messageName) {
 			case "TowerChoice" -> {
 				TowerType tower = (TowerType) message.getMessagePayload().getAttribute("Tower").getAsObject();
 				Player player = game.getPlayerByNickname(nicknameSender);
-				setupPlayerTower(player, tower);
+				try {
+					setupPlayerTower(player, tower);
+				} catch (TowerTypeAlreadyTakenException e) {
+					listeners.firePropertyChange("Error", ErrorMessageType.TOWER_ALREADY_TAKEN, nicknameSender);
+				}
 			}
 			case "WizardChoice" -> {
 				WizardType wizard = (WizardType) message.getMessagePayload().getAttribute("Wizard").getAsObject();
 				Player player = game.getPlayerByNickname(nicknameSender);
-				setupPlayerWizard(player, wizard);
+				try {
+					setupPlayerWizard(player, wizard);
+				} catch (WizardTypeAlreadyTakenException e) {
+					listeners.firePropertyChange("Error", ErrorMessageType.WIZARD_ALREADY_TAKEN, nicknameSender);
+				}
 			}
-			default -> throw new IllegalArgumentException();
+			default -> {
+				listeners.firePropertyChange("Error", ErrorMessageType.UNRECOGNIZE_MESSAGE, nicknameSender);
+				return;
+			}
 		}
-		fireAckEvent(nicknameSender, messageName);
+		listeners.firePropertyChange("Setup", nicknameSender, messageName);
 	}
-
 }

@@ -5,9 +5,11 @@ import it.polimi.ingsw.messages.ServerMessageType;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.server.RemoteView;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
-public class IslandListener implements ModelListener {
+public class IslandListener implements PropertyChangeListener {
     private final RemoteView remoteView;
 
     public IslandListener(RemoteView remoteView) {
@@ -25,7 +27,7 @@ public class IslandListener implements ModelListener {
         remoteView.sendMessage(messagePayload, "IslandStudentsUpdate", ServerMessageType.GAME_UPDATE);
     }*/
 
-    public void eventPerformed(TowerType type, int indexIsland){
+    public void eventPerformed(TowerType type, int indexIsland) {
         MessagePayload messagePayload = new MessagePayload();
         messagePayload.setAttribute("TowerType", type);
         messagePayload.setAttribute("indexIsland", indexIsland);
@@ -36,5 +38,10 @@ public class IslandListener implements ModelListener {
         MessagePayload messagePayload = new MessagePayload();
         messagePayload.setAttribute("islandIndexes", islandIndexes);
         remoteView.sendMessage(messagePayload, "IslandUnificationUpdate", ServerMessageType.GAME_UPDATE);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        //TODO
     }
 }

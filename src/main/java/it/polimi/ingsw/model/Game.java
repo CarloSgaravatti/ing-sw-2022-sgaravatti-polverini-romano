@@ -10,8 +10,11 @@ import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.enumerations.WizardType;
 import it.polimi.ingsw.model.gameConstants.GameConstants;
+import it.polimi.ingsw.server.GameLobby;
+import it.polimi.ingsw.server.RemoteView;
 
-import javax.swing.event.EventListenerList;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeSupport;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,7 +29,7 @@ public class Game implements ModelObserver{
 	private int coinGeneralSupply;
 	private final CharacterCard[] characterCards;
 	private int indexActivePlayer;
-	private final EventListenerList listenerList = new EventListenerList();
+	private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 	private final GameConstants gameConstants;
 	private boolean isLastRound = false;
 
@@ -42,28 +45,21 @@ public class Game implements ModelObserver{
 		coinGeneralSupply = gameConstants.getNumCoins();
 	}
 
-	//TODO: invoke addEventListener method into InitController after making RemoteView
-	public void addEventListener(IslandListener listener) {
-		listenerList.add(IslandListener.class, listener);
-	}
-
-	public void addEventListener(SchoolListener listener){
-		listenerList.add(SchoolListener.class, listener);
-	}
-
-	public void addEventListener(MotherNatureListener listener){
-		listenerList.add(MotherNatureListener.class,listener);
-	}
-
-	public void addEventListener(EndGameListener listener) {
-		listenerList.add(EndGameListener.class, listener);
+	public void createListeners(List<RemoteView> views, GameLobby lobby) {
+		listeners.addPropertyChangeListener("EndGame", new EndGameListener(lobby));
+		for (RemoteView r: views) {
+			listeners.addPropertyChangeListener("MotherNature", new MotherNatureListener(r));
+			listeners.addPropertyChangeListener("Professor", new SchoolListener(r));
+			IslandListener listener = new IslandListener(r);
+			listeners.addPropertyChangeListener("IslandTower", listener);
+			listeners.addPropertyChangeListener("IslandUnification", listener);
+		}
 	}
 
 	public void start() {
-
+		//TODO or delete
 	}
 
-	//TODO: this has to be done at the beginning of the match
 	public void setNumPlayers(int numPlayers) {
 		this.numPlayers = numPlayers;
 	}
@@ -76,7 +72,7 @@ public class Game implements ModelObserver{
 		//else exception
 	}
 
-	public int getNumPlayers(){
+	public int getNumPlayers() {
 		return players.size();
 	}
 
@@ -85,15 +81,12 @@ public class Game implements ModelObserver{
 	}
 
 	public void moveMotherNature(int movement){
-		int i = 0;
-		while(!islands.get(i).isMotherNaturePresent() && i<islands.size()) {
-			i++;
-		}
-		islands.get(i).setMotherNaturePresent(false);
-		int initialPosition = i;
-		i = (i + movement) % islands.size();
-		islands.get(i).setMotherNaturePresent(true);
-		fireMyEvent(initialPosition+1,i+1); //why +1 ?
+		int initialPosition = motherNaturePositionIndex();
+		islands.get(initialPosition).setMotherNaturePresent(false);
+		int finalPosition = (initialPosition + movement) % islands.size();
+		islands.get(finalPosition).setMotherNaturePresent(true);
+		//fireMyEvent(initialPosition+1,i+1); //why +1 ?
+		listeners.firePropertyChange("MotherNature", initialPosition, finalPosition);
 	}
 
 	public Cloud[] getClouds (){
@@ -195,8 +188,7 @@ public class Game implements ModelObserver{
 	@Override
 	public void updateProfessorPresence(RealmType studentType) {
 		Optional<Player> currPlayerProfessor = players.stream()
-				.filter(p -> p.getSchool().isProfessorPresent(studentType))
-				.findFirst();
+				.filter(p -> p.getSchool().isProfessorPresent(studentType)).findFirst();
 		int indexPlayerProfessor = currPlayerProfessor.map(players::indexOf).orElseGet(() -> numPlayers + 1);
 		int maxStudents = 0;
 		Player playerTakeProfessor = null;
@@ -219,7 +211,8 @@ public class Game implements ModelObserver{
 		if (playerTakeProfessor != null) {
 			currPlayerProfessor.ifPresent(p -> p.getSchool().removeProfessor(studentType));
 			playerTakeProfessor.getSchool().insertProfessor(studentType);
-			fireMyEvent(studentType,playerTakeProfessor.getNickName());
+			PropertyChangeEvent evt = new PropertyChangeEvent(playerTakeProfessor, "Professor", null, studentType);
+			listeners.firePropertyChange(evt);
 		}
 	}
 
@@ -244,9 +237,9 @@ public class Game implements ModelObserver{
 				getPlayerByTowerType(island.getTowerType()).getSchool().insertTower(island.getNumTowers());
 			}
 			playerMaxInfluence.getSchool().sendTowerToIsland(island);
-			fireMyEvent(playerMaxInfluence.getSchool().getTowerType(), islands.indexOf(island));
+			//fireMyEvent(playerMaxInfluence.getSchool().getTowerType(), islands.indexOf(island)); TODO
 			updateIslandUnification(island);
-			if (playerMaxInfluence.getSchool().getNumTowers() == 0) fireEndGameEvent();
+			if (playerMaxInfluence.getSchool().getNumTowers() == 0) checkWinners();
 		}
 	}
 
@@ -274,8 +267,8 @@ public class Game implements ModelObserver{
 			islandIndexes.add(islandIndex);
 			islands.removeAll(islandToUnify);
 			islands.add(indexToReplace, new IslandGroup(islandToUnify.toArray(new Island[0])));
-			fireMyEvent(islandIndexes);
-			if (islands.size() <= 3) fireEndGameEvent();
+			//fireMyEvent(islandIndexes); TODO
+			if (islands.size() <= 3) checkWinners();
 		}
 	}
 
@@ -317,41 +310,12 @@ public class Game implements ModelObserver{
 		}
 	}
 
-	protected void fireMyEvent(TowerType type, int indexIslands) {
-		for(IslandListener event : listenerList.getListeners(IslandListener.class)){
-			event.eventPerformed(type, indexIslands);
-		}
-	}
-
-	protected void fireMyEvent(List<Integer> islandIndexList ) {
-		for(IslandListener event : listenerList.getListeners(IslandListener.class)){
-			event.eventPerformed(islandIndexList);
-		}
-	}
-
-	protected void fireMyEvent(RealmType type, String namePlayer){
-		for(SchoolListener event : listenerList.getListeners(SchoolListener.class)){
-			event.eventPerformed(type,namePlayer);
-		}
-	}
-
-	protected void fireMyEvent(int initialPosition, int finalPosition){
-		for(MotherNatureListener event : listenerList.getListeners(MotherNatureListener.class)){
-			event.eventPerformed(initialPosition,finalPosition);
-		}
-	}
-
-	public void fireEndGameEvent() {
+	public void checkWinners() {
 		List<Player> winnerOrTies = onGameEndEvent();
-		for(EndGameListener listener : listenerList.getListeners(EndGameListener.class)){
-			if (winnerOrTies.size() == 1) {
-				listener.onWinnerEvent(winnerOrTies.get(0).getNickName());
-			} else {
-				listener.onTieEvent(winnerOrTies.stream().map(Player::getNickName).collect(Collectors.toList()));
-			}
-		}
+		boolean isWin = winnerOrTies.size() == 1;
+		PropertyChangeEvent evt = new PropertyChangeEvent(winnerOrTies, "EndGame", null, isWin);
+		listeners.firePropertyChange(evt);
 	}
-
 
 	public GameConstants getGameConstants() {
 		return gameConstants;

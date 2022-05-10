@@ -9,17 +9,19 @@ import it.polimi.ingsw.server.GameLobby;
 import it.polimi.ingsw.server.RemoteView;
 
 import javax.swing.event.EventListenerList;
-import java.util.EventListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.List;
 
-public class GameController implements EventListener {
+public class GameController implements PropertyChangeListener {
 	private TurnController turnController;
 	private ActionController actionController;
 	private final InitController initController;
 	private Game game;
 	private final int gameId;
 	private final boolean isExpertGame;
-	private final EventListenerList listenerList = new EventListenerList();
+	private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 
 	public GameController(int gameId, int numPlayers, boolean isExpertGame) {
 		initController = new InitController(numPlayers, isExpertGame);
@@ -34,7 +36,7 @@ public class GameController implements EventListener {
 	public void startGame() {
 		game.start();
 		//TODO
-		fireEndPhaseEvent(turnController.getCurrentPhase(), turnController.getActivePlayer().getNickName());
+		listeners.firePropertyChange("EndPhase", turnController.getCurrentPhase(), turnController.getActivePlayer().getNickName());
 	}
 
 	public Game getModel() {
@@ -66,19 +68,20 @@ public class GameController implements EventListener {
 		actionController = new ActionController(this, turnController);
 	}
 
-	public synchronized void eventPerformed(MessageFromClient message) {
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		MessageFromClient message = (MessageFromClient) evt.getNewValue();
 		//Message have to be ACTION
 		String nicknamePlayer = message.getClientMessageHeader().getNicknameSender();
 		String actionName = message.getClientMessageHeader().getMessageName();
 		if (!nicknamePlayer.equals(turnController.getActivePlayer().getNickName())) {
-			fireErrorEvent(ErrorMessageType.ILLEGAL_TURN, nicknamePlayer);
+			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_TURN, nicknamePlayer);
 			return;
 		}
-		//Message start turn?
 		if (actionName.equals("EndTurn")) {
 			boolean isTurnEnded = actionController.checkIfTurnIsEnded();
 			if (!isTurnEnded) {
-				fireErrorEvent(ErrorMessageType.TURN_NOT_FINISHED, nicknamePlayer);
+				listeners.firePropertyChange("Error", ErrorMessageType.TURN_NOT_FINISHED, nicknamePlayer);
 				return;
 			}
 			boolean isPhaseEnded = turnController.endTurn();
@@ -90,11 +93,11 @@ public class GameController implements EventListener {
 			}
 			//notify new turn
 			String turnStarter = turnController.getActivePlayer().getNickName();
-			fireEndTurnEvent(nicknamePlayer, turnStarter);
+			listeners.firePropertyChange("EndTurn", nicknamePlayer, turnStarter);
 		} else {
 			try {
 				actionController.doAction(message);
-				fireAckEvent(nicknamePlayer, actionName);
+				listeners.firePropertyChange("Action", nicknamePlayer, actionName);
 			} catch (Exception e) {
 				//TODO: decide if it has to handled here or directly in the action controller class;
 				//	the exception will be transformed in an error message
@@ -107,11 +110,11 @@ public class GameController implements EventListener {
 			actionController.refillClouds();
 		} else if (game.isLastRound()) {
 			//notify game finished
-			game.fireEndGameEvent();
+			game.checkWinners();
 			return;
 		}
 		//Notify change phase
-		fireEndPhaseEvent(turnController.getCurrentPhase(), turnController.getActivePlayer().getNickName());
+		listeners.firePropertyChange("EndPhase", turnController.getCurrentPhase(), turnController.getActivePlayer().getNickName());
 	}
 
 	public void setStartingTurnPhase(RoundPhase currentRoundPhase) {
@@ -122,60 +125,25 @@ public class GameController implements EventListener {
 		}
 	}
 
-	public void addListener(ErrorDispatcher errorListener) {
-		listenerList.add(ErrorDispatcher.class, errorListener);
-	}
-
-	public void addListener(TurnListener listener) {
-		listenerList.add(TurnListener.class, listener);
-	}
-
-	public void addListener(AcknowledgementDispatcher dispatcher) {
-		listenerList.add(AcknowledgementDispatcher.class, dispatcher);
-	}
-
-	protected void fireAckEvent(String nicknameToAcknowledge, String actionName) {
-		for (AcknowledgementDispatcher ackDispatcher: listenerList.getListeners(AcknowledgementDispatcher.class)) {
-			ackDispatcher.confirmActionPerformed(nicknameToAcknowledge, actionName);
-		}
-	}
-
-	protected void fireErrorEvent(ErrorMessageType error, String nickname) {
-		for (ErrorDispatcher errorDispatcher: listenerList.getListeners(ErrorDispatcher.class)) {
-			errorDispatcher.onErrorEvent(error, nickname);
-		}
-	}
-
-	protected void fireEndPhaseEvent(RoundPhase newPhase, String starter) {
-		for (TurnListener listener: listenerList.getListeners(TurnListener.class)) {
-			listener.endPhaseEventPerformed(newPhase, starter);
-		}
-	}
-
-	protected void fireEndTurnEvent(String turnEnder, String turnStarter) {
-		for (TurnListener listener: listenerList.getListeners(TurnListener.class)) {
-			listener.endTurnEventPerformed(turnEnder, turnStarter);
-		}
-	}
-
 	public void createListeners(List<RemoteView> views, GameLobby lobby) {
 		ErrorDispatcher errorDispatcher = new ErrorDispatcher(views);
 		AcknowledgementDispatcher ackDispatcher = new AcknowledgementDispatcher(views);
-		addListener(errorDispatcher);
-		actionController.addListener(errorDispatcher);
-		addListener(ackDispatcher);
-		initController.addListener(ackDispatcher);
-		game.addEventListener(new EndGameListener(lobby));
+		listeners.addPropertyChangeListener("Error", errorDispatcher);
+		initController.addListener("Error", errorDispatcher);
+		actionController.addListener("Error", errorDispatcher);
+		listeners.addPropertyChangeListener("Action", ackDispatcher);
+		initController.addListener("Setup", ackDispatcher);
+		game.createListeners(views, lobby);
 		for(RemoteView view: views) {
-			addListener(new TurnListener(view));
+			TurnListener turnListener = new TurnListener(view);
+			listeners.addPropertyChangeListener("EndTurn", turnListener);
+			listeners.addPropertyChangeListener("EndPhase", turnListener);
 			PlayerListener playerListener = new PlayerListener(view);
-			initController.addEventListener(playerListener);
-			actionController.addEventListener(playerListener);
-			actionController.addEventListener(new CloudListener(view));
-			actionController.addEventListener(new CharacterListener(view));
-			game.addEventListener(new IslandListener(view));
-			game.addEventListener(new SchoolListener(view));
-			game.addEventListener(new MotherNatureListener(view));
+			initController.addListener("Tower", playerListener);
+			initController.addListener("Wizard", playerListener);
+			actionController.addListener("Assistant", playerListener);
+			actionController.addListener("CloudPick", new CloudListener(view));
+			actionController.addListener("PlayCharacter", new CharacterListener(view));
 		}
 	}
 }

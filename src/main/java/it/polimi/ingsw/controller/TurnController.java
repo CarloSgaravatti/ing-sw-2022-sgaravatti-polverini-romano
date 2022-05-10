@@ -54,11 +54,6 @@ public class TurnController {
 		return playerOrder[activePlayerIndex];
 	}
 
-	//Don't know if it is useful
-	/*public Player[] getPlayerOrder() {
-		return playerOrder;
-	}*/
-
 	public RoundPhase getCurrentPhase() {
 		return currentPhase;
 	}

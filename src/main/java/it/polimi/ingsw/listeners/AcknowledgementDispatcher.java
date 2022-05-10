@@ -4,11 +4,15 @@ import it.polimi.ingsw.messages.MessagePayload;
 import it.polimi.ingsw.messages.ServerMessageType;
 import it.polimi.ingsw.server.RemoteView;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.EventListener;
 import java.util.List;
 
-public class AcknowledgementDispatcher implements EventListener {
-    List<RemoteView> views;
+public class AcknowledgementDispatcher implements EventListener, PropertyChangeListener {
+    private static final String ACTION = "Action";
+    private static final String SETUP = "Setup";
+    private final List<RemoteView> views;
 
     public AcknowledgementDispatcher(List<RemoteView> views) {
         this.views = views;
@@ -38,5 +42,13 @@ public class AcknowledgementDispatcher implements EventListener {
 
     private void dispatchAck(RemoteView view, MessagePayload payload, String messageName) {
         view.sendMessage(payload, messageName, ServerMessageType.ACK_MESSAGE);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case ACTION -> confirmActionPerformed((String) evt.getOldValue(), (String) evt.getNewValue());
+            case SETUP -> confirmSetupChoice((String) evt.getOldValue(), (String) evt.getNewValue());
+        }
     }
 }

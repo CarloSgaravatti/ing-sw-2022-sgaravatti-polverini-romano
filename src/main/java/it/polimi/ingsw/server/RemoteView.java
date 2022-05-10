@@ -5,9 +5,10 @@ import it.polimi.ingsw.exceptions.TowerTypeAlreadyTakenException;
 import it.polimi.ingsw.exceptions.WizardTypeAlreadyTakenException;
 import it.polimi.ingsw.messages.*;
 
-import java.util.EventListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
-public class RemoteView extends View implements EventListener {
+public class RemoteView extends View implements PropertyChangeListener {
     private final ClientConnection connection;
     private final int gameId;
     private final String playerNickname;
@@ -16,7 +17,7 @@ public class RemoteView extends View implements EventListener {
     public RemoteView(ClientConnection connection, int gameId, String playerNickname, GameLobby gameLobby, GameController controller) {
         super(controller);
         this.connection = connection;
-        connection.addListener(this);
+        connection.addListener("RemoteView", this);
         this.gameId = gameId;
         this.playerNickname = playerNickname;
         this.gameLobby = gameLobby;
@@ -36,21 +37,15 @@ public class RemoteView extends View implements EventListener {
         connection.sendError(error);
     }
 
-    public void eventPerformed(MessageFromClient message) {
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        MessageFromClient message = (MessageFromClient) evt.getNewValue();
         ClientMessageType messageType = message.getClientMessageHeader().getMessageType();
         //Message type will always be different from GAME_SETUP
         switch (messageType) {
             case PLAYER_SETUP -> {
-                try {
-                    fireSetupMessageEvent(message); //Need to call also setup in GameLobby
-                    gameLobby.notifySetupChanges();
-                } catch (WizardTypeAlreadyTakenException e) {
-                    sendError(ErrorMessageType.WIZARD_ALREADY_TAKEN);
-                } catch (TowerTypeAlreadyTakenException e) {
-                    sendError(ErrorMessageType.TOWER_ALREADY_TAKEN);
-                } catch (IllegalArgumentException e) {
-                    sendError(ErrorMessageType.UNRECOGNIZE_MESSAGE);
-                }
+                fireSetupMessageEvent(message); //Need to call also setup in GameLobby
+                gameLobby.notifySetupChanges();
             }
             case ACTION -> fireActionMessageEvent(message);
         }

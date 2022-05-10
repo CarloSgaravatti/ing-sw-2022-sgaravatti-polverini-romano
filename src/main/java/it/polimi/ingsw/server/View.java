@@ -7,33 +7,26 @@ import it.polimi.ingsw.exceptions.WizardTypeAlreadyTakenException;
 import it.polimi.ingsw.messages.MessageFromClient;
 
 import javax.swing.event.EventListenerList;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 public abstract class View {
-    private final EventListenerList controllerListeners = new EventListenerList();
+    private final PropertyChangeSupport controllerListeners = new PropertyChangeSupport(this);
 
     public View(GameController gameController) {
-        addListener(gameController);
-        addListener(gameController.getInitController());
+        addListener("ActionMessage", gameController);
+        addListener("SetupMessage", gameController.getInitController());
     }
 
-    protected void addListener(InitController initController) {
-        controllerListeners.add(InitController.class, initController);
+    protected void addListener(String propertyName, PropertyChangeListener listener) {
+        controllerListeners.addPropertyChangeListener(propertyName, listener);
     }
 
-    protected void addListener(GameController gameController) {
-        controllerListeners.add(GameController.class, gameController);
-    }
-
-    protected void fireSetupMessageEvent(MessageFromClient message) throws WizardTypeAlreadyTakenException,
-            TowerTypeAlreadyTakenException, IllegalArgumentException {
-        for (InitController initController: controllerListeners.getListeners(InitController.class)) {
-            initController.eventPerformed(message);
-        }
+    protected void fireSetupMessageEvent(MessageFromClient message) {
+        controllerListeners.firePropertyChange("SetupMessage", null, message);
     }
 
     protected void fireActionMessageEvent(MessageFromClient message) {
-        for (GameController gameController: controllerListeners.getListeners(GameController.class)) {
-            gameController.eventPerformed(message);
-        }
+        controllerListeners.firePropertyChange("ActionMessage", null, message);
     }
 }

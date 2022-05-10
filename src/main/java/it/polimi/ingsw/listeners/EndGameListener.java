@@ -6,18 +6,28 @@ import it.polimi.ingsw.messages.ServerMessageHeader;
 import it.polimi.ingsw.messages.ServerMessageType;
 import it.polimi.ingsw.server.GameLobby;
 
-import java.util.EventListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Arrays;
 import java.util.List;
 
-public class EndGameListener implements EventListener {
+public class EndGameListener implements PropertyChangeListener {
     private final GameLobby lobby;
 
     public EndGameListener(GameLobby lobby) {
         this.lobby = lobby;
     }
 
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        List<String> winnersOrTiers = Arrays.asList((String[]) evt.getSource());
+        boolean isWin = (boolean) evt.getNewValue();
+        if (isWin) onWinnerEvent(winnersOrTiers.get(0));
+        else onTieEvent(winnersOrTiers);
+    }
+
     //Se qualcuno vince
-    public void onWinnerEvent(String winner) {
+    private void onWinnerEvent(String winner) {
         MessagePayload payload = new MessagePayload();
         payload.setAttribute("Winner", winner);
         ServerMessageHeader header = new ServerMessageHeader("EndGameWinner", ServerMessageType.GAME_UPDATE);
@@ -25,7 +35,7 @@ public class EndGameListener implements EventListener {
     }
 
     //Se non ci sono vincitori ma il gioco finisce
-    public void onTieEvent(List<String> tiers) {
+    private void onTieEvent(List<String> tiers) {
         MessagePayload payload = new MessagePayload();
         payload.setAttribute("Tiers", tiers);
         ServerMessageHeader header = new ServerMessageHeader("EndGameTied", ServerMessageType.GAME_UPDATE);

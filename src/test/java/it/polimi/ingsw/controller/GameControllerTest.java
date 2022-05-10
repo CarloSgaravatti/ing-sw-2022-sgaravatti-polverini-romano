@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,25 +39,14 @@ public class GameControllerTest {
     }
 
     @Test
-    void errorEventTest() {
-        controller.fireErrorEvent(ErrorMessageType.ILLEGAL_TURN_ACTION, "player1");
-        Assertions.assertNull(view2.getMessage());
-        Assertions.assertEquals("Error", view1.getMessage().getServerMessageHeader().getMessageName());
-        Assertions.assertEquals(ServerMessageType.SERVER_MESSAGE,
-                view1.getMessage().getServerMessageHeader().getMessageType());
-        Assertions.assertEquals(ErrorMessageType.ILLEGAL_TURN_ACTION,
-                view1.getMessage().getMessagePayload().getAttribute("ErrorType").getAsObject());
-    }
-
-    @Test
     void eventPerformedWrongTurnErrorTest() {
         String nickname = controller.getTurnController().getActivePlayer().getNickName();
         String sender = (nickname.equals("player1")) ? "player2" : "player1";
         ClientMessageHeader header = new ClientMessageHeader("EndTurn", sender, ClientMessageType.ACTION);
         MessageFromClient message = new MessageFromClient(header, new MessagePayload());
-        controller.eventPerformed(message);
         RemoteViewStub viewNullMessage = (sender.equals("player1")) ? view2 : view1;
         RemoteViewStub viewNotNullMessage = (sender.equals("player1")) ? view1 : view2;
+        controller.propertyChange(new PropertyChangeEvent(viewNotNullMessage, "ActionMessage", null, message));
         Assertions.assertNull(viewNullMessage.getMessage());
         Assertions.assertEquals("Error", viewNotNullMessage.getMessage().getServerMessageHeader().getMessageName());
         Assertions.assertEquals(ServerMessageType.SERVER_MESSAGE,
@@ -71,9 +61,9 @@ public class GameControllerTest {
         String nickname = controller.getTurnController().getActivePlayer().getNickName();
         ClientMessageHeader header = new ClientMessageHeader("EndTurn", nickname, ClientMessageType.ACTION);
         MessageFromClient message = new MessageFromClient(header, new MessagePayload());
-        controller.eventPerformed(message);
         RemoteViewStub viewNullMessage = (nickname.equals("player1")) ? view2 : view1;
         RemoteViewStub viewNotNullMessage = (nickname.equals("player1")) ? view1 : view2;
+        controller.propertyChange(new PropertyChangeEvent(viewNotNullMessage, "ActionMessage", null, message));
         Assertions.assertNull(viewNullMessage.getMessage());
         Assertions.assertEquals("Error", viewNotNullMessage.getMessage().getServerMessageHeader().getMessageName());
         Assertions.assertEquals(ServerMessageType.SERVER_MESSAGE,

@@ -58,6 +58,6 @@ public class Cloud {
 	 * @return the students that are present in the cloud
 	 */
 	public Student[] getStudents() {
-		return students;
+		return (studentsPresents) ? students : null;
 	}
 }

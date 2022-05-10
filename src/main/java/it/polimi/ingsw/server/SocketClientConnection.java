@@ -4,6 +4,9 @@ import it.polimi.ingsw.exceptions.DuplicateNicknameException;
 import it.polimi.ingsw.messages.*;
 
 import javax.swing.event.EventListenerList;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -17,7 +20,8 @@ public class SocketClientConnection implements Runnable, ClientConnection {
     private final Server server;
     private boolean active = false;
     private boolean setupDone = false; //If a player has a game, this is true
-    private final EventListenerList listeners = new EventListenerList();
+    //private final EventListenerList listeners = new EventListenerList();
+    private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
     private String nickname;
     private final ScheduledExecutorService pingManager = Executors.newScheduledThreadPool(1);
     private final ExecutorService messageExecutor = Executors.newSingleThreadExecutor();
@@ -28,14 +32,8 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         this.server = server;
     }
 
-    public void addListener(RemoteView listener) {
-        listeners.add(RemoteView.class, listener);
-    }
-
-    protected void fireMessageEvent(MessageFromClient message) {
-        for (RemoteView eventListener: listeners.getListeners(RemoteView.class)) {
-            eventListener.eventPerformed(message);
-        }
+    public void addListener(String propertyName, PropertyChangeListener listener) {
+        listeners.addPropertyChangeListener(propertyName, listener);
     }
 
     @Override
@@ -81,7 +79,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
             if (!setupDone) {
                 sendError(ErrorMessageType.CLIENT_WITHOUT_GAME);
             } else {
-                messageExecutor.submit(() -> fireMessageEvent(message));
+                messageExecutor.submit(() -> listeners.firePropertyChange("RemoteView", null, message));
             }
         } else {
             messageExecutor.submit(() -> handleGameSetup(message));
