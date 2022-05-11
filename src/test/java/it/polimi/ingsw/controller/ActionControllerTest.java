@@ -118,8 +118,8 @@ class ActionControllerTest extends TestCase {
         List<Pair<RealmType, Integer>> toIslands = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             students[i] = new Student(RealmType.YELLOW_GNOMES);
-            if (i < 2) toDiningRoom.add(RealmType.YELLOW_GNOMES);
-            if (i == 2) toIslands.add(new Pair<>(RealmType.YELLOW_GNOMES, islandIndex));
+            if (i < 2) toIslands.add(new Pair<>(RealmType.YELLOW_GNOMES, islandIndex));
+            if (i == 2) toDiningRoom.add(RealmType.YELLOW_GNOMES);
         }
         activePlayer.setSchool(new School(8, TowerType.BLACK, gameConstants, activePlayer));
         activePlayer.getSchool().insertEntrance(students);
@@ -135,8 +135,8 @@ class ActionControllerTest extends TestCase {
             e.printStackTrace();
             Assertions.fail();
         }
-        Assertions.assertEquals(2, activePlayer.getSchool().getNumStudentsDiningRoom(RealmType.YELLOW_GNOMES));
-        Assertions.assertEquals(initialYellowsInIsland + 1,
+        Assertions.assertEquals(1, activePlayer.getSchool().getNumStudentsDiningRoom(RealmType.YELLOW_GNOMES));
+        Assertions.assertEquals(initialYellowsInIsland + 2,
                 island.getNumStudentsOfType(RealmType.YELLOW_GNOMES));
     }
 

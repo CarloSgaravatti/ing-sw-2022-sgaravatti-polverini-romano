@@ -27,7 +27,6 @@ public class StudentContainer extends StudentContainerObservable {
         initializeContainer();
     }
 
-    //TODO: verify if this is useful
     public List<Student> getStudents() {
         return students;
     }

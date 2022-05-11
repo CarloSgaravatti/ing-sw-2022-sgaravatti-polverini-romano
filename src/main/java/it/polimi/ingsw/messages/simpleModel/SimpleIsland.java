@@ -7,14 +7,15 @@ import java.io.Serializable;
 
 public class SimpleIsland implements Serializable {
     private final Triplet<Integer[], Integer, TowerType> islandRepresentation;
-    private int numEntryTiles;
+    private final int numEntryTiles;
 
-    public SimpleIsland(Integer[] students, Integer towers, TowerType tower) {
+    public SimpleIsland(Integer[] students, Integer towers, TowerType tower, int numEntryTiles) {
         islandRepresentation = new Triplet<>(students, towers, tower);
+        this.numEntryTiles = numEntryTiles;
     }
 
-    public SimpleIsland(Integer[] students, Integer towers) {
-        this(students, towers, null);
+    public SimpleIsland(Integer[] students) {
+        this(students, 1, null, 0);
     }
 
     public Triplet<Integer[], Integer, TowerType> getIslandRepresentation() {
@@ -23,9 +24,5 @@ public class SimpleIsland implements Serializable {
 
     public int getNumEntryTiles() {
         return numEntryTiles;
-    }
-
-    public void setNumEntryTiles(int numEntryTiles) {
-        this.numEntryTiles = numEntryTiles;
     }
 }

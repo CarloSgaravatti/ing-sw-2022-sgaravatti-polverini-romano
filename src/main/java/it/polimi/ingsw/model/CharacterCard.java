@@ -3,6 +3,9 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.exceptions.IllegalCharacterActionRequestedException;
 import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.List;
 
 //TODO: all additional methods in subclasses has to be private (after change in tests)
@@ -16,6 +19,7 @@ public abstract class CharacterCard {
 	private int coinPrice;
 	private boolean coinPresent;
 	private transient Player playerActive;
+	private final transient PropertyChangeSupport listeners;
 
 	/**
 	 * Construct a CharacterCard which has the specified id and the specified price
@@ -26,6 +30,7 @@ public abstract class CharacterCard {
 		this.coinPrice = coinPrice;
 		this.id = id;
 		coinPresent = false;
+		listeners = new PropertyChangeSupport(this);
 	}
 
 	/**
@@ -66,6 +71,7 @@ public abstract class CharacterCard {
 		if (!coinPresent) {
 			putCoin();
 		}
+		firePropertyChange(new PropertyChangeEvent(this, "PlayCharacter", null, playerActive));
 	}
 
 	//TODO: all the IllegalActionRequestedException must have a message
@@ -99,4 +105,14 @@ public abstract class CharacterCard {
 	public int getId() {
 		return id;
 	}
+
+	public void addListener(PropertyChangeListener listener) {
+		listeners.addPropertyChangeListener(listener);
+	}
+
+	public void firePropertyChange(PropertyChangeEvent evt) {
+		listeners.firePropertyChange(evt);
+	}
+
+	//TODO: fire other character events
 }

@@ -57,4 +57,12 @@ public enum RealmType {
         }
         return result;
     }
+
+    public static Integer[] getIntegerRepresentation(RealmType[] realmTypes) {
+        Integer[] res = new Integer[values().length];
+        for (RealmType r: realmTypes) {
+            res[r.ordinal()]++;
+        }
+        return res;
+    }
 }

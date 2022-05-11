@@ -36,7 +36,6 @@ public class ActionController {
 	}
 
 	//TODO: these methods should return a message to the client and not an exception
-	//TODO: change in the turn phase after a conventional action is requested
 	public void doAction(MessageFromClient message) throws IllegalArgumentException, AssistantAlreadyPlayedException,
 			StudentNotFoundException, NoSuchAssistantException, EmptyCloudException, FullDiningRoomException,
 			NotEnoughCoinsException, IllegalCharacterActionRequestedException, WrongTurnActionRequestedException {
@@ -77,7 +76,6 @@ public class ActionController {
 			throw new AssistantAlreadyPlayedException();
 		}
 		setTurnPhase(TurnPhase.TURN_ENDED); //planning phase is ended for this player
-		listeners.firePropertyChange("Assistant", assistantIdx, playerName);
 		if (turnController.getActivePlayer().getAssistants().size() == 0) {
 			gameController.getModel().setLastRound(true);
 		}
@@ -100,6 +98,7 @@ public class ActionController {
 	}
 
 	//Use of ? to not have unchecked warning (maybe we should change the message format to not use generics)
+	//TODO: maybe this method can be done better
 	public void studentMovement(MessagePayload payload) throws IllegalArgumentException, StudentNotFoundException,
 			FullDiningRoomException, WrongTurnActionRequestedException, ClassCastException {
 		if (turnPhase != TurnPhase.MOVE_STUDENTS){
@@ -107,7 +106,7 @@ public class ActionController {
 			throw new WrongTurnActionRequestedException();
 		}
 		List<?> toDiningRoom = (List<?>) payload.getAttribute("StudentsToDR").getAsObject();
-		List<?> toIslands = (List<?>) payload.getAttribute("StudentsToIslands").getAsObject();
+		List<?> toIslands = new ArrayList<>((List<?>) payload.getAttribute("StudentsToIslands").getAsObject());
 		if (toDiningRoom.size() + toIslands.size() > 3){
 			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
 			throw new IllegalArgumentException();
@@ -119,16 +118,27 @@ public class ActionController {
 				gameController.getModel().takeCoinFromGeneralSupply();
 			}
 		}
-		for (Object pair: toIslands) {
-			Pair<?, ?> pairStudentIsland = (Pair<?, ?>) pair;
+		while (!toIslands.isEmpty()) {
+			Pair<?, ?> pairStudentIsland = (Pair<?, ?>) toIslands.get(0);
 			int islandIndex = (Integer) pairStudentIsland.getSecond();
 			if (!isValidIsland(islandIndex)){
 				listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
 				throw new IllegalArgumentException();
 			}
+			List<RealmType> studentsToIsland = new ArrayList<>();
+			studentsToIsland.add((RealmType) pairStudentIsland.getFirst());
+			toIslands.remove(pairStudentIsland);
+			List<Pair<?, ?>> toRemove = new ArrayList<>();
+			for (Object toIsland : toIslands) {
+				Pair<?, ?> pair = (Pair<?, ?>) toIsland;
+				if ((Integer) pair.getSecond() == islandIndex) {
+					studentsToIsland.add((RealmType) pair.getFirst());
+					toRemove.add(pair);
+				}
+			}
+			for (Object o: toRemove) toIslands.remove(o);
 			Island island = gameController.getModel().getIslands().get(islandIndex);
-			RealmType studentType = (RealmType) pairStudentIsland.getFirst();
-			school.sendStudentToIsland(island, studentType);
+			school.sendStudentToIsland(island, studentsToIsland.toArray(new RealmType[0]));
 		}
 		setTurnPhase(TurnPhase.MOVE_MOTHER_NATURE);
 	}
@@ -140,11 +150,7 @@ public class ActionController {
 		}
 		int cloudIndex = payload.getAttribute("Cloud").getAsInt();
 		Cloud cloud = gameController.getModel().getClouds()[cloudIndex];
-		Student[] students = cloud.getStudents();
 		turnController.getActivePlayer().pickFromCloud(cloud);
-		PropertyChangeEvent evt = new PropertyChangeEvent(turnController.getActivePlayer().getNickName(),
-				"CloudPick", null, new Pair<>(cloudIndex, students));
-		listeners.firePropertyChange(evt);
 		setTurnPhase(TurnPhase.TURN_ENDED);
 	}
 
@@ -166,8 +172,6 @@ public class ActionController {
 		//TODO: if player does not have enough coins this is not correct
 		if (!characterCard.isCoinPresent()) coinToGeneralSupply--;
 		characterCard.playCard(turnController.getActivePlayer());
-		listeners.firePropertyChange(new PropertyChangeEvent(activePlayer.getNickName(), "PlayCharacter",
-				null, characterId));
 		turnController.getActivePlayer().getTurnEffect().setCharacterPlayed(true);
 		turnController.getActivePlayer().getTurnEffect().setCharacterEffectConsumed(false);
 		gameController.getModel().insertCoinsInGeneralSupply(coinToGeneralSupply);

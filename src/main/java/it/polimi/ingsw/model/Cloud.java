@@ -3,6 +3,9 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.exceptions.EmptyCloudException;
 import it.polimi.ingsw.exceptions.StudentsNumberInCloudException;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
 /**
  * Class Cloud represent a game cloud, that can contain some students (in base on how many
  * players have the game) that are picked from the cloud at the end of a round by players
@@ -10,6 +13,7 @@ import it.polimi.ingsw.exceptions.StudentsNumberInCloudException;
 public class Cloud {
 	private boolean studentsPresents;
 	private Student[] students;
+	private final PropertyChangeSupport game = new PropertyChangeSupport(this);
 
 	/**
 	 * Constructs a cloud with no students that can contain the specified number of students
@@ -36,6 +40,7 @@ public class Cloud {
 	 */
 	public Student[] pickStudents() throws EmptyCloudException {
 		if (!studentsPresents) throw new EmptyCloudException();
+		game.firePropertyChange("PickFromCloud", null, students);
 		studentsPresents = false;
 		return students;
 	}
@@ -59,5 +64,9 @@ public class Cloud {
 	 */
 	public Student[] getStudents() {
 		return (studentsPresents) ? students : null;
+	}
+
+	public void addListener(PropertyChangeListener listener) {
+		game.addPropertyChangeListener(listener);
 	}
 }

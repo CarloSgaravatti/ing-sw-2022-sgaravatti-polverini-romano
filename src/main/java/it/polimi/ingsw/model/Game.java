@@ -9,14 +9,16 @@ import it.polimi.ingsw.model.enumerations.WizardType;
 import it.polimi.ingsw.model.gameConstants.GameConstants;
 import it.polimi.ingsw.server.GameLobby;
 import it.polimi.ingsw.server.RemoteView;
+import it.polimi.ingsw.utils.Pair;
 
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.*;
 import java.util.stream.Collectors;
 
 //TODO: this class is becoming way too big
-public class Game implements ModelObserver{
+public class Game implements ModelObserver, PropertyChangeListener {
 	private boolean started;
 	private final List<Player> players;
 	private final Bag bag;
@@ -47,10 +49,16 @@ public class Game implements ModelObserver{
 		for (RemoteView r: views) {
 			listeners.addPropertyChangeListener("MotherNature", new MotherNatureListener(r));
 			IslandListener listener = new IslandListener(r);
+			listeners.addPropertyChangeListener("IslandStudents", listener);
 			listeners.addPropertyChangeListener("IslandTower", listener);
 			listeners.addPropertyChangeListener("IslandUnification", listener);
+			listeners.addPropertyChangeListener("PickFromCloud", new CloudListener(r));
 			getPlayerByNickname(r.getPlayerNickname()).addListener(new PlayerListener(r));
+			CharacterListener characterListener = new CharacterListener(r);
+			for (CharacterCard c: characterCards) c.addListener(characterListener);
 		}
+		for (Island i: islands) i.addListener(this);
+		for (Cloud c: clouds) c.addListener(this);
 	}
 
 	public void start() {
@@ -178,9 +186,6 @@ public class Game implements ModelObserver{
 		player.setWizardType(type);
 	}
 
-	//TODO: assign also school
-
-
 	//This method maybe can be done in a better way
 	@Override
 	public void updateProfessorPresence(RealmType studentType) {
@@ -232,7 +237,6 @@ public class Game implements ModelObserver{
 				getPlayerByTowerType(island.getTowerType()).getSchool().insertTower(island.getNumTowers());
 			}
 			playerMaxInfluence.getSchool().sendTowerToIsland(island);
-			//fireMyEvent(playerMaxInfluence.getSchool().getTowerType(), islands.indexOf(island)); TODO
 			updateIslandUnification(island);
 			if (playerMaxInfluence.getSchool().getNumTowers() == 0) checkWinners();
 		}
@@ -261,8 +265,10 @@ public class Game implements ModelObserver{
 			islandToUnify.add(island);
 			islandIndexes.add(islandIndex);
 			islands.removeAll(islandToUnify);
-			islands.add(indexToReplace, new IslandGroup(islandToUnify.toArray(new Island[0])));
-			//fireMyEvent(islandIndexes); TODO
+			Island newIsland = new IslandGroup(islandToUnify.toArray(new Island[0]));
+			islands.add(indexToReplace, newIsland);
+			newIsland.addListener(this);
+			listeners.firePropertyChange( "IslandUnification", islandIndexes.toArray(new Integer[0]), newIsland);
 			if (islands.size() <= 3) checkWinners();
 		}
 	}
@@ -358,5 +364,25 @@ public class Game implements ModelObserver{
 
 	public int getCoinGeneralSupply() {
 		return coinGeneralSupply;
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		switch (evt.getPropertyName()) {
+			case "IslandStudents", "IslandTower" -> {
+				Integer islandIndex = islands.indexOf((Island) evt.getSource());
+				listeners.firePropertyChange(new PropertyChangeEvent(
+						islandIndex, evt.getPropertyName(), evt.getOldValue(), evt.getNewValue()));
+			}
+			case "MotherNature" -> updateIslandTower((Island) evt.getNewValue());
+			case "PickFromCloud" -> {
+				int cloudIndex = 0;
+				while(evt.getSource() != clouds[cloudIndex]) cloudIndex++; //!= because I want the exact cloud object
+				listeners.firePropertyChange(new PropertyChangeEvent(
+						players.get(indexActivePlayer).getNickName(), "PickFromCloud",
+						null, new Pair<Integer, Student[]>(cloudIndex, (Student[]) evt.getNewValue())
+				));
+			}
+		}
 	}
 }

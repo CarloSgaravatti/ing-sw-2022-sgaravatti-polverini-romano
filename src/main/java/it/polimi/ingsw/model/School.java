@@ -126,14 +126,16 @@ public class School extends ProfessorPresenceObservable {
 	}
 
 	/**
-	 * Method sendStudentToIsland sends a student from the entrance of the specified Realm Type
+	 * Method sendStudentToIsland sends some students from the entrance of the specified Realm Types
 	 * to the specified island.
 	 * @param island the island on which the student is sent
-	 * @param studentType the Realm Type of the student to pick from the entrance
+	 * @param students the Realm Type of the students to pick from the entrance
 	 * @throws StudentNotFoundException if the entrance doesn't have a student from the specified type
 	 */
-	public void sendStudentToIsland (Island island, RealmType studentType) throws StudentNotFoundException {
-		island.addStudent(removeStudentEntrance(studentType));
+	public void sendStudentToIsland (Island island, RealmType ... students) throws StudentNotFoundException {
+		for (RealmType studentType: students) {
+			island.addStudents(removeStudentEntrance(studentType));
+		}
 	}
 
 	/**

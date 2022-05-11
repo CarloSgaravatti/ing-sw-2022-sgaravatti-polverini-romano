@@ -6,7 +6,6 @@ public class ServerMessageHeader implements Serializable {
     private final String messageName;
     private final ServerMessageType messageType;
     private int gameId;
-    //TODO: other attributes
 
     public ServerMessageHeader(String messageName, ServerMessageType messageType) {
         this.messageName = messageName;

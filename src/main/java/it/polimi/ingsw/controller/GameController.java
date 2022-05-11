@@ -140,9 +140,6 @@ public class GameController implements PropertyChangeListener {
 			PlayerSetupListener playerListener = new PlayerSetupListener(view);
 			initController.addListener("Tower", playerListener);
 			initController.addListener("Wizard", playerListener);
-			//TODO: these two will be removed
-			actionController.addListener("CloudPick", new CloudListener(view));
-			actionController.addListener("PlayCharacter", new CharacterListener(view));
 		}
 	}
 }

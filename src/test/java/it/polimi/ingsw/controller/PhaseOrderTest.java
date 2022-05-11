@@ -22,7 +22,6 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-//TODO: these classes need more accurate tests
 class PhaseOrderTest {
     PlanningPhaseOrder planningPhaseOrder;
     ActionPhaseOrder actionPhaseOrder;

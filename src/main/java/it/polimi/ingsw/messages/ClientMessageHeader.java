@@ -6,7 +6,6 @@ public class ClientMessageHeader implements Serializable {
     private final String messageName;
     private final ClientMessageType messageType;
     private final String nicknameSender;
-    //TODO: other attributes
 
     public ClientMessageHeader(String messageName, String nicknameSender, ClientMessageType messageType) {
         this.messageName = messageName;

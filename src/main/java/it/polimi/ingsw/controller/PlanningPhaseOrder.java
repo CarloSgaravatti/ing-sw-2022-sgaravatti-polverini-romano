@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Random;
 
 public class PlanningPhaseOrder implements PhaseOrder {
-	private boolean isFirstRound = true; //Round number.
+	private boolean isFirstRound = true;
 	private final List<Player> playersClockOrder;
 	private final int numPlayers;
 
@@ -17,7 +17,6 @@ public class PlanningPhaseOrder implements PhaseOrder {
 		numPlayers = game.getNumPlayers();
 	}
 
-	//TODO: better naming for variables
 	public Player[] calculateOrder(Player[] players) {
 		Random rnd;
 		int a;

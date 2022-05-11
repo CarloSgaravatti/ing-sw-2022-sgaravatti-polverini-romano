@@ -46,7 +46,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
                     new ServerMessageHeader(null, ServerMessageType.PING_MESSAGE), null);
             pingManager.scheduleAtFixedRate(() -> {
                 if (!isPingAckReceived()) {
-                    close(); //TODO: this is not correct
+                    setActive(false);
                     return;
                 }
                 asyncSend(pingMessage);

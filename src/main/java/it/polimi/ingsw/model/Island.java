@@ -5,6 +5,9 @@ import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.modelObservables.MotherNatureMovementObservable;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -19,12 +22,12 @@ public abstract class Island extends MotherNatureMovementObservable {
 	private int noEntryTilePresents;
 	private NoEntryTileManager noEntryTileManager = null;
 	public static final int NUM_ISLANDS = 12;
+	public transient PropertyChangeSupport game = new PropertyChangeSupport(this);
 
 	/**
 	 * Constructs an empty Island with no students, no entry tiles and mother nature in it
 	 */
 	public Island() {
-		super();
 		motherNaturePresent = false;
 		noEntryTilePresents = 0;
 	}
@@ -94,6 +97,19 @@ public abstract class Island extends MotherNatureMovementObservable {
 	}
 
 	public void setTowerType(TowerType towerType) {
+		game.firePropertyChange("IslandTower", this.towerType, towerType);
 		this.towerType = towerType;
+	}
+
+	public void addStudents(Student ... students) {
+		for (Student s: students) {
+			addStudent(s);
+		}
+		game.firePropertyChange("IslandStudents", null, Arrays.stream(students)
+				.map(Student::getStudentType).toList().toArray(new RealmType[0]));
+	}
+
+	public void addListener(PropertyChangeListener listener) {
+		game.addPropertyChangeListener(listener);
 	}
 }

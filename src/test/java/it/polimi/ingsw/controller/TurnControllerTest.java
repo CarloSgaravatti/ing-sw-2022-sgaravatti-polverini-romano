@@ -57,7 +57,6 @@ class TurnControllerTest extends TestCase {
     }
 
     @Test
-    //TODO: to run this test phase order needs to be finished
     void getActivePlayerTest() {
         //This is just to skip the first round planning phase order
         Player[] players = new Player[3];

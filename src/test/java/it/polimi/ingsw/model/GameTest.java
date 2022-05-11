@@ -33,7 +33,7 @@ class GameTest extends TestCase {
 
 
     @Test
-    void addPlayerTest() { //TODO: need to check if is a correct way to test this method
+    void addPlayerTest() {
         game.setNumPlayers(4);
         for(int i = 0; i < 4; i++){
             game.addPlayer("generic player");
