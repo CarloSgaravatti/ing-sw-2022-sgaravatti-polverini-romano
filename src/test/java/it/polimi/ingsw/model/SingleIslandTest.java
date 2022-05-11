@@ -57,7 +57,8 @@ class SingleIslandTest extends TestCase {
         game.addPlayer("player2");
         islandToTest.addObserver(game);
         for (int i = 0; i < game.getPlayers().size(); i++) {
-            game.getPlayers().get(i).setSchool(new School(8, TowerType.values()[i], gameConstants));
+            Player player = game.getPlayers().get(i);
+            player.setSchool(new School(8, TowerType.values()[i], gameConstants, player));
         }
         try {
             for (int j = 0; j < player1Students; j++)

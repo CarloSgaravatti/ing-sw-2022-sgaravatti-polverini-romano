@@ -31,7 +31,7 @@ class Character10Test extends TestCase {
         CharacterCreator characterCreator = new CharacterCreator(null);
         character10 = (Character10) characterCreator.getCharacter(10);
         player = new Player("player");
-        player.setSchool(new School(8, TowerType.BLACK, gameConstants));
+        player.setSchool(new School(8, TowerType.BLACK, gameConstants, player));
         for (int i = 0; i < character10.getPrice(); i++) player.insertCoin();
         try {
             character10.playCard(player);

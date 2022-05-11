@@ -1,10 +1,7 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.EmptyBagException;
-import it.polimi.ingsw.listeners.EndGameListener;
-import it.polimi.ingsw.listeners.IslandListener;
-import it.polimi.ingsw.listeners.MotherNatureListener;
-import it.polimi.ingsw.listeners.SchoolListener;
+import it.polimi.ingsw.listeners.*;
 import it.polimi.ingsw.model.effects.StudentContainer;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
@@ -49,15 +46,15 @@ public class Game implements ModelObserver{
 		listeners.addPropertyChangeListener("EndGame", new EndGameListener(lobby));
 		for (RemoteView r: views) {
 			listeners.addPropertyChangeListener("MotherNature", new MotherNatureListener(r));
-			listeners.addPropertyChangeListener("Professor", new SchoolListener(r));
 			IslandListener listener = new IslandListener(r);
 			listeners.addPropertyChangeListener("IslandTower", listener);
 			listeners.addPropertyChangeListener("IslandUnification", listener);
+			getPlayerByNickname(r.getPlayerNickname()).addListener(new PlayerListener(r));
 		}
 	}
 
 	public void start() {
-		//TODO or delete
+		//TODO (or delete)
 	}
 
 	public void setNumPlayers(int numPlayers) {
@@ -211,8 +208,6 @@ public class Game implements ModelObserver{
 		if (playerTakeProfessor != null) {
 			currPlayerProfessor.ifPresent(p -> p.getSchool().removeProfessor(studentType));
 			playerTakeProfessor.getSchool().insertProfessor(studentType);
-			PropertyChangeEvent evt = new PropertyChangeEvent(playerTakeProfessor, "Professor", null, studentType);
-			listeners.firePropertyChange(evt);
 		}
 	}
 

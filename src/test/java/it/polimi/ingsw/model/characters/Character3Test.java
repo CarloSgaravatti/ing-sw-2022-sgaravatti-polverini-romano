@@ -44,8 +44,8 @@ class Character3Test extends TestCase {
         game.setNumPlayers(2);
         game.addPlayer("player1");
         game.addPlayer("player2");
-        game.getPlayers().get(0).setSchool(new School(8, TowerType.BLACK, gameConstants));
-        game.getPlayers().get(1).setSchool(new School(8, TowerType.WHITE, gameConstants));
+        game.getPlayers().get(0).setSchool(new School(8, TowerType.BLACK, gameConstants, null));
+        game.getPlayers().get(1).setSchool(new School(8, TowerType.WHITE, gameConstants, null));
         game.getPlayers().get(0).getSchool().addObserver(game);
         game.getPlayers().get(1).getSchool().addObserver(game);
         try {
@@ -70,8 +70,8 @@ class Character3Test extends TestCase {
         game.setNumPlayers(2);
         game.addPlayer("player1");
         game.addPlayer("player2");
-        game.getPlayers().get(0).setSchool(new School(8, TowerType.BLACK, gameConstants));
-        game.getPlayers().get(1).setSchool(new School(8, TowerType.WHITE, gameConstants));
+        game.getPlayers().get(0).setSchool(new School(8, TowerType.BLACK, gameConstants, null));
+        game.getPlayers().get(1).setSchool(new School(8, TowerType.WHITE, gameConstants, null));
         game.getPlayers().get(0).getSchool().addObserver(game);
         game.getPlayers().get(1).getSchool().addObserver(game);
         try {

@@ -19,7 +19,7 @@ class SchoolTest extends TestCase {
     @BeforeEach
     void setup() {
         GameConstants gameConstants = JsonUtils.constantsByNumPlayer(2);
-        schoolTest = new School(8, TowerType.BLACK, gameConstants);
+        schoolTest = new School(8, TowerType.BLACK, gameConstants, null);
     }
 
     @ParameterizedTest

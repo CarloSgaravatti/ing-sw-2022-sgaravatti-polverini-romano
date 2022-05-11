@@ -87,7 +87,7 @@ class ActionControllerTest extends TestCase {
             students[i] = new Student(RealmType.values()[i]);
             toDiningRoom.add(RealmType.values()[i]);
         }
-        activePlayer.setSchool(new School(8, TowerType.BLACK,gameConstants));
+        activePlayer.setSchool(new School(8, TowerType.BLACK, gameConstants, activePlayer));
         activePlayer.getSchool().insertEntrance(students);
         //Now in the entrance there are: 1 Y, 1 B, 1 G
         ClientMessageHeader header =
@@ -121,7 +121,7 @@ class ActionControllerTest extends TestCase {
             if (i < 2) toDiningRoom.add(RealmType.YELLOW_GNOMES);
             if (i == 2) toIslands.add(new Pair<>(RealmType.YELLOW_GNOMES, islandIndex));
         }
-        activePlayer.setSchool(new School(8, TowerType.BLACK,gameConstants));
+        activePlayer.setSchool(new School(8, TowerType.BLACK, gameConstants, activePlayer));
         activePlayer.getSchool().insertEntrance(students);
         ClientMessageHeader header =
                 new ClientMessageHeader("MoveStudents", activePlayer.getNickName(), ClientMessageType.ACTION);
@@ -174,7 +174,7 @@ class ActionControllerTest extends TestCase {
         } catch (StudentsNumberInCloudException e) {
             Assertions.fail();
         }
-        activePlayer.setSchool(new School(8, TowerType.BLACK,gameConstants));
+        activePlayer.setSchool(new School(8, TowerType.BLACK,gameConstants, activePlayer));
         ClientMessageHeader header =
                 new ClientMessageHeader("PickFromCloud", activePlayer.getNickName(), ClientMessageType.ACTION);
         MessagePayload payload = new MessagePayload();

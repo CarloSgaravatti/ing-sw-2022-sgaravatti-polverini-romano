@@ -8,7 +8,6 @@ import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.server.GameLobby;
 import it.polimi.ingsw.server.RemoteView;
 
-import javax.swing.event.EventListenerList;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -138,10 +137,10 @@ public class GameController implements PropertyChangeListener {
 			TurnListener turnListener = new TurnListener(view);
 			listeners.addPropertyChangeListener("EndTurn", turnListener);
 			listeners.addPropertyChangeListener("EndPhase", turnListener);
-			PlayerListener playerListener = new PlayerListener(view);
+			PlayerSetupListener playerListener = new PlayerSetupListener(view);
 			initController.addListener("Tower", playerListener);
 			initController.addListener("Wizard", playerListener);
-			actionController.addListener("Assistant", playerListener);
+			//TODO: these two will be removed
 			actionController.addListener("CloudPick", new CloudListener(view));
 			actionController.addListener("PlayCharacter", new CharacterListener(view));
 		}

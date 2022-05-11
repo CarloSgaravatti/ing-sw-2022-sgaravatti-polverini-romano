@@ -29,7 +29,7 @@ class InfluenceStrategyTest extends TestCase {
         for (int i = 0; i < RealmType.values().length; i++) {
             island.addStudent(new Student(RealmType.values()[i]));
         }
-        player.setSchool(new School(8, TowerType.BLACK, gameConstants));
+        player.setSchool(new School(8, TowerType.BLACK, gameConstants, player));
         try {
             player.getSchool().insertDiningRoom(new Student(realmType));
         } catch (FullDiningRoomException e) {

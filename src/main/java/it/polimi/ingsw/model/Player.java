@@ -5,23 +5,31 @@ import it.polimi.ingsw.exceptions.NoSuchAssistantException;
 import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
 import it.polimi.ingsw.model.enumerations.WizardType;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Player {
+public class Player implements PropertyChangeListener{
 	private int numCoins;
 	private final String nickName;
 	private School school;
 	private List<Assistant> assistants;
 	private final TurnEffect turnEffect;
 	private WizardType wizardType;
+	private final transient PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 
-	public Player(String nickName){
+	public Player(String nickName) {
 		numCoins = 1;
 		this.nickName = nickName;
 		turnEffect = new TurnEffect();
 		assistants = new ArrayList<>();
+	}
+
+	public void addListener(PropertyChangeListener listener) {
+		listeners.addPropertyChangeListener(listener);
 	}
 
 	public void pickFromCloud(Cloud cloud) throws EmptyCloudException{
@@ -50,6 +58,9 @@ public class Player {
 				turnEffect.incrementMotherNatureMovement(assistants.get(i).getMotherNatureMovement());
 				turnEffect.setFirstPlayedAssistant(isFirstPlayedAssistant);
 				assistants.remove(i);
+				listeners.firePropertyChange(
+						new PropertyChangeEvent(nickName, "Assistant", null, assistant)
+				);
 				return true;
 			}
 		}
@@ -107,5 +118,10 @@ public class Player {
 	@Override
 	public int hashCode() {
 		return Objects.hash(nickName);
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		listeners.firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
 	}
 }

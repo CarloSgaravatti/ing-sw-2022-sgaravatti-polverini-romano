@@ -58,13 +58,23 @@ public class InitController implements PropertyChangeListener {
 	public void setupPlayerTower(Player player, TowerType tower) throws TowerTypeAlreadyTakenException {
 		if (player.getSchool() != null) return; //TODO: player has already made the choice (exception?)
 		int towerPerSchool = gameConstants.getNumTowers();
-		for(int j = 0; j < numPlayers;j++){
+		for(int j = 0; j < numPlayers; j++){
 			School school = game.getPlayers().get(j).getSchool();
 			if(school != null && school.getTowerType() == tower){
 				throw new TowerTypeAlreadyTakenException();
 			}
 		}
-		player.setSchool(new School(towerPerSchool, tower, gameConstants));
+		player.setSchool(new School(towerPerSchool, tower, gameConstants, player));
+		School school = player.getSchool();
+		school.addObserver(game);
+		int studentPerSchool = gameConstants.getNumStudentsInEntrance();
+		for(int j = 0; j < studentPerSchool;j++){
+			try {
+				school.insertEntrance(game.getBag().pickStudent());
+			} catch (EmptyBagException e) {
+				game.setLastRound(true);
+			}
+		}
 		listeners.firePropertyChange("Tower", tower, player.getNickName());
 		playersWithTower.put(player.getNickName(), tower);
 	}
@@ -81,12 +91,14 @@ public class InitController implements PropertyChangeListener {
 		playersWithWizard.put(player.getNickName(), wizard);
 	}
 
-	//TODO: we can move this in the setupPlayerTower method
+	@Deprecated
 	public void setupSchools() throws EmptyBagException {
 		for(int i = 0; i < game.getNumPlayers(); i++){
+			School school = game.getPlayers().get(i).getSchool();
+			school.addObserver(game);
 			int studentPerSchool = gameConstants.getNumStudentsInEntrance();
 			for(int j = 0; j < studentPerSchool;j++){
-				game.getPlayers().get(i).getSchool().insertEntrance(game.getBag().pickStudent());
+				school.insertEntrance(game.getBag().pickStudent());
 			}
 		}
 	}

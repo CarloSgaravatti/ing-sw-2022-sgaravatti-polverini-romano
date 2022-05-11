@@ -7,6 +7,8 @@ import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.gameConstants.GameConstants;
 import it.polimi.ingsw.model.modelObservables.ProfessorPresenceObservable;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,9 +29,8 @@ public class School extends ProfessorPresenceObservable {
 	private int numTowers;
 	private final List<Student> studentDiningRoom;
 	private final List<Student> studentEntrance;
-	private final transient GameConstants gameConstants;
-
-	//TODO: add observer from game
+	private final transient GameConstants gameConstants; //why?
+	private final PropertyChangeSupport player = new PropertyChangeSupport(this);
 
 	/**
 	 * Constructs a school with no students in entrance or in dining room and no
@@ -38,7 +39,7 @@ public class School extends ProfessorPresenceObservable {
 	 * @param towerType the tower type associated to the school
 	 * @see TowerType
 	 */
-	public School (int numTower, TowerType towerType,GameConstants gameConstants) {
+	public School (int numTower, TowerType towerType, GameConstants gameConstants, PropertyChangeListener player) {
 		this.towerType = towerType;
 		this.numTowers = numTower;
 		this.entrance = new int[RealmType.values().length];
@@ -49,7 +50,7 @@ public class School extends ProfessorPresenceObservable {
 		studentEntrance = new ArrayList<>();
 		studentDiningRoom = new ArrayList<>();
 		this.gameConstants = gameConstants;
-		//TODO: pick students from bag to initialize school
+		this.player.addPropertyChangeListener(player);
 	}
 
 	/**
@@ -78,6 +79,7 @@ public class School extends ProfessorPresenceObservable {
 		diningRoom[student.getStudentType().ordinal()] ++;
 		int newStudentsDiningRoom = diningRoom[student.getStudentType().ordinal()];
 		notifyObservers(student.getStudentType());
+		player.firePropertyChange("DiningRoomIns", null, student.getStudentType());
 		//maybe the return condition can be done better
 		return (newStudentsDiningRoom == 3 || newStudentsDiningRoom == 6 || newStudentsDiningRoom == 9);
 	}
@@ -100,6 +102,7 @@ public class School extends ProfessorPresenceObservable {
 	 */
 	public void insertProfessor (RealmType professorType) {
 		professorTable[professorType.ordinal()] = true;
+		player.firePropertyChange("Professor", null, professorType);
 	}
 
 	/**
@@ -201,6 +204,7 @@ public class School extends ProfessorPresenceObservable {
 		Student toEliminate = remove(diningRoom, studentDiningRoom, studentType);
 		studentDiningRoom.remove(toEliminate);
 		diningRoom[studentType.ordinal()] --;
+		player.firePropertyChange("DiningRoomRem", null, studentType);
 		return toEliminate;
 	}
 

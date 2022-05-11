@@ -59,7 +59,7 @@ class PlayerTest extends TestCase {
         } catch (StudentsNumberInCloudException e) {
             Assertions.fail();
         }
-        playerToTest.setSchool(new School(8, TowerType.BLACK, gameConstants));
+        playerToTest.setSchool(new School(8, TowerType.BLACK, gameConstants, playerToTest));
         try {
             playerToTest.pickFromCloud(cloud);
         } catch (EmptyCloudException e) {
