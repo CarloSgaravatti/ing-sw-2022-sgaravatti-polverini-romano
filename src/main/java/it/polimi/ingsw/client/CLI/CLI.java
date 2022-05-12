@@ -62,14 +62,13 @@ public class CLI implements Runnable, UserInterface {
         } catch (IOException e) {
             System.err.println("Error in connection with server");
         }
-        String start;
         System.out.println("Connection Established");
         clearScreen();
         Scanner sc = new Scanner(System.in);
         PrintEntryWindow.printWelcome();
-        start = sc.nextLine();
-        clearScreen();
         askNickname();
+        System.out.println(nickname);
+        clearScreen();
         ConnectionToServer connectionToServer = new ConnectionToServer(socket, this);
         new Thread(connectionToServer).start();
         //...
@@ -125,9 +124,4 @@ public class CLI implements Runnable, UserInterface {
     public void displayLobbyInfo(){}
 
     public void askAction(){}
-
-    public void printWelcomeToEriantys(){
-
-    }
-
 }
