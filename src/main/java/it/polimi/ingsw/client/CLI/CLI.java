@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.CLI;
 
+import it.polimi.ingsw.client.CLI.utils.PrintEntryWindow;
 import it.polimi.ingsw.client.ConnectionToServer;
 import it.polimi.ingsw.client.UserInterface;
 import it.polimi.ingsw.model.enumerations.TowerType;
@@ -36,6 +37,24 @@ public class CLI implements Runnable, UserInterface {
         this.serverPort = serverPort;
     }
 
+    public static void clearScreen(){
+        try{
+            String operatingSystem = System.getProperty("os.name");
+            if(operatingSystem.contains("Windows")){
+                ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "cls");
+                Process startProcess = pb.inheritIO().start();
+                startProcess.waitFor();
+            }
+            else{
+                ProcessBuilder pb = new ProcessBuilder("clear");
+                Process startProcess = pb.inheritIO().start();
+                startProcess.waitFor();
+            }
+        }catch (Exception e){
+            System.out.println(e);
+        }
+    }
+
     @Override
     public void run() {
         try {
@@ -43,7 +62,14 @@ public class CLI implements Runnable, UserInterface {
         } catch (IOException e) {
             System.err.println("Error in connection with server");
         }
+        String start;
         System.out.println("Connection Established");
+        clearScreen();
+        Scanner sc = new Scanner(System.in);
+        PrintEntryWindow.printWelcome();
+        start = sc.nextLine();
+        clearScreen();
+        askNickname();
         ConnectionToServer connectionToServer = new ConnectionToServer(socket, this);
         new Thread(connectionToServer).start();
         //...
@@ -99,4 +125,9 @@ public class CLI implements Runnable, UserInterface {
     public void displayLobbyInfo(){}
 
     public void askAction(){}
+
+    public void printWelcomeToEriantys(){
+
+    }
+
 }
