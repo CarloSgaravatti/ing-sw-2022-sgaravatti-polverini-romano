@@ -7,16 +7,21 @@ import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.enumerations.WizardType;
 import it.polimi.ingsw.utils.Pair;
 
+import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.*;
+
+//TODO: fire property change listeners might be useful (instead of using return types, because it isn't always the same
+//  type that we want to return in some methods, i.e. askGameToPlay)
 
 public class CLI implements Runnable, UserInterface {
     private final String serverAddress;
     private final int serverPort;
     private Socket socket;
-    private Scanner sc = new Scanner(System.in);
+    private final Scanner sc = new Scanner(System.in);
     private String nickname;
+    private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -37,7 +42,8 @@ public class CLI implements Runnable, UserInterface {
         this.serverPort = serverPort;
     }
 
-    public static void clearScreen(){
+
+    public void clearScreen(){
         try{
             String operatingSystem = System.getProperty("os.name");
             if(operatingSystem.contains("Windows")){
@@ -51,7 +57,7 @@ public class CLI implements Runnable, UserInterface {
                 startProcess.waitFor();
             }
         }catch (Exception e){
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
     }
 
@@ -64,11 +70,10 @@ public class CLI implements Runnable, UserInterface {
         }
         System.out.println("Connection Established");
         clearScreen();
-        Scanner sc = new Scanner(System.in);
         PrintEntryWindow.printWelcome();
-        askNickname();
-        System.out.println(nickname);
-        clearScreen();
+        //askNickname();
+        //System.out.println(nickname);
+        //clearScreen();
         ConnectionToServer connectionToServer = new ConnectionToServer(socket, this);
         new Thread(connectionToServer).start();
         //...
@@ -91,8 +96,8 @@ public class CLI implements Runnable, UserInterface {
     }
 
     @Override
-    public void displayGameLobby(int numGames, Map<Integer, Pair<Integer, List<String>>> gamesInfo) {
-        System.out.println("There are currently " + numGames + " games not started. These are those games: ");
+    public void displayGlobalLobby(int numGames, Map<Integer, Pair<Integer, List<String>>> gamesInfo) {
+        System.out.println("There are currently " + numGames + " games not started.");
         for (Integer i: gamesInfo.keySet()) {
             Pair<Integer, List<String>> gameInfo = gamesInfo.get(i);
             List<String> players = gameInfo.getSecond();
@@ -121,7 +126,24 @@ public class CLI implements Runnable, UserInterface {
         return null;
     }
 
-    public void displayLobbyInfo(){}
+    public void displayLobbyInfo(int numPlayers, boolean rules, String[] waitingPlayers) {
+        System.out.print("You entered the lobby, there are currently " + waitingPlayers.length + "players waiting.\n"
+                + "Their names are:");
+        Arrays.stream(waitingPlayers).forEach(p -> System.out.print(" " + p));
+        System.out.println("\nRemember: this game requires " + numPlayers + " players and the rules are "
+                + ((rules) ? "simple" : "expert"));
+    }
 
-    public void askAction(){}
+    public void askAction(List<String> actions) {
+        actions.forEach(System.out::println);
+        insertAction();
+    }
+
+    public void askAssistant() {
+
+    }
+
+    public void insertAction() {
+        String action = sc.nextLine();
+    }
 }

@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Island;
 import it.polimi.ingsw.model.effects.NoEntryTileManager;
 
+import java.beans.PropertyChangeEvent;
 import java.util.List;
 
 public class Character5 extends CharacterCard implements NoEntryTileManager {
@@ -42,6 +43,7 @@ public class Character5 extends CharacterCard implements NoEntryTileManager {
         if (noEntryTiles == 0) throw new IllegalStateException();
         island.insertNoEntryTile(this);
         noEntryTiles--;
+        firePropertyChange(new PropertyChangeEvent(this, "NoEntryTiles", null, islands.indexOf(island)));
     }
 
     @Override

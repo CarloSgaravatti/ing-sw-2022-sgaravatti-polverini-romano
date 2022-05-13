@@ -58,4 +58,14 @@ public class ExpertFieldView {
     public void updateIslandNoEntryTiles(int newIslandNoEntryTiles, int island) {
         islandsWithNoEntryTiles.replace(island, newIslandNoEntryTiles);
     }
+
+    public void updateCharacterStudents(int characterId, RealmType[] students) {
+        Integer[] newStudents = new Integer[RealmType.values().length];
+        ModelView.insertStudents(newStudents, students);
+        characterStudents.replace(characterId, newStudents);
+    }
+
+    public Map<Integer, Integer> getCharacters() {
+        return characters;
+    }
 }

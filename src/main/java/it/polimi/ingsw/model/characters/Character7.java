@@ -7,6 +7,7 @@ import it.polimi.ingsw.model.effects.StudentContainer;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.School;
 
+import java.beans.PropertyChangeEvent;
 import java.util.List;
 
 public class Character7 extends CharacterCard {
@@ -47,6 +48,7 @@ public class Character7 extends CharacterCard {
             studentContainer.insertStudent(school.removeStudentEntrance(s));
         }
         school.insertEntrance(toEntrance);
+        firePropertyChange(new PropertyChangeEvent(this, "SwapFromEntrance", toPick, fromEntrance));
     }
 
     //For testing

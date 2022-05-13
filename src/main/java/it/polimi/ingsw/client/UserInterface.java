@@ -7,13 +7,13 @@ import it.polimi.ingsw.utils.Pair;
 import java.util.List;
 import java.util.Map;
 
-public interface UserInterface {
+public interface UserInterface /*extends PropertyChangeListener*/{
 
     String getNickname(); //Don't know if it is useful
 
     String askNickname();
 
-    void displayGameLobby(int numGames, Map<Integer, Pair<Integer, List<String>>> gamesInfo);
+    void displayGlobalLobby(int numGames, Map<Integer, Pair<Integer, List<String>>> gamesInfo);
 
     Pair<String, Integer> askGameToPlay();
 
@@ -23,7 +23,11 @@ public interface UserInterface {
 
     WizardType askWizardChoice(List<WizardType> freeWizards);
 
-    void displayLobbyInfo();
+    void displayLobbyInfo(int numPlayers, boolean rules, String[] waitingPlayers);
 
-    void askAction();
+    void askAction(List<String> actions);
+
+    void askAssistant();
+
+    void insertAction();
 }

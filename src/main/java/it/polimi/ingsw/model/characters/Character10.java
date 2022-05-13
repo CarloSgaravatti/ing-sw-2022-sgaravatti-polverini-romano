@@ -7,6 +7,7 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.School;
 
+import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class Character10 extends CharacterCard {
         } catch (StudentNotFoundException | FullDiningRoomException e) {
             throw new IllegalCharacterActionRequestedException(); //TODO: these exception will have different return messages
         }
+        firePropertyChange(new PropertyChangeEvent(this, "SchoolSwap", toDiningRoom, fromEntrance));
     }
 
     public void swap(RealmType[] entrance, RealmType[] diningRoom) throws StudentNotFoundException,

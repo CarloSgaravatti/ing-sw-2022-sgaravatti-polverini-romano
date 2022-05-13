@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.messageHandlers;
 
 import it.polimi.ingsw.client.ConnectionToServer;
+import it.polimi.ingsw.client.TurnHandler;
 import it.polimi.ingsw.client.modelView.FieldView;
 import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.client.PlayerSetupHandler;
@@ -73,10 +74,14 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
         for (String player: getModelView().getPlayers().keySet()) {
             getModelView().getPlayers().get(player).getSchoolStudents().setFirst((Integer[]) schoolEntrances.get(player));
         }
+        TurnHandler turnHandler = new TurnHandler(getModelView().isExpert(), getConnection(), getUserInterface());
+        ((DefaultMessageHandler)getNextHandler()).setTurnHandler(turnHandler);
         if (getModelView().isExpert()) {
             getConnection().addFirstMessageHandler(new CharacterMessageHandler(getConnection(), getUserInterface(), getModelView()));
         }
-        getConnection().addFirstMessageHandler(new TurnMessageHandler(getConnection(), getUserInterface(), getModelView()));
+        TurnMessageHandler turnMessageHandler = new TurnMessageHandler(getConnection(), getUserInterface(), getModelView());
+        getConnection().addFirstMessageHandler(turnMessageHandler);
+        turnMessageHandler.setTurnHandler(turnHandler);
         getConnection().addFirstMessageHandler(new GameUpdateMessageHandler(getConnection(), getUserInterface(), getModelView()));
     }
 

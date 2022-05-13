@@ -111,6 +111,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
             out.reset();
             out.writeObject(message);
             out.flush();
+            System.out.println("Sending " + ((MessageFromServer) message).getServerMessageHeader().getMessageName());
         } catch(IOException e){
             System.err.println(e.getMessage());
             e.printStackTrace();

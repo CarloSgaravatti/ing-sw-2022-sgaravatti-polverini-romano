@@ -39,9 +39,8 @@ public class ConnectionToServer implements Runnable {
         try {
             while (true) { //while(isActive()) ?
                 MessageFromServer message = (MessageFromServer) inputStream.readObject();
+                System.out.println("Received " + message.getServerMessageHeader().getMessageName());
                 if (message.getServerMessageHeader().getMessageType() != ServerMessageType.PING_MESSAGE) {
-                    //executor is needed because a ping message can be received when the executor elaborates the
-                    //previous message, but the ping message requires a quick response
                     messageHandlerExecutor.submit(() -> firstMessageHandler.handleMessage(message));
                 } else {
                     onPingMessage();

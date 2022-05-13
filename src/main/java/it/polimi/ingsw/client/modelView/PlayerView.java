@@ -12,12 +12,12 @@ import static it.polimi.ingsw.client.modelView.ModelView.insertStudents;
 import static it.polimi.ingsw.client.modelView.ModelView.removeStudents;
 
 public class PlayerView {
-    private final Pair<Integer[], Integer[]> schoolStudents = new Pair<>(new Integer[RealmType.values().length], new Integer[RealmType.values().length]);
+    private Pair<Integer[], Integer[]> schoolStudents = new Pair<>(new Integer[RealmType.values().length], new Integer[RealmType.values().length]);
     private int numTowers;
     private TowerType tower;
     private WizardType wizard;
-    private final List<Integer> playerAssistants = new ArrayList<>();
     private int playerCoins;
+    private Pair<Integer, Integer> lastPlayedAssistant;
 
     public void updateDiningRoom(RealmType[] students, boolean isInsertion) {
         Integer[] diningRoom = schoolStudents.getSecond();
@@ -70,11 +70,17 @@ public class PlayerView {
         return playerCoins;
     }
 
-    public List<Integer> getPlayerAssistants() {
-        return playerAssistants;
+    public void resetStudentsTo(RealmType[] entrance, RealmType[] diningRoom) {
+        this.schoolStudents = new Pair<>(new Integer[RealmType.values().length], new Integer[RealmType.values().length]);
+        updateEntrance(entrance, true);
+        updateDiningRoom(diningRoom, true);
     }
 
-    public void removeAssistant(int assistant) {
-        playerAssistants.remove(assistant);
+    public void updateLastPlayedAssistant(int assistant, int motherNatureMovement) {
+        lastPlayedAssistant = new Pair<>(assistant, motherNatureMovement);
+    }
+
+    public Pair<Integer, Integer> getLastPlayedAssistant() {
+        return lastPlayedAssistant;
     }
 }

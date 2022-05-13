@@ -11,19 +11,21 @@ import it.polimi.ingsw.messages.ServerMessageHeader;
 import it.polimi.ingsw.messages.ServerMessageType;
 import it.polimi.ingsw.model.enumerations.RealmType;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.List;
 import java.util.Map;
 
 public class TurnMessageHandler extends BaseMessageHandler {
-    private TurnHandler turnHandler;
+    private PropertyChangeSupport turnHandler = new PropertyChangeSupport(this);
     private static final List<String> messageHandled = List.of("EndTurn", "ChangePhase", "EndGame", "ActionAck");
 
     public TurnMessageHandler(ConnectionToServer connection, UserInterface userInterface, ModelView modelView) {
         super(connection, userInterface, modelView);
     }
 
-    public void setTurnHandler(TurnHandler turnHandler) {
-        this.turnHandler = turnHandler;
+    public void setTurnHandler(PropertyChangeListener turnHandler) {
+        this.turnHandler.addPropertyChangeListener(turnHandler);
     }
 
     @Override
@@ -75,12 +77,12 @@ public class TurnMessageHandler extends BaseMessageHandler {
     }
 
     private void onActionAck(MessagePayload payload) {
-        //TODO (notify turn handler)
+        turnHandler.firePropertyChange("ActionAck", null, payload.getAttribute("ActionNAme").getAsString());
     }
 
     private void checkClientTurn(String turnStarter) {
         if (turnStarter.equals(getUserInterface().getNickname())) {
-            //TODO: notify turn handler
+            turnHandler.firePropertyChange("ClientTurn", null, getModelView().getCurrentPhase());
         }
     }
 }

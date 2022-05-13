@@ -95,6 +95,7 @@ public class Server implements Runnable{
             throw new DuplicateNicknameException();
         }
         clientsConnected.put(clientName, client);
+        System.out.println("Registered " + clientName);
     }
 
     public void deregisterConnection(String clientName) {

@@ -46,8 +46,10 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
 
     private void onAssistantPlayed(MessagePayload payload) {
         int assistant = payload.getAttribute("AssistantId").getAsInt();
+        int motherNatureMovement = payload.getAttribute("MotherNatureMovement").getAsInt();
         String playerName = payload.getAttribute("PlayerName").getAsString();
-        getModelView().getPlayers().get(playerName).removeAssistant(assistant);
+        getModelView().getPlayers().get(playerName).updateLastPlayedAssistant(assistant, motherNatureMovement);
+        if (getUserInterface().getNickname().equals(playerName)) getModelView().removeAssistant(assistant);
 
         //TODO
     }

@@ -16,6 +16,7 @@ public class FieldView {
     private final Map<Integer, Integer[]> cloudStudents;
     private int motherNaturePosition;
     private final String[] professorsOwners = new String[RealmType.values().length];
+    private ExpertFieldView expertField; //TODO
 
     public FieldView(List<SimpleIsland>  islands, Map<Integer, Integer[]> cloudStudents, int motherNaturePosition) {
         this.islands = islands.stream().map(SimpleIsland::getIslandRepresentation).collect(Collectors.toList());
@@ -81,5 +82,13 @@ public class FieldView {
         Optional<String> lastOwner = Optional.of(professorsOwners[realm.ordinal()]);
         professorsOwners[realm.ordinal()] = newOwner;
         return lastOwner;
+    }
+
+    public ExpertFieldView getExpertField() {
+        return expertField;
+    }
+
+    public Map<Integer, Integer[]> getCloudStudents() {
+        return cloudStudents;
     }
 }

@@ -17,6 +17,12 @@ public class SimplePlayer implements Serializable {
         this.nickname = nickname;
     }
 
+    public SimplePlayer(String nickname, RealmType[] entrance, RealmType[] diningRoom) {
+        this(nickname);
+        this.entrance = entrance;
+        this.diningRoom = diningRoom;
+    }
+
     public RealmType[] getEntrance() {
         return entrance;
     }

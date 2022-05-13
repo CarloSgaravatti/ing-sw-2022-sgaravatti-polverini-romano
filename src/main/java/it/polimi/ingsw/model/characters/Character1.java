@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.effects.StudentContainer;
 import it.polimi.ingsw.model.enumerations.RealmType;
 
+import java.beans.PropertyChangeEvent;
 import java.util.List;
 
 public class Character1 extends CharacterCard {
@@ -41,6 +42,8 @@ public class Character1 extends CharacterCard {
         } catch (StudentNotFoundException e) {
             throw new IllegalCharacterActionRequestedException();
         }
+        firePropertyChange(new PropertyChangeEvent(
+                this, "Students", null, studentContainer.getStudents().toArray(new Student[0])));
     }
 
     public void pickAndSendToIsland(RealmType studentType, Island island) throws StudentNotFoundException {

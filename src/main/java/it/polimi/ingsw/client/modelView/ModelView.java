@@ -4,9 +4,7 @@ import it.polimi.ingsw.controller.RoundPhase;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class ModelView {
     private final Map<String, PlayerView> players = new HashMap<>();
@@ -14,6 +12,7 @@ public class ModelView {
     private RoundPhase currentPhase;
     private String currentActivePlayer;
     private final boolean isExpert;
+    private Map<Integer, Integer> clientPlayerAssistants = new HashMap<>();
 
     public ModelView(boolean isExpert) {
         this.isExpert = isExpert;
@@ -75,5 +74,17 @@ public class ModelView {
         for (RealmType r: students) {
             toRemove[r.ordinal()]--;
         }
+    }
+
+    public Map<Integer, Integer> getClientPlayerAssistants() {
+        return clientPlayerAssistants;
+    }
+
+    public void setClientPlayerAssistants(Map<Integer, Integer> clientPlayerAssistants) {
+        this.clientPlayerAssistants = clientPlayerAssistants;
+    }
+
+    public void removeAssistant(int assistant) {
+        this.clientPlayerAssistants.remove(assistant);
     }
 }

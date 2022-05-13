@@ -8,6 +8,7 @@ import it.polimi.ingsw.model.effects.StudentContainer;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.School;
 
+import java.beans.PropertyChangeEvent;
 import java.util.List;
 
 public class Character11 extends CharacterCard {
@@ -32,6 +33,8 @@ public class Character11 extends CharacterCard {
         } catch (StudentNotFoundException | FullDiningRoomException e) {
             throw new IllegalCharacterActionRequestedException();
         }
+        firePropertyChange(new PropertyChangeEvent(
+                this, "Students", null, getStudents().toArray(new Student[0])));
     }
 
     public void pickAndSendToDiningRoom(RealmType studentType) throws StudentNotFoundException, FullDiningRoomException {
@@ -39,7 +42,6 @@ public class Character11 extends CharacterCard {
         school.insertDiningRoom(studentContainer.pickStudent(studentType, true));
     }
 
-    //For testing
     public List<Student> getStudents() {
         return studentContainer.getStudents();
     }
