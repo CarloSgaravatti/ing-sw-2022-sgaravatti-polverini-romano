@@ -87,6 +87,7 @@ public class GameController implements PropertyChangeListener {
 			game.setIndexActivePlayer(turnController.getActivePlayer());
 			setStartingTurnPhase(turnController.getCurrentPhase());
 			if (isPhaseEnded) {
+				actionController.resetPossibleActions(turnController.getCurrentPhase());
 				handleEndPhase();
 				return;
 			}
@@ -96,6 +97,7 @@ public class GameController implements PropertyChangeListener {
 		} else {
 			try {
 				actionController.doAction(message);
+				//TODO: update possible actions
 				listeners.firePropertyChange("Action", nicknamePlayer, actionName);
 			} catch (Exception e) {
 				//TODO: decide if it has to handled here or directly in the action controller class;

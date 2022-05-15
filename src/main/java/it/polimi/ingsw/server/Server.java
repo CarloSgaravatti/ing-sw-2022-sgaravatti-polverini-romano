@@ -23,6 +23,7 @@ public class Server implements Runnable{
     private final Map<String, ClientConnection> clientsConnected;
     //this list of games id is for games that are finished and are about to be canceled
     private final List<Integer> gamesFinished;
+    private int lastGameId = 0;
 
     public Server(int port) throws IOException{
         serverSocket = new ServerSocket(port);
@@ -117,11 +118,11 @@ public class Server implements Runnable{
             payload.setAttribute("GamesInfo", new HashMap<>());
         } else {
             payload.setAttribute("NotStartedGames", waitingPlayersPerGameMap.size());
-            Map<Integer, Pair<Integer, List<String>>> gamesToSendMap = new HashMap<>();
+            Map<Integer, Pair<Integer, String[]>> gamesToSendMap = new HashMap<>();
             for (Integer gameId: waitingPlayersPerGameMap.keySet()) {
-                Pair<Integer, List<String>> gameInfo = new Pair<>();
+                Pair<Integer, String[]> gameInfo = new Pair<>();
                 gameInfo.setFirst(gamesMap.get(gameId).getNumPlayers());
-                gameInfo.setSecond(new ArrayList<>(waitingPlayersPerGameMap.get(gameId).keySet()));
+                gameInfo.setSecond(gamesMap.get(gameId).getGameParticipants());
                 gamesToSendMap.put(gameId, gameInfo);
             }
             payload.setAttribute("GamesInfo", gamesToSendMap);
@@ -137,8 +138,8 @@ public class Server implements Runnable{
         } else {
             gamesMap.get(gameId).insertInLobby(clientName, client);
             client.setSetupDone(true);
+            waitingPlayersWithNoGame.remove(clientName);
         }
-        waitingPlayersWithNoGame.remove(clientName);
     }
 
     private void handleLobbyError(ErrorMessageType error,  ClientConnection client, String clientName) {
@@ -150,10 +151,12 @@ public class Server implements Runnable{
         //creates a new game of numPlayers number of players, assigns it a unique identifier, adds it to the games map
         //and to the waiting players per game map (it also creates the corresponding empty hash map) but not to the
         //games participants map
-        int id = assignNewGameId().orElse(1); //if optional is empty it means that there are no games in the server
-        gamesMap.put(id, new GameLobby(id, numPlayers, isExpertGame));
-        waitingPlayersPerGameMap.put(id, new HashMap<>());
-        return id;
+        //int id = assignNewGameId().orElse(1); //if optional is empty it means that there are no games in the server
+        lastGameId++;
+        System.out.println("created a new game with id = " + lastGameId);
+        gamesMap.put(lastGameId, new GameLobby(lastGameId, numPlayers, isExpertGame));
+        waitingPlayersPerGameMap.put(lastGameId, new HashMap<>());
+        return lastGameId;
     }
 
     //This implements a sort of auto-incremental key for gameId (like in a db)

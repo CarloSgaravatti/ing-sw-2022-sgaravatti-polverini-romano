@@ -18,7 +18,7 @@ public class TurnHandler implements PropertyChangeListener {
     private final ConnectionToServer connection;
     private final UserInterface userInterface;
     private final List<String> turnActions = List.of("MoveStudents", "MoveMotherNature", "PickFromCloud", "PlayCharacterCard");
-    private List<String> currentTurnActions;
+    private final List<String> currentTurnActions = new ArrayList<>();
     private final ExecutorService clientTurnHandler = Executors.newSingleThreadExecutor();
     private boolean ackReceived = false;
     private boolean errorReceived = false;
@@ -26,7 +26,7 @@ public class TurnHandler implements PropertyChangeListener {
     private final Object waitAckOrErrorLock = new Object();
 
     public TurnHandler(boolean expertGame, ConnectionToServer connection, UserInterface userInterface) {
-        if (!expertGame) turnActions.remove("Play a character card");
+        //if (!expertGame) turnActions.remove("Play a character card"); TODO: delete turn actions?
         this.connection = connection;
         this.userInterface = userInterface;
     }
@@ -45,10 +45,12 @@ public class TurnHandler implements PropertyChangeListener {
     }
 
     private void planningPhase() throws InterruptedException {
+        currentTurnActions.clear();
+        currentTurnActions.add("PlayAssistant");
         setAckReceived(false);
         do {
             setErrorReceived(false);
-            userInterface.askAssistant();
+            userInterface.askAction(currentTurnActions);
             synchronized (waitAckOrErrorLock) {
                 while (!isAckReceived() && !isErrorReceived()) waitAckOrErrorLock.wait();
             }
@@ -57,7 +59,8 @@ public class TurnHandler implements PropertyChangeListener {
     }
 
     private void actionPhase() throws InterruptedException {
-        currentTurnActions = new ArrayList<>(turnActions); //TODO: control characters action (is optional)
+        currentTurnActions.clear();
+        currentTurnActions.addAll(turnActions); //TODO: control characters action (is optional)
         while(!currentTurnActions.isEmpty()) {
             setAckReceived(false);
             setErrorReceived(false);
@@ -112,4 +115,44 @@ public class TurnHandler implements PropertyChangeListener {
     private synchronized void setErrorReceived(boolean errorReceived) {
         this.errorReceived = errorReceived;
     }
+
+    //---------------------------------------------------------------------------------------------------
+    //Possible alternative to handlePlayerTurn (message contains also possible actions (for both planning and action phase)
+
+    public void handlePlayerTurn(final List<String> possibleActions) {
+        synchronized (currentTurnActions) {
+            currentTurnActions.clear();
+            currentTurnActions.addAll(possibleActions); //TODO: control characters action (is optional)
+            while (!currentTurnActions.isEmpty()) {
+                setAckReceived(false);
+                setErrorReceived(false);
+                synchronized (currentTurnActions) {
+                    userInterface.askAction(currentTurnActions);
+                }
+                try {
+                    while (!isAckReceived() && !isErrorReceived()) currentTurnActions.wait();
+                } catch (InterruptedException e) {
+                    //TODO
+                }
+            }
+        }
+    }
+
+    public void onAckReceived(List<String> newPossibleActions) {
+        setAckReceived(true);
+        synchronized (currentTurnActions) {
+            currentTurnActions.clear();
+            currentTurnActions.addAll(newPossibleActions);
+            currentTurnActions.notify();
+        }
+    }
+
+    public void onErrorReceived2() {
+        setErrorReceived(true);
+        //TODO: notify user
+        synchronized (currentTurnActions) {
+            currentTurnActions.notify();
+        }
+    }
+
 }

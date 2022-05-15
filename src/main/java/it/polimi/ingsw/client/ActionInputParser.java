@@ -7,12 +7,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-public class InputParser implements PropertyChangeListener {
+public class ActionInputParser implements PropertyChangeListener {
     private final PropertyChangeSupport messageConstructor = new PropertyChangeSupport(this);
     private final UserInterface userInterface;
     private final ModelView modelView;
-    //TODO
-    private static final String ASSISTANT_NOT_FOUND = "";
+    private static final String ASSISTANT_NOT_FOUND = "There isn't such an assistant in your deck";
     private static final String NOT_A_NUMBER = "You have to insert a number";
     private static final String NOT_A_STUDENT = "Student abbreviation not valid";
     private static final String ISLAND_NOT_FOUND = "There isn't such an island";
@@ -22,7 +21,7 @@ public class InputParser implements PropertyChangeListener {
     private static final String CLOUD_NOT_FOUND = "There isn't such a cloud";
     private static final String CHARACTER_NOT_FOUND = "There isn't such a character";
 
-    public InputParser(PropertyChangeListener messageConstructor, UserInterface userInterface, ModelView modelView) {
+    public ActionInputParser(PropertyChangeListener messageConstructor, UserInterface userInterface, ModelView modelView) {
         this.messageConstructor.addPropertyChangeListener(messageConstructor);
         this.userInterface = userInterface;
         this.modelView = modelView;
@@ -44,7 +43,7 @@ public class InputParser implements PropertyChangeListener {
         if (error == null) messageConstructor.firePropertyChange(evt);
         else {
             userInterface.displayStringMessage(error);
-            userInterface.insertAction(); //TODO: do better
+            //userInterface.insertAction(); //TODO: do better
         }
     }
 

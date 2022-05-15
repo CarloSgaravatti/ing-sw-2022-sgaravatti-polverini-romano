@@ -22,6 +22,7 @@ public class GameLobby {
     private final Map<String, ClientConnection> participants = new ConcurrentHashMap<>();
     private boolean started = false;
     private final int gameId;
+    private final boolean isExpertGame;
 
     private final Object setupLock = new Object();
 
@@ -29,6 +30,7 @@ public class GameLobby {
         this.gameId = gameId;
         gameController = new GameController(gameId, numPlayers, isExpertGame);
         this.numPlayers = numPlayers;
+        this.isExpertGame = isExpertGame;
     }
 
     public synchronized void insertInLobby(String nickname, ClientConnection clientConnection) {
@@ -38,10 +40,17 @@ public class GameLobby {
         payload.setAttribute("PlayerName", nickname);
         multicast(new MessageFromServer(header, payload), nickname);
         payload = new MessagePayload();
+
+        header = new ServerMessageHeader("GameLobby", ServerMessageType.SERVER_MESSAGE);
+        payload.setAttribute("Rules", isExpertGame);
+        payload.setAttribute("GameNumPlayers", numPlayers);
+        payload.setAttribute("WaitingPlayers", participants.keySet().toArray(new String[0]));
+        clientConnection.asyncSend(new MessageFromServer(header, payload));
+
         if (participants.size() == numPlayers) {
             setStarted(true);
-            header = new ServerMessageHeader("GameStarted", ServerMessageType.GAME_UPDATE);
-            payload.setAttribute("Players", participants.keySet().toArray(new String[0]));
+            header = new ServerMessageHeader("GameStarted", ServerMessageType.GAME_SETUP);
+            payload.setAttribute("Opponents", participants.keySet().toArray(new String[0]));
             broadcast(new MessageFromServer(header, payload));
             InitController initController = gameController.getInitController();
             try {
@@ -59,13 +68,13 @@ public class GameLobby {
             //SocketClientConnection, we want that when the setupGame method is running all the SocketClientConnections
             //are reading messages to update setup choices.
             new Thread(this::setupGame).start();
-        } else {
+        } /*else {
             header = new ServerMessageHeader("GameLobby", ServerMessageType.SERVER_MESSAGE);
+            payload.setAttribute("Rules", isExpertGame);
             payload.setAttribute("GameNumPlayers", numPlayers);
-            payload.setAttribute("WaitingPlayers", participants.size());
-            //The last attribute can be replaced with players nicknames
+            payload.setAttribute("WaitingPlayers", participants.keySet().toArray(new String[0]));
             clientConnection.asyncSend(new MessageFromServer(header, payload));
-        }
+        }*/
     }
 
     private List<RemoteView> assignRemoteViews() {
@@ -118,12 +127,14 @@ public class GameLobby {
                 synchronized (setupLock) {
                     while (gameController.getInitController().getPlayersWithTower().size() == numPlayersWithTower &&
                             gameController.getInitController().getPlayersWithWizard().size() == numPlayersWithWizard) {
+                        System.out.println("Waiting for setup choice");
                         setupLock.wait();
                     }
                 }
             } catch (InterruptedException e) {
                 //Don't know what to put here (maybe we can just ignore it?)
             }
+            System.out.println("Setup choice done");
             setupTowersDone = gameController.getInitController().getPlayersWithTower().size() == numPlayers;
             setupWizardsDone = gameController.getInitController().getPlayersWithWizard().size() == numPlayers;
         }
@@ -134,6 +145,7 @@ public class GameLobby {
 
     //This method wake up the setupGame Thread because someone has chosen a tower or a wizard
     public void notifySetupChanges() {
+        System.out.println("A setup has been done");
         synchronized (setupLock) {
             setupLock.notify();
         }
@@ -145,7 +157,7 @@ public class GameLobby {
         List<TowerType> towerTypesNotTaken = Arrays.stream(TowerType.values())
                 .filter(t -> !playersWithTower.containsValue(t)).toList();
         ClientConnection connection = participants.get(playersWithoutTower.get(0));
-        ServerMessageHeader header = new ServerMessageHeader("TowerType", ServerMessageType.GAME_SETUP);
+        ServerMessageHeader header = new ServerMessageHeader("TowerTypeRequest", ServerMessageType.GAME_SETUP);
         MessagePayload payload = new MessagePayload();
         payload.setAttribute("FreeTowers", towerTypesNotTaken.toArray(new TowerType[0]));
         MessageFromServer message = new MessageFromServer(header, payload);
@@ -159,7 +171,7 @@ public class GameLobby {
         List<WizardType> wizardTypesNotTaken = Arrays.stream(WizardType.values())
                 .filter(w -> !playersWithWizard.containsValue(w)).toList();
         ClientConnection connection = participants.get(playersWithoutWizard.get(0));
-        ServerMessageHeader header = new ServerMessageHeader("WizardType", ServerMessageType.GAME_SETUP);
+        ServerMessageHeader header = new ServerMessageHeader("WizardTypeRequest", ServerMessageType.GAME_SETUP);
         MessagePayload payload = new MessagePayload();
         payload.setAttribute("FreeWizards", wizardTypesNotTaken.toArray(new WizardType[0]));
         MessageFromServer message = new MessageFromServer(header, payload);
@@ -212,5 +224,9 @@ public class GameLobby {
 
     public void doEndGameOperations() {
         //TODO
+    }
+
+    public String[] getGameParticipants() {
+        return participants.keySet().toArray(new String[0]);
     }
 }

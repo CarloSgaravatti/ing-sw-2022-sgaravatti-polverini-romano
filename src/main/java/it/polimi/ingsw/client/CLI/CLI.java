@@ -1,12 +1,15 @@
 package it.polimi.ingsw.client.CLI;
 
+import it.polimi.ingsw.client.CLI.utils.Colors;
 import it.polimi.ingsw.client.CLI.utils.PrintEntryWindow;
 import it.polimi.ingsw.client.ConnectionToServer;
+import it.polimi.ingsw.client.PlayerSetupHandler;
 import it.polimi.ingsw.client.UserInterface;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.enumerations.WizardType;
 import it.polimi.ingsw.utils.Pair;
 
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.net.Socket;
@@ -62,6 +65,11 @@ public class CLI implements Runnable, UserInterface {
     }
 
     @Override
+    public void addListener(PropertyChangeListener listener, String propertyName) {
+        listeners.addPropertyChangeListener(propertyName, listener);
+    }
+
+    @Override
     public void run() {
         try {
             socket = new Socket(serverAddress, serverPort);
@@ -75,19 +83,25 @@ public class CLI implements Runnable, UserInterface {
         //System.out.println(nickname);
         //clearScreen();
         ConnectionToServer connectionToServer = new ConnectionToServer(socket, this);
+        PlayerSetupHandler playerSetupHandler = new PlayerSetupHandler(connectionToServer);
+        addListener(playerSetupHandler, "Nickname");
+        addListener(playerSetupHandler, "NewGame");
+        addListener(playerSetupHandler, "GameToPlay");
+        addListener(playerSetupHandler, "TowerChoice");
+        addListener(playerSetupHandler, "WizardChoice");
         new Thread(connectionToServer).start();
         //...
     }
 
     @Override
-    public String askNickname() {
+    public void askNickname() {
         String nickname;
         nickname = sc.next();
         while (nickname == null || nickname.isBlank()){
             nickname = sc.next();
         }
         this.nickname = nickname; //TODO: need to change
-        return nickname;
+        listeners.firePropertyChange("Nickname", null, nickname);
     }
 
     @Override
@@ -96,12 +110,12 @@ public class CLI implements Runnable, UserInterface {
     }
 
     @Override
-    public void displayGlobalLobby(int numGames, Map<Integer, Pair<Integer, List<String>>> gamesInfo) {
+    public void displayGlobalLobby(int numGames, Map<Integer, Pair<Integer,String[]>> gamesInfo) {
         System.out.println("There are currently " + numGames + " games not started.");
         for (Integer i: gamesInfo.keySet()) {
-            Pair<Integer, List<String>> gameInfo = gamesInfo.get(i);
-            List<String> players = gameInfo.getSecond();
-            System.out.println("- game id = " + i + " numPlayers = " + gameInfo.getFirst() + " players = " + players);
+            Pair<Integer, String[]> gameInfo = gamesInfo.get(i);
+            String[] players = gameInfo.getSecond();
+            System.out.println("- game id = " + i + " numPlayers = " + gameInfo.getFirst() + " players = " + Arrays.toString(players));
         }
     }
 
@@ -114,36 +128,98 @@ public class CLI implements Runnable, UserInterface {
     }
 
     @Override
+    public void askLobbyDecision() {
+        String decision;
+        do {
+            System.out.println("Select what to do: [New/Game]");
+            decision = sc.next();
+        } while (!decision.equals("New") && !decision.equals("Game"));
+        if (decision.equals("New")) {
+            int numPlayers = 0;
+            do {
+                System.out.println("Insert number of players: [2/3]");
+                try {
+                    numPlayers = Integer.parseInt(sc.next());
+                }
+                catch (NumberFormatException e) {
+                    System.out.println(Colors.RED + "You have to insert a number!" + Colors.RESET);
+                }
+            } while (numPlayers != 2 && numPlayers != 3);
+            boolean rules;
+            System.out.println("Insert rules types: to create an expert game type 'expert', otherwise a simple game will be created");
+            rules = sc.next().equals("expert");
+            listeners.firePropertyChange("NewGame", numPlayers, rules);
+        } else {
+            int gameId = 0;
+            boolean inputOk = false;
+            System.out.println("Insert game id");
+            do {
+                try {
+                    gameId = Integer.parseInt(sc.next());
+                    inputOk = true;
+                }
+                catch (NumberFormatException e) {
+                    System.out.println(Colors.RED + "You have to insert a number!" + Colors.RESET);
+                }
+            } while(!inputOk);
+            listeners.firePropertyChange("GameToPlay", null, gameId);
+        }
+    }
+
+    @Override
     public void displayStringMessage(String message) {
         System.out.println(message);
     }
 
-    public TowerType askTowerChoice(List<TowerType> freeTowers){
-        return null;
+    @Override
+    public void askTowerChoice(TowerType[] freeTowers){
+        System.out.println("You have to choose a tower, these are the options: " + Arrays.toString(freeTowers));
+        boolean towerChosen = false;
+        TowerType choice = null;
+        while (!towerChosen) {
+            try {
+                choice = TowerType.valueOf(sc.next());
+                towerChosen = true;
+            } catch (IllegalArgumentException e) {
+                System.out.println(Colors.RED + "Not a valid input, retry" + Colors.RESET);
+            }
+        }
+        listeners.firePropertyChange("TowerChoice", null, choice);
     }
 
-    public WizardType askWizardChoice(List<WizardType> freeWizards){
-        return null;
+    @Override
+    public void askWizardChoice(WizardType[] freeWizards){
+        System.out.println("You have to choose a tower, these are the options: " + Arrays.toString(freeWizards));
+        boolean wizardChosen = false;
+        WizardType choice = null;
+        while (!wizardChosen) {
+            try {
+                choice = WizardType.valueOf(sc.next());
+                wizardChosen = true;
+            } catch (IllegalArgumentException e) {
+                System.out.println(Colors.RED + "Not a valid input, retry" + Colors.RESET);
+            }
+        }
+        listeners.firePropertyChange("WizardChoice", null, choice);
     }
 
     public void displayLobbyInfo(int numPlayers, boolean rules, String[] waitingPlayers) {
-        System.out.print("You entered the lobby, there are currently " + waitingPlayers.length + "players waiting.\n"
+        System.out.print("You entered the lobby, there are currently " + waitingPlayers.length + " players waiting.\n"
                 + "Their names are:");
         Arrays.stream(waitingPlayers).forEach(p -> System.out.print(" " + p));
         System.out.println("\nRemember: this game requires " + numPlayers + " players and the rules are "
-                + ((rules) ? "simple" : "expert"));
+                + ((rules) ? "expert" : "simple"));
     }
 
     public void askAction(List<String> actions) {
         actions.forEach(System.out::println);
-        insertAction();
-    }
-
-    public void askAssistant() {
-
-    }
-
-    public void insertAction() {
-        String action = sc.nextLine();
+        String actionName = sc.next();
+        String actionArgument = sc.nextLine();
+        while(!actions.contains(actionName)) { //can be modified (for example by adding abbreviations)
+            System.out.println(Colors.RED + "Action not recognized, retry" + Colors.RESET);
+            actionName = sc.next();
+            actionArgument = sc.nextLine();
+        }
+        listeners.firePropertyChange(actionName, null, actionArgument);
     }
 }

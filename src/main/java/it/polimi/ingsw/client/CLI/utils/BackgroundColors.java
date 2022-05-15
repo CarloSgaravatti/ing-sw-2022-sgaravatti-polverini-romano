@@ -20,7 +20,7 @@ public enum BackgroundColors {
     BRIGHT_CYAN("\u001b[46;1m"),
     BRIGHT_WHITE("\u001b[47;1m");
 
-    static final String RESET = "\u001B[0m";
+    public static final String RESET = "\u001B[0m";
 
     private final String escape;
 

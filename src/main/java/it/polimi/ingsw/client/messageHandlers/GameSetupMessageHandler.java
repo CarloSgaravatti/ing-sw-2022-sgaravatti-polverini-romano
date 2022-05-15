@@ -4,7 +4,6 @@ import it.polimi.ingsw.client.ConnectionToServer;
 import it.polimi.ingsw.client.TurnHandler;
 import it.polimi.ingsw.client.modelView.FieldView;
 import it.polimi.ingsw.client.modelView.ModelView;
-import it.polimi.ingsw.client.PlayerSetupHandler;
 import it.polimi.ingsw.client.UserInterface;
 import it.polimi.ingsw.client.modelView.PlayerView;
 import it.polimi.ingsw.messages.MessageFromServer;
@@ -15,11 +14,11 @@ import it.polimi.ingsw.messages.simpleModel.SimpleField;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.enumerations.WizardType;
 
+import java.util.Arrays;
 import java.util.Map;
 
 //Handles GAME_SETUP and SetupAck messages
 public class GameSetupMessageHandler extends BaseMessageHandler{
-    private final PlayerSetupHandler handler = new PlayerSetupHandler();
 
     public GameSetupMessageHandler(ConnectionToServer connection, UserInterface userInterface, ModelView modelView) {
         super(connection, userInterface, modelView);
@@ -35,10 +34,12 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
         MessagePayload payload = message.getMessagePayload();
         switch (header.getMessageName()) {
             case "PlayerJoined" -> onPlayerJoin(payload);
+            case "GameStarted" -> onGameStarted(payload);
             case "TowerTaken" -> onTowerTaken(payload);
             case "WizardTaken" -> onWizardTaken(payload);
             case "GameInitializations" -> onGameInitializationMessage(payload);
-            case "TowerTypeRequest", "WizardTypeRequest" -> onRequestMessage(message); //maybe two separate messages
+            case "TowerTypeRequest" -> onTowerTypeRequest(payload);
+            case "WizardTypeRequest" -> onWizardTypeRequest(payload);
             case "SetupAck" -> onSetupAck(payload);
         }
     }
@@ -46,8 +47,16 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
     private void onPlayerJoin(MessagePayload payload) {
         String playerName = payload.getAttribute("Nickname").getAsString();
         getModelView().getPlayers().put(playerName, new PlayerView());
+        getUserInterface().displayStringMessage(playerName + " has joined the game");
+    }
 
-        //TODO
+    private void onGameStarted(MessagePayload payload) {
+        String[] gamePlayers = (String[]) payload.getAttribute("Opponents").getAsObject();
+        for (String player: gamePlayers) {
+            getModelView().getPlayers().put(player, new PlayerView());
+        }
+        //Temporary
+        getUserInterface().displayStringMessage("Game has started, these are the players: " + Arrays.toString(gamePlayers));
     }
 
     private void onTowerTaken(MessagePayload payload) {
@@ -83,11 +92,16 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
         getConnection().addFirstMessageHandler(turnMessageHandler);
         turnMessageHandler.setTurnHandler(turnHandler);
         getConnection().addFirstMessageHandler(new GameUpdateMessageHandler(getConnection(), getUserInterface(), getModelView()));
+
+        //TODO: notify user (information will be printed on screen)
     }
 
-    private void onRequestMessage(MessageFromServer message) {
-        //notify player setup handler
-        //TODO
+    private void onTowerTypeRequest(MessagePayload payload) {
+        getUserInterface().askTowerChoice((TowerType[]) payload.getAttribute("FreeTowers").getAsObject());
+    }
+
+    private void onWizardTypeRequest(MessagePayload payload) {
+        getUserInterface().askWizardChoice((WizardType[]) payload.getAttribute("FreeWizards").getAsObject());
     }
 
     private void onSetupAck(MessagePayload payload) {

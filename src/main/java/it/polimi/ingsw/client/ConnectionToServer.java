@@ -17,6 +17,7 @@ public class ConnectionToServer implements Runnable {
     private ObjectInputStream inputStream;
     private MessageHandler firstMessageHandler;
     private final ExecutorService messageHandlerExecutor = Executors.newSingleThreadExecutor();
+    private String nickname;
 
     public ConnectionToServer(Socket socket, UserInterface view) {
         try {
@@ -75,8 +76,18 @@ public class ConnectionToServer implements Runnable {
         return t;
     }
 
+    public void sendMessage(MessagePayload payload, String messageName, ClientMessageType messageType) {
+        ClientMessageHeader header = new ClientMessageHeader(messageName, nickname, messageType);
+        MessageFromClient message = new MessageFromClient(header, payload);
+        asyncWriteToServer(message);
+    }
+
     public void onPingMessage() {
         ClientMessageHeader header = new ClientMessageHeader(null, null, ClientMessageType.PING_ACK);
         asyncWriteToServer(new MessageFromClient(header, null));
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 }

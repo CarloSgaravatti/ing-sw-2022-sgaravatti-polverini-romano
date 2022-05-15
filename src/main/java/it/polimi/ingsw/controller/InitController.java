@@ -136,6 +136,7 @@ public class InitController implements PropertyChangeListener {
 					setupPlayerTower(player, tower);
 				} catch (TowerTypeAlreadyTakenException e) {
 					listeners.firePropertyChange("Error", ErrorMessageType.TOWER_ALREADY_TAKEN, nicknameSender);
+					return;
 				}
 			}
 			case "WizardChoice" -> {
@@ -145,6 +146,7 @@ public class InitController implements PropertyChangeListener {
 					setupPlayerWizard(player, wizard);
 				} catch (WizardTypeAlreadyTakenException e) {
 					listeners.firePropertyChange("Error", ErrorMessageType.WIZARD_ALREADY_TAKEN, nicknameSender);
+					return;
 				}
 			}
 			default -> {

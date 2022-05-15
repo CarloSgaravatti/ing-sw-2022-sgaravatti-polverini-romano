@@ -14,6 +14,7 @@ import javax.swing.event.EventListenerList;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class ActionController {
 	private final TurnController turnController;
 	private final GameController gameController;
 	private final List<String> possibleActions;
+	private final List<TurnPhase> currentTurnRemainingActions = new ArrayList<>();
 	private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 
 	public ActionController(GameController gameController, TurnController turnController) {
@@ -29,6 +31,7 @@ public class ActionController {
 		this.turnController = turnController;
 		turnPhase = TurnPhase.PLAY_ASSISTANT;
 		possibleActions = JsonUtils.getRulesByDifficulty(gameController.isExpertGame());
+		currentTurnRemainingActions.add(TurnPhase.PLAY_ASSISTANT);
 	}
 
 	public void addListener(String propertyName, PropertyChangeListener listener) {
@@ -75,6 +78,7 @@ public class ActionController {
 			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, playerName);
 			throw new AssistantAlreadyPlayedException();
 		}
+		currentTurnRemainingActions.remove(TurnPhase.PLAY_ASSISTANT);
 		setTurnPhase(TurnPhase.TURN_ENDED); //planning phase is ended for this player
 		if (turnController.getActivePlayer().getAssistants().size() == 0) {
 			gameController.getModel().setLastRound(true);
@@ -94,6 +98,7 @@ public class ActionController {
 			throw new IllegalArgumentException(); //TODO: create a specific exception
 		}
 		gameController.getModel().moveMotherNature(motherNatureMovement);
+		currentTurnRemainingActions.remove(TurnPhase.MOVE_MOTHER_NATURE);
 		setTurnPhase(TurnPhase.SELECT_CLOUD);
 	}
 
@@ -140,6 +145,7 @@ public class ActionController {
 			Island island = gameController.getModel().getIslands().get(islandIndex);
 			school.sendStudentToIsland(island, studentsToIsland.toArray(new RealmType[0]));
 		}
+		currentTurnRemainingActions.remove(TurnPhase.MOVE_STUDENTS);
 		setTurnPhase(TurnPhase.MOVE_MOTHER_NATURE);
 	}
 
@@ -151,6 +157,7 @@ public class ActionController {
 		int cloudIndex = payload.getAttribute("Cloud").getAsInt();
 		Cloud cloud = gameController.getModel().getClouds()[cloudIndex];
 		turnController.getActivePlayer().pickFromCloud(cloud);
+		currentTurnRemainingActions.remove(TurnPhase.SELECT_CLOUD);
 		setTurnPhase(TurnPhase.TURN_ENDED);
 	}
 
@@ -175,6 +182,7 @@ public class ActionController {
 		turnController.getActivePlayer().getTurnEffect().setCharacterPlayed(true);
 		turnController.getActivePlayer().getTurnEffect().setCharacterEffectConsumed(false);
 		gameController.getModel().insertCoinsInGeneralSupply(coinToGeneralSupply);
+		currentTurnRemainingActions.remove(TurnPhase.PLAY_CHARACTER_CARD);
 		characterEffect(payload);
 	}
 
@@ -224,6 +232,21 @@ public class ActionController {
 	}
 
 	public boolean checkIfTurnIsEnded() {
-		return turnPhase == TurnPhase.TURN_ENDED;
+		return turnPhase == TurnPhase.TURN_ENDED ||
+				(currentTurnRemainingActions.size() == 1 && currentTurnRemainingActions.contains(TurnPhase.PLAY_CHARACTER_CARD));
+	}
+
+	public void resetPossibleActions(RoundPhase phase) {
+		currentTurnRemainingActions.clear(); //can contain play character card
+		if (phase == RoundPhase.PLANNING) {
+			currentTurnRemainingActions.add(TurnPhase.PLAY_ASSISTANT);
+		} else {
+			currentTurnRemainingActions.add(TurnPhase.MOVE_STUDENTS);
+			currentTurnRemainingActions.add(TurnPhase.MOVE_MOTHER_NATURE);
+			currentTurnRemainingActions.add(TurnPhase.SELECT_CLOUD);
+			if (possibleActions.contains("PlayCharacterCard")) {
+				currentTurnRemainingActions.add(TurnPhase.PLAY_CHARACTER_CARD);
+			}
+		}
 	}
 }
