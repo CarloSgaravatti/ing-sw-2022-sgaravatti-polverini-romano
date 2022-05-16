@@ -1,10 +1,8 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.exceptions.*;
-import it.polimi.ingsw.messages.ClientMessageHeader;
-import it.polimi.ingsw.messages.ClientMessageType;
-import it.polimi.ingsw.messages.MessageFromClient;
-import it.polimi.ingsw.messages.MessagePayload;
+import it.polimi.ingsw.listeners.ErrorDispatcher;
+import it.polimi.ingsw.messages.*;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.CharacterCard;
 import it.polimi.ingsw.model.enumerations.RealmType;
@@ -33,6 +31,7 @@ class ActionControllerTest extends TestCase {
     GameController gameController;
     Player activePlayer; //Used to check values after the actions
     GameConstants gameConstants;
+    RemoteViewStub viewActivePlayer;
 
     @BeforeEach
     void setup() {
@@ -59,6 +58,11 @@ class ActionControllerTest extends TestCase {
         gameController.initializeControllers();
         actionController = gameController.getActionController();
         activePlayer = gameController.getTurnController().getActivePlayer();
+        RemoteViewStub viewPlayer1 = new RemoteViewStub(1, "player1", gameController);
+        RemoteViewStub viewPlayer2 = new RemoteViewStub(1, "player2", gameController);
+        ErrorDispatcher errorDispatcher = new ErrorDispatcher(List.of(viewPlayer1, viewPlayer2));
+        actionController.addListener("Error", errorDispatcher);
+        viewActivePlayer = (activePlayer.getNickName().equals("player1")) ? viewPlayer1 : viewPlayer2;
     }
 
     @Test
@@ -203,10 +207,27 @@ class ActionControllerTest extends TestCase {
         try {
             actionController.doAction(message);
         } catch (Exception e) {
-            e.printStackTrace();
             Assertions.fail();
         }
         Assertions.assertEquals(activePlayer, characterCard.getPlayerActive());
+    }
+
+    @Test
+    void playCharacterTest_WithCharacterAlreadyPlayedInTheTurn() {
+        CharacterCard characterCard = gameController.getModel().getCharacterCards()[new Random().nextInt(3)];
+        int characterToPlay = characterCard.getId();
+        ClientMessageHeader header =
+                new ClientMessageHeader("PlayCharacter", activePlayer.getNickName(), ClientMessageType.ACTION);
+        MessagePayload payload = new MessagePayload();
+        payload.setAttribute("CharacterId", characterToPlay);
+        MessageFromClient message = new MessageFromClient(header, payload);
+        activePlayer.getTurnEffect().setCharacterPlayed(true);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> actionController.doAction(message));
+        Assertions.assertEquals("Error", viewActivePlayer.getMessage().getServerMessageHeader().getMessageName());
+        Assertions.assertEquals(ServerMessageType.SERVER_MESSAGE,
+                viewActivePlayer.getMessage().getServerMessageHeader().getMessageType());
+        Assertions.assertEquals(ErrorMessageType.CHARACTER_ALREADY_PLAYED,
+                viewActivePlayer.getMessage().getMessagePayload().getAttribute("ErrorType").getAsObject());
     }
 
     @Test
@@ -221,9 +242,15 @@ class ActionControllerTest extends TestCase {
         payload.setAttribute("CharacterId", characterToPlay);
         payload.setAttribute("Arguments", arguments);
         MessageFromClient message = new MessageFromClient(header, payload);
-        activePlayer.getTurnEffect().setCharacterEffectConsumed(false);
+        for (int i = 0; i < characterCard.getPrice(); i++) activePlayer.insertCoin();
+        activePlayer.getTurnEffect().setCharacterEffectConsumed(true);
         //Character is already consumed, so it cannot be played anymore
         Assertions.assertThrows(IllegalArgumentException.class, () -> actionController.doAction(message));
+        Assertions.assertEquals("Error", viewActivePlayer.getMessage().getServerMessageHeader().getMessageName());
+        Assertions.assertEquals(ServerMessageType.SERVER_MESSAGE,
+                viewActivePlayer.getMessage().getServerMessageHeader().getMessageType());
+        Assertions.assertEquals(ErrorMessageType.ILLEGAL_ARGUMENT,
+                viewActivePlayer.getMessage().getMessagePayload().getAttribute("ErrorType").getAsObject());
     }
 
     @Test
@@ -233,6 +260,12 @@ class ActionControllerTest extends TestCase {
             Assertions.assertEquals(gameController.getModel().getGameConstants().getNumStudentsPerCloud(),
                     cloud.getStudentsNumber());
         }
+    }
+
+    @Test
+    void illegalActionRequired() {
+        ClientMessageHeader header = new ClientMessageHeader("IllegalAction", null, null);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> actionController.doAction(new MessageFromClient(header, null)));
     }
 
     //TODO: one test for all characters that have an active effect?

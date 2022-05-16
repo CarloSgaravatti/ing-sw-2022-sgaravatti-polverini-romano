@@ -48,7 +48,6 @@ public class InitController implements PropertyChangeListener {
 		game.setupIslands();
 		game.createAllStudentsForBag();
 		if (isExpertGame) game.createCharacterCards();
-		//setupSchools(); At this time it can't be done (players don't have schools)
 	}
 
 	public void addPlayer(String nick) {
@@ -91,7 +90,7 @@ public class InitController implements PropertyChangeListener {
 		playersWithWizard.put(player.getNickName(), wizard);
 	}
 
-	@Deprecated
+	/*@Deprecated
 	public void setupSchools() throws EmptyBagException {
 		for(int i = 0; i < game.getNumPlayers(); i++){
 			School school = game.getPlayers().get(i).getSchool();
@@ -101,7 +100,7 @@ public class InitController implements PropertyChangeListener {
 				school.insertEntrance(game.getBag().pickStudent());
 			}
 		}
-	}
+	}*/
 
 	private Cloud[] createClouds(){
 		Cloud[] clouds = new Cloud[numPlayers];

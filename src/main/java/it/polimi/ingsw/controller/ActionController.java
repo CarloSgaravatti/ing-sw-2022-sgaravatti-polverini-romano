@@ -165,7 +165,7 @@ public class ActionController {
 			NotEnoughCoinsException, IllegalCharacterActionRequestedException, ClassCastException {
 		Player activePlayer = turnController.getActivePlayer();
 		//TODO: illegal argument exception is too general
-		if (turnController.getActivePlayer().getTurnEffect().isCharacterPlayed()) {
+		if (activePlayer.getTurnEffect().isCharacterPlayed()) {
 			listeners.firePropertyChange("Error", ErrorMessageType.CHARACTER_ALREADY_PLAYED, turnController.getActivePlayer().getNickName());
 			throw new IllegalArgumentException();
         }
@@ -179,8 +179,8 @@ public class ActionController {
 		//TODO: if player does not have enough coins this is not correct
 		if (!characterCard.isCoinPresent()) coinToGeneralSupply--;
 		characterCard.playCard(turnController.getActivePlayer());
-		turnController.getActivePlayer().getTurnEffect().setCharacterPlayed(true);
-		turnController.getActivePlayer().getTurnEffect().setCharacterEffectConsumed(false);
+		activePlayer.getTurnEffect().setCharacterPlayed(true);
+		activePlayer.getTurnEffect().setCharacterEffectConsumed(false);
 		gameController.getModel().insertCoinsInGeneralSupply(coinToGeneralSupply);
 		currentTurnRemainingActions.remove(TurnPhase.PLAY_CHARACTER_CARD);
 		characterEffect(payload);

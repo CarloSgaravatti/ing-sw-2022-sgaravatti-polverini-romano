@@ -39,7 +39,7 @@ public class GameControllerTest {
     }
 
     @Test
-    void eventPerformedWrongTurnErrorTest() {
+    void propertyChangeWrongTurnErrorTest() {
         String nickname = controller.getTurnController().getActivePlayer().getNickName();
         String sender = (nickname.equals("player1")) ? "player2" : "player1";
         ClientMessageHeader header = new ClientMessageHeader("EndTurn", sender, ClientMessageType.ACTION);
@@ -56,7 +56,7 @@ public class GameControllerTest {
     }
 
     @Test
-    void eventPerformedEndTurnErrorTest() {
+    void propertyChangeEndTurnErrorTest() {
         controller.getActionController().setTurnPhase(TurnPhase.PLAY_ASSISTANT);
         String nickname = controller.getTurnController().getActivePlayer().getNickName();
         ClientMessageHeader header = new ClientMessageHeader("EndTurn", nickname, ClientMessageType.ACTION);
@@ -70,6 +70,26 @@ public class GameControllerTest {
                 viewNotNullMessage.getMessage().getServerMessageHeader().getMessageType());
         Assertions.assertEquals(ErrorMessageType.TURN_NOT_FINISHED,
                 viewNotNullMessage.getMessage().getMessagePayload().getAttribute("ErrorType").getAsObject());
+    }
+
+    @Test
+    void propertyChangeCorrectEndTurnTest() {
+        controller.getActionController().setTurnPhase(TurnPhase.TURN_ENDED);
+        String turnEnder = controller.getTurnController().getActivePlayer().getNickName();
+        ClientMessageHeader header = new ClientMessageHeader("EndTurn", turnEnder, ClientMessageType.ACTION);
+        MessageFromClient message = new MessageFromClient(header, new MessagePayload());
+        controller.propertyChange(new PropertyChangeEvent(turnEnder, "ActionMessage", null, message));
+        String turnStarter = controller.getTurnController().getActivePlayer().getNickName();
+        Assertions.assertEquals("EndTurn", view1.getMessage().getServerMessageHeader().getMessageName());
+        Assertions.assertEquals("EndTurn", view2.getMessage().getServerMessageHeader().getMessageName());
+        Assertions.assertEquals(ServerMessageType.GAME_UPDATE,
+                view1.getMessage().getServerMessageHeader().getMessageType());
+        Assertions.assertEquals(ServerMessageType.GAME_UPDATE,
+                view2.getMessage().getServerMessageHeader().getMessageType());
+        Assertions.assertEquals(turnEnder, view1.getMessage().getMessagePayload().getAttribute("TurnEnder").getAsString());
+        Assertions.assertEquals(turnEnder, view2.getMessage().getMessagePayload().getAttribute("TurnEnder").getAsString());
+        Assertions.assertEquals(turnStarter, view1.getMessage().getMessagePayload().getAttribute("TurnStarter").getAsString());
+        Assertions.assertEquals(turnStarter, view2.getMessage().getMessagePayload().getAttribute("TurnStarter").getAsString());
     }
 
     //TODO: end turn when is not an error (after adding a listener)
