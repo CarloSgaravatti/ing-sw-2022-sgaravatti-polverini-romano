@@ -5,6 +5,7 @@ import it.polimi.ingsw.client.ConnectionToServer;
 import it.polimi.ingsw.client.ActionInputParser;
 import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.client.UserInterface;
+import it.polimi.ingsw.client.modelView.PlayerView;
 import it.polimi.ingsw.messages.*;
 import it.polimi.ingsw.utils.Pair;
 
@@ -57,6 +58,9 @@ public class DefaultMessageHandler extends BaseMessageHandler {
         boolean rules = payload.getAttribute("Rules").getAsBoolean();
         String[] playersWaiting = (String[]) payload.getAttribute("WaitingPlayers").getAsObject();
         setModelView(new ModelView(rules));
+        for (String player: playersWaiting) {
+            getModelView().getPlayers().put(player, new PlayerView());
+        }
         getConnection().addFirstMessageHandler(new GameSetupMessageHandler(getConnection(), getUserInterface(), getModelView()));
         getUserInterface().displayLobbyInfo(numPlayers, rules, playersWaiting);
         ActionMessageConstructor messageConstructor = new ActionMessageConstructor(getConnection());

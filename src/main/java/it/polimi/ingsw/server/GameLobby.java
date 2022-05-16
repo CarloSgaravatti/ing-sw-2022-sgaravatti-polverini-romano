@@ -8,6 +8,10 @@ import it.polimi.ingsw.messages.MessageFromServer;
 import it.polimi.ingsw.messages.MessagePayload;
 import it.polimi.ingsw.messages.ServerMessageHeader;
 import it.polimi.ingsw.messages.ServerMessageType;
+import it.polimi.ingsw.messages.simpleModel.SimpleCharacter;
+import it.polimi.ingsw.messages.simpleModel.SimpleField;
+import it.polimi.ingsw.messages.simpleModel.SimpleIsland;
+import it.polimi.ingsw.messages.simpleModel.SimplePlayer;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.enumerations.*;
 
@@ -127,14 +131,12 @@ public class GameLobby {
                 synchronized (setupLock) {
                     while (gameController.getInitController().getPlayersWithTower().size() == numPlayersWithTower &&
                             gameController.getInitController().getPlayersWithWizard().size() == numPlayersWithWizard) {
-                        System.out.println("Waiting for setup choice");
                         setupLock.wait();
                     }
                 }
             } catch (InterruptedException e) {
                 //Don't know what to put here (maybe we can just ignore it?)
             }
-            System.out.println("Setup choice done");
             setupTowersDone = gameController.getInitController().getPlayersWithTower().size() == numPlayers;
             setupWizardsDone = gameController.getInitController().getPlayersWithWizard().size() == numPlayers;
         }
@@ -145,7 +147,6 @@ public class GameLobby {
 
     //This method wake up the setupGame Thread because someone has chosen a tower or a wizard
     public void notifySetupChanges() {
-        System.out.println("A setup has been done");
         synchronized (setupLock) {
             setupLock.notify();
         }
@@ -180,34 +181,48 @@ public class GameLobby {
     }
 
     private void sendInitializations() {
+        //TODO: decide if game initializations can be sent in more than one message
         gameController.setGame();
         game = gameController.getModel();
         ServerMessageHeader header = new ServerMessageHeader("GameInitializations", ServerMessageType.GAME_SETUP);
         MessagePayload payload = new MessagePayload();
-        payload.setAttribute("MotherNature", game.motherNaturePositionIndex());
-        Map<String, Integer[]> playersSchools = new HashMap<>();
-        for (String name: participants.keySet()) {
-            Integer[] students = new Integer[RealmType.values().length];
-            for (int i = 0; i < students.length; i++) {
-                students[i] = game.getPlayerByNickname(name).getSchool().getStudentsEntrance(RealmType.values()[i]);
-            }
-            playersSchools.put(name, students);
+        int motherNaturePosition = game.motherNaturePositionIndex();
+        List<SimpleIsland> islandsView = new ArrayList<>();
+        for (Island i: game.getIslands()) {
+            Integer[] students = RealmType.getIntegerRepresentation(i.getStudents().stream()
+                    .map(Student::getStudentType).toList().toArray(new RealmType[0]));
+            islandsView.add(new SimpleIsland(students));
         }
-        payload.setAttribute("Schools", playersSchools);
-        Map<Integer, RealmType> islands = new HashMap<>();
-        for (int i = 0; i < Island.NUM_ISLANDS; i++) {
-            List<Student> islandStudents = game.getIslands().get(i).getStudents();
-            islands.put(i, (islandStudents.size() == 0) ? null : islandStudents.get(0).getStudentType());
-        }
-        payload.setAttribute("Islands", islands);
-        Map<Integer, List<RealmType>> clouds = new HashMap<>();
+        Map<Integer, Integer[]> clouds = new HashMap<>();
         Cloud[] gameClouds = game.getClouds();
         for (int i = 0; i < gameClouds.length; i++) {
-            clouds.put(i, Arrays.stream(gameClouds[i].getStudents())
-                                    .map(Student::getStudentType).collect(Collectors.toList()));
+            Integer[] students = RealmType.getIntegerRepresentation(Arrays.stream(gameClouds[i].getStudents())
+                    .map(Student::getStudentType).toList().toArray(new RealmType[0]));
+            clouds.put(i, students);
         }
-        payload.setAttribute("Clouds", clouds);
+        List<Player> players = game.getPlayers();
+        SimplePlayer[] playersView = new SimplePlayer[players.size()];
+        for (int i = 0; i < playersView.length; i++) {
+            List<RealmType> entrance = new ArrayList<>();
+            for (RealmType r: RealmType.values()) {
+                for (int j = 0; j < players.get(i).getSchool().getStudentsEntrance(r); j++) entrance.add(r);
+            }
+            playersView[i] = new SimplePlayer(players.get(i).getNickName(), entrance.toArray(new RealmType[0]));
+        }
+        SimpleField simpleField;
+        if (isExpertGame) {
+            List<SimpleCharacter> characters = new ArrayList<>();
+            for (CharacterCard c: game.getCharacterCards()) {
+                characters.add(new SimpleCharacter(c.getId(), c.getPrice())); //TODO: modify (probably character cards need to be modified)
+            }
+            simpleField = new SimpleField(islandsView, clouds, characters, motherNaturePosition);
+        } else {
+            simpleField = new SimpleField(islandsView, clouds, motherNaturePosition);
+        }
+        payload.setAttribute("Field", simpleField);
+        payload.setAttribute("PlayersInfo", playersView);
         broadcast(new MessageFromServer(header, payload));
+        //TODO: assistants
     }
 
     public int getNumPlayers() {

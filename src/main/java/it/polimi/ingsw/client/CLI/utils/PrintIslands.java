@@ -4,6 +4,11 @@ package it.polimi.ingsw.client.CLI.utils;
 import it.polimi.ingsw.model.enumerations.TowerType;
 
 public class PrintIslands {
+    //TODO: some notes that might improve code readability and cli performance (not only for PrintIslands)
+    //  - this class will not have static methods
+    //  - class will have a constructor that loads an island skeleton in a final String[][] (without dynamic parts)
+    //  - method drawIsland (not static) will change the skeleton only in the dynamic parts
+
     public static String[][] drawIsland(int islandIndex, int numTowers,  TowerType type , int ...islandStudent){
         String[][] draw = new String[7][15];
         draw[0][4] = ""+  Colors.GREEN + "╔" + Colors.RED;

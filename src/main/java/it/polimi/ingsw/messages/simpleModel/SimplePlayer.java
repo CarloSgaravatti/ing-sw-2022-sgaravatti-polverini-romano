@@ -4,13 +4,14 @@ import it.polimi.ingsw.model.enumerations.RealmType;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public class SimplePlayer implements Serializable {
     private RealmType[] entrance;
     private RealmType[] diningRoom;
     private int numTowers;
     private final String nickname;
-    private List<Integer> assistants;
+    private Map<Integer, Integer> assistants;
     private int numCoins;
 
     public SimplePlayer(String nickname) {
@@ -18,9 +19,18 @@ public class SimplePlayer implements Serializable {
     }
 
     public SimplePlayer(String nickname, RealmType[] entrance, RealmType[] diningRoom) {
+        this(nickname, entrance);
+        this.diningRoom = diningRoom;
+    }
+
+    public SimplePlayer(String nickname, RealmType[] entrance) {
         this(nickname);
         this.entrance = entrance;
-        this.diningRoom = diningRoom;
+    }
+
+    public SimplePlayer(String nickname, RealmType[] entrance, Map<Integer, Integer> assistants) {
+        this(nickname, entrance);
+        this.assistants = assistants;
     }
 
     public RealmType[] getEntrance() {
@@ -47,11 +57,11 @@ public class SimplePlayer implements Serializable {
         this.numTowers = numTowers;
     }
 
-    public List<Integer> getAssistants() {
+    public Map<Integer, Integer> getAssistants() {
         return assistants;
     }
 
-    public void setAssistants(List<Integer> assistants) {
+    public void setAssistants(Map<Integer, Integer> assistants) {
         this.assistants = assistants;
     }
 

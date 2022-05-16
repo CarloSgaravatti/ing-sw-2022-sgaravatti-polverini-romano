@@ -11,6 +11,7 @@ import it.polimi.ingsw.messages.MessagePayload;
 import it.polimi.ingsw.messages.ServerMessageHeader;
 import it.polimi.ingsw.messages.ServerMessageType;
 import it.polimi.ingsw.messages.simpleModel.SimpleField;
+import it.polimi.ingsw.messages.simpleModel.SimplePlayer;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.enumerations.WizardType;
 
@@ -79,9 +80,13 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
         //...
         FieldView fieldView = new FieldView((SimpleField) payload.getAttribute("Field").getAsObject());
         getModelView().setField(fieldView);
-        Map<?,?> schoolEntrances = (Map<?, ?>) payload.getAttribute("Schools").getAsObject();
-        for (String player: getModelView().getPlayers().keySet()) {
-            getModelView().getPlayers().get(player).getSchoolStudents().setFirst((Integer[]) schoolEntrances.get(player));
+        SimplePlayer[] playersInfo = (SimplePlayer[]) payload.getAttribute("PlayersInfo").getAsObject();
+        for (SimplePlayer player: playersInfo) {
+            String playerName = player.getNickname();
+            getModelView().getPlayers().get(playerName).updateEntrance(player.getEntrance(), true);
+            if (playerName.equals(getUserInterface().getNickname())) {
+                getModelView().setClientPlayerAssistants(player.getAssistants());
+            }
         }
         TurnHandler turnHandler = new TurnHandler(getModelView().isExpert(), getConnection(), getUserInterface());
         ((DefaultMessageHandler)getNextHandler()).setTurnHandler(turnHandler);

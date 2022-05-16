@@ -3,6 +3,7 @@ package it.polimi.ingsw.messages.simpleModel;
 import it.polimi.ingsw.model.enumerations.RealmType;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +23,7 @@ public class SimpleField implements Serializable {
     }
 
     public SimpleField(List<SimpleIsland> islands, Map<Integer, Integer[]> clouds, int motherNaturePosition) {
-        this(islands, clouds, null, motherNaturePosition);
+        this(islands, clouds, new ArrayList<>(), motherNaturePosition);
     }
 
     public List<SimpleIsland> getIslands() {
