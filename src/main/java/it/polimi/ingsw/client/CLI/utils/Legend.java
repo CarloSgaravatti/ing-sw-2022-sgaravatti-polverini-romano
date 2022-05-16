@@ -13,17 +13,17 @@ public class Legend {
             System.out.print("\t\t");
             for(int j = 0 ; j < 15 ; j++){
                 if(i==6 && j== 2){
-                    System.out.print("^");
+                    System.out.print(Colors.RESET+"^"+Colors.GREEN);
                 }
                 else {
                     System.out.print(legend[i][j]);
                 }
             }
             if(i==3){
-                System.out.print(" <--- Number of Students");
+                System.out.print(Colors.RESET+" <--- Number of Students");
             }
             if(i==4){
-                System.out.print("       Colored by Type");
+                System.out.print(Colors.RESET+"       Colored by Type");
             }
             System.out.println();
         }

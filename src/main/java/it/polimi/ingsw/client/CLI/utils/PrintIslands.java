@@ -24,7 +24,7 @@ public class PrintIslands {
         draw[3][2] = "╝";
         draw[5][4] = "╝";
         draw[5][14] = "╝";
-        draw[6][13] = "╝";
+        draw[6][13] = "╝"+Colors.RESET;
         draw[5][0] = ""+  Colors.GREEN+ "╚";
         draw[6][5] = ""+  Colors.GREEN+ "╚";
         draw[1][11] = "╚";
