@@ -176,10 +176,10 @@ public class PrintSchool {
                 school[l][s] = Colors.BLACK + "♜" + Colors.RESET;
             }
             if(type == TowerType.WHITE){
-                school[l][s] = Colors.BLACK + "♜" + Colors.RESET;
+                school[l][s] = "♜";
             }
             if(type == TowerType.GREY){
-                school[l][s] = Colors.BLACK + "♜" + Colors.RESET;
+                school[l][s] = Colors.WHITE + "♜" + Colors.RESET;
             }
             if(s==32){
                 s=31;
