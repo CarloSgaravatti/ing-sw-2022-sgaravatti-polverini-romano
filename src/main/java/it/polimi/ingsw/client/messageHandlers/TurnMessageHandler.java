@@ -2,9 +2,9 @@ package it.polimi.ingsw.client.messageHandlers;
 
 import it.polimi.ingsw.client.ConnectionToServer;
 import it.polimi.ingsw.client.modelView.ModelView;
-import it.polimi.ingsw.client.TurnHandler;
 import it.polimi.ingsw.client.UserInterface;
 import it.polimi.ingsw.controller.RoundPhase;
+import it.polimi.ingsw.controller.TurnPhase;
 import it.polimi.ingsw.messages.MessageFromServer;
 import it.polimi.ingsw.messages.MessagePayload;
 import it.polimi.ingsw.messages.ServerMessageHeader;
@@ -13,11 +13,12 @@ import it.polimi.ingsw.model.enumerations.RealmType;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class TurnMessageHandler extends BaseMessageHandler {
-    private PropertyChangeSupport turnHandler = new PropertyChangeSupport(this);
+    private final PropertyChangeSupport turnHandler = new PropertyChangeSupport(this);
     private static final List<String> messageHandled = List.of("EndTurn", "ChangePhase", "EndGame", "ActionAck");
 
     public TurnMessageHandler(ConnectionToServer connection, UserInterface userInterface, ModelView modelView) {
@@ -30,6 +31,7 @@ public class TurnMessageHandler extends BaseMessageHandler {
 
     @Override
     public void handleMessage(MessageFromServer message) {
+        System.out.println("C");
         ServerMessageHeader header = message.getServerMessageHeader();
         if (header.getMessageType() != ServerMessageType.GAME_UPDATE && !messageHandled.contains(header.getMessageName())) {
             getNextHandler().handleMessage(message);
@@ -50,7 +52,7 @@ public class TurnMessageHandler extends BaseMessageHandler {
         getModelView().setCurrentActivePlayer(newActivePlayer);
 
         //TODO
-        checkClientTurn(newActivePlayer);
+        checkClientTurn(newActivePlayer, (TurnPhase[]) payload.getAttribute("PossibleActions").getAsObject());
     }
 
     private void onChangePhase(MessagePayload payload) {
@@ -65,8 +67,13 @@ public class TurnMessageHandler extends BaseMessageHandler {
             }
         }
 
+        System.out.println(starter);
         //TODO
-        checkClientTurn(starter);
+        try {
+            checkClientTurn(starter, (TurnPhase[]) payload.getAttribute("PossibleActions").getAsObject());
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void onEndGame(MessagePayload payload) {
@@ -77,12 +84,15 @@ public class TurnMessageHandler extends BaseMessageHandler {
     }
 
     private void onActionAck(MessagePayload payload) {
-        turnHandler.firePropertyChange("ActionAck", null, payload.getAttribute("ActionNAme").getAsString());
+        turnHandler.firePropertyChange("ActionAck",
+                payload.getAttribute("ActionName").getAsString(), payload.getAttribute("NewPossibleActions").getAsObject());
     }
 
-    private void checkClientTurn(String turnStarter) {
+    private void checkClientTurn(String turnStarter, TurnPhase[] possibleActions) {
         if (turnStarter.equals(getUserInterface().getNickname())) {
-            turnHandler.firePropertyChange("ClientTurn", null, getModelView().getCurrentPhase());
+            turnHandler.firePropertyChange("ClientTurnV2", null, possibleActions);
+            //turnHandler.firePropertyChange("ClientTurn", null, getModelView().getCurrentPhase());
+            getUserInterface().displayStringMessage(Arrays.toString(possibleActions)); //temporary
         }
     }
 }

@@ -35,7 +35,8 @@ public class GameController implements PropertyChangeListener {
 	public void startGame() {
 		game.start();
 		//TODO
-		listeners.firePropertyChange("EndPhase", turnController.getCurrentPhase(), turnController.getActivePlayer().getNickName());
+		//listeners.firePropertyChange("EndPhase", turnController.getCurrentPhase(), turnController.getActivePlayer().getNickName());
+		handleEndPhase();
 	}
 
 	public Game getModel() {
@@ -84,21 +85,27 @@ public class GameController implements PropertyChangeListener {
 				return;
 			}
 			boolean isPhaseEnded = turnController.endTurn();
+			actionController.resetPossibleActions(turnController.getCurrentPhase());
 			game.setIndexActivePlayer(turnController.getActivePlayer());
 			setStartingTurnPhase(turnController.getCurrentPhase());
 			if (isPhaseEnded) {
-				actionController.resetPossibleActions(turnController.getCurrentPhase());
 				handleEndPhase();
 				return;
 			}
 			//notify new turn
 			String turnStarter = turnController.getActivePlayer().getNickName();
-			listeners.firePropertyChange("EndTurn", nicknamePlayer, turnStarter);
+			TurnPhase[] newPossibleActions = actionController.getCurrentTurnRemainingActions().toArray(new TurnPhase[0]);
+			//listeners.firePropertyChange("EndTurn", nicknamePlayer, turnStarter);
+			listeners.firePropertyChange(new PropertyChangeEvent(turnStarter, "EndTurn", nicknamePlayer, newPossibleActions));
 		} else {
 			try {
 				actionController.doAction(message);
+				TurnPhase[] newPossibleActions = actionController.getCurrentTurnRemainingActions().toArray(new TurnPhase[0]);
 				//TODO: update possible actions
-				listeners.firePropertyChange("Action", nicknamePlayer, actionName);
+				PropertyChangeEvent event =
+						new PropertyChangeEvent(nicknamePlayer, "Action", actionName, newPossibleActions);
+				//listeners.firePropertyChange("Action", nicknamePlayer, actionName);
+				listeners.firePropertyChange(event);
 			} catch (Exception e) {
 				//TODO: decide if it has to handled here or directly in the action controller class;
 				//	the exception will be transformed in an error message
@@ -115,7 +122,10 @@ public class GameController implements PropertyChangeListener {
 			return;
 		}
 		//Notify change phase
-		listeners.firePropertyChange("EndPhase", turnController.getCurrentPhase(), turnController.getActivePlayer().getNickName());
+		TurnPhase[] newPossibleActions = actionController.getCurrentTurnRemainingActions().toArray(new TurnPhase[0]);
+		//listeners.firePropertyChange("EndPhase", turnController.getCurrentPhase(), turnController.getActivePlayer().getNickName());
+		listeners.firePropertyChange(new PropertyChangeEvent(turnController.getActivePlayer().getNickName(), "EndPhase",
+				turnController.getCurrentPhase(), newPossibleActions));
 	}
 
 	public void setStartingTurnPhase(RoundPhase currentRoundPhase) {

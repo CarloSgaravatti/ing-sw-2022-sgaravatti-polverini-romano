@@ -1,7 +1,6 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.exceptions.*;
-import it.polimi.ingsw.listeners.*;
 import it.polimi.ingsw.messages.ErrorMessageType;
 import it.polimi.ingsw.messages.MessageFromClient;
 import it.polimi.ingsw.messages.MessagePayload;
@@ -10,11 +9,8 @@ import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.utils.JsonUtils;
 import it.polimi.ingsw.utils.Pair;
 
-import javax.swing.event.EventListenerList;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -238,15 +234,13 @@ public class ActionController {
 
 	public void resetPossibleActions(RoundPhase phase) {
 		currentTurnRemainingActions.clear(); //can contain play character card
-		if (phase == RoundPhase.PLANNING) {
-			currentTurnRemainingActions.add(TurnPhase.PLAY_ASSISTANT);
-		} else {
-			currentTurnRemainingActions.add(TurnPhase.MOVE_STUDENTS);
-			currentTurnRemainingActions.add(TurnPhase.MOVE_MOTHER_NATURE);
-			currentTurnRemainingActions.add(TurnPhase.SELECT_CLOUD);
-			if (possibleActions.contains("PlayCharacterCard")) {
-				currentTurnRemainingActions.add(TurnPhase.PLAY_CHARACTER_CARD);
-			}
+		currentTurnRemainingActions.addAll(phase.getTurnActions());
+		if (phase == RoundPhase.PLANNING && !possibleActions.contains("PlayCharacterCard")) {
+			currentTurnRemainingActions.remove(TurnPhase.PLAY_CHARACTER_CARD);
 		}
+	}
+
+	public List<TurnPhase> getCurrentTurnRemainingActions() {
+		return currentTurnRemainingActions;
 	}
 }

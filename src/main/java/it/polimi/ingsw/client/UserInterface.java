@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client;
 
+import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.enumerations.WizardType;
 import it.polimi.ingsw.utils.Pair;
@@ -31,4 +32,6 @@ public interface UserInterface /*extends PropertyChangeListener*/{
     void askLobbyDecision();
 
     void addListener(PropertyChangeListener listener, String propertyName);
+
+    void onGameInitialization(ModelView modelView);
 }

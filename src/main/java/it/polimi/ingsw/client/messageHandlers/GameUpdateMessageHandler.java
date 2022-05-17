@@ -27,7 +27,7 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
     @Override
     public void handleMessage(MessageFromServer message) {
         ServerMessageHeader header = message.getServerMessageHeader();
-        if(header.getMessageType() != ServerMessageType.GAME_UPDATE && !messageHandled.contains(header.getMessageName())) {
+        if(header.getMessageType() != ServerMessageType.GAME_UPDATE || !messageHandled.contains(header.getMessageName())) {
             getNextHandler().handleMessage(message);
             return;
         }

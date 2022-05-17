@@ -12,6 +12,7 @@ import it.polimi.ingsw.messages.ServerMessageHeader;
 import it.polimi.ingsw.messages.ServerMessageType;
 import it.polimi.ingsw.messages.simpleModel.SimpleField;
 import it.polimi.ingsw.messages.simpleModel.SimplePlayer;
+import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.enumerations.WizardType;
 
@@ -77,19 +78,18 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
     }
 
     private void onGameInitializationMessage(MessagePayload payload) {
-        //...
         FieldView fieldView = new FieldView((SimpleField) payload.getAttribute("Field").getAsObject());
         getModelView().setField(fieldView);
         SimplePlayer[] playersInfo = (SimplePlayer[]) payload.getAttribute("PlayersInfo").getAsObject();
-        for (SimplePlayer player: playersInfo) {
+        for (SimplePlayer player : playersInfo) {
             String playerName = player.getNickname();
-            getModelView().getPlayers().get(playerName).updateEntrance(player.getEntrance(), true);
-            if (playerName.equals(getUserInterface().getNickname())) {
+            getModelView().getPlayers().get(playerName).resetStudentsTo(player.getEntrance(), new RealmType[0]);
+            /*if (playerName.equals(getUserInterface().getNickname())) {
                 getModelView().setClientPlayerAssistants(player.getAssistants());
-            }
+            }*/
         }
         TurnHandler turnHandler = new TurnHandler(getModelView().isExpert(), getConnection(), getUserInterface());
-        ((DefaultMessageHandler)getNextHandler()).setTurnHandler(turnHandler);
+        ((DefaultMessageHandler) getNextHandler()).setTurnHandler(turnHandler);
         if (getModelView().isExpert()) {
             getConnection().addFirstMessageHandler(new CharacterMessageHandler(getConnection(), getUserInterface(), getModelView()));
         }
@@ -97,8 +97,12 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
         getConnection().addFirstMessageHandler(turnMessageHandler);
         turnMessageHandler.setTurnHandler(turnHandler);
         getConnection().addFirstMessageHandler(new GameUpdateMessageHandler(getConnection(), getUserInterface(), getModelView()));
-
         //TODO: notify user (information will be printed on screen)
+        try {
+            getUserInterface().onGameInitialization(getModelView());
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void onTowerTypeRequest(MessagePayload payload) {

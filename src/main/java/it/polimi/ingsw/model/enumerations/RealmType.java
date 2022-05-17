@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.enumerations;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -60,6 +61,7 @@ public enum RealmType {
 
     public static Integer[] getIntegerRepresentation(RealmType[] realmTypes) {
         Integer[] res = new Integer[values().length];
+        Arrays.fill(res, 0);
         for (RealmType r: realmTypes) {
             res[r.ordinal()]++;
         }

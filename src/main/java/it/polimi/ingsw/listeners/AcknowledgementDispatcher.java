@@ -1,5 +1,6 @@
 package it.polimi.ingsw.listeners;
 
+import it.polimi.ingsw.controller.TurnPhase;
 import it.polimi.ingsw.messages.MessagePayload;
 import it.polimi.ingsw.messages.ServerMessageType;
 import it.polimi.ingsw.server.RemoteView;
@@ -29,9 +30,10 @@ public class AcknowledgementDispatcher implements EventListener, PropertyChangeL
         }
     }
 
-    public void confirmActionPerformed(String clientName, String actionName) {
+    public void confirmActionPerformed(String clientName, String actionName, TurnPhase[] newPossibleActions) {
         MessagePayload payload = new MessagePayload();
         payload.setAttribute("ActionName", actionName);
+        payload.setAttribute("NewPossibleActions", newPossibleActions);
         for (RemoteView view: views) {
             if (view.getPlayerNickname().equals(clientName)) {
                 dispatchAck(view, payload, "ActionAck");
@@ -47,7 +49,7 @@ public class AcknowledgementDispatcher implements EventListener, PropertyChangeL
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
-            case ACTION -> confirmActionPerformed((String) evt.getOldValue(), (String) evt.getNewValue());
+            case ACTION -> confirmActionPerformed((String) evt.getSource(), (String) evt.getOldValue(), (TurnPhase[]) evt.getNewValue());
             case SETUP -> confirmSetupChoice((String) evt.getOldValue(), (String) evt.getNewValue());
         }
     }

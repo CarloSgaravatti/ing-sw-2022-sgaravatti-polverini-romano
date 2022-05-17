@@ -22,7 +22,7 @@ public class ExpertFieldView {
                 numNoEntryTilesOnCharacter = new Pair<>(c.getId(), numNoEntryTiles);
                 islandsWithNoEntryTiles = new HashMap<>();
             });
-            Optional<RealmType[]> studentsOptional = Optional.of(c.getStudents());
+            Optional<RealmType[]> studentsOptional = Optional.ofNullable(c.getStudents());
             studentsOptional.ifPresent(students -> {
                 Integer[] characterStud = new Integer[RealmType.values().length];
                 ModelView.insertStudents(characterStud, students);

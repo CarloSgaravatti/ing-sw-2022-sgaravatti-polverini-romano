@@ -1,9 +1,11 @@
 package it.polimi.ingsw.utils;
 
-public class Triplet<T, V, R> {
-    T t;
-    V v;
-    R r;
+import java.io.Serializable;
+
+public class Triplet<T, V, R> implements Serializable {
+    private T t;
+    private V v;
+    private R r;
 
     public Triplet(T t, V v, R r) {
         this.t = t;

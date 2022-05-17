@@ -1,10 +1,12 @@
 package it.polimi.ingsw.client.CLI;
 
 import it.polimi.ingsw.client.CLI.utils.Colors;
+import it.polimi.ingsw.client.CLI.utils.MapPrinter;
 import it.polimi.ingsw.client.CLI.utils.PrintEntryWindow;
 import it.polimi.ingsw.client.ConnectionToServer;
 import it.polimi.ingsw.client.PlayerSetupHandler;
 import it.polimi.ingsw.client.UserInterface;
+import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.enumerations.WizardType;
 import it.polimi.ingsw.utils.Pair;
@@ -25,6 +27,8 @@ public class CLI implements Runnable, UserInterface {
     private final Scanner sc = new Scanner(System.in);
     private String nickname;
     private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
+    private final InputManager inputManager = new InputManager(sc);
+    private ModelView modelView;
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -62,6 +66,8 @@ public class CLI implements Runnable, UserInterface {
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
+        System.out.println("\033[H\033[2J");
+        System.out.flush();
     }
 
     @Override
@@ -81,7 +87,6 @@ public class CLI implements Runnable, UserInterface {
         PrintEntryWindow.printWelcome();
         //askNickname();
         //System.out.println(nickname);
-        //clearScreen();
         ConnectionToServer connectionToServer = new ConnectionToServer(socket, this);
         PlayerSetupHandler playerSetupHandler = new PlayerSetupHandler(connectionToServer);
         addListener(playerSetupHandler, "Nickname");
@@ -89,8 +94,15 @@ public class CLI implements Runnable, UserInterface {
         addListener(playerSetupHandler, "GameToPlay");
         addListener(playerSetupHandler, "TowerChoice");
         addListener(playerSetupHandler, "WizardChoice");
-        new Thread(connectionToServer).start();
-        //...
+        //TODO: maybe use an executor service
+        Thread t = new Thread(connectionToServer);
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            //TODO
+            t.interrupt(); //is this ok?
+        }
     }
 
     @Override
@@ -221,5 +233,13 @@ public class CLI implements Runnable, UserInterface {
             actionArgument = sc.nextLine();
         }
         listeners.firePropertyChange(actionName, null, actionArgument);
+    }
+
+    @Override
+    public void onGameInitialization(ModelView modelView) {
+        MapPrinter printer = new MapPrinter(0, 0);
+        this.modelView = modelView;
+        printer.initializeMap(modelView);
+        printer.printMap();
     }
 }

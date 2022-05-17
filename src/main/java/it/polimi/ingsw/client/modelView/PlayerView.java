@@ -6,18 +6,25 @@ import it.polimi.ingsw.model.enumerations.WizardType;
 import it.polimi.ingsw.utils.Pair;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static it.polimi.ingsw.client.modelView.ModelView.insertStudents;
 import static it.polimi.ingsw.client.modelView.ModelView.removeStudents;
 
 public class PlayerView {
-    private Pair<Integer[], Integer[]> schoolStudents = new Pair<>(new Integer[RealmType.values().length], new Integer[RealmType.values().length]);
+    private final Pair<Integer[], Integer[]> schoolStudents;
     private int numTowers;
     private TowerType tower;
     private WizardType wizard;
     private int playerCoins;
     private Pair<Integer, Integer> lastPlayedAssistant;
+
+    public PlayerView() {
+        schoolStudents = new Pair<>(new Integer[RealmType.values().length], new Integer[RealmType.values().length]);
+        Arrays.fill(schoolStudents.getFirst(), 0);
+        Arrays.fill(schoolStudents.getSecond(), 0);
+    }
 
     public void updateDiningRoom(RealmType[] students, boolean isInsertion) {
         Integer[] diningRoom = schoolStudents.getSecond();
@@ -71,7 +78,8 @@ public class PlayerView {
     }
 
     public void resetStudentsTo(RealmType[] entrance, RealmType[] diningRoom) {
-        this.schoolStudents = new Pair<>(new Integer[RealmType.values().length], new Integer[RealmType.values().length]);
+        Arrays.fill(schoolStudents.getFirst(), 0);
+        Arrays.fill(schoolStudents.getSecond(), 0);
         updateEntrance(entrance, true);
         updateDiningRoom(diningRoom, true);
     }

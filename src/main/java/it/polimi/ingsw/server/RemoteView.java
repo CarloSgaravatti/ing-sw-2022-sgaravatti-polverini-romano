@@ -50,8 +50,7 @@ public class RemoteView extends View implements PropertyChangeListener {
         //Message type will always be different from GAME_SETUP
         switch (messageType) {
             case PLAYER_SETUP -> {
-                fireSetupMessageEvent(message); //Need to call also setup in GameLobby
-                System.out.println("Notifying game lobby");
+                fireSetupMessageEvent(message);
                 gameLobby.notifySetupChanges();
             }
             case ACTION -> fireActionMessageEvent(message);

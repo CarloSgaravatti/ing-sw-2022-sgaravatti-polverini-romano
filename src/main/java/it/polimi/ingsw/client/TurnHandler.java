@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client;
 
 import it.polimi.ingsw.controller.RoundPhase;
+import it.polimi.ingsw.controller.TurnPhase;
 import it.polimi.ingsw.messages.ClientMessageHeader;
 import it.polimi.ingsw.messages.ClientMessageType;
 import it.polimi.ingsw.messages.MessageFromClient;
@@ -95,8 +96,10 @@ public class TurnHandler implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case "ActionAck" -> onAckReceived((String) evt.getNewValue());
+            case "ActionAckV2" -> onAckReceived(List.of((String[]) evt.getNewValue()));
             case "Error" -> onErrorReceived();
             case "ClientTurn" -> clientTurnHandler.submit(() -> handlePlayerTurn((RoundPhase) evt.getNewValue()));
+            case "ClientTurnV2" -> clientTurnHandler.submit(() -> handlePlayerTurn(List.of((String[]) evt.getNewValue())));
         }
     }
 
