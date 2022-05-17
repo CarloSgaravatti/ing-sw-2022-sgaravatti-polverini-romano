@@ -8,7 +8,7 @@ public class PrintClouds {
 
 
 
-    public static String[][] drawClouds(int cloudIndex, int numStudents, boolean full, Student... students) {
+    public static String[][] drawClouds(int cloudIndex, boolean full, Student... students) {
         String[][] draw = new String[5][10];
         draw[0][0] = ""+ Colors.BLUE + "╔" + Colors.RESET;
         draw[0][9] = ""+ Colors.BLUE + "╗";
