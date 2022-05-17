@@ -237,9 +237,9 @@ public class CLI implements Runnable, UserInterface {
 
     @Override
     public void onGameInitialization(ModelView modelView) {
-        MapPrinter printer = new MapPrinter(0, 0);
+        /*MapPrinter printer = new MapPrinter(0, 0);
         this.modelView = modelView;
         printer.initializeMap(modelView);
-        printer.printMap();
+        printer.printMap();*/
     }
 }
