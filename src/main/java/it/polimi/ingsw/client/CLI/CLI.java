@@ -27,7 +27,6 @@ public class CLI implements Runnable, UserInterface {
     private final Scanner sc = new Scanner(System.in);
     private String nickname;
     private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
-    private final InputManager inputManager = new InputManager(sc);
     private ModelView modelView;
 
     public static void main(String[] args) {
@@ -237,9 +236,9 @@ public class CLI implements Runnable, UserInterface {
 
     @Override
     public void onGameInitialization(ModelView modelView) {
-        /*MapPrinter printer = new MapPrinter(0, 0);
+        MapPrinter printer = new MapPrinter(0, 0);
         this.modelView = modelView;
         printer.initializeMap(modelView);
-        printer.printMap();*/
+        printer.printMap();
     }
 }

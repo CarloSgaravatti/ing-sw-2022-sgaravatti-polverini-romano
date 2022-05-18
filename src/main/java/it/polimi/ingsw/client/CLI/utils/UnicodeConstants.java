@@ -17,7 +17,8 @@ public enum UnicodeConstants {
 
     BLACK_TOWER(Colors.BLACK + "\u265C" + Colors.RESET),
     WHITE_TOWER(Colors.WHITE + "\u265C" + Colors.RESET),
-    GREY_TOWER(Colors.CYAN + "\u265C" + Colors.RESET); //There isn't grey, for the moment I put cyan
+    GREY_TOWER(Colors.CYAN + "\u265C" + Colors.RESET), //There isn't grey, for the moment I put cyan
+    NO_COLOR_TOWER("\u265C");
 
     private final String codeValue;
 
