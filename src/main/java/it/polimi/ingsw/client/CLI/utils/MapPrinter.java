@@ -1,16 +1,14 @@
 package it.polimi.ingsw.client.CLI.utils;
 
 import it.polimi.ingsw.client.modelView.ModelView;
-import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.utils.Pair;
-import it.polimi.ingsw.utils.Triplet;
 
 import java.util.Arrays;
 
 public class MapPrinter {
     private String[][] lastMap;
     private ModelView modelView;
-    private final IslandPrinter islandPrinter = new IslandPrinter();
+    private final IslandMapPrinter islandMapPrinter = new IslandMapPrinter();
     private Pair<Integer, Integer> islandsSectionTopLeftPosition;
     private Pair<Integer, Integer> islandsSectionBottomRightPosition;
     private Pair<Integer, Integer> cloudsSectionTopLeftPosition;
@@ -48,25 +46,19 @@ public class MapPrinter {
 
     public void initializeMap(ModelView modelView) {
         this.modelView = modelView;
-        int numIslands = modelView.getField().getIslandSize();
-        String[][] firstLine = new String[0][0];
-        String[][] secondLine = new String[0][0];
-        for (int i = 0; i < (numIslands + 1) / 2; i++) {
-            Triplet<Integer[], Integer, TowerType> islandValues = modelView.getField().getIsland(i);
-            String[][] island = islandPrinter.getIsland(i, islandValues.getSecond(), islandValues.getThird(), islandValues.getFirst());
-            firstLine = appendMatrixInLine(island, firstLine);
+        islandMapPrinter.setFieldView(modelView.getField());
+        islandMapPrinter.initializeIslandMap();
+        lastMap = islandMapPrinter.getIslandMap();
+        //TODO
+    }
 
-            int island2Idx = numIslands - i - 1;
-            Triplet<Integer[], Integer, TowerType> island2Values = modelView.getField().getIsland(island2Idx);
-            String[][] island2 = islandPrinter.getIsland(island2Idx, island2Values.getSecond(), island2Values.getThird(), island2Values.getFirst());
-            secondLine = appendMatrixInLine(island2, secondLine);
-        }
-        lastMap = firstLine;
-        lastMap = appendMatrixInColumn(secondLine, lastMap);
+    public void testIslandMapReplace(int islandId) {
+        islandMapPrinter.changeOnlyIsland(islandId);
+        lastMap = islandMapPrinter.getIslandMap();
     }
 
 
-    private String[][] appendMatrixInLine(String[][] toAppend, String[][] matrix) {
+    public static String[][] appendMatrixInLine(String[][] toAppend, String[][] matrix) {
         int matrixDimX = toAppend.length;
         int matrixDimY = (matrix.length == 0) ? 0 : matrix[0].length;
         int newMatrixDimY = matrixDimY + toAppend[0].length;
@@ -86,7 +78,7 @@ public class MapPrinter {
     }
 
     //The two matrix must have the same y dimension
-    private String[][] appendMatrixInColumn(String[][] toAppend, String[][] matrix) {
+    public static String[][] appendMatrixInColumn(String[][] toAppend, String[][] matrix) {
         int matrixDimX = matrix.length;
         int toAppendDimX = toAppend.length;
         int matrixDimY = matrix[0].length;
@@ -101,6 +93,17 @@ public class MapPrinter {
         for (int i = 0; i < matrixDimX; i++) {
             for (int j = 0; j < matrixDimY; j++) {
                 newMatrix[i + matrixDimX][j] = toAppend[i][j];
+            }
+        }
+        return newMatrix;
+    }
+
+    //toInsert must be smaller in dimensions than oldMatrix
+    public static String[][] substituteSubMatrix(String[][] oldMatrix, String[][] toInsert, Pair<Integer, Integer> startingPos) {
+        String[][] newMatrix = oldMatrix;
+        for (int i = 0; i < toInsert.length; i++) {
+            for (int j = 0; j < toInsert[i].length; j++) {
+                newMatrix[i + startingPos.getFirst()][j + startingPos.getSecond()] = toInsert[i][j];
             }
         }
         return newMatrix;

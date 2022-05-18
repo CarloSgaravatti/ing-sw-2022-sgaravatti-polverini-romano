@@ -23,6 +23,8 @@ public class IslandPrinter {
                     RealmType.GREEN_FROGS, new Triplet<>(3, 6, Colors.GREEN),
                     RealmType.RED_DRAGONS, new Triplet<>(4, 10, Colors.RED),
                     RealmType.PINK_FAIRES, new Triplet<>(5, 8, Colors.PURPLE));
+    public static final int ISLAND_SIZE_X = 7;
+    public static final int ISLAND_SIZE_Y = 15;
 
     public IslandPrinter() {
         islandSkeleton = getIslandSkeleton();
@@ -158,45 +160,46 @@ public class IslandPrinter {
     }
 
     public String[][] getIslandSkeleton() {
-        String[][] islandSkeleton = new String[7][15];
+        String[][] islandSkeleton = new String[ISLAND_SIZE_X][ISLAND_SIZE_Y];
         for (String[] row: islandSkeleton) {
             Arrays.fill(row, " ");
         }
-        islandSkeleton[0][4] = Colors.GREEN.toString() + UnicodeConstants.TOP_LEFT + Colors.RED;
-        islandSkeleton[0][11] = Colors.GREEN.toString() + UnicodeConstants.TOP_RIGHT;
-        islandSkeleton[1][2] = Colors.GREEN.toString() + UnicodeConstants.TOP_LEFT;
-        islandSkeleton[3][0] = Colors.GREEN.toString() + UnicodeConstants.TOP_LEFT;
-        islandSkeleton[4][4] = UnicodeConstants.TOP_LEFT.toString();
-        islandSkeleton[5][13] = UnicodeConstants.TOP_LEFT.toString();
-        islandSkeleton[4][5] = UnicodeConstants.TOP_RIGHT.toString();
-        islandSkeleton[1][12] = UnicodeConstants.TOP_RIGHT.toString();
-        islandSkeleton[2][14] = UnicodeConstants.TOP_RIGHT.toString();
-        islandSkeleton[1][4] = UnicodeConstants.BOTTOM_RIGHT.toString();
-        islandSkeleton[3][2] = UnicodeConstants.BOTTOM_RIGHT.toString();
-        islandSkeleton[5][4] = UnicodeConstants.BOTTOM_RIGHT.toString();
-        islandSkeleton[5][14] = UnicodeConstants.BOTTOM_RIGHT.toString();
-        islandSkeleton[6][13] = UnicodeConstants.BOTTOM_RIGHT + Colors.RESET;
-        islandSkeleton[5][0] = Colors.GREEN.toString() + UnicodeConstants.BOTTOM_LEFT;
-        islandSkeleton[6][5] = Colors.GREEN.toString() + UnicodeConstants.BOTTOM_LEFT;
-        islandSkeleton[1][11] = UnicodeConstants.BOTTOM_LEFT.toString();
-        islandSkeleton[2][12] = UnicodeConstants.BOTTOM_LEFT.toString();
+        //Need to set always colors because map will be composed not only by islands (other don't have green borders)
+        islandSkeleton[0][4] = Colors.GREEN.toString() + UnicodeConstants.TOP_LEFT + Colors.RESET;
+        islandSkeleton[0][11] = Colors.GREEN.toString() + UnicodeConstants.TOP_RIGHT + Colors.RESET;
+        islandSkeleton[1][2] = Colors.GREEN.toString() + UnicodeConstants.TOP_LEFT + Colors.RESET;
+        islandSkeleton[3][0] = Colors.GREEN.toString() + UnicodeConstants.TOP_LEFT + Colors.RESET;
+        islandSkeleton[4][4] = Colors.GREEN + UnicodeConstants.TOP_LEFT.toString() + Colors.RESET;
+        islandSkeleton[5][13] = Colors.GREEN + UnicodeConstants.TOP_LEFT.toString() + Colors.RESET;
+        islandSkeleton[4][5] = Colors.GREEN + UnicodeConstants.TOP_RIGHT.toString() + Colors.RESET;
+        islandSkeleton[1][12] = Colors.GREEN + UnicodeConstants.TOP_RIGHT.toString() + Colors.RESET;
+        islandSkeleton[2][14] = Colors.GREEN + UnicodeConstants.TOP_RIGHT.toString() + Colors.RESET;
+        islandSkeleton[1][4] = Colors.GREEN + UnicodeConstants.BOTTOM_RIGHT.toString() + Colors.RESET;
+        islandSkeleton[3][2] = Colors.GREEN + UnicodeConstants.BOTTOM_RIGHT.toString() + Colors.RESET;
+        islandSkeleton[5][4] = Colors.GREEN + UnicodeConstants.BOTTOM_RIGHT.toString() + Colors.RESET;
+        islandSkeleton[5][14] = Colors.GREEN + UnicodeConstants.BOTTOM_RIGHT.toString() + Colors.RESET;
+        islandSkeleton[6][13] = Colors.GREEN + UnicodeConstants.BOTTOM_RIGHT.toString() + Colors.RESET;
+        islandSkeleton[5][0] = Colors.GREEN.toString() + UnicodeConstants.BOTTOM_LEFT + Colors.RESET;
+        islandSkeleton[6][5] = Colors.GREEN.toString() + UnicodeConstants.BOTTOM_LEFT + Colors.RESET;
+        islandSkeleton[1][11] = Colors.GREEN + UnicodeConstants.BOTTOM_LEFT.toString() + Colors.RESET;
+        islandSkeleton[2][12] = Colors.GREEN + UnicodeConstants.BOTTOM_LEFT.toString() + Colors.RESET;
 
         for (int i = 5; i <= 10; i++) {
-            islandSkeleton[0][i] = UnicodeConstants.HORIZONTAL.toString();
+            islandSkeleton[0][i] = Colors.RED + UnicodeConstants.HORIZONTAL.toString() + Colors.RESET;
         }
-        islandSkeleton[1][3] = UnicodeConstants.HORIZONTAL.toString();
-        islandSkeleton[2][2] = Colors.GREEN.toString() + UnicodeConstants.VERTICAL;
-        islandSkeleton[2][13] = UnicodeConstants.HORIZONTAL.toString();
-        islandSkeleton[3][1] = UnicodeConstants.HORIZONTAL.toString();
-        islandSkeleton[3][14] = UnicodeConstants.VERTICAL.toString();
-        islandSkeleton[4][0] = Colors.GREEN.toString() + UnicodeConstants.VERTICAL;
-        islandSkeleton[4][14] = UnicodeConstants.VERTICAL.toString();
+        islandSkeleton[1][3] = Colors.GREEN + UnicodeConstants.HORIZONTAL.toString() + Colors.RESET;
+        islandSkeleton[2][2] = Colors.GREEN + UnicodeConstants.VERTICAL.toString() + Colors.RESET;
+        islandSkeleton[2][13] = Colors.GREEN + UnicodeConstants.HORIZONTAL.toString() + Colors.RESET;
+        islandSkeleton[3][1] = Colors.GREEN + UnicodeConstants.HORIZONTAL.toString() + Colors.RESET;
+        islandSkeleton[3][14] = Colors.GREEN + UnicodeConstants.VERTICAL.toString() + Colors.RESET;
+        islandSkeleton[4][0] = Colors.GREEN + UnicodeConstants.VERTICAL.toString() + Colors.RESET;
+        islandSkeleton[4][14] = Colors.GREEN + UnicodeConstants.VERTICAL.toString() + Colors.RESET;
         for (int i = 1; i <= 3; i++) {
-            islandSkeleton[5][i] = UnicodeConstants.HORIZONTAL.toString();
+            islandSkeleton[5][i] = Colors.GREEN.toString() + UnicodeConstants.HORIZONTAL + Colors.RESET;
         }
-        islandSkeleton[5][5] = UnicodeConstants.VERTICAL.toString();
+        islandSkeleton[5][5] = Colors.GREEN + UnicodeConstants.VERTICAL.toString() + Colors.RESET;
         for (int i = 6; i <= 12; i++) {
-            islandSkeleton[6][i] = UnicodeConstants.HORIZONTAL.toString();
+            islandSkeleton[6][i] = Colors.GREEN + UnicodeConstants.HORIZONTAL.toString() + Colors.RESET;
         }
         return islandSkeleton;
     }
@@ -206,10 +209,10 @@ public class IslandPrinter {
         //(even if the island skeleton is modified this isn't a problem)
         int firstIslandIdxFigure = (islandIndex <= 9) ? islandIndex : islandIndex / 10;
         island[ISLAND_INDEX_POSITION.getFirst()][ISLAND_INDEX_POSITION.getSecond()] =
-                Colors.BLACK.toString() + BackgroundColors.YELLOW + firstIslandIdxFigure + BackgroundColors.RESET + Colors.RED;
+                Colors.BLACK.toString() + BackgroundColors.YELLOW + firstIslandIdxFigure + BackgroundColors.RESET + Colors.RESET;
         island[ISLAND_INDEX_POSITION.getFirst()][ISLAND_INDEX_POSITION.getSecond() + 1] = (islandIndex > 9) ?
                 Colors.BLACK.toString() + BackgroundColors.YELLOW + islandIndex % 10 + BackgroundColors.RESET + Colors.RED :
-                UnicodeConstants.HORIZONTAL.toString();
+                Colors.RED + UnicodeConstants.HORIZONTAL.toString() + Colors.RESET;
         if (type != null) {
             island[TOWER_POSITION.getFirst()][TOWER_POSITION.getSecond() - 1] =
                     towersUnicode.get(type).getSecond().toString() + numTowers + Colors.RESET;

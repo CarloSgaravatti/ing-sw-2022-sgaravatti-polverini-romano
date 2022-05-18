@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.enumerations;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -66,5 +67,15 @@ public enum RealmType {
             res[r.ordinal()]++;
         }
         return res;
+    }
+
+    public static RealmType[] getRealmsFromIntegerRepresentation(Integer[] students) {
+        List<RealmType> realmTypes = new ArrayList<>();
+        for (int j = 0; j < students.length; j++) {
+            for (int i = 0; i < students[j]; i++) {
+                realmTypes.add(RealmType.values()[j]);
+            }
+        }
+        return realmTypes.toArray(new RealmType[0]);
     }
 }

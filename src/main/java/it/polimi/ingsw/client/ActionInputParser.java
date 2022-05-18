@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client;
 
+import it.polimi.ingsw.client.CLI.utils.Colors;
 import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.model.enumerations.RealmType;
 
@@ -31,26 +32,27 @@ public class ActionInputParser implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) {
         //check input, if ok notify the message constructor
         String move = (String) evt.getNewValue();
-        String[] moveArgs = move.split(" ");
+        System.out.println("You ordered: " + evt.getPropertyName() + " " + move);
+        System.out.println("You ordered: " + evt.getPropertyName() + evt.getNewValue());
         String error = switch (evt.getPropertyName()) {
-            case "MoveStudents" -> checkMoveStudents(moveArgs);
-            case "MoveMotherNature" -> checkMoveMotherNature(moveArgs);
-            case "PickFromCloud" -> checkPickFromCloud(moveArgs);
-            case "PlayCharacter" -> checkPlayCharacter(moveArgs);
-            case "PlayAssistant" -> checkPlayAssistant(moveArgs);
+            case "MoveStudents" -> checkMoveStudents(move);
+            case "MoveMotherNature" -> checkMoveMotherNature(move);
+            case "PickFromCloud" -> checkPickFromCloud(move);
+            case "PlayCharacter" -> checkPlayCharacter(move);
+            case "PlayAssistant" -> checkPlayAssistant(move);
             default -> UNRECOGNISED_COMMAND;
         };
         if (error == null) messageConstructor.firePropertyChange(evt);
         else {
-            userInterface.displayStringMessage(error);
+            userInterface.displayStringMessage(Colors.RED + error + Colors.RESET);
             //userInterface.insertAction(); //TODO: do better
         }
     }
 
-    private String checkPlayAssistant(String[] moveArgs) {
+    private String checkPlayAssistant(String move) {
         int assistantId;
         try {
-            assistantId = Integer.parseInt(moveArgs[0]);
+            assistantId = Integer.parseInt(move);
         } catch (NumberFormatException e) {
             return NOT_A_NUMBER;
         }
@@ -58,7 +60,8 @@ public class ActionInputParser implements PropertyChangeListener {
         return null;
     }
 
-    private String checkMoveStudents(String[] moveArgs) {
+    private String checkMoveStudents(String move) {
+        String[] moveArgs = move.split(" ");
         int i = 0;
         int numStudentsMoved = 0;
         while(i < moveArgs.length) {
@@ -86,10 +89,10 @@ public class ActionInputParser implements PropertyChangeListener {
         return null;
     }
 
-    private String checkMoveMotherNature(String[] moveArgs) {
+    private String checkMoveMotherNature(String move) {
         int motherNatureMovement;
         try {
-            motherNatureMovement = Integer.parseInt(moveArgs[0]);
+            motherNatureMovement = Integer.parseInt(move);
         } catch (NumberFormatException e) {
             return NOT_A_NUMBER;
         }
@@ -100,10 +103,10 @@ public class ActionInputParser implements PropertyChangeListener {
         return null;
     }
 
-    private String checkPickFromCloud(String[] moveArgs) {
+    private String checkPickFromCloud(String move) {
         int cloudId;
         try {
-            cloudId = Integer.parseInt(moveArgs[0]);
+            cloudId = Integer.parseInt(move);
         } catch (NumberFormatException e) {
             return NOT_A_NUMBER;
         }
@@ -111,7 +114,8 @@ public class ActionInputParser implements PropertyChangeListener {
         return null;
     }
 
-    private String checkPlayCharacter(String[] moveArgs) {
+    private String checkPlayCharacter(String move) {
+        String[] moveArgs = move.split(" ");
         int characterId;
         try {
             characterId = Integer.parseInt(moveArgs[0]);

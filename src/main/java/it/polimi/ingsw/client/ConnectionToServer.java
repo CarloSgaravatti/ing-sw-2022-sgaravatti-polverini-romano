@@ -40,7 +40,6 @@ public class ConnectionToServer implements Runnable {
         try {
             while (true) { //while(isActive()) ?
                 MessageFromServer message = (MessageFromServer) inputStream.readObject();
-                System.out.println("Received " + message.getServerMessageHeader().getMessageName());
                 if (message.getServerMessageHeader().getMessageType() != ServerMessageType.PING_MESSAGE) {
                     messageHandlerExecutor.submit(() -> firstMessageHandler.handleMessage(message));
                 } else {
@@ -67,7 +66,6 @@ public class ConnectionToServer implements Runnable {
     public Thread asyncWriteToServer(Object message) {
         Thread t = new Thread(() -> {
             try {
-                System.out.println("Sending " + ((MessageFromClient) message).getClientMessageHeader().getMessageName());
                 outputStream.writeObject(message);
             } catch (IOException e) {
                 //TODO

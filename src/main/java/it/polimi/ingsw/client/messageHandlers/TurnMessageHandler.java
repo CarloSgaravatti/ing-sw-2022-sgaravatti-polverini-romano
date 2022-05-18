@@ -31,7 +31,6 @@ public class TurnMessageHandler extends BaseMessageHandler {
 
     @Override
     public void handleMessage(MessageFromServer message) {
-        System.out.println("C");
         ServerMessageHeader header = message.getServerMessageHeader();
         if (header.getMessageType() != ServerMessageType.GAME_UPDATE && !messageHandled.contains(header.getMessageName())) {
             getNextHandler().handleMessage(message);
@@ -90,9 +89,11 @@ public class TurnMessageHandler extends BaseMessageHandler {
 
     private void checkClientTurn(String turnStarter, TurnPhase[] possibleActions) {
         if (turnStarter.equals(getUserInterface().getNickname())) {
-            turnHandler.firePropertyChange("ClientTurnV2", null, possibleActions);
             //turnHandler.firePropertyChange("ClientTurn", null, getModelView().getCurrentPhase());
             getUserInterface().displayStringMessage(Arrays.toString(possibleActions)); //temporary
+            /*getUserInterface().askAction(Arrays.stream(possibleActions).map(TurnPhase::getActionDescription).toList(),
+                    Arrays.stream(possibleActions).map(TurnPhase::getActionCommand).toList());*/
+            turnHandler.firePropertyChange("ClientTurnV2", null, possibleActions);
         }
     }
 }

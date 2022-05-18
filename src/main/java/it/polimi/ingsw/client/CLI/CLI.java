@@ -222,23 +222,43 @@ public class CLI implements Runnable, UserInterface {
                 + ((rules) ? "expert" : "simple"));
     }
 
-    public void askAction(List<String> actions) {
-        actions.forEach(System.out::println);
+    public void askAction(List<String> actions, List<String> actionCommands) {
+        System.out.println("This is what you can do: ");
+        for (int i = 0; i < actions.size(); i++) {
+            System.out.println(actions.get(i) + " (" + actionCommands.get(i) + ")");
+        }
         String actionName = sc.next();
-        String actionArgument = sc.nextLine();
-        while(!actions.contains(actionName)) { //can be modified (for example by adding abbreviations)
+        String actionArgument = getActionArguments();
+        while(!actionCommands.contains(actionName)) { //can be modified (for example by adding abbreviations)
             System.out.println(Colors.RED + "Action not recognized, retry" + Colors.RESET);
             actionName = sc.next();
-            actionArgument = sc.nextLine();
+            actionArgument = getActionArguments();
         }
         listeners.firePropertyChange(actionName, null, actionArgument);
+    }
+
+    private String getActionArguments() {
+        StringBuilder actionArgument = new StringBuilder();
+        String nextArg = sc.next();
+        actionArgument.append(nextArg);
+        boolean endAction = false;
+        while (!endAction) {
+            nextArg = sc.next();
+            if (!nextArg.equals("end")) actionArgument.append(" ").append(nextArg);
+            else endAction = true;
+        }
+        return actionArgument.toString();
     }
 
     @Override
     public void onGameInitialization(ModelView modelView) {
         MapPrinter printer = new MapPrinter(0, 0);
         this.modelView = modelView;
+        clearScreen();
         printer.initializeMap(modelView);
+        printer.printMap();
+        System.out.println();
+        printer.testIslandMapReplace(2);
         printer.printMap();
     }
 }

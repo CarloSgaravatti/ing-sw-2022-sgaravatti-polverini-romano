@@ -27,7 +27,7 @@ public interface UserInterface /*extends PropertyChangeListener*/{
 
     void displayLobbyInfo(int numPlayers, boolean rules, String[] waitingPlayers);
 
-    void askAction(List<String> actions);
+    void askAction(List<String> actions, List<String> actionCommands);
 
     void askLobbyDecision();
 
