@@ -20,7 +20,7 @@ public class ModelView {
 
     //Need to change, otherwise view knows game logic
     public void updateIslandTower(int islandId, TowerType tower) {
-        Optional<TowerType> islandTower = Optional.of(field.getIsland(islandId).getThird());
+        Optional<TowerType> islandTower = Optional.ofNullable(field.getIsland(islandId).getThird());
         islandTower.ifPresent(t -> {
             Optional<String> playerWithIsland = players.keySet().stream()
                     .filter(p -> players.get(p).getPlayerTower() == t).findAny();

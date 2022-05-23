@@ -47,10 +47,8 @@ public class TurnMessageHandler extends BaseMessageHandler {
 
     private void onEndTurn(MessagePayload payload) {
         String newActivePlayer = payload.getAttribute("TurnStarter").getAsString();
-        String oldActivePlayer = payload.getAttribute("TurnEnder").getAsString();
+        String oldActivePlayer = payload.getAttribute("TurnEnder").getAsString(); //TODO: decide if this information is useful
         getModelView().setCurrentActivePlayer(newActivePlayer);
-
-        //TODO
         checkClientTurn(newActivePlayer, (TurnPhase[]) payload.getAttribute("PossibleActions").getAsObject());
     }
 
@@ -59,20 +57,7 @@ public class TurnMessageHandler extends BaseMessageHandler {
         RoundPhase newPhase = (RoundPhase) payload.getAttribute("NewPhase").getAsObject();
         getModelView().setCurrentActivePlayer(starter);
         getModelView().setCurrentPhase(newPhase);
-        if (newPhase == RoundPhase.ACTION) {
-            Map<?, ?> newClouds = (Map<?, ?>) payload.getAttribute("CloudsRefill").getAsObject();
-            for (Object o: newClouds.keySet()) {
-                getModelView().getField().updateCloudStudents((Integer) o, (RealmType[]) newClouds.get(o));
-            }
-        }
-
-        System.out.println(starter);
-        //TODO
-        try {
-            checkClientTurn(starter, (TurnPhase[]) payload.getAttribute("PossibleActions").getAsObject());
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
+        checkClientTurn(starter, (TurnPhase[]) payload.getAttribute("PossibleActions").getAsObject());
     }
 
     private void onEndGame(MessagePayload payload) {
@@ -83,17 +68,18 @@ public class TurnMessageHandler extends BaseMessageHandler {
     }
 
     private void onActionAck(MessagePayload payload) {
+        System.out.println("Ack");
         turnHandler.firePropertyChange("ActionAck",
                 payload.getAttribute("ActionName").getAsString(), payload.getAttribute("NewPossibleActions").getAsObject());
     }
 
     private void checkClientTurn(String turnStarter, TurnPhase[] possibleActions) {
         if (turnStarter.equals(getUserInterface().getNickname())) {
-            //turnHandler.firePropertyChange("ClientTurn", null, getModelView().getCurrentPhase());
+            getUserInterface().displayStringMessage("Now is your turn");
             getUserInterface().displayStringMessage(Arrays.toString(possibleActions)); //temporary
-            /*getUserInterface().askAction(Arrays.stream(possibleActions).map(TurnPhase::getActionDescription).toList(),
-                    Arrays.stream(possibleActions).map(TurnPhase::getActionCommand).toList());*/
-            turnHandler.firePropertyChange("ClientTurnV2", null, possibleActions);
+            turnHandler.firePropertyChange("ClientTurn", null, possibleActions);
+        } else {
+            getUserInterface().displayStringMessage("Now is " + turnStarter + "'s turn");
         }
     }
 }

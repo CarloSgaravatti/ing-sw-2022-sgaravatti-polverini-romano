@@ -18,22 +18,23 @@ import java.util.concurrent.Executors;
 public class TurnHandler implements PropertyChangeListener {
     private final ConnectionToServer connection;
     private final UserInterface userInterface;
-    private final List<String> turnActions = List.of("MoveStudents", "MoveMotherNature", "PickFromCloud", "PlayCharacterCard");
     private final List<TurnPhase> currentTurnActions = new ArrayList<>();
     private final ExecutorService clientTurnHandler = Executors.newSingleThreadExecutor();
     private boolean ackReceived = false;
     private boolean errorReceived = false;
+    private boolean turnAlreadyEnded = false;
+    private boolean isInputErrorReceived = false;
 
     private final Object waitAckOrErrorLock = new Object();
 
-    public TurnHandler(boolean expertGame, ConnectionToServer connection, UserInterface userInterface) {
-        //if (!expertGame) turnActions.remove("Play a character card"); TODO: delete turn actions?
+    public TurnHandler(ConnectionToServer connection, UserInterface userInterface) {
         this.connection = connection;
         this.userInterface = userInterface;
     }
 
+    /*@Deprecated
     public void handlePlayerTurn(RoundPhase currentPhase) {
-        /*try {
+        try {
             if (currentPhase == RoundPhase.PLANNING) {
                 //planningPhase();
             } else {
@@ -42,10 +43,10 @@ public class TurnHandler implements PropertyChangeListener {
             sendEndTurnMessage();
         } catch (InterruptedException e) {
             //TODO
-        }*/
+        }
     }
 
-   /* private void planningPhase() throws InterruptedException {
+   private void planningPhase() throws InterruptedException {
         currentTurnActions.clear();
         currentTurnActions.add("PlayAssistant");
         setAckReceived(false);
@@ -55,13 +56,12 @@ public class TurnHandler implements PropertyChangeListener {
             synchronized (waitAckOrErrorLock) {
                 while (!isAckReceived() && !isErrorReceived()) waitAckOrErrorLock.wait();
             }
-            //TODO (or is ok like that)?
         } while (!isAckReceived());
     }
 
     private void actionPhase() throws InterruptedException {
         currentTurnActions.clear();
-        currentTurnActions.addAll(turnActions); //TODO: control characters action (is optional)
+        currentTurnActions.addAll(turnActions);
         while(!currentTurnActions.isEmpty()) {
             setAckReceived(false);
             setErrorReceived(false);
@@ -72,34 +72,13 @@ public class TurnHandler implements PropertyChangeListener {
         }
     }*/
 
-    private void sendEndTurnMessage() {
-        ClientMessageHeader header = new ClientMessageHeader("EndTurn", userInterface.getNickname(), ClientMessageType.ACTION);
-        connection.asyncWriteToServer(new MessageFromClient(header, new MessagePayload()));
-    }
-
-    public void onAckReceived(String actionName) {
-        currentTurnActions.remove(actionName);
-        setAckReceived(true);
-        synchronized (waitAckOrErrorLock) {
-            waitAckOrErrorLock.notify();
-        }
-    }
-
-    public void onErrorReceived() {
-        setErrorReceived(true);
-        synchronized (waitAckOrErrorLock) {
-            waitAckOrErrorLock.notify();
-        }
-    }
-
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
-            case "ActionAck" -> onAckReceived((String) evt.getNewValue());
-            case "ActionAckV2" -> onAckReceived(List.of((TurnPhase[]) evt.getNewValue()));
+            case "ActionAck" -> onAckReceived(List.of((TurnPhase[]) evt.getNewValue()), (String) evt.getOldValue());
             case "Error" -> onErrorReceived();
-            case "ClientTurn" -> clientTurnHandler.submit(() -> handlePlayerTurn((RoundPhase) evt.getNewValue()));
-            case "ClientTurnV2" -> clientTurnHandler.submit(() -> handlePlayerTurn(List.of((TurnPhase[]) evt.getNewValue())));
+            case "InputError" -> onInputError();
+            case "ClientTurn" -> clientTurnHandler.submit(() -> handlePlayerTurn(List.of((TurnPhase[]) evt.getNewValue())));
         }
     }
 
@@ -119,29 +98,51 @@ public class TurnHandler implements PropertyChangeListener {
         this.errorReceived = errorReceived;
     }
 
-    //---------------------------------------------------------------------------------------------------
-    //Possible alternative to handlePlayerTurn (message contains also possible actions (for both planning and action phase)
-
     public void handlePlayerTurn(final List<TurnPhase> possibleActions) {
+        System.out.println("Turn handler is starting");
+        setTurnAlreadyEnded(false);
         synchronized (currentTurnActions) {
             currentTurnActions.clear();
-            currentTurnActions.addAll(possibleActions); //TODO: control characters action (is optional)
+            currentTurnActions.addAll(possibleActions);
             while (!currentTurnActions.isEmpty()) {
                 setAckReceived(false);
                 setErrorReceived(false);
+                if (!isInputErrorReceived()) {
+                    //TODO: separate printing menu and getting action, so if an input error is received
+                    //  the printing menu is not printed on user interface
+                }
                 userInterface.askAction(currentTurnActions.stream().map(TurnPhase::getActionDescription).toList(),
                         currentTurnActions.stream().map(TurnPhase::getActionCommand).toList());
                 try {
-                    while (!isAckReceived() && !isErrorReceived()) currentTurnActions.wait();
+                    while (!isAckReceived() && !isErrorReceived() && !isInputErrorReceived()) currentTurnActions.wait();
                 } catch (InterruptedException e) {
                     //TODO
                 }
             }
+            if (isTurnAlreadyEnded()) {
+                userInterface.displayStringMessage("You have ended your turn");
+            } else {
+                userInterface.displayStringMessage("You have nothing more to do, your turn has ended");
+                setAckReceived(false);
+                do {
+                    connection.sendMessage(new MessagePayload(), "EndTurn", ClientMessageType.ACTION);
+                    try {
+                        while (!isAckReceived() && !isErrorReceived()) currentTurnActions.wait();
+                    } catch (InterruptedException e) {
+                        //TODO
+                    }
+                } while (!isAckReceived());
+            }
         }
+        System.out.println("Turn handler has quit the turn handling");
     }
 
-    public void onAckReceived(List<TurnPhase> newPossibleActions) {
+    public void onAckReceived(List<TurnPhase> newPossibleActions, String actionToAck) {
+        System.out.println("AckOK");
         setAckReceived(true);
+        if (actionToAck.equals("EndTurn")) {
+            setTurnAlreadyEnded(true);
+        }
         synchronized (currentTurnActions) {
             currentTurnActions.clear();
             currentTurnActions.addAll(newPossibleActions);
@@ -149,7 +150,7 @@ public class TurnHandler implements PropertyChangeListener {
         }
     }
 
-    public void onErrorReceived2() {
+    public void onErrorReceived() {
         setErrorReceived(true);
         //TODO: notify user
         synchronized (currentTurnActions) {
@@ -157,4 +158,26 @@ public class TurnHandler implements PropertyChangeListener {
         }
     }
 
+    public void onInputError() {
+        setInputErrorReceived(true);
+        synchronized (currentTurnActions) {
+            currentTurnActions.notify();
+        }
+    }
+
+    public synchronized boolean isTurnAlreadyEnded() {
+        return turnAlreadyEnded;
+    }
+
+    public synchronized void setTurnAlreadyEnded(boolean turnAlreadyEnded) {
+        this.turnAlreadyEnded = turnAlreadyEnded;
+    }
+
+    public synchronized boolean isInputErrorReceived() {
+        return isInputErrorReceived;
+    }
+
+    public synchronized void setInputErrorReceived(boolean inputErrorReceived) {
+        isInputErrorReceived = inputErrorReceived;
+    }
 }

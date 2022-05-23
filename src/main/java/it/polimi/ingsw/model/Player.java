@@ -57,9 +57,9 @@ public class Player implements PropertyChangeListener{
 				turnEffect.setOrderPrecedence(assistant);
 				turnEffect.incrementMotherNatureMovement(assistants.get(i).getMotherNatureMovement());
 				turnEffect.setFirstPlayedAssistant(isFirstPlayedAssistant);
-				assistants.remove(i);
+				Assistant removed = assistants.remove(i);
 				listeners.firePropertyChange(
-						new PropertyChangeEvent(nickName, "Assistant", null, assistant)
+						new PropertyChangeEvent(nickName, "Assistant", null, removed)
 				);
 				return true;
 			}

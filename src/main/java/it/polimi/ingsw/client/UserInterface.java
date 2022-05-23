@@ -9,15 +9,13 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.Map;
 
-public interface UserInterface /*extends PropertyChangeListener*/{
+public interface UserInterface extends PropertyChangeListener{
 
     String getNickname(); //Don't know if it is useful
 
     void askNickname();
 
     void displayGlobalLobby(int numGames, Map<Integer, Pair<Integer,String[]>> gamesInfo);
-
-    Pair<String, Integer> askGameToPlay();
 
     void displayStringMessage(String message);
 

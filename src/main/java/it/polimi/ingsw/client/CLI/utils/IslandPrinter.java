@@ -7,6 +7,7 @@ import it.polimi.ingsw.utils.Pair;
 import it.polimi.ingsw.utils.Triplet;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class IslandPrinter {
@@ -23,6 +24,14 @@ public class IslandPrinter {
                     RealmType.GREEN_FROGS, new Triplet<>(3, 6, Colors.GREEN),
                     RealmType.RED_DRAGONS, new Triplet<>(4, 10, Colors.RED),
                     RealmType.PINK_FAIRES, new Triplet<>(5, 8, Colors.PURPLE));
+    private static final List<Pair<Integer, Integer>> VERTICAL_POSITIONS =
+            List.of(new Pair<>(2, 2), new Pair<>(3, 14), new Pair<>(4, 0),
+                    new Pair<>(4, 14), new Pair<>(5, 5));
+    private static final List<Pair<Integer, Integer>> BOTTOM_RIGHT_POSITIONS =
+            List.of(new Pair<>(1, 4), new Pair<>(3, 2), new Pair<>(5, 4),
+                    new Pair<>(5, 14), new Pair<>(6, 13));
+    private static final List<Pair<Integer, Integer>> BOTTOM_LEFT_POSITIONS =
+            List.of(new Pair<>(5, 0), new Pair<>(6, 5), new Pair<>(1, 11), new Pair<>(2, 12));
     public static final int ISLAND_SIZE_X = 7;
     public static final int ISLAND_SIZE_Y = 15;
 
@@ -174,30 +183,28 @@ public class IslandPrinter {
         islandSkeleton[4][5] = Colors.GREEN + UnicodeConstants.TOP_RIGHT.toString() + Colors.RESET;
         islandSkeleton[1][12] = Colors.GREEN + UnicodeConstants.TOP_RIGHT.toString() + Colors.RESET;
         islandSkeleton[2][14] = Colors.GREEN + UnicodeConstants.TOP_RIGHT.toString() + Colors.RESET;
-        islandSkeleton[1][4] = Colors.GREEN + UnicodeConstants.BOTTOM_RIGHT.toString() + Colors.RESET;
-        islandSkeleton[3][2] = Colors.GREEN + UnicodeConstants.BOTTOM_RIGHT.toString() + Colors.RESET;
-        islandSkeleton[5][4] = Colors.GREEN + UnicodeConstants.BOTTOM_RIGHT.toString() + Colors.RESET;
-        islandSkeleton[5][14] = Colors.GREEN + UnicodeConstants.BOTTOM_RIGHT.toString() + Colors.RESET;
-        islandSkeleton[6][13] = Colors.GREEN + UnicodeConstants.BOTTOM_RIGHT.toString() + Colors.RESET;
-        islandSkeleton[5][0] = Colors.GREEN.toString() + UnicodeConstants.BOTTOM_LEFT + Colors.RESET;
-        islandSkeleton[6][5] = Colors.GREEN.toString() + UnicodeConstants.BOTTOM_LEFT + Colors.RESET;
-        islandSkeleton[1][11] = Colors.GREEN + UnicodeConstants.BOTTOM_LEFT.toString() + Colors.RESET;
-        islandSkeleton[2][12] = Colors.GREEN + UnicodeConstants.BOTTOM_LEFT.toString() + Colors.RESET;
 
         for (int i = 5; i <= 10; i++) {
             islandSkeleton[0][i] = Colors.RED + UnicodeConstants.HORIZONTAL.toString() + Colors.RESET;
         }
         islandSkeleton[1][3] = Colors.GREEN + UnicodeConstants.HORIZONTAL.toString() + Colors.RESET;
-        islandSkeleton[2][2] = Colors.GREEN + UnicodeConstants.VERTICAL.toString() + Colors.RESET;
         islandSkeleton[2][13] = Colors.GREEN + UnicodeConstants.HORIZONTAL.toString() + Colors.RESET;
         islandSkeleton[3][1] = Colors.GREEN + UnicodeConstants.HORIZONTAL.toString() + Colors.RESET;
-        islandSkeleton[3][14] = Colors.GREEN + UnicodeConstants.VERTICAL.toString() + Colors.RESET;
-        islandSkeleton[4][0] = Colors.GREEN + UnicodeConstants.VERTICAL.toString() + Colors.RESET;
-        islandSkeleton[4][14] = Colors.GREEN + UnicodeConstants.VERTICAL.toString() + Colors.RESET;
+        for (Pair<Integer, Integer> position: VERTICAL_POSITIONS) {
+            islandSkeleton[position.getFirst()][position.getSecond()] =
+                     Colors.GREEN + UnicodeConstants.VERTICAL.toString() + Colors.RESET;
+        }
+        for (Pair<Integer, Integer> position: BOTTOM_LEFT_POSITIONS) {
+            islandSkeleton[position.getFirst()][position.getSecond()] =
+                    Colors.GREEN + UnicodeConstants.BOTTOM_LEFT.toString() + Colors.RESET;
+        }
+        for (Pair<Integer, Integer> position: BOTTOM_RIGHT_POSITIONS) {
+            islandSkeleton[position.getFirst()][position.getSecond()] =
+                    Colors.GREEN + UnicodeConstants.BOTTOM_RIGHT.toString() + Colors.RESET;
+        }
         for (int i = 1; i <= 3; i++) {
             islandSkeleton[5][i] = Colors.GREEN.toString() + UnicodeConstants.HORIZONTAL + Colors.RESET;
         }
-        islandSkeleton[5][5] = Colors.GREEN + UnicodeConstants.VERTICAL.toString() + Colors.RESET;
         for (int i = 6; i <= 12; i++) {
             islandSkeleton[6][i] = Colors.GREEN + UnicodeConstants.HORIZONTAL.toString() + Colors.RESET;
         }

@@ -7,9 +7,10 @@ import it.polimi.ingsw.model.enumerations.RealmType;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Arrays;
 
 public class ActionInputParser implements PropertyChangeListener {
-    private final PropertyChangeSupport messageConstructor = new PropertyChangeSupport(this);
+    private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
     private final UserInterface userInterface;
     private final ModelView modelView;
     private static final String ASSISTANT_NOT_FOUND = "There isn't such an assistant in your deck";
@@ -22,8 +23,9 @@ public class ActionInputParser implements PropertyChangeListener {
     private static final String CLOUD_NOT_FOUND = "There isn't such a cloud";
     private static final String CHARACTER_NOT_FOUND = "There isn't such a character";
 
-    public ActionInputParser(PropertyChangeListener messageConstructor, UserInterface userInterface, ModelView modelView) {
-        this.messageConstructor.addPropertyChangeListener(messageConstructor);
+    public ActionInputParser(PropertyChangeListener messageConstructor, TurnHandler turnHandler, UserInterface userInterface, ModelView modelView) {
+        this.listeners.addPropertyChangeListener(messageConstructor);
+        this.listeners.addPropertyChangeListener("InputError", turnHandler);
         this.userInterface = userInterface;
         this.modelView = modelView;
     }
@@ -33,20 +35,31 @@ public class ActionInputParser implements PropertyChangeListener {
         //check input, if ok notify the message constructor
         String move = (String) evt.getNewValue();
         System.out.println("You ordered: " + evt.getPropertyName() + " " + move);
-        System.out.println("You ordered: " + evt.getPropertyName() + evt.getNewValue());
-        String error = switch (evt.getPropertyName()) {
-            case "MoveStudents" -> checkMoveStudents(move);
-            case "MoveMotherNature" -> checkMoveMotherNature(move);
-            case "PickFromCloud" -> checkPickFromCloud(move);
-            case "PlayCharacter" -> checkPlayCharacter(move);
-            case "PlayAssistant" -> checkPlayAssistant(move);
-            default -> UNRECOGNISED_COMMAND;
-        };
-        if (error == null) messageConstructor.firePropertyChange(evt);
-        else {
-            userInterface.displayStringMessage(Colors.RED + error + Colors.RESET);
-            //userInterface.insertAction(); //TODO: do better
+        try {
+            String error = switch (evt.getPropertyName()) {
+                case "MoveStudents" -> checkMoveStudents(move);
+                case "MoveMotherNature" -> checkMoveMotherNature(move);
+                case "PickFromCloud" -> checkPickFromCloud(move);
+                case "PlayCharacter" -> checkPlayCharacter(move);
+                case "PlayAssistant" -> checkPlayAssistant(move);
+                default -> UNRECOGNISED_COMMAND;
+            };
+            if (error == null) listeners.firePropertyChange(evt);
+            else {
+                userInterface.displayStringMessage(Colors.RED + error + Colors.RESET);
+                //userInterface.insertAction(); //TODO: do better
+                listeners.firePropertyChange("InputError", null, evt.getPropertyName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
+
+    private String[] getMoveArgs(String move) {
+        return Arrays.stream(move.split("\n"))
+                .flatMap(line -> Arrays.stream(line.split(" ")))
+                .filter(arg -> (arg.length() != 0 && !arg.equals(" ")))
+                .toList().toArray(new String[0]);
     }
 
     private String checkPlayAssistant(String move) {
@@ -61,7 +74,8 @@ public class ActionInputParser implements PropertyChangeListener {
     }
 
     private String checkMoveStudents(String move) {
-        String[] moveArgs = move.split(" ");
+        String[] moveArgs = getMoveArgs(move);
+        //String[] moveArgs = move.split(" ");
         int i = 0;
         int numStudentsMoved = 0;
         while(i < moveArgs.length) {
@@ -97,7 +111,7 @@ public class ActionInputParser implements PropertyChangeListener {
             return NOT_A_NUMBER;
         }
         int maxMovement = modelView.getPlayers().get(userInterface.getNickname()).getLastPlayedAssistant().getSecond();
-        if (motherNatureMovement < 1 && motherNatureMovement > maxMovement) {
+        if (motherNatureMovement < 1 || motherNatureMovement > maxMovement) {
             return WRONG_MOTHER_NATURE_MOVEMENT + maxMovement;
         }
         return null;
@@ -115,7 +129,8 @@ public class ActionInputParser implements PropertyChangeListener {
     }
 
     private String checkPlayCharacter(String move) {
-        String[] moveArgs = move.split(" ");
+        //String[] moveArgs = move.split(" ");
+        String[] moveArgs = getMoveArgs(move);
         int characterId;
         try {
             characterId = Integer.parseInt(moveArgs[0]);

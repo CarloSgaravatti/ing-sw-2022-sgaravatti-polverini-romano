@@ -58,8 +58,8 @@ class ActionControllerTest extends TestCase {
         gameController.initializeControllers();
         actionController = gameController.getActionController();
         activePlayer = gameController.getTurnController().getActivePlayer();
-        RemoteViewStub viewPlayer1 = new RemoteViewStub(1, "player1", gameController);
-        RemoteViewStub viewPlayer2 = new RemoteViewStub(1, "player2", gameController);
+        RemoteViewStub viewPlayer1 = new RemoteViewStub(1, "player1", gameController, null);
+        RemoteViewStub viewPlayer2 = new RemoteViewStub(1, "player2", gameController, null);
         ErrorDispatcher errorDispatcher = new ErrorDispatcher(List.of(viewPlayer1, viewPlayer2));
         actionController.addListener("Error", errorDispatcher);
         viewActivePlayer = (activePlayer.getNickName().equals("player1")) ? viewPlayer1 : viewPlayer2;

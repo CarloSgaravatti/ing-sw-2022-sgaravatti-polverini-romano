@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.messageHandlers;
 
 import it.polimi.ingsw.client.ConnectionToServer;
+import it.polimi.ingsw.client.modelView.FieldView;
 import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.client.UserInterface;
 import it.polimi.ingsw.messages.MessageFromServer;
@@ -11,17 +12,18 @@ import it.polimi.ingsw.messages.simpleModel.SimpleIsland;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.beans.PropertyChangeSupport;
+import java.util.*;
 
 public class GameUpdateMessageHandler extends BaseMessageHandler {
     private static final List<String> messageHandled =
-            List.of("AssistantPlayed", "ProfessorUpdate", "MotherNatureMovement", "SchoolDiningRoomUpdate",
-                    "IslandStudentsUpdate", "IslandUnification", "IslandTowerUpdate", "PickFromCloud");
+            List.of("AssistantPlayed", "ProfessorUpdate", "MotherNatureMovement", "SchoolDiningRoomUpdate", "IslandStudentsUpdate",
+                    "IslandUnification", "IslandTowerUpdate", "PickFromCloud", "AssistantsUpdate", "CloudsRefill");
+    private final PropertyChangeSupport userInterface = new PropertyChangeSupport(this);
 
     public GameUpdateMessageHandler(ConnectionToServer connection, UserInterface userInterface, ModelView modelView) {
         super(connection, userInterface, modelView);
+        this.userInterface.addPropertyChangeListener(userInterface);
     }
 
     @Override
@@ -41,6 +43,8 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
             case "IslandUnificationUpdate" -> onIslandUnificationUpdate(payload);
             case "IslandTowerUpdate" -> onIslandTowerUpdate(payload);
             case "PickFromCloud" -> onPickFromCloud(payload);
+            case "AssistantsUpdate" -> onAssistantsUpdate(payload);
+            case "CloudsRefill" -> onCloudsRefill(payload);
         }
     }
 
@@ -48,6 +52,7 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         int assistant = payload.getAttribute("AssistantId").getAsInt();
         int motherNatureMovement = payload.getAttribute("MotherNatureMovement").getAsInt();
         String playerName = payload.getAttribute("PlayerName").getAsString();
+        System.out.println(playerName + " has played assistant " + assistant);
         getModelView().getPlayers().get(playerName).updateLastPlayedAssistant(assistant, motherNatureMovement);
         if (getUserInterface().getNickname().equals(playerName)) getModelView().removeAssistant(assistant);
 
@@ -91,7 +96,7 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
 
     private void onIslandTowerUpdate(MessagePayload payload) {
         int island = payload.getAttribute("IslandId").getAsInt();
-        TowerType tower = (TowerType) payload.getAttribute("Tower").getAsObject();
+        TowerType tower = (TowerType) payload.getAttribute("TowerType").getAsObject();
         getModelView().updateIslandTower(island, tower);
 
         //TODO
@@ -105,5 +110,24 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         getModelView().getPlayers().get(playerName).updateEntrance(students, true);
 
         //TODO
+    }
+
+    private void onAssistantsUpdate(MessagePayload payload) {
+        Integer[] values = (Integer[]) payload.getAttribute("Values").getAsObject();
+        Integer[] motherNature = (Integer[]) payload.getAttribute("MotherNatureMovements").getAsObject();
+        Map<Integer, Integer> newClientAssistants = new HashMap<>();
+        for (int i = 0; i < values.length; i++) {
+            newClientAssistants.put(values[i], motherNature[i]);
+        }
+        getModelView().setClientPlayerAssistants(newClientAssistants);
+        System.out.println("Received assistant update: your assistants are " + Arrays.toString(values));
+    }
+
+    private void onCloudsRefill(MessagePayload payload) {
+        RealmType[][] cloudsStudents = (RealmType[][]) payload.getAttribute("CloudsStudents").getAsObject();
+        FieldView fieldView = getModelView().getField();
+        for (int i = 0; i < cloudsStudents.length; i++) {
+            fieldView.updateCloudStudents(i, cloudsStudents[i]);
+        }
     }
 }

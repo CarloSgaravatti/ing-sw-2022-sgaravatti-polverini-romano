@@ -8,15 +8,18 @@ import it.polimi.ingsw.messages.*;
 import it.polimi.ingsw.messages.simpleModel.SimplePlayer;
 import it.polimi.ingsw.model.enumerations.RealmType;
 
+import java.beans.PropertyChangeSupport;
 import java.util.List;
 import java.util.Optional;
 
 public class CharacterMessageHandler extends BaseMessageHandler {
     private static final List<String> messageHandled =
             List.of("CharacterPlayed", "CharacterStudents", "NoEntryTileUpdate", "StudentSwap");
+    private final PropertyChangeSupport userInterface = new PropertyChangeSupport(this);
 
     public CharacterMessageHandler(ConnectionToServer connection, UserInterface userInterface, ModelView modelView) {
         super(connection, userInterface, modelView);
+        this.userInterface.addPropertyChangeListener(userInterface);
     }
 
     @Override

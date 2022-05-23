@@ -63,13 +63,6 @@ public class DefaultMessageHandler extends BaseMessageHandler {
         }
         getConnection().addFirstMessageHandler(new GameSetupMessageHandler(getConnection(), getUserInterface(), getModelView()));
         getUserInterface().displayLobbyInfo(numPlayers, rules, playersWaiting);
-        ActionMessageConstructor messageConstructor = new ActionMessageConstructor(getConnection());
-        ActionInputParser inputParser = new ActionInputParser(messageConstructor, getUserInterface(), getModelView());
-        getUserInterface().addListener(inputParser, "MoveStudents");
-        getUserInterface().addListener(inputParser, "MoveMotherNature");
-        getUserInterface().addListener(inputParser, "PickFromCloud");
-        getUserInterface().addListener(inputParser, "PlayCharacter");
-        getUserInterface().addListener(inputParser, "PlayAssistant");
     }
 
     private void onErrorMessage(MessagePayload payload) {

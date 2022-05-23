@@ -76,10 +76,20 @@ public class SocketClientConnection implements Runnable, ClientConnection {
             setPingAckReceived(true);
             System.out.println("PingAck received by " + nickname);
         } else if (message.getClientMessageHeader().getMessageType() != ClientMessageType.GAME_SETUP) {
+            System.out.println("Received from " + nickname + " : " +
+                    "message name = " + message.getClientMessageHeader().getMessageName() + " " +
+                    "message type = " + message.getClientMessageHeader().getMessageType());
             if (!setupDone) {
                 sendError(ErrorMessageType.CLIENT_WITHOUT_GAME);
             } else {
-                messageExecutor.submit(() -> listeners.firePropertyChange("RemoteView", null, message));
+                //TODO: delete try catch when everything is ok
+                messageExecutor.submit(() -> {
+                    try {
+                        listeners.firePropertyChange("RemoteView", null, message);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
             }
         } else {
             messageExecutor.submit(() -> handleGameSetup(message));
@@ -130,6 +140,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         this.active = active;
     }
 
+    //TODO: there is a problem with pings when a client sends nickname after ping a ping ack
     public void initializeClient() throws IOException, ClassNotFoundException, ClassCastException {
         ServerMessageHeader header = new ServerMessageHeader("NicknameRequest", ServerMessageType.SERVER_MESSAGE);
         MessagePayload payload = new MessagePayload();

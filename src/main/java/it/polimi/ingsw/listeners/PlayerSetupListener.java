@@ -27,15 +27,15 @@ public class PlayerSetupListener implements PropertyChangeListener {
 
     private void onTowerChoice(TowerType type, String playerName){
         MessagePayload messagePayload = new MessagePayload();
-        messagePayload.setAttribute("towerType", type);
-        messagePayload.setAttribute("playerName", playerName);
+        messagePayload.setAttribute("TowerType", type);
+        messagePayload.setAttribute("PlayerName", playerName);
         remoteView.sendMessage(messagePayload,"TowerTaken", ServerMessageType.GAME_SETUP);
     }
 
     private void onWizardChoice(WizardType type, String playerName){
         MessagePayload messagePayload = new MessagePayload();
-        messagePayload.setAttribute("wizardType", type);
-        messagePayload.setAttribute("playerName", playerName);
+        messagePayload.setAttribute("WizardType", type);
+        messagePayload.setAttribute("PlayerName", playerName);
         remoteView.sendMessage(messagePayload,"WizardTaken", ServerMessageType.GAME_SETUP);
     }
 }

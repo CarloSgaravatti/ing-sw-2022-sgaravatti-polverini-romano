@@ -3,14 +3,15 @@ package it.polimi.ingsw.controller;
 import it.polimi.ingsw.listeners.*;
 import it.polimi.ingsw.messages.ErrorMessageType;
 import it.polimi.ingsw.messages.MessageFromClient;
-import it.polimi.ingsw.model.Game;
-import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.server.GameLobby;
 import it.polimi.ingsw.server.RemoteView;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Arrays;
 import java.util.List;
 
 public class GameController implements PropertyChangeListener {
@@ -84,6 +85,7 @@ public class GameController implements PropertyChangeListener {
 				listeners.firePropertyChange("Error", ErrorMessageType.TURN_NOT_FINISHED, nicknamePlayer);
 				return;
 			}
+			listeners.firePropertyChange(new PropertyChangeEvent(nicknamePlayer, "Action", actionName, new TurnPhase[0]));
 			boolean isPhaseEnded = turnController.endTurn();
 			actionController.resetPossibleActions(turnController.getCurrentPhase());
 			game.setIndexActivePlayer(turnController.getActivePlayer());
@@ -95,20 +97,18 @@ public class GameController implements PropertyChangeListener {
 			//notify new turn
 			String turnStarter = turnController.getActivePlayer().getNickName();
 			TurnPhase[] newPossibleActions = actionController.getCurrentTurnRemainingActions().toArray(new TurnPhase[0]);
-			//listeners.firePropertyChange("EndTurn", nicknamePlayer, turnStarter);
 			listeners.firePropertyChange(new PropertyChangeEvent(turnStarter, "EndTurn", nicknamePlayer, newPossibleActions));
 		} else {
 			try {
 				actionController.doAction(message);
 				TurnPhase[] newPossibleActions = actionController.getCurrentTurnRemainingActions().toArray(new TurnPhase[0]);
-				//TODO: update possible actions
 				PropertyChangeEvent event =
 						new PropertyChangeEvent(nicknamePlayer, "Action", actionName, newPossibleActions);
-				//listeners.firePropertyChange("Action", nicknamePlayer, actionName);
 				listeners.firePropertyChange(event);
 			} catch (Exception e) {
 				//TODO: decide if it has to handled here or directly in the action controller class;
 				//	the exception will be transformed in an error message
+				e.printStackTrace();
 			}
 		}
 	}
@@ -117,13 +117,25 @@ public class GameController implements PropertyChangeListener {
 		if (turnController.getCurrentPhase() == RoundPhase.ACTION) {
 			actionController.refillClouds();
 		} else if (game.isLastRound()) {
-			//notify game finished
 			game.checkWinners();
 			return;
+		} else {
+			Cloud[] clouds = game.getClouds();
+			RealmType[][] cloudsStudents = new RealmType[clouds.length][];
+			for (int i = 0; i < clouds.length; i++) {
+				cloudsStudents[i] = Arrays.stream(clouds[i].getStudents()).map(Student::getStudentType).toList().toArray(new RealmType[0]);
+			}
+			listeners.firePropertyChange("CloudsRefill", null, cloudsStudents);
+			for (Player p: game.getPlayers()) {
+				Integer[] assistantValues = p.getAssistants().stream().map(Assistant::getCardValue).toList().toArray(new Integer[0]);
+				Integer[] motherNatureMovements =
+						p.getAssistants().stream().map(Assistant::getMotherNatureMovement).toList().toArray(new Integer[0]);
+				listeners.firePropertyChange(new PropertyChangeEvent(p.getNickName(),
+						"AssistantsUpdate", assistantValues, motherNatureMovements));
+			}
 		}
 		//Notify change phase
 		TurnPhase[] newPossibleActions = actionController.getCurrentTurnRemainingActions().toArray(new TurnPhase[0]);
-		//listeners.firePropertyChange("EndPhase", turnController.getCurrentPhase(), turnController.getActivePlayer().getNickName());
 		listeners.firePropertyChange(new PropertyChangeEvent(turnController.getActivePlayer().getNickName(), "EndPhase",
 				turnController.getCurrentPhase(), newPossibleActions));
 	}
@@ -149,6 +161,7 @@ public class GameController implements PropertyChangeListener {
 			TurnListener turnListener = new TurnListener(view);
 			listeners.addPropertyChangeListener("EndTurn", turnListener);
 			listeners.addPropertyChangeListener("EndPhase", turnListener);
+			listeners.addPropertyChangeListener("AssistantsUpdate", turnListener);
 			PlayerSetupListener playerListener = new PlayerSetupListener(view);
 			initController.addListener("Tower", playerListener);
 			initController.addListener("Wizard", playerListener);

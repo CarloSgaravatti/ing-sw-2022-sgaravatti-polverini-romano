@@ -7,6 +7,7 @@ import it.polimi.ingsw.server.RemoteView;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Arrays;
 import java.util.EventListener;
 import java.util.List;
 
@@ -31,6 +32,8 @@ public class AcknowledgementDispatcher implements EventListener, PropertyChangeL
     }
 
     public void confirmActionPerformed(String clientName, String actionName, TurnPhase[] newPossibleActions) {
+        System.out.println("Sending an acknowledgement for action " + actionName + " to " + clientName);
+        System.out.println(clientName + " can now do these actions: " + Arrays.toString(newPossibleActions));
         MessagePayload payload = new MessagePayload();
         payload.setAttribute("ActionName", actionName);
         payload.setAttribute("NewPossibleActions", newPossibleActions);

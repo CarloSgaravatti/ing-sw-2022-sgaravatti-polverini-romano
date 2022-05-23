@@ -14,6 +14,7 @@ public enum UnicodeConstants {
     RED_DOT(Colors.RED + "\u25CF" + Colors.RESET),
     GREEN_DOT(Colors.GREEN + "\u25CF" + Colors.RESET),
     PURPLE_DOT(Colors.PURPLE + "\u25CF" + Colors.RESET),
+    NO_COLOR_DOT("\u25CF"),
 
     BLACK_TOWER(Colors.BLACK + "\u265C" + Colors.RESET),
     WHITE_TOWER(Colors.WHITE + "\u265C" + Colors.RESET),

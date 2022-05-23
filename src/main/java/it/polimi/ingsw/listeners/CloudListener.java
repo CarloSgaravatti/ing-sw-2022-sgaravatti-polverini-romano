@@ -25,8 +25,8 @@ public class CloudListener implements PropertyChangeListener {
         RealmType[] students = Arrays.stream((Student[]) cloud.getSecond())
                 .map(Student::getStudentType).toList().toArray(new RealmType[0]);
         MessagePayload messagePayload = new MessagePayload();
-        messagePayload.setAttribute("CloudIndex", cloud.getFirst());
-        messagePayload.setAttribute("NamePlayer", evt.getSource());
+        messagePayload.setAttribute("CloudId", cloud.getFirst());
+        messagePayload.setAttribute("PlayerName", evt.getSource());
         messagePayload.setAttribute("Students", students);
         remoteView.sendMessage(messagePayload, "PickFromCloud", ServerMessageType.GAME_UPDATE);
     }

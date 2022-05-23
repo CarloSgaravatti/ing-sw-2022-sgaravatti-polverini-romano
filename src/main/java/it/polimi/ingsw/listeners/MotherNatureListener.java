@@ -17,8 +17,8 @@ public class MotherNatureListener implements PropertyChangeListener {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         MessagePayload messagePayload = new MessagePayload();
-        messagePayload.setAttribute("initialPosition", evt.getOldValue());
-        messagePayload.setAttribute("finalPosition", evt.getNewValue());
+        messagePayload.setAttribute("InitialPosition", evt.getOldValue());
+        messagePayload.setAttribute("FinalPosition", evt.getNewValue());
         remoteView.sendMessage(messagePayload,"MotherNatureMovement", ServerMessageType.GAME_UPDATE);
     }
 }

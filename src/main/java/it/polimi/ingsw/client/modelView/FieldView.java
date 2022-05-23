@@ -79,7 +79,7 @@ public class FieldView {
     }
 
     public Optional<String> updateProfessorOwner(RealmType realm, String newOwner) {
-        Optional<String> lastOwner = Optional.of(professorsOwners[realm.ordinal()]);
+        Optional<String> lastOwner = Optional.ofNullable(professorsOwners[realm.ordinal()]);
         professorsOwners[realm.ordinal()] = newOwner;
         return lastOwner;
     }

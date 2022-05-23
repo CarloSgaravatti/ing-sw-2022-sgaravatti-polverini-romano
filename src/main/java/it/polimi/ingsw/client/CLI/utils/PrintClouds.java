@@ -1,27 +1,25 @@
 package it.polimi.ingsw.client.CLI.utils;
 
-import it.polimi.ingsw.controller.InitController;
-import it.polimi.ingsw.model.Student;
 import it.polimi.ingsw.model.enumerations.RealmType;
 
 public class PrintClouds {
+    public static final int CLOUD_SIZE_X = 5;
+    public static final int CLOUD_SIZE_Y = 10;
 
-
-
-    public static String[][] drawClouds(int cloudIndex, boolean full, Student... students) {
-        String[][] draw = new String[5][10];
+    public static String[][] drawClouds(int cloudIndex, boolean full, RealmType ... students) {
+        String[][] draw = new String[CLOUD_SIZE_X][CLOUD_SIZE_Y];
         draw[0][0] = ""+ Colors.BLUE + "╔" + Colors.RESET;
         draw[0][9] = ""+ Colors.BLUE + "╗";
         draw[4][0] = ""+ Colors.BLUE + "╚";
-        draw[4][9] = ""+ Colors.BLUE + "╝"+Colors.BLUE;
+        draw[4][9] = ""+ Colors.BLUE + "╝"+Colors.BLUE + Colors.RESET;
 
         for(int i = 0; i<5; i++){
             for(int j = 0; j<10; j++){
                 if((i == 0 && j!=0 && j!=9) || (i == 4 && j!=0 && j!=9)){
-                    draw[i][j] ="═";
+                    draw[i][j] = "═";
                 }
                 if((j==0 && i!=0 && i!= 4) || (j== 9 && i!=0 && i!=4 )){
-                    draw[i][j] ="║";
+                    draw[i][j] = Colors.BLUE + "║" + Colors.RESET;
                 }
                 if(i!=0 && i!=4 && j!=0 && j!=9){
                     draw[i][j] =" ";
@@ -38,22 +36,22 @@ public class PrintClouds {
         int l=3;
         if(full) {
             while (f < students.length) {
-                if(students[f].getStudentType() == RealmType.RED_DRAGONS){
+                if(students[f] == RealmType.RED_DRAGONS){
                   draw[h][l] = Colors.RED + "●" + Colors.BLUE;
                 }
-                if(students[f].getStudentType() == RealmType.YELLOW_GNOMES){
+                if(students[f] == RealmType.YELLOW_GNOMES){
                     draw[h][l] = Colors.YELLOW + "●" + Colors.BLUE;
 
                 }
-                if(students[f].getStudentType() == RealmType.GREEN_FROGS){
+                if(students[f] == RealmType.GREEN_FROGS){
                     draw[h][l] = Colors.GREEN + "●" + Colors.BLUE;
 
                 }
-                if(students[f].getStudentType() == RealmType.BLUE_UNICORNS){
+                if(students[f] == RealmType.BLUE_UNICORNS){
                     draw[h][l] = Colors.BLUE + "●" + Colors.BLUE;
 
                 }
-                if(students[f].getStudentType() == RealmType.PINK_FAIRES){
+                if(students[f] == RealmType.PINK_FAIRES){
                     draw[h][l] = Colors.PURPLE + "●" + Colors.BLUE;
                 }
 
@@ -68,10 +66,6 @@ public class PrintClouds {
                 f++;
             }
         }
-
-
-
-
         return draw;
     }
 }

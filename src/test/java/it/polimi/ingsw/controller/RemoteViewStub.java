@@ -8,8 +8,8 @@ import it.polimi.ingsw.server.SocketClientConnection;
 public class RemoteViewStub extends RemoteView {
     MessageFromServer message;
 
-    public RemoteViewStub(int gameId, String playerNickname, GameController controller) {
-        super(new SocketClientConnection(null, null), gameId, playerNickname, null, controller);
+    public RemoteViewStub(int gameId, String playerNickname, GameController controller, GameLobby lobby) {
+        super(new SocketClientConnection(null, null), gameId, playerNickname, lobby, controller);
     }
 
     @Override

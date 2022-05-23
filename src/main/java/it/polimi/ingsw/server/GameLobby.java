@@ -207,7 +207,8 @@ public class GameLobby {
             for (RealmType r: RealmType.values()) {
                 for (int j = 0; j < players.get(i).getSchool().getStudentsEntrance(r); j++) entrance.add(r);
             }
-            playersView[i] = new SimplePlayer(players.get(i).getNickName(), entrance.toArray(new RealmType[0]));
+            playersView[i] = new SimplePlayer(players.get(i).getNickName(), entrance.toArray(new RealmType[0]),
+                    players.get(i).getSchool().getNumTowers(), players.get(i).getNumCoins());
         }
         SimpleField simpleField;
         if (isExpertGame) {

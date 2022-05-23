@@ -53,7 +53,7 @@ public class ActionController {
 	}
 
 	public void playAssistant(MessagePayload payload) throws AssistantAlreadyPlayedException,
-			NoSuchAssistantException, WrongTurnActionRequestedException, ClassCastException {
+			NoSuchAssistantException, WrongTurnActionRequestedException {
 		String playerName = turnController.getActivePlayer().getNickName();
 		if (turnPhase != TurnPhase.PLAY_ASSISTANT) {
 			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_TURN_ACTION, playerName);
@@ -82,7 +82,7 @@ public class ActionController {
 	}
 
 	public void motherNatureMovement(MessagePayload payload) throws IllegalArgumentException,
-			WrongTurnActionRequestedException, ClassCastException {
+			WrongTurnActionRequestedException {
 		if (turnPhase != TurnPhase.MOVE_MOTHER_NATURE) {
 			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_TURN_ACTION, turnController.getActivePlayer().getNickName());
 			throw new WrongTurnActionRequestedException();
@@ -101,7 +101,7 @@ public class ActionController {
 	//Use of ? to not have unchecked warning (maybe we should change the message format to not use generics)
 	//TODO: maybe this method can be done better
 	public void studentMovement(MessagePayload payload) throws IllegalArgumentException, StudentNotFoundException,
-			FullDiningRoomException, WrongTurnActionRequestedException, ClassCastException {
+			FullDiningRoomException, WrongTurnActionRequestedException {
 		if (turnPhase != TurnPhase.MOVE_STUDENTS){
 			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_TURN_ACTION, turnController.getActivePlayer().getNickName());
 			throw new WrongTurnActionRequestedException();
@@ -158,7 +158,7 @@ public class ActionController {
 	}
 
 	public void playCharacter(MessagePayload payload) throws IllegalArgumentException,
-			NotEnoughCoinsException, IllegalCharacterActionRequestedException, ClassCastException {
+			NotEnoughCoinsException, IllegalCharacterActionRequestedException {
 		Player activePlayer = turnController.getActivePlayer();
 		//TODO: illegal argument exception is too general
 		if (activePlayer.getTurnEffect().isCharacterPlayed()) {
@@ -235,7 +235,7 @@ public class ActionController {
 	public void resetPossibleActions(RoundPhase phase) {
 		currentTurnRemainingActions.clear(); //can contain play character card
 		currentTurnRemainingActions.addAll(phase.getTurnActions());
-		if (phase == RoundPhase.PLANNING && !possibleActions.contains("PlayCharacterCard")) {
+		if (phase == RoundPhase.PLANNING && !possibleActions.contains("PlayCharacter")) {
 			currentTurnRemainingActions.remove(TurnPhase.PLAY_CHARACTER_CARD);
 		}
 	}

@@ -20,17 +20,23 @@ public class ActionMessageConstructor implements PropertyChangeListener {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        String userAction = (String) evt.getNewValue();
-        MessagePayload payload = switch (evt.getPropertyName()) {
-            case "MoveStudents" -> createMoveStudentMessage(userAction);
-            case "MoveMotherNature" -> createMoveMotherNatureMessage(userAction);
-            case "PickFromCloud" -> createPickFromCloudMessage(userAction);
-            case "PlayCharacter" -> createPlayCharacterMessage(userAction);
-            case "PlayAssistant" -> createPlayAssistantMessage(userAction);
-            default -> null;
-        };
-        if (payload != null) {
-            connection.sendMessage(payload, evt.getPropertyName(), ClientMessageType.ACTION);
+        //TODO: delete try catch when everything is ok
+        try {
+            String userAction = (String) evt.getNewValue();
+            MessagePayload payload = switch (evt.getPropertyName()) {
+                case "MoveStudents" -> createMoveStudentMessage(userAction);
+                case "MoveMotherNature" -> createMoveMotherNatureMessage(userAction);
+                case "PickFromCloud" -> createPickFromCloudMessage(userAction);
+                case "PlayCharacter" -> createPlayCharacterMessage(userAction);
+                case "PlayAssistant" -> createPlayAssistantMessage(userAction);
+                case "EndTurn" -> new MessagePayload();
+                default -> null;
+            };
+            if (payload != null) {
+                connection.sendMessage(payload, evt.getPropertyName(), ClientMessageType.ACTION);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -48,7 +54,7 @@ public class ActionMessageConstructor implements PropertyChangeListener {
         int i = 0;
         while (i < args.length) {
             RealmType student = RealmType.getRealmByAbbreviation(args[i]);
-            if (args[i + 1].equals("toDiningRoom")) studentsToDR.add(student);
+            if (args[i + 1].equals("ToDiningRoom")) studentsToDR.add(student);
             else {
                 int islandId = Integer.parseInt(args[i + 2]);
                 studentsToIsland.add(new Pair<>(student, islandId));
@@ -57,7 +63,7 @@ public class ActionMessageConstructor implements PropertyChangeListener {
             i += 2;
         }
         payload.setAttribute("StudentsToDR", studentsToDR);
-        payload.setAttribute("StudentsToIsland", studentsToIsland);
+        payload.setAttribute("StudentsToIslands", studentsToIsland);
         return payload;
     }
 
@@ -77,7 +83,7 @@ public class ActionMessageConstructor implements PropertyChangeListener {
         MessagePayload payload = new MessagePayload();
         String[] args = action.split(" ");
         int characterId = Integer.parseInt(args[0]);
-        String arguments = Arrays.stream(Arrays.copyOfRange(args, 1, args.length)).reduce("", (s1, s2) -> s1 + s2);
+        String arguments = Arrays.stream(Arrays.copyOfRange(args, 1, args.length)).reduce("", (s1, s2) -> s1 + " " + s2);
         payload.setAttribute("CharacterId", characterId);
         payload.setAttribute("Arguments", arguments);
         return payload;

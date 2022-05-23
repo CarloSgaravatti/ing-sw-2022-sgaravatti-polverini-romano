@@ -11,6 +11,7 @@ import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.enumerations.WizardType;
 import it.polimi.ingsw.utils.Pair;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
@@ -28,6 +29,7 @@ public class CLI implements Runnable, UserInterface {
     private String nickname;
     private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
     private ModelView modelView;
+    private MapPrinter printer;
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -131,14 +133,6 @@ public class CLI implements Runnable, UserInterface {
     }
 
     @Override
-    //This implementation is very bad I know (is just for test the server)
-    public Pair<String, Integer> askGameToPlay() {
-        System.out.println("Select what to do");
-        return new Pair<>(sc.next(), sc.nextInt());
-        //TODO: control input
-    }
-
-    @Override
     public void askLobbyDecision() {
         String decision;
         do {
@@ -189,7 +183,7 @@ public class CLI implements Runnable, UserInterface {
         TowerType choice = null;
         while (!towerChosen) {
             try {
-                choice = TowerType.valueOf(sc.next());
+                choice = TowerType.valueOf(sc.next().toUpperCase());
                 towerChosen = true;
             } catch (IllegalArgumentException e) {
                 System.out.println(Colors.RED + "Not a valid input, retry" + Colors.RESET);
@@ -205,7 +199,7 @@ public class CLI implements Runnable, UserInterface {
         WizardType choice = null;
         while (!wizardChosen) {
             try {
-                choice = WizardType.valueOf(sc.next());
+                choice = WizardType.valueOf(sc.next().toUpperCase());
                 wizardChosen = true;
             } catch (IllegalArgumentException e) {
                 System.out.println(Colors.RED + "Not a valid input, retry" + Colors.RESET);
@@ -223,24 +217,42 @@ public class CLI implements Runnable, UserInterface {
     }
 
     public void askAction(List<String> actions, List<String> actionCommands) {
+        clearScreen();
+        printer.printMap();
         System.out.println("This is what you can do: ");
         for (int i = 0; i < actions.size(); i++) {
             System.out.println(actions.get(i) + " (" + actionCommands.get(i) + ")");
         }
         String actionName = sc.next();
+        if (actionName.equals("EndTurn")) {
+            listeners.firePropertyChange(actionName, null, null);
+            return;
+        }
         String actionArgument = getActionArguments();
         while(!actionCommands.contains(actionName)) { //can be modified (for example by adding abbreviations)
             System.out.println(Colors.RED + "Action not recognized, retry" + Colors.RESET);
             actionName = sc.next();
             actionArgument = getActionArguments();
         }
+        //Don't know why but this second version doesn't work
+        /*System.out.println("To end your turn type 'EndTurn'. Remember to type end at the end of your action.");
+        actionCommands.add("EndTurn");
+        String actionName;
+        String actionArgument;
+        boolean actionRecognized;
+        do {
+            actionName = sc.next();
+            actionArgument = getActionArguments();
+            actionRecognized = actionCommands.contains(actionName);
+            if (!actionRecognized) System.out.println(Colors.RED + "Action not recognized, retry" + Colors.RESET);
+        } while (!actionRecognized)*/
         listeners.firePropertyChange(actionName, null, actionArgument);
     }
 
     private String getActionArguments() {
         StringBuilder actionArgument = new StringBuilder();
         String nextArg = sc.next();
-        actionArgument.append(nextArg);
+        if (!nextArg.equals("end")) actionArgument.append(nextArg);
         boolean endAction = false;
         while (!endAction) {
             nextArg = sc.next();
@@ -252,13 +264,38 @@ public class CLI implements Runnable, UserInterface {
 
     @Override
     public void onGameInitialization(ModelView modelView) {
-        MapPrinter printer = new MapPrinter(0, 0);
+        printer = new MapPrinter(0, 0);
         this.modelView = modelView;
         clearScreen();
-        printer.initializeMap(modelView);
+
+        //debug
+        Map<Integer, Integer[]> clouds = modelView.getField().getCloudStudents();
+        for (Integer i: clouds.keySet()) {
+            System.out.println("Cloud " + i + " students " + Arrays.toString(clouds.get(i)));
+        }
+
+
+        printer.initializeMap(modelView, nickname);
         printer.printMap();
         System.out.println();
         printer.testIslandMapReplace(2);
         printer.printMap();
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case "IslandStudentsUpdate", "IslandTowerUpdate",
+                    "MotherNatureMovement"  -> printer.testIslandMapReplace((Integer) evt.getNewValue());
+            case "IslandUnification" -> printer.recomputeIslandMap();
+            case "SchoolDiningRoomUpdate" -> printer.testSchoolReplace((String) evt.getNewValue());
+            case "ProfessorUpdate" -> {
+                printer.testSchoolReplace((String) evt.getOldValue());
+                printer.testSchoolReplace((String) evt.getNewValue());
+                //or printer.recomputeSchoolMap()
+            }
+            case "PickFromCloud" -> printer.testCloudReplace((Integer) evt.getNewValue());
+            //TODO: Characters
+        }
     }
 }
