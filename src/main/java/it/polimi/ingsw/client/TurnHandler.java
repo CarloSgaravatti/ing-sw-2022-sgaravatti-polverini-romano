@@ -1,11 +1,9 @@
 package it.polimi.ingsw.client;
 
+import it.polimi.ingsw.client.CLI.utils.Colors;
 import it.polimi.ingsw.controller.RoundPhase;
 import it.polimi.ingsw.controller.TurnPhase;
-import it.polimi.ingsw.messages.ClientMessageHeader;
-import it.polimi.ingsw.messages.ClientMessageType;
-import it.polimi.ingsw.messages.MessageFromClient;
-import it.polimi.ingsw.messages.MessagePayload;
+import it.polimi.ingsw.messages.*;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -24,8 +22,6 @@ public class TurnHandler implements PropertyChangeListener {
     private boolean errorReceived = false;
     private boolean turnAlreadyEnded = false;
     private boolean isInputErrorReceived = false;
-
-    private final Object waitAckOrErrorLock = new Object();
 
     public TurnHandler(ConnectionToServer connection, UserInterface userInterface) {
         this.connection = connection;
@@ -76,9 +72,14 @@ public class TurnHandler implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case "ActionAck" -> onAckReceived(List.of((TurnPhase[]) evt.getNewValue()), (String) evt.getOldValue());
-            case "Error" -> onErrorReceived();
+            case "Error" -> onErrorReceived((ErrorMessageType) evt.getNewValue());
             case "InputError" -> onInputError();
-            case "ClientTurn" -> clientTurnHandler.submit(() -> handlePlayerTurn(List.of((TurnPhase[]) evt.getNewValue())));
+            //TODO: delete try catch when everything is ok
+            case "ClientTurn" -> clientTurnHandler.submit(() -> {
+                try {
+                    handlePlayerTurn(List.of((TurnPhase[]) evt.getNewValue()));
+                } catch (Exception e) {e.printStackTrace();}
+            });
         }
     }
 
@@ -101,16 +102,22 @@ public class TurnHandler implements PropertyChangeListener {
     public void handlePlayerTurn(final List<TurnPhase> possibleActions) {
         System.out.println("Turn handler is starting");
         setTurnAlreadyEnded(false);
+        setInputErrorReceived(false);
+        setErrorReceived(false);
+        setAckReceived(false);
         synchronized (currentTurnActions) {
             currentTurnActions.clear();
             currentTurnActions.addAll(possibleActions);
             while (!currentTurnActions.isEmpty()) {
-                setAckReceived(false);
-                setErrorReceived(false);
-                if (!isInputErrorReceived()) {
+                if (!isErrorReceived() && !isInputErrorReceived()) {
                     //TODO: separate printing menu and getting action, so if an input error is received
                     //  the printing menu is not printed on user interface
+                    userInterface.printTurnMenu(currentTurnActions.stream().map(TurnPhase::getActionDescription).toList(),
+                            currentTurnActions.stream().map(TurnPhase::getActionCommand).toList());
                 }
+                setInputErrorReceived(false);
+                setErrorReceived(false);
+                setAckReceived(false);
                 userInterface.askAction(currentTurnActions.stream().map(TurnPhase::getActionDescription).toList(),
                         currentTurnActions.stream().map(TurnPhase::getActionCommand).toList());
                 try {
@@ -150,9 +157,9 @@ public class TurnHandler implements PropertyChangeListener {
         }
     }
 
-    public void onErrorReceived() {
+    public void onErrorReceived(ErrorMessageType errorType) {
+        userInterface.displayStringMessage(Colors.RED + "Received error: " + errorType + Colors.RESET);
         setErrorReceived(true);
-        //TODO: notify user
         synchronized (currentTurnActions) {
             currentTurnActions.notify();
         }

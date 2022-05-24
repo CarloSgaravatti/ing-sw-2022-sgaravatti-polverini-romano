@@ -28,14 +28,16 @@ public class CloudMapPrinter {
         }
     }
 
+    //FIXME: substitute sub matrix throws ArrayIndexOutOfBound sometimes
     public void changeOnlyCloud(int cloudId) {
+        System.out.println("Changing cloud " + cloudId + ". The cloud map dimension (x, y) is ("
+                + cloudMap.length + "," + cloudMap[0].length + ")");
         String[][] cloudPrint = getCloud(cloudId);
-        int cloudPositionY = cloudId * PrintClouds.CLOUD_SIZE_Y;
-        cloudMap = MapPrinter.substituteSubMatrix(cloudMap, cloudPrint, new Pair<>(0, cloudPositionY));
+        int cloudPositionX = cloudId * PrintClouds.CLOUD_SIZE_X;
+        cloudMap = MapPrinter.substituteSubMatrix(cloudMap, cloudPrint, new Pair<>(cloudPositionX, 0));
     }
 
     private String[][] getCloud(int cloudId) {
-        //TODO: need to change print cloud signature because client doesn't have Student class (but only RealmType)
         RealmType[] students = RealmType.getRealmsFromIntegerRepresentation(fieldView.getCloudStudents().get(cloudId));
         return PrintClouds.drawClouds(cloudId, students.length > 0, students);
     }

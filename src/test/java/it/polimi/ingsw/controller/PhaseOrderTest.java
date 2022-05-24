@@ -31,7 +31,7 @@ class PhaseOrderTest {
     @BeforeEach
     void setUp() {
         gameConstants = JsonUtils.constantsByNumPlayer(3);
-        game = new Game(null, null, gameConstants);
+        game = new Game(null, null, gameConstants, true);
         game.setNumPlayers(3);
         for (int i = 0; i < 3; i++) {
             game.addPlayer("generic player");

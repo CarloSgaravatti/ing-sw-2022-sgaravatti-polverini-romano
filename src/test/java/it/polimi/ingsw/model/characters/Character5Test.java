@@ -29,7 +29,7 @@ class Character5Test extends TestCase {
         for (int i = 0; i < gameConstants.getNumIslands(); i++) {
             islands.add(new SingleIsland());
         }
-        game = new Game(islands, null, gameConstants);
+        game = new Game(islands, null, gameConstants, true);
         for (int i = 0; i < gameConstants.getNumIslands(); i++) {
             islands.get(i).addObserver(game);
         }

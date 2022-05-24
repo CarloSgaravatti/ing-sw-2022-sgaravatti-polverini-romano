@@ -12,6 +12,7 @@ import it.polimi.ingsw.messages.simpleModel.SimpleIsland;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeSupport;
 import java.util.*;
 
@@ -63,43 +64,51 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         String newOwner = payload.getAttribute("PlayerName").getAsString();
         RealmType professor = (RealmType) payload.getAttribute("ProfessorType").getAsObject();
         Optional<String> lastOwner = getModelView().getField().updateProfessorOwner(professor, newOwner);
-
-        //TODO
+        userInterface.firePropertyChange("ProfessorUpdate", lastOwner.orElse(null), newOwner);
     }
 
     private void onMotherNatureMovement(MessagePayload payload) {
+        int startingPosition = payload.getAttribute("InitialPosition").getAsInt();
         int newMotherNaturePosition = payload.getAttribute("FinalPosition").getAsInt();
         getModelView().getField().updateMotherNaturePosition(newMotherNaturePosition);
-
-        //TODO
+        userInterface.firePropertyChange("MotherNatureUpdate", startingPosition, newMotherNaturePosition);
     }
 
     private void onSchoolDiningRoomUpdate(MessagePayload payload) {
-        //TODO
+        String playerName = payload.getAttribute("PlayerName").getAsString();
+        RealmType student = (RealmType) payload.getAttribute("Students").getAsObject(); //TODO: change after fixing school
+        RealmType[] students = new RealmType[1];
+        students[0] = student;
+        boolean isInsertion = payload.getAttribute("IsInsertion").getAsBoolean();
+        getModelView().getPlayers().get(playerName).updateDiningRoom(students, isInsertion);
+        //Fixme after fixing school
+        if (isInsertion) {
+            getModelView().getPlayers().get(playerName).updateEntrance(students, false);
+        }
+        userInterface.firePropertyChange("SchoolDiningRoomUpdate", null, playerName);
     }
 
+    //FIXME when a student come from a character
     private void onIslandStudentsUpdate(MessagePayload payload) {
         int islandId = payload.getAttribute("IslandId").getAsInt();
         RealmType[] students = (RealmType[]) payload.getAttribute("Students").getAsObject();
+        getModelView().getPlayers().get(getModelView().getCurrentActivePlayer()).updateEntrance(students, false);
         getModelView().getField().updateIslandStudents(islandId, students);
-
-        //TODO
+        userInterface.firePropertyChange("IslandStudentsUpdate", null, islandId);
     }
 
     private void onIslandUnificationUpdate(MessagePayload payload) {
         Integer[] islandsId = (Integer[]) payload.getAttribute("IslandsId").getAsObject();
         SimpleIsland island = (SimpleIsland) payload.getAttribute("NewIsland").getAsObject();
         getModelView().getField().mergeIslands(Arrays.asList(islandsId), island.getIslandRepresentation());
-
-        //TODO
+        userInterface.firePropertyChange("IslandUnification", null, null);
     }
 
     private void onIslandTowerUpdate(MessagePayload payload) {
         int island = payload.getAttribute("IslandId").getAsInt();
         TowerType tower = (TowerType) payload.getAttribute("TowerType").getAsObject();
         getModelView().updateIslandTower(island, tower);
-
-        //TODO
+        userInterface.firePropertyChange("IslandStudentsUpdate", null, island);
     }
 
     private void onPickFromCloud(MessagePayload payload) {
@@ -108,8 +117,7 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         int cloudId = payload.getAttribute("CloudId").getAsInt();
         getModelView().getField().resetCloud(cloudId);
         getModelView().getPlayers().get(playerName).updateEntrance(students, true);
-
-        //TODO
+        userInterface.firePropertyChange(new PropertyChangeEvent(playerName, "PickFromCloud", null, cloudId));
     }
 
     private void onAssistantsUpdate(MessagePayload payload) {
@@ -120,7 +128,7 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
             newClientAssistants.put(values[i], motherNature[i]);
         }
         getModelView().setClientPlayerAssistants(newClientAssistants);
-        System.out.println("Received assistant update: your assistants are " + Arrays.toString(values));
+        //System.out.println("Received assistant update: your assistants are " + Arrays.toString(values));
     }
 
     private void onCloudsRefill(MessagePayload payload) {
@@ -129,5 +137,6 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         for (int i = 0; i < cloudsStudents.length; i++) {
             fieldView.updateCloudStudents(i, cloudsStudents[i]);
         }
+        userInterface.firePropertyChange("CloudsRefill", null, null);
     }
 }

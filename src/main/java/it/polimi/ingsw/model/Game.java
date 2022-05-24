@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 //TODO: this class is becoming way too big
 public class Game implements ModelObserver, PropertyChangeListener {
-	private boolean started;
+	private boolean started; //useless
 	private final List<Player> players;
 	private final Bag bag;
 	private final List<Island> islands;
@@ -31,8 +31,9 @@ public class Game implements ModelObserver, PropertyChangeListener {
 	private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 	private final GameConstants gameConstants;
 	private boolean isLastRound = false;
+	private final boolean isExpertGame;
 
-	public Game(List<Island> islands, Cloud[] clouds, GameConstants gameConstants){
+	public Game(List<Island> islands, Cloud[] clouds, GameConstants gameConstants, boolean isExpertGame){
 		this.gameConstants = gameConstants;
 		numPlayers = 0;
 		started = false;
@@ -42,6 +43,7 @@ public class Game implements ModelObserver, PropertyChangeListener {
 		players = new ArrayList<>();
 		this.clouds = clouds;
 		coinGeneralSupply = gameConstants.getNumCoins();
+		this.isExpertGame = isExpertGame;
 	}
 
 	public void createListeners(List<RemoteView> views, GameLobby lobby) {
@@ -55,7 +57,9 @@ public class Game implements ModelObserver, PropertyChangeListener {
 			listeners.addPropertyChangeListener("PickFromCloud", new CloudListener(r));
 			getPlayerByNickname(r.getPlayerNickname()).addListener(new PlayerListener(r));
 			CharacterListener characterListener = new CharacterListener(r);
-			for (CharacterCard c: characterCards) c.addListener(characterListener);
+			if (isExpertGame) {
+				for (CharacterCard c: characterCards) c.addListener(characterListener);
+			}
 		}
 		for (Island i: islands) i.addListener(this);
 		for (Cloud c: clouds) c.addListener(this);
@@ -380,7 +384,7 @@ public class Game implements ModelObserver, PropertyChangeListener {
 				while(evt.getSource() != clouds[cloudIndex]) cloudIndex++; //!= because I want the exact cloud object
 				listeners.firePropertyChange(new PropertyChangeEvent(
 						players.get(indexActivePlayer).getNickName(), "PickFromCloud",
-						null, new Pair<Integer, Student[]>(cloudIndex, (Student[]) evt.getNewValue())
+						null, new Pair<>(cloudIndex, (Student[]) evt.getNewValue())
 				));
 			}
 		}

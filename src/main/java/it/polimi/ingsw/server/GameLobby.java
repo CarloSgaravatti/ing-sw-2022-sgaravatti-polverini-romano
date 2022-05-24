@@ -27,14 +27,16 @@ public class GameLobby {
     private boolean started = false;
     private final int gameId;
     private final boolean isExpertGame;
+    private final Server server;
 
     private final Object setupLock = new Object();
 
-    public GameLobby(int gameId, int numPlayers, boolean isExpertGame) {
+    public GameLobby(int gameId, int numPlayers, boolean isExpertGame, Server server) {
         this.gameId = gameId;
         gameController = new GameController(gameId, numPlayers, isExpertGame);
         this.numPlayers = numPlayers;
         this.isExpertGame = isExpertGame;
+        this.server = server;
     }
 
     public synchronized void insertInLobby(String nickname, ClientConnection clientConnection) {
@@ -62,7 +64,7 @@ public class GameLobby {
             } catch (EmptyBagException e) {
                 //At this point it shouldn't be thrown, maybe it should be handled before
             }
-            for (String name: participants.keySet()) {
+            for (String name : participants.keySet()) {
                 initController.addPlayer(name);
             }
             gameController.setGame();
@@ -140,7 +142,7 @@ public class GameLobby {
             setupTowersDone = gameController.getInitController().getPlayersWithTower().size() == numPlayers;
             setupWizardsDone = gameController.getInitController().getPlayersWithWizard().size() == numPlayers;
         }
-        gameController.getActionController().refillClouds();
+        //gameController.getActionController().refillClouds();
         sendInitializations();
         gameController.startGame();
     }
@@ -196,8 +198,10 @@ public class GameLobby {
         Map<Integer, Integer[]> clouds = new HashMap<>();
         Cloud[] gameClouds = game.getClouds();
         for (int i = 0; i < gameClouds.length; i++) {
-            Integer[] students = RealmType.getIntegerRepresentation(Arrays.stream(gameClouds[i].getStudents())
-                    .map(Student::getStudentType).toList().toArray(new RealmType[0]));
+            //Integer[] students = RealmType.getIntegerRepresentation(Arrays.stream(gameClouds[i].getStudents())
+            //        .map(Student::getStudentType).toList().toArray(new RealmType[0]));
+            Integer[] students = new Integer[RealmType.values().length];
+            Arrays.fill(students, 0);
             clouds.put(i, students);
         }
         List<Player> players = game.getPlayers();
@@ -223,7 +227,6 @@ public class GameLobby {
         payload.setAttribute("Field", simpleField);
         payload.setAttribute("PlayersInfo", playersView);
         broadcast(new MessageFromServer(header, payload));
-        //TODO: assistants
     }
 
     public int getNumPlayers() {
@@ -239,10 +242,24 @@ public class GameLobby {
     }
 
     public void doEndGameOperations() {
-        //TODO
+        //TODO: maybe there are other things to do
+        server.deleteGame(gameId);
     }
 
     public String[] getGameParticipants() {
         return participants.keySet().toArray(new String[0]);
+    }
+
+    protected Map<String, ClientConnection> getClients() {
+        return participants;
+    }
+
+    protected void onDisconnection(String clientDisconnected) {
+        ServerMessageHeader header = new ServerMessageHeader("PlayerDisconnected", ServerMessageType.SERVER_MESSAGE);
+        MessagePayload payload = new MessagePayload();
+        payload.setAttribute("PlayerName", clientDisconnected);
+        MessageFromServer message = new MessageFromServer(header, payload);
+        multicast(message, clientDisconnected);
+        server.deleteGame(gameId);
     }
 }

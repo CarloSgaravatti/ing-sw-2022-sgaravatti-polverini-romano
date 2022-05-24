@@ -216,13 +216,23 @@ public class CLI implements Runnable, UserInterface {
                 + ((rules) ? "expert" : "simple"));
     }
 
-    public void askAction(List<String> actions, List<String> actionCommands) {
+    public void printTurnMenu(List<String> actions, List<String> actionCommands) {
         clearScreen();
         printer.printMap();
         System.out.println("This is what you can do: ");
         for (int i = 0; i < actions.size(); i++) {
             System.out.println(actions.get(i) + " (" + actionCommands.get(i) + ")");
         }
+    }
+
+    public void askAction(List<String> actions, List<String> actionCommands) {
+        //clearScreen();
+        if (sc.hasNext()) sc.nextLine(); //Don't know if there is a better way to rest the input
+        /*printer.printMap();
+        System.out.println("This is what you can do: ");
+        for (int i = 0; i < actions.size(); i++) {
+            System.out.println(actions.get(i) + " (" + actionCommands.get(i) + ")");
+        }*/
         String actionName = sc.next();
         if (actionName.equals("EndTurn")) {
             listeners.firePropertyChange(actionName, null, null);
@@ -267,14 +277,6 @@ public class CLI implements Runnable, UserInterface {
         printer = new MapPrinter(0, 0);
         this.modelView = modelView;
         clearScreen();
-
-        //debug
-        Map<Integer, Integer[]> clouds = modelView.getField().getCloudStudents();
-        for (Integer i: clouds.keySet()) {
-            System.out.println("Cloud " + i + " students " + Arrays.toString(clouds.get(i)));
-        }
-
-
         printer.initializeMap(modelView, nickname);
         printer.printMap();
         System.out.println();
@@ -283,18 +285,31 @@ public class CLI implements Runnable, UserInterface {
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
+    public synchronized void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
-            case "IslandStudentsUpdate", "IslandTowerUpdate",
-                    "MotherNatureMovement"  -> printer.testIslandMapReplace((Integer) evt.getNewValue());
+            case "CloudsRefill" -> printer.recomputeCloudMap();
+            case "IslandStudentsUpdate", "NoEntryTileUpdate" -> printer.testIslandMapReplace((Integer) evt.getNewValue());
+            case "IslandTowerUpdate" -> {
+                printer.testIslandMapReplace((Integer) evt.getNewValue());
+                printer.recomputeSchoolMap(); //can be better
+            }
+            case "MotherNatureUpdate" -> {
+                printer.testIslandMapReplace((Integer) evt.getOldValue());
+                printer.testIslandMapReplace((Integer) evt.getNewValue());
+            }
             case "IslandUnification" -> printer.recomputeIslandMap();
             case "SchoolDiningRoomUpdate" -> printer.testSchoolReplace((String) evt.getNewValue());
             case "ProfessorUpdate" -> {
-                printer.testSchoolReplace((String) evt.getOldValue());
+                if (evt.getOldValue() != null) {
+                    printer.testSchoolReplace((String) evt.getOldValue());
+                }
                 printer.testSchoolReplace((String) evt.getNewValue());
                 //or printer.recomputeSchoolMap()
             }
-            case "PickFromCloud" -> printer.testCloudReplace((Integer) evt.getNewValue());
+            case "PickFromCloud" -> {
+                printer.testCloudReplace((Integer) evt.getNewValue());
+                printer.testSchoolReplace((String) evt.getSource());
+            }
             //TODO: Characters
         }
     }

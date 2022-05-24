@@ -22,7 +22,7 @@ class TurnControllerTest extends TestCase {
     void setup() {
         gameConstants = JsonUtils.constantsByNumPlayer(3);
         gameController = new GameController(1, 3, true);
-        Game game = new Game(null, null, gameConstants);
+        Game game = new Game(null, null, gameConstants, true);
         game.setNumPlayers(3);
         game.addPlayer("player1");
         game.addPlayer("player2");

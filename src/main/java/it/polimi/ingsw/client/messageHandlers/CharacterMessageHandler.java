@@ -54,8 +54,7 @@ public class CharacterMessageHandler extends BaseMessageHandler {
         int islandId = payload.getAttribute("IslandId").getAsInt();
         ExpertFieldView expertField = getModelView().getField().getExpertField();
         expertField.updateIslandNoEntryTiles(expertField.getNoEntryTilesOnIsland(islandId) + 1, islandId);
-
-        //TODO
+        userInterface.firePropertyChange("NoEntryTileUpdate", null, islandId);
     }
 
     private void onStudentSwap(MessagePayload payload) {

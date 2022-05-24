@@ -32,4 +32,6 @@ public interface UserInterface extends PropertyChangeListener{
     void addListener(PropertyChangeListener listener, String propertyName);
 
     void onGameInitialization(ModelView modelView);
+
+    void printTurnMenu(List<String> actions, List<String> actionCommands); //maybe this is not correct and have to be done with listeners
 }

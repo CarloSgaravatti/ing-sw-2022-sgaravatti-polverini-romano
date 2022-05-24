@@ -1,8 +1,6 @@
 package it.polimi.ingsw.client.messageHandlers;
 
-import it.polimi.ingsw.client.ActionMessageConstructor;
 import it.polimi.ingsw.client.ConnectionToServer;
-import it.polimi.ingsw.client.ActionInputParser;
 import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.client.UserInterface;
 import it.polimi.ingsw.client.modelView.PlayerView;
@@ -29,6 +27,7 @@ public class DefaultMessageHandler extends BaseMessageHandler {
     public void handleMessage(MessageFromServer message) {
         ServerMessageHeader header = message.getServerMessageHeader();
         if (header.getMessageType() != ServerMessageType.SERVER_MESSAGE) {
+            System.out.println(header.getMessageName());
             getNextHandler().handleMessage(message);
             return;
         }

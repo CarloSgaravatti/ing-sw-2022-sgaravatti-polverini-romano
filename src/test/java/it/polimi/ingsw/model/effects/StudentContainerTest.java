@@ -47,7 +47,7 @@ class StudentContainerTest extends TestCase {
     @Test
     void initializationTest() {
         gameConstants = JsonUtils.constantsByNumPlayer(2);
-        Game game = new Game(null, null, gameConstants);
+        Game game = new Game(null, null, gameConstants, true);
         game.createAllStudentsForBag();
         studentContainerToTest = new StudentContainer(4, game);
         Assertions.assertEquals(4, studentContainerToTest.getStudents().size());

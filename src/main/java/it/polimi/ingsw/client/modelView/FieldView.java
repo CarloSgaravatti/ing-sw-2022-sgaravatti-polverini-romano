@@ -55,7 +55,9 @@ public class FieldView {
     }
 
     public void resetCloud(int cloudId) {
-        cloudStudents.replace(cloudId, new Integer[RealmType.values().length]);
+        Integer[] emptyCloudStudents = new Integer[RealmType.values().length];
+        Arrays.fill(emptyCloudStudents, 0);
+        cloudStudents.replace(cloudId, emptyCloudStudents);
     }
 
     public Triplet<Integer[], Integer, TowerType> getIsland(int islandId) {

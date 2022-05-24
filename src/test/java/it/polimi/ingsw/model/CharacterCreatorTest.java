@@ -15,7 +15,7 @@ class CharacterCreatorTest extends TestCase {
     @BeforeEach
     void setup() {
         gameConstants = JsonUtils.constantsByNumPlayer(3);
-        Game game = new Game(null, null, gameConstants);
+        Game game = new Game(null, null, gameConstants, true);
         characterCreator = new CharacterCreator(game);
         game.createAllStudentsForBag();
     }

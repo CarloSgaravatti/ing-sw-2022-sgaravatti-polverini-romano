@@ -18,11 +18,8 @@ public class Server implements Runnable{
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private final Map<Integer, GameLobby> gamesMap;
     private final Map<String, ClientConnection> waitingPlayersWithNoGame;
-    //when a game is started, the key is deleted from here
     private final Map<Integer, Map<String, ClientConnection>> waitingPlayersPerGameMap; //Decide if is useful
     private final Map<String, ClientConnection> clientsConnected;
-    //this list of games id is for games that are finished and are about to be canceled
-    private final List<Integer> gamesFinished;
     private int lastGameId = 0;
 
     public Server(int port) throws IOException{
@@ -31,8 +28,6 @@ public class Server implements Runnable{
         waitingPlayersPerGameMap = new ConcurrentHashMap<>();
         waitingPlayersWithNoGame = new ConcurrentHashMap<>();
         clientsConnected = new ConcurrentHashMap<>();
-        gamesFinished = new ArrayList<>();
-        //new Thread(this::gameFinishedHandler).start();
     }
 
     @Override
@@ -57,35 +52,15 @@ public class Server implements Runnable{
         }
     }
 
-    //Schema produttore/consumatore (magari lo si può fare in una classe a parte)
-    //TODO: produttore
-    /*protected void gameFinishedHandler() {
-        int gameId;
-        while (true) {
-            synchronized (gamesFinished) {
-                while (gamesFinished.isEmpty()) {
-                    try {
-                        gamesFinished.wait(); //Decide what can be done with Interrupted exception
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        return;
-                    }
-                }
-                gameId = gamesFinished.remove(0);
-            }
-            String winner = gamesMap.get(gameId).getGameController().declareWinner();
-            ServerMessageHeader header = new ServerMessageHeader("GameFinished", ServerMessageType.GAME_UPDATE);
-            MessagePayload payload = new MessagePayload();
-            payload.setAttribute("Winner", winner);
-            MessageFromServer message = new MessageFromServer(header, payload);
-            for (ClientConnection c: gamesParticipantMap.get(gameId).values()) {
-                c.asyncSend(message);
-                c.setSetupDone(false);
-            }
-            gamesMap.remove(gameId);
-            gamesParticipantMap.remove(gameId);
+    protected synchronized void deleteGame(int gameId) {
+        Map<String, ClientConnection> participants = gamesMap.get(gameId).getClients();
+        gamesMap.remove(gameId);
+        waitingPlayersPerGameMap.remove(gameId);
+        for(String clientName: participants.keySet()) {
+            globalLobby(participants.get(clientName), clientName);
+            participants.get(clientName).setSetupDone(false);
         }
-    }*/
+    }
 
     public GameLobby getGameById(int gameId) {
         return gamesMap.get(gameId);
@@ -102,7 +77,12 @@ public class Server implements Runnable{
     public void deregisterConnection(String clientName) {
         clientsConnected.remove(clientName);
         waitingPlayersWithNoGame.remove(clientName);
-        //TODO: what happens at game lobby?
+        for(GameLobby lobby: gamesMap.values()) {
+            if (lobby.getClients().containsKey(clientName)) {
+                lobby.onDisconnection(clientName);
+                return;
+            }
+        }
     }
 
     public void globalLobby(ClientConnection client, String clientName) {
@@ -154,7 +134,7 @@ public class Server implements Runnable{
         //int id = assignNewGameId().orElse(1); //if optional is empty it means that there are no games in the server
         lastGameId++;
         System.out.println("created a new game with id = " + lastGameId);
-        gamesMap.put(lastGameId, new GameLobby(lastGameId, numPlayers, isExpertGame));
+        gamesMap.put(lastGameId, new GameLobby(lastGameId, numPlayers, isExpertGame, this));
         waitingPlayersPerGameMap.put(lastGameId, new HashMap<>());
         return lastGameId;
     }

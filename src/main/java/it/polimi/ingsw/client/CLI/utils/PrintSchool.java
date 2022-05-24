@@ -266,8 +266,8 @@ public class PrintSchool {
         int line = 1;
         int row = 31;
         String tower = towersUnicode.get(type).getSecond().toString() + towersUnicode.get(type).getFirst() + Colors.RESET;
-        for (int i = 0; i < numTowers; i++) {
-            school[line][row] = tower;
+        for (int i = 0; i < 8; i++) {
+            school[line][row] = (i < numTowers) ? tower : " ";
             line += (row == 32) ? 1 : 0;
             row += (row != 32) ? 1 : -1;
         }

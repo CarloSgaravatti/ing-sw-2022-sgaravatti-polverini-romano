@@ -29,7 +29,7 @@ public class GameControllerTest {
         private final Map<String, RemoteViewStub> fakeViews = new HashMap<>();
 
         public GameLobbyStub() {
-            super(1, 2, true);
+            super(1, 2, true, null);
         }
 
         public void createRemoteViews(Pair<String, RemoteViewStub> player1, Pair<String, RemoteViewStub> player2) {

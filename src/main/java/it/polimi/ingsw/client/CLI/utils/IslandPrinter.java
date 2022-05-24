@@ -225,6 +225,9 @@ public class IslandPrinter {
                     towersUnicode.get(type).getSecond().toString() + numTowers + Colors.RESET;
             island[TOWER_POSITION.getFirst()][TOWER_POSITION.getSecond()] =
                     towersUnicode.get(type).getFirst().toString() + Colors.GREEN;
+        } else {
+            island[TOWER_POSITION.getFirst()][TOWER_POSITION.getSecond() - 1] = " ";
+            island[TOWER_POSITION.getFirst()][TOWER_POSITION.getSecond()] = " ";
         }
         for (int i = 0; i < RealmType.values().length; i++) {
             RealmType r = RealmType.values()[i];

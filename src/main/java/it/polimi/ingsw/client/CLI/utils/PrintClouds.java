@@ -8,10 +8,10 @@ public class PrintClouds {
 
     public static String[][] drawClouds(int cloudIndex, boolean full, RealmType ... students) {
         String[][] draw = new String[CLOUD_SIZE_X][CLOUD_SIZE_Y];
-        draw[0][0] = ""+ Colors.BLUE + "╔" + Colors.RESET;
-        draw[0][9] = ""+ Colors.BLUE + "╗";
-        draw[4][0] = ""+ Colors.BLUE + "╚";
-        draw[4][9] = ""+ Colors.BLUE + "╝"+Colors.BLUE + Colors.RESET;
+        draw[0][0] = Colors.BLUE + "╔" + Colors.RESET;
+        draw[0][9] = Colors.BLUE + "╗" + Colors.RESET;
+        draw[4][0] = Colors.BLUE + "╚";
+        draw[4][9] = Colors.BLUE + "╝" + Colors.BLUE + Colors.RESET;
 
         for(int i = 0; i<5; i++){
             for(int j = 0; j<10; j++){
@@ -37,22 +37,22 @@ public class PrintClouds {
         if(full) {
             while (f < students.length) {
                 if(students[f] == RealmType.RED_DRAGONS){
-                  draw[h][l] = Colors.RED + "●" + Colors.BLUE;
+                  draw[h][l] = Colors.RED + "●" + Colors.RESET;
                 }
                 if(students[f] == RealmType.YELLOW_GNOMES){
-                    draw[h][l] = Colors.YELLOW + "●" + Colors.BLUE;
+                    draw[h][l] = Colors.YELLOW + "●" + Colors.RESET;
 
                 }
                 if(students[f] == RealmType.GREEN_FROGS){
-                    draw[h][l] = Colors.GREEN + "●" + Colors.BLUE;
+                    draw[h][l] = Colors.GREEN + "●" + Colors.RESET;
 
                 }
                 if(students[f] == RealmType.BLUE_UNICORNS){
-                    draw[h][l] = Colors.BLUE + "●" + Colors.BLUE;
+                    draw[h][l] = Colors.BLUE + "●" + Colors.RESET;
 
                 }
                 if(students[f] == RealmType.PINK_FAIRES){
-                    draw[h][l] = Colors.PURPLE + "●" + Colors.BLUE;
+                    draw[h][l] = Colors.PURPLE + "●" + Colors.RESET;
                 }
 
                 if(l == 6){

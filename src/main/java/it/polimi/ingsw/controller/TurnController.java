@@ -35,6 +35,9 @@ public class TurnController {
 	}
 
 	public boolean endTurn() {
+		if (currentPhase == RoundPhase.ACTION) {
+			playerOrder[activePlayerIndex].resetTurnEffect();
+		}
 		if (activePlayerIndex == playerOrder.length - 1) {
 			if (currentPhase == RoundPhase.PLANNING) {
 				currPhaseOrder = phaseOrderStrategy[1];

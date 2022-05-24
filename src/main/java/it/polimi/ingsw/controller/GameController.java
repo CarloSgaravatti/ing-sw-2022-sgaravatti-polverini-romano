@@ -114,12 +114,13 @@ public class GameController implements PropertyChangeListener {
 	}
 
 	private void handleEndPhase() {
-		if (turnController.getCurrentPhase() == RoundPhase.ACTION) {
+		/*if (turnController.getCurrentPhase() == RoundPhase.ACTION) {
 			actionController.refillClouds();
-		} else if (game.isLastRound()) {
+		}*/if (turnController.getCurrentPhase() == RoundPhase.PLANNING && game.isLastRound()) {
 			game.checkWinners();
 			return;
-		} else {
+		} else if (turnController.getCurrentPhase() == RoundPhase.PLANNING){
+			actionController.refillClouds();
 			Cloud[] clouds = game.getClouds();
 			RealmType[][] cloudsStudents = new RealmType[clouds.length][];
 			for (int i = 0; i < clouds.length; i++) {
@@ -162,6 +163,7 @@ public class GameController implements PropertyChangeListener {
 			listeners.addPropertyChangeListener("EndTurn", turnListener);
 			listeners.addPropertyChangeListener("EndPhase", turnListener);
 			listeners.addPropertyChangeListener("AssistantsUpdate", turnListener);
+			listeners.addPropertyChangeListener("CloudsRefill", turnListener);
 			PlayerSetupListener playerListener = new PlayerSetupListener(view);
 			initController.addListener("Tower", playerListener);
 			initController.addListener("Wizard", playerListener);

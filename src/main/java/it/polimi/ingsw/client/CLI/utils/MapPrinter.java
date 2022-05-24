@@ -68,17 +68,12 @@ public class MapPrinter {
     public void initializeMap(ModelView modelView, String nickname) {
         this.modelView = modelView;
         islandMapPrinter.setFieldView(modelView.getField());
-        islandMapPrinter.initializeIslandMap();
-        islandsMap = islandMapPrinter.getIslandMap();
-
+        recomputeIslandMap();
         schoolMapPrinter.setModelView(modelView);
         schoolMapPrinter.initializePlayersSchoolOrder(nickname);
-        schoolMapPrinter.initializeSchoolMap();
-        schoolMap = schoolMapPrinter.getSchoolMap();
-
+        recomputeSchoolMap();
         cloudMapPrinter.setFieldView(modelView.getField());
-        cloudMapPrinter.initializeCloudMap();
-        cloudsMap = cloudMapPrinter.getCloudMap();
+        recomputeCloudMap();
     }
 
     public void testIslandMapReplace(int islandId) {
@@ -98,17 +93,17 @@ public class MapPrinter {
 
     public void recomputeSchoolMap() {
         schoolMapPrinter.initializeSchoolMap();
-        schoolMapPrinter.getSchoolMap();
+        schoolMap = schoolMapPrinter.getSchoolMap();
     }
 
     public void testCloudReplace(int cloudId) {
         cloudMapPrinter.changeOnlyCloud(cloudId);
-        schoolMap = cloudMapPrinter.getCloudMap();
+        cloudsMap = cloudMapPrinter.getCloudMap();
     }
 
     public void recomputeCloudMap() {
         cloudMapPrinter.initializeCloudMap();
-        schoolMap = cloudMapPrinter.getCloudMap();
+        cloudsMap = cloudMapPrinter.getCloudMap();
     }
 
 

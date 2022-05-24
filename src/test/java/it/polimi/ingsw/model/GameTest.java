@@ -28,7 +28,7 @@ class GameTest extends TestCase {
         for (int i = 0; i < 3; i ++) {
             clouds[i] = new Cloud(gameConstants.getNumStudentsPerCloud());
         }
-        game = new Game(islands, clouds, gameConstants);
+        game = new Game(islands, clouds, gameConstants, true);
     }
 
 

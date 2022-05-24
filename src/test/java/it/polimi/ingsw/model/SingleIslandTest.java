@@ -51,7 +51,7 @@ class SingleIslandTest extends TestCase {
             if (i == islandToTestIndex) islands.add(islandToTest);
             else islands.add(new SingleIsland());
         }
-        Game game = new Game(islands, null, gameConstants ); //clouds are not important
+        Game game = new Game(islands, null, gameConstants, true); //clouds are not important
         game.setNumPlayers(2);
         game.addPlayer("player1");
         game.addPlayer("player2");
@@ -96,7 +96,7 @@ class SingleIslandTest extends TestCase {
     @Test
     void insertNoEntryTile() {
         GameConstants gameConstants = JsonUtils.constantsByNumPlayer(2);
-        Game game = new Game(null, null, gameConstants);
+        Game game = new Game(null, null, gameConstants, true);
         CharacterCreator characterCreator = new CharacterCreator(game);
         NoEntryTileManager character5 = (Character5) characterCreator.getCharacter(5);
         islandToTest.insertNoEntryTile(character5);

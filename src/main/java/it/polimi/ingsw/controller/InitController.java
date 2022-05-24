@@ -42,7 +42,7 @@ public class InitController implements PropertyChangeListener {
 		for(int i=0; i < gameConstants.getNumIslands();i++){
 			islands.add(new SingleIsland());
 		}
-		game = new Game(islands,createClouds(),gameConstants);
+		game = new Game(islands, createClouds(), gameConstants, isExpertGame);
 		game.setNumPlayers(numPlayers);
 		game.genStudentForBeginning();
 		game.setupIslands();

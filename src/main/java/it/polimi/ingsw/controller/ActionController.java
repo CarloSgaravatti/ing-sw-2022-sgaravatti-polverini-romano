@@ -235,7 +235,7 @@ public class ActionController {
 	public void resetPossibleActions(RoundPhase phase) {
 		currentTurnRemainingActions.clear(); //can contain play character card
 		currentTurnRemainingActions.addAll(phase.getTurnActions());
-		if (phase == RoundPhase.PLANNING && !possibleActions.contains("PlayCharacter")) {
+		if (phase == RoundPhase.ACTION && !possibleActions.contains("PlayCharacter")) {
 			currentTurnRemainingActions.remove(TurnPhase.PLAY_CHARACTER_CARD);
 		}
 	}
