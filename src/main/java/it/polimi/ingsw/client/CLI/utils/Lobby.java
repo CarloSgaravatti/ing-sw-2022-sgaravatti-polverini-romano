@@ -112,10 +112,9 @@ public class Lobby {
         //setup box if we have just one game
         setup0[0][0] = UnicodeConstants.T_RIGHT.toString();
         setup0[0][8] = UnicodeConstants.CROSS.toString();
-        setup0[0][9] = UnicodeConstants.T_UP.toString();
         setup0[0][16] = UnicodeConstants.T_UP.toString();
-        setup0[0][23] = UnicodeConstants.CROSS.toString();
-        setup0[0][33] = UnicodeConstants.CROSS.toString();
+        setup0[0][23] = UnicodeConstants.T_DOWN.toString();
+        setup0[0][33] = UnicodeConstants.T_DOWN.toString();
         setup0[0][48] = UnicodeConstants.TOP_RIGHT.toString();
         setup0[4][0] = UnicodeConstants.BOTTOM_LEFT.toString();
         setup0[4][5] = UnicodeConstants.CROSS.toString();
@@ -146,13 +145,12 @@ public class Lobby {
         }
         lobby.add(setup0);
 
-        //setup box if we have more than one game
+        //setup first box if we have more than one game
         setup1[0][0] = UnicodeConstants.T_RIGHT.toString();
         setup1[0][8] = UnicodeConstants.CROSS.toString();
-        setup1[0][9] = UnicodeConstants.T_UP.toString();
         setup1[0][16] = UnicodeConstants.T_UP.toString();
-        setup1[0][23] = UnicodeConstants.CROSS.toString();
-        setup1[0][33] = UnicodeConstants.CROSS.toString();
+        setup1[0][23] = UnicodeConstants.T_DOWN.toString();
+        setup1[0][33] = UnicodeConstants.T_DOWN.toString();
         setup1[0][48] = UnicodeConstants.TOP_RIGHT.toString();
         for(int i = 0; i< 48; i++){
             if(setup1[0][i]==null){
