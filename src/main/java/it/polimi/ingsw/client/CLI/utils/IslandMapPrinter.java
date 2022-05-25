@@ -20,14 +20,15 @@ public class IslandMapPrinter {
         int numIslands = fieldView.getIslandSize();
         String[][] firstLine = new String[0][0];
         String[][] secondLine = new String[0][0];
+        int position = fieldView.getMotherNaturePosition();
         for (int i = 0; i < (numIslands + 1) / 2; i++) {
             Triplet<Integer[], Integer, TowerType> islandValues = fieldView.getIsland(i);
-            String[][] island = islandPrinter.getIsland(i, islandValues.getSecond(), islandValues.getThird(), islandValues.getFirst());
+            String[][] island = islandPrinter.getIsland(i, position == i,islandValues.getSecond(), islandValues.getThird(), islandValues.getFirst());
             firstLine = appendMatrixInLine(island, firstLine);
 
             int island2Idx = numIslands - i - 1;
             Triplet<Integer[], Integer, TowerType> island2Values = fieldView.getIsland(island2Idx);
-            String[][] island2 = islandPrinter.getIsland(island2Idx, island2Values.getSecond(), island2Values.getThird(), island2Values.getFirst());
+            String[][] island2 = islandPrinter.getIsland(island2Idx, position==island2Idx,island2Values.getSecond(), island2Values.getThird(), island2Values.getFirst());
             secondLine = appendMatrixInLine(island2, secondLine);
         }
         islandMap = firstLine;
@@ -39,9 +40,10 @@ public class IslandMapPrinter {
     }
 
     public void changeOnlyIsland(int islandId) {
+        int position = fieldView.getMotherNaturePosition();
         Pair<Integer, Integer> islandPosition = getIslandPositionInMap(islandId);
         Triplet<Integer[], Integer, TowerType> island = fieldView.getIsland(islandId);
-        String[][] islandDrawn = islandPrinter.getIsland(islandId, island.getSecond(), island.getThird(), island.getFirst());
+        String[][] islandDrawn = islandPrinter.getIsland(islandId, position==islandId,island.getSecond(), island.getThird(), island.getFirst());
         substituteSubMatrix(islandMap, islandDrawn, islandPosition);
     }
 

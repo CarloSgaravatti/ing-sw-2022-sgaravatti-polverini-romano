@@ -1,6 +1,12 @@
 package it.polimi.ingsw.client.CLI.utils;
 
 public enum UnicodeConstants {
+
+    CROSS("\u256c"),
+    T_RIGHT("\u2560"),
+    T_LEFT("\u2563"),
+    T_UP("\u2569"),
+    T_DOWN("\u2566"),
     BOTTOM_RIGHT("\u255D"),
     BOTTOM_LEFT("\u255A"),
     TOP_RIGHT("\u2557"),

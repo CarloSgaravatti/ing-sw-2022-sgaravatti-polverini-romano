@@ -125,6 +125,7 @@ public class CLI implements Runnable, UserInterface {
     @Override
     public void displayGlobalLobby(int numGames, Map<Integer, Pair<Integer,String[]>> gamesInfo) {
         System.out.println("There are currently " + numGames + " games not started.");
+        List<Integer> ids = new ArrayList<>(gamesInfo.keySet()); //TODO: for printing the lobby
         for (Integer i: gamesInfo.keySet()) {
             Pair<Integer, String[]> gameInfo = gamesInfo.get(i);
             String[] players = gameInfo.getSecond();
