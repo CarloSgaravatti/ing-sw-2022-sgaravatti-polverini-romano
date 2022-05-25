@@ -42,7 +42,7 @@ public class CharacterListener implements PropertyChangeListener {
 
     private void onStudentsChange(int characterId, Student[] students) {
         MessagePayload payload = new MessagePayload();
-        payload.setAttribute("Character", characterId);
+        payload.setAttribute("CharacterId", characterId);
         RealmType[] realms = Arrays.stream(students).map(Student::getStudentType).toList().toArray(new RealmType[0]);
         payload.setAttribute("Students", realms);
         remoteView.sendMessage(payload, "CharacterStudents", ServerMessageType.GAME_UPDATE);
