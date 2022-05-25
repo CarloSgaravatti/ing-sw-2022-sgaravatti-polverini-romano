@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.CLI.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Lobby {
@@ -21,6 +22,7 @@ public class Lobby {
 
     public List<String[][]> createSkeleton(){
         int count=0;
+        List<String[][]> skeleton = new ArrayList<>();
         String newGame = "NewGame";
         String[] newGameString = new String[7];
         String newGame1 = "Refresh";
@@ -51,7 +53,7 @@ public class Lobby {
             int s = 0;
             int f = 0;
             for(int j = 0 ; j < 49; j++){
-                if((i == 0 || i==2) && upperCommandBox1[i][j] == null){
+                if((i == 0 || i==2) && upperCommandBox1[i][j] == null && j<16){
                     upperCommandBox1[i][j] = UnicodeConstants.HORIZONTAL.toString();
                 }
                 if(i==1 && (j==0 || j==8 || j==16)){
@@ -74,7 +76,7 @@ public class Lobby {
                 }
             }
         }
-        lobby.add(upperCommandBox1);
+        skeleton.add(upperCommandBox1);
 
         //upperCommandBox for when we have at least one game in lobby
         upperCommandBox[0][0] = UnicodeConstants.TOP_LEFT.toString();
@@ -84,7 +86,7 @@ public class Lobby {
             int s = 0;
             int f = 0;
             for(int j = 0 ; j < 49; j++){
-                if(i == 0 && upperCommandBox[i][j] == null){
+                if(i == 0 && upperCommandBox[i][j] == null && j<16){
                     upperCommandBox[i][j] = UnicodeConstants.HORIZONTAL.toString();
                 }
                 if(i==1 && (j==0 || j==8 || j==16)){
@@ -107,7 +109,7 @@ public class Lobby {
                 }
             }
         }
-        lobby.add(upperCommandBox);
+        skeleton.add(upperCommandBox);
 
         //setup box if we have just one game
         setup0[0][0] = UnicodeConstants.T_RIGHT.toString();
@@ -117,18 +119,18 @@ public class Lobby {
         setup0[0][33] = UnicodeConstants.T_DOWN.toString();
         setup0[0][48] = UnicodeConstants.TOP_RIGHT.toString();
         setup0[4][0] = UnicodeConstants.BOTTOM_LEFT.toString();
-        setup0[4][5] = UnicodeConstants.CROSS.toString();
+        //setup0[4][5] = UnicodeConstants.CROSS.toString();
         setup0[4][8] = UnicodeConstants.T_UP.toString();
         setup0[4][23] = UnicodeConstants.T_UP.toString();
         setup0[4][33] = UnicodeConstants.T_UP.toString();
-        setup0[4][43] = UnicodeConstants.CROSS.toString();
+        //setup0[4][43] = UnicodeConstants.CROSS.toString();
         setup0[4][48] = UnicodeConstants.BOTTOM_RIGHT.toString();
         for(int i = 0; i< 48; i++){
             if(setup0[0][i]==null){
                 setup0[0][i]= UnicodeConstants.HORIZONTAL.toString();
             }
             if(setup0[4][i]==null){
-                setup0[0][i]= UnicodeConstants.HORIZONTAL.toString();
+                setup0[4][i]= UnicodeConstants.HORIZONTAL.toString();
             }
         }
         for(int i = 0 ; i < 5; i++){
@@ -143,7 +145,7 @@ public class Lobby {
                 }
             }
         }
-        lobby.add(setup0);
+        skeleton.add(setup0);
 
         //setup first box if we have more than one game
         setup1[0][0] = UnicodeConstants.T_RIGHT.toString();
@@ -169,14 +171,14 @@ public class Lobby {
                 }
             }
         }
-        lobby.add(setup1);
+        skeleton.add(setup1);
 
         //setup box for boxes in the middle
         setup2[0][0] = UnicodeConstants.T_RIGHT.toString();
         setup2[0][8] = UnicodeConstants.CROSS.toString();
         setup2[0][23] = UnicodeConstants.CROSS.toString();
         setup2[0][33] = UnicodeConstants.CROSS.toString();
-        setup2[0][48] = UnicodeConstants.TOP_RIGHT.toString();
+        setup2[0][48] = UnicodeConstants.T_LEFT.toString();
         for(int i = 0; i< 48; i++){
             if(setup2[0][i]==null){
                 setup2[0][i]= UnicodeConstants.HORIZONTAL.toString();
@@ -194,16 +196,14 @@ public class Lobby {
                 }
             }
         }
-        lobby.add(setup2);
+        skeleton.add(setup2);
 
         //setup for last box
         setup3[0][0] = UnicodeConstants.T_RIGHT.toString();
         setup3[0][8] = UnicodeConstants.CROSS.toString();
-        setup3[0][9] = UnicodeConstants.T_UP.toString();
-        setup3[0][17] = UnicodeConstants.T_UP.toString();
         setup3[0][23] = UnicodeConstants.CROSS.toString();
         setup3[0][33] = UnicodeConstants.CROSS.toString();
-        setup3[0][48] = UnicodeConstants.TOP_RIGHT.toString();
+        setup3[0][48] = UnicodeConstants.T_LEFT.toString();
         setup3[4][0] = UnicodeConstants.T_RIGHT.toString();
         setup3[4][5] = UnicodeConstants.T_DOWN.toString();
         setup3[4][8] = UnicodeConstants.T_UP.toString();
@@ -216,7 +216,7 @@ public class Lobby {
                 setup3[0][i]= UnicodeConstants.HORIZONTAL.toString();
             }
             if(setup3[4][i]==null){
-                setup3[0][i]= UnicodeConstants.HORIZONTAL.toString();
+                setup3[4][i]= UnicodeConstants.HORIZONTAL.toString();
             }
         }
         for(int i = 0 ; i < 5; i++){
@@ -231,7 +231,7 @@ public class Lobby {
                 }
             }
         }
-        lobby.add(setup3);
+        skeleton.add(setup3);
 
         //lowerCommandBox appear just when we have at least one game
         lowerCommandBox[1][0] = UnicodeConstants.BOTTOM_LEFT.toString();
@@ -256,8 +256,18 @@ public class Lobby {
                 }
             }
         }
-        lobby.add(lowerCommandBox);
+        for(int i = 0 ; i< 2;i++){
+            for( int j =0;j<49;j++){
+                if(lowerCommandBox[i][j]==null){
+                    lowerCommandBox[i][j]= " ";
+                }
+            }
+        }
+        skeleton.add(lowerCommandBox);
 
+        return skeleton;
+    }
+    public List<String[][]> getSkeleton(){
         return lobby;
     }
 }
