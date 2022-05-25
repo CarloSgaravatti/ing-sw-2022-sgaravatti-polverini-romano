@@ -205,11 +205,11 @@ public class Lobby {
         setup3[0][33] = UnicodeConstants.CROSS.toString();
         setup3[0][48] = UnicodeConstants.TOP_RIGHT.toString();
         setup3[4][0] = UnicodeConstants.T_RIGHT.toString();
-        setup3[4][5] = UnicodeConstants.CROSS.toString();
+        setup3[4][5] = UnicodeConstants.T_DOWN.toString();
         setup3[4][8] = UnicodeConstants.T_UP.toString();
         setup3[4][23] = UnicodeConstants.T_UP.toString();
         setup3[4][33] = UnicodeConstants.T_UP.toString();
-        setup3[4][43] = UnicodeConstants.CROSS.toString();
+        setup3[4][43] = UnicodeConstants.T_DOWN.toString();
         setup3[4][48] = UnicodeConstants.T_LEFT.toString();
         for(int i = 0; i< 48; i++){
             if(setup3[0][i]==null){
