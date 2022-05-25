@@ -28,10 +28,7 @@ public class CloudMapPrinter {
         }
     }
 
-    //FIXME: substitute sub matrix throws ArrayIndexOutOfBound sometimes
     public void changeOnlyCloud(int cloudId) {
-        System.out.println("Changing cloud " + cloudId + ". The cloud map dimension (x, y) is ("
-                + cloudMap.length + "," + cloudMap[0].length + ")");
         String[][] cloudPrint = getCloud(cloudId);
         int cloudPositionX = cloudId * PrintClouds.CLOUD_SIZE_X;
         cloudMap = MapPrinter.substituteSubMatrix(cloudMap, cloudPrint, new Pair<>(cloudPositionX, 0));

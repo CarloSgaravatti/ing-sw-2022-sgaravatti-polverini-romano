@@ -79,6 +79,7 @@ public class School extends ProfessorPresenceObservable {
 		diningRoom[student.getStudentType().ordinal()] ++;
 		int newStudentsDiningRoom = diningRoom[student.getStudentType().ordinal()];
 		notifyObservers(student.getStudentType());
+		//TODO: add a way to not notify when is a school swap (character 7)
 		player.firePropertyChange("DiningRoomIns", null, student.getStudentType());
 		//maybe the return condition can be done better
 		return (newStudentsDiningRoom == 3 || newStudentsDiningRoom == 6 || newStudentsDiningRoom == 9);
@@ -206,6 +207,7 @@ public class School extends ProfessorPresenceObservable {
 		Student toEliminate = remove(diningRoom, studentDiningRoom, studentType);
 		studentDiningRoom.remove(toEliminate);
 		diningRoom[studentType.ordinal()] --;
+		//TODO: deprecated message, fix
 		player.firePropertyChange("DiningRoomRem", null, studentType);
 		return toEliminate;
 	}

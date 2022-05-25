@@ -10,21 +10,21 @@ public class ExpertFieldView {
     private final Map<Integer, Integer> characters = new HashMap<>(); //id and price
     private boolean noEntryTilesPresent = false;
     private Pair<Integer, Integer> numNoEntryTilesOnCharacter; //id and no entry tiles
-    private Map<Integer, Integer> islandsWithNoEntryTiles; //islandId and no entry tiles on island
+    private final Map<Integer, Integer> islandsWithNoEntryTiles = new HashMap<>(); //islandId and no entry tiles on island
     private final Map<Integer, Integer[]> characterStudents = new HashMap<>(); //id and students
 
     public ExpertFieldView(List<SimpleCharacter> characters) {
         for (SimpleCharacter c : characters) {
             this.characters.put(c.getId(), c.getPrice());
-            Optional<Integer> noEntryTiles = Optional.of(c.getNumNoEntryTiles());
+            Optional<Integer> noEntryTiles = Optional.ofNullable(c.getNumNoEntryTiles());
             noEntryTiles.ifPresent(numNoEntryTiles -> {
                 noEntryTilesPresent = true;
                 numNoEntryTilesOnCharacter = new Pair<>(c.getId(), numNoEntryTiles);
-                islandsWithNoEntryTiles = new HashMap<>();
             });
             Optional<RealmType[]> studentsOptional = Optional.ofNullable(c.getStudents());
             studentsOptional.ifPresent(students -> {
                 Integer[] characterStud = new Integer[RealmType.values().length];
+                Arrays.fill(characterStud, 0);
                 ModelView.insertStudents(characterStud, students);
                 characterStudents.put(c.getId(), characterStud);
             });
@@ -39,7 +39,7 @@ public class ExpertFieldView {
         return numNoEntryTilesOnCharacter;
     }
 
-    public int getNoEntryTilesOnIsland(int island) {
+    public Integer getNoEntryTilesOnIsland(int island) {
         return islandsWithNoEntryTiles.get(island);
     }
 

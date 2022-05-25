@@ -71,6 +71,7 @@ public abstract class CharacterCard {
 		if (!coinPresent) {
 			putCoin();
 		}
+		//TODO: change with id and nickname (also in CharacterListener)
 		firePropertyChange(new PropertyChangeEvent(this, "PlayCharacter", null, playerActive));
 	}
 
@@ -86,9 +87,7 @@ public abstract class CharacterCard {
 	 * @throws IllegalCharacterActionRequestedException if the parameters are not correct, or if the character does not
 	 * provide any effect that can be used after the player plays the card
 	 */
-	public void useEffect(List<String> args) throws IllegalCharacterActionRequestedException {
-		throw new IllegalCharacterActionRequestedException();
-	}
+	public abstract void useEffect(List<String> args) throws IllegalCharacterActionRequestedException;
 
 	/**
 	 * Returns the last player that has played this character (even if he has already terminated his turn)
@@ -114,5 +113,8 @@ public abstract class CharacterCard {
 		listeners.firePropertyChange(evt);
 	}
 
-	//TODO: fire other character events
+	//TODO: after characters re implementation, make this abstract
+	public boolean requiresInput() {
+		return true;
+	}
 }

@@ -24,14 +24,14 @@ public class Character10 extends CharacterCard {
             throw new IllegalCharacterActionRequestedException();
         }
         RealmType[] fromEntrance = RealmType.getRealmsByAbbreviations(args.subList(1, studentsToPick + 1));
-        RealmType[] toDiningRoom = RealmType.getRealmsByAbbreviations(args.
+        RealmType[] fromDiningRoom = RealmType.getRealmsByAbbreviations(args.
                 subList(studentsToPick + 1, (2 * studentsToPick) + 1));
         try {
-            swap(fromEntrance, toDiningRoom);
+            swap(fromEntrance, fromDiningRoom);
         } catch (StudentNotFoundException | FullDiningRoomException e) {
             throw new IllegalCharacterActionRequestedException(); //TODO: these exception will have different return messages
         }
-        firePropertyChange(new PropertyChangeEvent(this, "SchoolSwap", toDiningRoom, fromEntrance));
+        firePropertyChange(new PropertyChangeEvent(this, "SchoolSwap", fromDiningRoom, fromEntrance));
     }
 
     public void swap(RealmType[] entrance, RealmType[] diningRoom) throws StudentNotFoundException,

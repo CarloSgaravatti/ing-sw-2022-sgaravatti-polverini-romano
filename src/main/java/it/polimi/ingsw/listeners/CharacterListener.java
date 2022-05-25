@@ -3,6 +3,7 @@ package it.polimi.ingsw.listeners;
 import it.polimi.ingsw.messages.MessagePayload;
 import it.polimi.ingsw.messages.ServerMessageType;
 import it.polimi.ingsw.model.CharacterCard;
+import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.Student;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.server.RemoteView;
@@ -17,6 +18,19 @@ public class CharacterListener implements PropertyChangeListener {
 
     public CharacterListener(RemoteView remoteView) {
         this.remoteView = remoteView;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch(evt.getPropertyName()) {
+            case "PlayCharacter" -> onCharacterPlay(((CharacterCard)evt.getSource()).getId(), ((Player)evt.getNewValue()).getNickName());
+            case "Students" -> onStudentsChange(((CharacterCard)evt.getSource()).getId(), (Student[]) evt.getNewValue());
+            case "EntranceSwap" -> onEntranceSwap(((CharacterCard) evt.getSource()).getPlayerActive().getNickName(),
+                    (RealmType[]) evt.getOldValue(), (RealmType[]) evt.getNewValue());
+            case "SchoolSwap" -> onSchoolSwap(((CharacterCard) evt.getSource()).getPlayerActive().getNickName(),
+                    (RealmType[]) evt.getOldValue(), (RealmType[]) evt.getNewValue());
+            case "NoEntryTile" -> onNoEntryTileUpdate(((CharacterCard)evt.getSource()).getId(), (Integer) evt.getNewValue());
+        }
     }
 
     private void onCharacterPlay(int characterId, String namePlayer) {
@@ -34,15 +48,12 @@ public class CharacterListener implements PropertyChangeListener {
         remoteView.sendMessage(payload, "CharacterStudents", ServerMessageType.GAME_UPDATE);
     }
 
-    private void onStudentsSwap(CharacterCard character, RealmType[] fromSource, RealmType[] toSource, boolean fromEntrance, boolean toDiningRoom) {
+    private void onSchoolSwap(String playerName, RealmType[] toEntrance, RealmType[] toDiningRoom) {
         MessagePayload payload = new MessagePayload();
-        payload.setAttribute("CharacterId", character.getId());
-        payload.setAttribute("PlayerInvolved", character.getPlayerActive().getNickName());
-        payload.setAttribute("StudentsFromSource", fromSource);
-        payload.setAttribute("IsFromEntrance", fromEntrance);
-        payload.setAttribute("StudentsToSource", toSource);
-        payload.setAttribute("IsToDiningRoom", toDiningRoom);
-        remoteView.sendMessage(payload, "StudentsSwap", ServerMessageType.GAME_UPDATE);
+        payload.setAttribute("PlayerName", playerName);
+        payload.setAttribute("ToEntrance", toEntrance);
+        payload.setAttribute("ToDiningRoom", toDiningRoom);
+        remoteView.sendMessage(payload, "SchoolSwap", ServerMessageType.GAME_UPDATE);
     }
 
     private void onNoEntryTileUpdate(int characterId, int islandId) {
@@ -52,16 +63,11 @@ public class CharacterListener implements PropertyChangeListener {
         remoteView.sendMessage(payload, "NoEntryTileUpdate", ServerMessageType.GAME_UPDATE);
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        switch(evt.getPropertyName()) {
-            case "PlayCharacter" -> onCharacterPlay((Integer) evt.getNewValue(), (String) evt.getSource());
-            case "Students" -> onStudentsChange(((CharacterCard)evt.getSource()).getId(), (Student[]) evt.getNewValue());
-            case "SwapFromEntrance" -> onStudentsSwap((CharacterCard) evt.getSource(),
-                    (RealmType[]) evt.getNewValue(), (RealmType[]) evt.getOldValue(), true, false);
-            case "SchoolSwap" -> onStudentsSwap((CharacterCard) evt.getSource(),
-                    (RealmType[]) evt.getNewValue(), (RealmType[]) evt.getOldValue(), true, true);
-            case "NoEntryTile" -> onNoEntryTileUpdate(((CharacterCard)evt.getSource()).getId(), (Integer) evt.getNewValue());
-        }
+    private void onEntranceSwap(String playerName, RealmType[] removed, RealmType[] inserted) {
+        MessagePayload payload = new MessagePayload();
+        payload.setAttribute("PlayerName", playerName);
+        payload.setAttribute("Inserted", inserted);
+        payload.setAttribute("Removed", removed);
+        remoteView.sendMessage(payload, "EntranceSwap", ServerMessageType.GAME_UPDATE);
     }
 }

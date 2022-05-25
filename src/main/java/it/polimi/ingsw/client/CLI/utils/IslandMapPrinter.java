@@ -11,9 +11,11 @@ public class IslandMapPrinter {
     private FieldView fieldView;
     private final IslandPrinter islandPrinter = new IslandPrinter();
     private String[][] islandMap;
+    boolean isWithNoEntryTiles;
 
     public void setFieldView(FieldView fieldView) {
         this.fieldView = fieldView;
+        isWithNoEntryTiles = fieldView.getExpertField() != null;
     }
 
     public void initializeIslandMap() {
@@ -23,12 +25,16 @@ public class IslandMapPrinter {
         int position = fieldView.getMotherNaturePosition();
         for (int i = 0; i < (numIslands + 1) / 2; i++) {
             Triplet<Integer[], Integer, TowerType> islandValues = fieldView.getIsland(i);
-            String[][] island = islandPrinter.getIsland(i, position == i,islandValues.getSecond(), islandValues.getThird(), islandValues.getFirst());
+            int numNoEntryTiles = getNoEntryTilesValue(i);
+            String[][] island = islandPrinter.getIsland(i, position == i, islandValues.getSecond(),
+                    islandValues.getThird(), islandValues.getFirst(), numNoEntryTiles);
             firstLine = appendMatrixInLine(island, firstLine);
 
             int island2Idx = numIslands - i - 1;
+            numNoEntryTiles = getNoEntryTilesValue(island2Idx);
             Triplet<Integer[], Integer, TowerType> island2Values = fieldView.getIsland(island2Idx);
-            String[][] island2 = islandPrinter.getIsland(island2Idx, position==island2Idx,island2Values.getSecond(), island2Values.getThird(), island2Values.getFirst());
+            String[][] island2 = islandPrinter.getIsland(island2Idx, position == island2Idx, island2Values.getSecond(),
+                    island2Values.getThird(), island2Values.getFirst(), numNoEntryTiles);
             secondLine = appendMatrixInLine(island2, secondLine);
         }
         islandMap = firstLine;
@@ -43,8 +49,15 @@ public class IslandMapPrinter {
         int position = fieldView.getMotherNaturePosition();
         Pair<Integer, Integer> islandPosition = getIslandPositionInMap(islandId);
         Triplet<Integer[], Integer, TowerType> island = fieldView.getIsland(islandId);
-        String[][] islandDrawn = islandPrinter.getIsland(islandId, position==islandId,island.getSecond(), island.getThird(), island.getFirst());
-        substituteSubMatrix(islandMap, islandDrawn, islandPosition);
+        int numNoEntryTiles = getNoEntryTilesValue(islandId);
+        String[][] islandDrawn = islandPrinter.getIsland(islandId, position == islandId, island.getSecond(),
+                island.getThird(), island.getFirst(), numNoEntryTiles);
+        islandMap = substituteSubMatrix(islandMap, islandDrawn, islandPosition);
+    }
+
+    private int getNoEntryTilesValue(int islandId) {
+        return (isWithNoEntryTiles) ? ((fieldView.getExpertField().getNoEntryTilesOnIsland(islandId) == null) ? 0 :
+                fieldView.getExpertField().getNoEntryTilesOnIsland(islandId)) : 0;
     }
 
     private Pair<Integer, Integer> getIslandPositionInMap(int islandId) {

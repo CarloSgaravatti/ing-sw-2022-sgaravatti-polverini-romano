@@ -3,7 +3,6 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.controller.InitController;
 import it.polimi.ingsw.exceptions.EmptyBagException;
-import it.polimi.ingsw.exceptions.GameAlreadyStartedException;
 import it.polimi.ingsw.messages.MessageFromServer;
 import it.polimi.ingsw.messages.MessagePayload;
 import it.polimi.ingsw.messages.ServerMessageHeader;
@@ -13,11 +12,14 @@ import it.polimi.ingsw.messages.simpleModel.SimpleField;
 import it.polimi.ingsw.messages.simpleModel.SimpleIsland;
 import it.polimi.ingsw.messages.simpleModel.SimplePlayer;
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.characters.Character1;
+import it.polimi.ingsw.model.characters.Character11;
+import it.polimi.ingsw.model.characters.Character5;
+import it.polimi.ingsw.model.characters.Character7;
 import it.polimi.ingsw.model.enumerations.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public class GameLobby {
     private final GameController gameController;
@@ -183,7 +185,6 @@ public class GameLobby {
     }
 
     private void sendInitializations() {
-        //TODO: decide if game initializations can be sent in more than one message
         gameController.setGame();
         game = gameController.getModel();
         ServerMessageHeader header = new ServerMessageHeader("GameInitializations", ServerMessageType.GAME_SETUP);
@@ -198,8 +199,6 @@ public class GameLobby {
         Map<Integer, Integer[]> clouds = new HashMap<>();
         Cloud[] gameClouds = game.getClouds();
         for (int i = 0; i < gameClouds.length; i++) {
-            //Integer[] students = RealmType.getIntegerRepresentation(Arrays.stream(gameClouds[i].getStudents())
-            //        .map(Student::getStudentType).toList().toArray(new RealmType[0]));
             Integer[] students = new Integer[RealmType.values().length];
             Arrays.fill(students, 0);
             clouds.put(i, students);
@@ -218,7 +217,8 @@ public class GameLobby {
         if (isExpertGame) {
             List<SimpleCharacter> characters = new ArrayList<>();
             for (CharacterCard c: game.getCharacterCards()) {
-                characters.add(new SimpleCharacter(c.getId(), c.getPrice())); //TODO: modify (probably character cards need to be modified)
+                //characters.add(new SimpleCharacter(c.getId(), c.getPrice())); //TODO: modify (probably character cards need to be modified)
+                characters.add(getSimpleCharacter(c));
             }
             simpleField = new SimpleField(islandsView, clouds, characters, motherNaturePosition);
         } else {
@@ -227,6 +227,29 @@ public class GameLobby {
         payload.setAttribute("Field", simpleField);
         payload.setAttribute("PlayersInfo", playersView);
         broadcast(new MessageFromServer(header, payload));
+    }
+
+    //TODO: modify when characters are reimplemented
+    private SimpleCharacter getSimpleCharacter(CharacterCard c) {
+        return switch (c.getId()) {
+            case 5 -> new SimpleCharacter(((Character5) c).getNoEntryTiles(), c.getId(), c.getPrice());
+            case 1 -> {
+                RealmType[] students = ((Character1) c).getStudents().stream()
+                        .map(Student::getStudentType).toList().toArray(new RealmType[0]);
+                yield new SimpleCharacter(students, c.getId(), c.getPrice());
+            }
+            case 7 -> {
+                RealmType[] students = ((Character7) c).getStudents().stream()
+                        .map(Student::getStudentType).toList().toArray(new RealmType[0]);
+                yield new SimpleCharacter(students, c.getId(), c.getPrice());
+            }
+            case 11 -> {
+                RealmType[] students = ((Character11) c).getStudents().stream()
+                        .map(Student::getStudentType).toList().toArray(new RealmType[0]);
+                yield new SimpleCharacter(students, c.getId(), c.getPrice());
+            }
+            default -> new SimpleCharacter(c.getId(), c.getPrice());
+        };
     }
 
     public int getNumPlayers() {

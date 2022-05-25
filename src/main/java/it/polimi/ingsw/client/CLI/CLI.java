@@ -195,7 +195,7 @@ public class CLI implements Runnable, UserInterface {
 
     @Override
     public void askWizardChoice(WizardType[] freeWizards){
-        System.out.println("You have to choose a tower, these are the options: " + Arrays.toString(freeWizards));
+        System.out.println("You have to choose a wizard, these are the options: " + Arrays.toString(freeWizards));
         boolean wizardChosen = false;
         WizardType choice = null;
         while (!wizardChosen) {
@@ -227,13 +227,7 @@ public class CLI implements Runnable, UserInterface {
     }
 
     public void askAction(List<String> actions, List<String> actionCommands) {
-        //clearScreen();
         if (sc.hasNext()) sc.nextLine(); //Don't know if there is a better way to rest the input
-        /*printer.printMap();
-        System.out.println("This is what you can do: ");
-        for (int i = 0; i < actions.size(); i++) {
-            System.out.println(actions.get(i) + " (" + actionCommands.get(i) + ")");
-        }*/
         String actionName = sc.next();
         if (actionName.equals("EndTurn")) {
             listeners.firePropertyChange(actionName, null, null);
@@ -299,7 +293,8 @@ public class CLI implements Runnable, UserInterface {
                 printer.testIslandMapReplace((Integer) evt.getNewValue());
             }
             case "IslandUnification" -> printer.recomputeIslandMap();
-            case "SchoolDiningRoomUpdate" -> printer.testSchoolReplace((String) evt.getNewValue());
+            case "SchoolDiningRoomUpdate", "CoinsUpdate", "SchoolSwap", "EntranceSwap" ->
+                    printer.testSchoolReplace((String) evt.getNewValue());
             case "ProfessorUpdate" -> {
                 if (evt.getOldValue() != null) {
                     printer.testSchoolReplace((String) evt.getOldValue());
@@ -311,6 +306,7 @@ public class CLI implements Runnable, UserInterface {
                 printer.testCloudReplace((Integer) evt.getNewValue());
                 printer.testSchoolReplace((String) evt.getSource());
             }
+            case "CharacterStudents" -> printer.testCharacterReplace((Integer) evt.getNewValue());
             //TODO: Characters
         }
     }

@@ -31,6 +31,7 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
     public void handleMessage(MessageFromServer message) {
         ServerMessageHeader header = message.getServerMessageHeader();
         if(header.getMessageType() != ServerMessageType.GAME_UPDATE || !messageHandled.contains(header.getMessageName())) {
+            System.out.println("Passing message " + message.getServerMessageHeader().getMessageName());
             getNextHandler().handleMessage(message);
             return;
         }
@@ -108,7 +109,7 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         int island = payload.getAttribute("IslandId").getAsInt();
         TowerType tower = (TowerType) payload.getAttribute("TowerType").getAsObject();
         getModelView().updateIslandTower(island, tower);
-        userInterface.firePropertyChange("IslandStudentsUpdate", null, island);
+        userInterface.firePropertyChange("IslandTowerUpdate", null, island);
     }
 
     private void onPickFromCloud(MessagePayload payload) {

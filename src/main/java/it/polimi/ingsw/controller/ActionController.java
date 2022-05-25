@@ -12,6 +12,7 @@ import it.polimi.ingsw.utils.Pair;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ActionController {
@@ -33,6 +34,8 @@ public class ActionController {
 	public void addListener(String propertyName, PropertyChangeListener listener) {
 		listeners.addPropertyChangeListener(propertyName, listener);
 	}
+
+	//TODO: most operations are not atomic
 
 	//TODO: these methods should return a message to the client and not an exception
 	public void doAction(MessageFromClient message) throws IllegalArgumentException, AssistantAlreadyPlayedException,
@@ -183,24 +186,25 @@ public class ActionController {
 	}
 
 	public void characterEffect(MessagePayload payload) throws IllegalCharacterActionRequestedException {
-		List<?> payloadArgs = (List<?>) payload.getAttribute("Arguments").getAsObject();
-		if (payloadArgs.size() == 0) return;
-		List<String> args = new ArrayList<>();
-		for (Object payloadArg : payloadArgs) {
-			args.add((String) payloadArg);
-		}
+		String arguments = payload.getAttribute("Arguments").getAsString();
+		//if (payloadArgs.length == 0) return;
+		if (arguments == null) return;
+		String[] payloadArgs = arguments.split(" ");
+		int characterId = payload.getAttribute("CharacterId").getAsInt();
+		System.out.println(turnController.getActivePlayer().getNickName() + " has played character " + characterId +
+				" with arguments " + Arrays.toString(payloadArgs) + payloadArgs.length);
+		List<String> args = new ArrayList<>(Arrays.asList(payloadArgs));
 		if (turnController.getActivePlayer().getTurnEffect().isCharacterEffectConsumed()) {
             //TODO: check if "ILLEGAL ARGUMENT" is correct in this case
 			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
             throw new IllegalArgumentException();
         }
-		int characterId = payload.getAttribute("CharacterId").getAsInt();
 		CharacterCard characterCard = gameController.getModel().getCharacterById(characterId);
 		if (characterCard == null) {
 			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
             throw new IllegalArgumentException();
         }
-		characterCard.useEffect(args.subList(1, args.size()));
+		characterCard.useEffect(args);
 	}
 
 	public void refillClouds() {

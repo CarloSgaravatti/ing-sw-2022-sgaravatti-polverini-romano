@@ -87,7 +87,7 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
         TurnHandler turnHandler = new TurnHandler(getConnection(), getUserInterface());
         ((DefaultMessageHandler) getNextHandler()).setTurnHandler(turnHandler);
         if (getModelView().isExpert()) {
-            getConnection().addFirstMessageHandler(new CharacterMessageHandler(getConnection(), getUserInterface(), getModelView()));
+            getConnection().addFirstMessageHandler(new ExpertGameMessageHandler(getConnection(), getUserInterface(), getModelView()));
         }
         TurnMessageHandler turnMessageHandler = new TurnMessageHandler(getConnection(), getUserInterface(), getModelView());
         getConnection().addFirstMessageHandler(turnMessageHandler);

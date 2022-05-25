@@ -196,17 +196,18 @@ class ActionControllerTest extends TestCase {
     void playCharacterTest() {
         CharacterCard characterCard = gameController.getModel().getCharacterCards()[new Random().nextInt(3)];
         int characterToPlay = characterCard.getId();
-        List<String> arguments = new ArrayList<>();
+        String arguments = null;
         for (int i = 0; i < characterCard.getPrice(); i++) activePlayer.insertCoin();
         ClientMessageHeader header =
                 new ClientMessageHeader("PlayCharacter", activePlayer.getNickName(), ClientMessageType.ACTION);
         MessagePayload payload = new MessagePayload();
         payload.setAttribute("CharacterId", characterToPlay);
-        payload.setAttribute("Arguments", arguments);
+        payload.setAttribute("Arguments", null);
         MessageFromClient message = new MessageFromClient(header, payload);
         try {
             actionController.doAction(message);
         } catch (Exception e) {
+            e.printStackTrace();
             Assertions.fail();
         }
         Assertions.assertEquals(activePlayer, characterCard.getPlayerActive());
@@ -234,8 +235,7 @@ class ActionControllerTest extends TestCase {
     void notValidCharacterEffectTest() {
         CharacterCard characterCard = gameController.getModel().getCharacterCards()[new Random().nextInt(3)];
         int characterToPlay = characterCard.getId();
-        List<String> arguments = new ArrayList<>();
-        arguments.add("Y"); //totally random argument, because it is not important, but arguments must be not empty
+        String arguments = "Y";//totally random argument, because it is not important, but arguments must be not empty
         ClientMessageHeader header =
                 new ClientMessageHeader("CharacterEffect", activePlayer.getNickName(), ClientMessageType.ACTION);
         MessagePayload payload = new MessagePayload();

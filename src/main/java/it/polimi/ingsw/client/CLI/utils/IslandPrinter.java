@@ -32,6 +32,8 @@ public class IslandPrinter {
                     new Pair<>(5, 14), new Pair<>(6, 13));
     private static final List<Pair<Integer, Integer>> BOTTOM_LEFT_POSITIONS =
             List.of(new Pair<>(5, 0), new Pair<>(6, 5), new Pair<>(1, 11), new Pair<>(2, 12));
+    private static final Pair<Integer, Integer> MOTHER_NATURE_POSITION = new Pair<>(4, 13);
+    private static final Pair<Integer, Integer> NO_ENTRY_TILES_POSITION = new Pair<>(4, 12);
     public static final int ISLAND_SIZE_X = 7;
     public static final int ISLAND_SIZE_Y = 15;
 
@@ -87,7 +89,8 @@ public class IslandPrinter {
         return islandSkeleton;
     }
 
-    public String[][] getIsland(int islandIndex, boolean isPresent, Integer numTowers,  TowerType type , Integer ... islandStudent) {
+    public String[][] getIsland(int islandIndex, boolean isPresent, Integer numTowers,  TowerType type,
+                                Integer[] islandStudent, int numNoEntryTiles) {
         String[][] island = islandSkeleton; //doesn't matter if array are mutable, only the dynamic part are replaced
         //(even if the island skeleton is modified this isn't a problem)
         int firstIslandIdxFigure = (islandIndex <= 9) ? islandIndex : islandIndex / 10;
@@ -110,13 +113,11 @@ public class IslandPrinter {
             island[STUDENT_COLOR_POSITION.get(r).getFirst()][STUDENT_COLOR_POSITION.get(r).getSecond()] =
                     STUDENT_COLOR_POSITION.get(r).getThird().toString() + islandStudent[i] + Colors.RESET;
         }
-        if(isPresent){
-            island[4][13] = "M";
-        }
-        else{
-            island[4][13] = " ";
-        }
-        //TODO: add entrytales
+        island[MOTHER_NATURE_POSITION.getFirst()][MOTHER_NATURE_POSITION.getSecond()] = (isPresent) ? "M" : " ";
+        island[NO_ENTRY_TILES_POSITION.getFirst()][NO_ENTRY_TILES_POSITION.getSecond()] = (numNoEntryTiles > 0) ?
+                Colors.RED + "x" + Colors.RESET : " ";
+        island[NO_ENTRY_TILES_POSITION.getFirst()][NO_ENTRY_TILES_POSITION.getSecond() - 1] = (numNoEntryTiles > 0) ?
+                Colors.RED.toString() + numNoEntryTiles + Colors.RESET : " ";
         return island;
     }
 }

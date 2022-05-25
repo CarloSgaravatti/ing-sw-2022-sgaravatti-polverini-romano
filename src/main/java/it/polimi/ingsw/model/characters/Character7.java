@@ -33,6 +33,9 @@ public class Character7 extends CharacterCard {
         } catch (StudentNotFoundException e) {
             throw new IllegalCharacterActionRequestedException();
         }
+        firePropertyChange(new PropertyChangeEvent(
+                this, "Students", null, studentContainer.getStudents().toArray(new Student[0])));
+        firePropertyChange(new PropertyChangeEvent(this, "EntranceSwap", fromEntrance, toPick));
     }
 
     public void pickAndSwapStudents(RealmType[] toPick, RealmType[] fromEntrance) throws StudentNotFoundException {
@@ -48,7 +51,6 @@ public class Character7 extends CharacterCard {
             studentContainer.insertStudent(school.removeStudentEntrance(s));
         }
         school.insertEntrance(toEntrance);
-        firePropertyChange(new PropertyChangeEvent(this, "SwapFromEntrance", toPick, fromEntrance));
     }
 
     //For testing

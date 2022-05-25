@@ -10,6 +10,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class ActionMessageConstructor implements PropertyChangeListener {
     private final ConnectionToServer connection;
@@ -83,9 +84,9 @@ public class ActionMessageConstructor implements PropertyChangeListener {
         MessagePayload payload = new MessagePayload();
         String[] args = action.split(" ");
         int characterId = Integer.parseInt(args[0]);
-        String arguments = Arrays.stream(Arrays.copyOfRange(args, 1, args.length)).reduce("", (s1, s2) -> s1 + " " + s2);
+        Optional<String> arguments = Arrays.stream(Arrays.copyOfRange(args, 1, args.length)).reduce((s1, s2) -> s1 + " " + s2);
         payload.setAttribute("CharacterId", characterId);
-        payload.setAttribute("Arguments", arguments);
+        payload.setAttribute("Arguments", arguments.orElse(null));
         return payload;
     }
 }

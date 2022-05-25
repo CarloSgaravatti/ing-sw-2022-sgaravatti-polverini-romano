@@ -3,10 +3,11 @@ package it.polimi.ingsw.messages.simpleModel;
 import it.polimi.ingsw.model.enumerations.RealmType;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 public class SimpleCharacter implements Serializable {
     private RealmType[] students = null;
-    private int numNoEntryTiles;
+    private Integer numNoEntryTiles;
     private final int id;
     private final int price;
 
@@ -20,7 +21,7 @@ public class SimpleCharacter implements Serializable {
         this.students = students;
     }
 
-    public SimpleCharacter(int numEntryTiles, int id, int price) {
+    public SimpleCharacter(Integer numEntryTiles, int id, int price) {
         this(id, price);
         this.numNoEntryTiles = numEntryTiles;
     }
@@ -37,7 +38,7 @@ public class SimpleCharacter implements Serializable {
         return students;
     }
 
-    public int getNumNoEntryTiles() {
+    public Integer getNumNoEntryTiles() {
         return numNoEntryTiles;
     }
 }

@@ -8,9 +8,11 @@ import java.util.Arrays;
 public class MapPrinter {
     private String[][] islandsMap;
     private ModelView modelView;
+    private String nickname;
     private final IslandMapPrinter islandMapPrinter = new IslandMapPrinter();
     private final SchoolMapPrinter schoolMapPrinter = new SchoolMapPrinter();
     private final CloudMapPrinter cloudMapPrinter = new CloudMapPrinter();
+    private final CharacterMapPrinter characterMapPrinter = new CharacterMapPrinter();
     private Pair<Integer, Integer> islandsSectionTopLeftPosition;
     private Pair<Integer, Integer> islandsSectionBottomRightPosition;
     private Pair<Integer, Integer> cloudsSectionTopLeftPosition;
@@ -22,6 +24,7 @@ public class MapPrinter {
     //TODO: add all to last map (for the moment i do separate maps)
     private String[][] schoolMap;
     private String[][] cloudsMap;
+    private String[][] characterMap;
 
     public MapPrinter(int dimX, int dimY) {
         islandsMap = new String[dimX][dimY];
@@ -32,15 +35,39 @@ public class MapPrinter {
     }
 
     public void printMap() {
-        for (int i = 0; i < islandsMap.length; i++) {
-            for (int j = 0; j < islandsMap[i].length; j++) {
-                System.out.print(islandsMap[i][j]);
+        int maxDimensionX = Math.max(Math.max(islandsMap.length, cloudsMap.length), characterMap.length);
+        //FIXME: try to eliminate if else
+        for (int i = 0; i < maxDimensionX; i++) {
+            if (i < islandsMap.length) {
+                for (int j = 0; j < islandsMap[i].length; j++) {
+                    System.out.print(islandsMap[i][j]);
+                }
+            } else {
+                for (int j = 0; j < islandsMap[0].length; j++) {
+                    System.out.print(" ");
+                }
             }
             if (i < cloudsMap.length) {
                 for (int j = 0; j < cloudsMap[i].length; j++) {
                     System.out.print(cloudsMap[i][j]);
                 }
+            } else {
+                for (int j = 0; j < cloudsMap[0].length; j++) {
+                    System.out.print(" ");
+                }
             }
+            if (modelView.isExpert() && i < characterMap.length) {
+                for (int j = 0; j < characterMap[i].length; j++) {
+                    System.out.print(characterMap[i][j]);
+                }
+            } else if (modelView.isExpert()) {
+                for (int j = 0; j < characterMap[0].length; j++) {
+                    System.out.print(" ");
+                }
+            }
+            /*printMatrixRow((i < islandsMap.length) ? islandsMap[i] : null, islandsMap[0].length, maxDimensionX, i);
+            printMatrixRow((i < cloudsMap.length) ? cloudsMap[i] : null, cloudsMap[0].length, maxDimensionX, i);
+            printMatrixRow((i < characterMap.length) ? characterMap[i] : null, characterMap[0].length, maxDimensionX, i);*/
             System.out.println();
         }
 
@@ -50,6 +77,22 @@ public class MapPrinter {
                 System.out.print(schoolMap[i][j]);
             }
             System.out.println();
+        }
+
+        //temporary
+        System.out.println("These are your assistants: " +
+                Arrays.toString(modelView.getClientPlayerAssistants().keySet().toArray(new Integer[0])));
+    }
+
+    public static void printMatrixRow(String[] matrixRow, int rowLength, int matrixRowDim, int numRows) {
+        if (matrixRowDim < numRows) {
+            for (int i = 0; i < rowLength; i++) {
+                System.out.print(matrixRow[i]);
+            }
+        } else {
+            for (int i = 0; i < rowLength; i++) {
+                System.out.print(" ");
+            }
         }
     }
 
@@ -67,6 +110,7 @@ public class MapPrinter {
 
     public void initializeMap(ModelView modelView, String nickname) {
         this.modelView = modelView;
+        this.nickname = nickname;
         islandMapPrinter.setFieldView(modelView.getField());
         recomputeIslandMap();
         schoolMapPrinter.setModelView(modelView);
@@ -74,6 +118,11 @@ public class MapPrinter {
         recomputeSchoolMap();
         cloudMapPrinter.setFieldView(modelView.getField());
         recomputeCloudMap();
+        if (modelView.isExpert()) {
+            characterMapPrinter.setExpertField(modelView.getField().getExpertField());
+            characterMapPrinter.initializeCharacterMap();
+            characterMap = characterMapPrinter.getCharacterMap();
+        }
     }
 
     public void testIslandMapReplace(int islandId) {
@@ -106,6 +155,10 @@ public class MapPrinter {
         cloudsMap = cloudMapPrinter.getCloudMap();
     }
 
+    public void testCharacterReplace(int characterId) {
+        characterMapPrinter.changeOnlyCharacter(characterId);
+        characterMap = characterMapPrinter.getCharacterMap();
+    }
 
     public static String[][] appendMatrixInLine(String[][] toAppend, String[][] matrix) {
         int matrixDimX = toAppend.length;

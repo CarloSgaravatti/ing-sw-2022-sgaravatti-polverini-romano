@@ -3,6 +3,9 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.effects.InfluenceStrategy;
 import it.polimi.ingsw.model.effects.NormalInfluenceStrategy;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
 public class TurnEffect {
     private int motherNatureMovement;
     private int orderPrecedence;
@@ -12,9 +15,11 @@ public class TurnEffect {
     private int additionalInfluence;
     private boolean characterPlayed;
     private boolean characterEffectConsumed; //for those characters who have an active effect for all turn
+    private final PropertyChangeSupport player = new PropertyChangeSupport(this);
 
-    public TurnEffect() {
+    public TurnEffect(PropertyChangeListener player) {
         reset();
+        this.player.addPropertyChangeListener(player);
     }
 
     public void reset() {
@@ -41,6 +46,7 @@ public class TurnEffect {
     }
 
     public void incrementMotherNatureMovement(int incr) {
+        if (motherNatureMovement != 0) player.firePropertyChange("MotherNatureMoveIncrement", null, incr);
         motherNatureMovement += incr;
     }
 

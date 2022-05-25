@@ -15,6 +15,8 @@ public class PlayerListener implements PropertyChangeListener {
     private static final String DINING_ROOM_INSERTION = "DiningRoomIns";
     private static final String ASSISTANT = "Assistant";
     private static final String PROFESSOR = "Professor";
+    private static final String COINS = "Coins";
+    private static final String MOTHER_NATURE_MOVE = "MotherNatureMovementIncrement";
     private final RemoteView view;
 
     public PlayerListener(RemoteView view) {
@@ -35,6 +37,8 @@ public class PlayerListener implements PropertyChangeListener {
             case DINING_ROOM_REMOVAL -> onDiningRoomChange(
                     ((Player) evt.getSource()).getNickName(), (RealmType) evt.getNewValue(), false);
             case PROFESSOR -> onProfessorUpdate(((Player)evt.getSource()).getNickName(), (RealmType) evt.getNewValue());
+            case COINS -> onCoinsUpdate((String) evt.getSource(), (Integer) evt.getOldValue(), (Integer) evt.getNewValue());
+            case MOTHER_NATURE_MOVE -> onMotherNatureMovementIncrement(((Player)evt.getSource()).getNickName(), (Integer) evt.getNewValue());
         }
     }
 
@@ -60,5 +64,20 @@ public class PlayerListener implements PropertyChangeListener {
         messagePayload.setAttribute("ProfessorType", professor);
         messagePayload.setAttribute("PlayerName", nickname);
         view.sendBroadcast(messagePayload,"ProfessorUpdate", ServerMessageType.GAME_UPDATE);
+    }
+
+    private void onCoinsUpdate(String nickname, int oldCoins, int newCoins) {
+        MessagePayload messagePayload = new MessagePayload();
+        messagePayload.setAttribute("PlayerName", nickname);
+        messagePayload.setAttribute("OldCoins", oldCoins);
+        messagePayload.setAttribute("NewCoins", newCoins);
+        view.sendBroadcast(messagePayload,"CoinsUpdate", ServerMessageType.GAME_UPDATE);
+    }
+
+    private void onMotherNatureMovementIncrement(String nickname, int increment) {
+        MessagePayload messagePayload = new MessagePayload();
+        messagePayload.setAttribute("PlayerName", nickname);
+        messagePayload.setAttribute("MovementIncrement", increment);
+        view.sendBroadcast(messagePayload,"MotherNatureMovementIncrement", ServerMessageType.GAME_UPDATE);
     }
 }

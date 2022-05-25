@@ -21,10 +21,11 @@ public class Player implements PropertyChangeListener{
 	private WizardType wizardType;
 	private final transient PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 
+	//TODO: enable/disable coins
 	public Player(String nickName) {
 		numCoins = 1;
 		this.nickName = nickName;
-		turnEffect = new TurnEffect();
+		turnEffect = new TurnEffect(this);
 		assistants = new ArrayList<>();
 	}
 
@@ -92,12 +93,16 @@ public class Player implements PropertyChangeListener{
 	}
 
 	public void insertCoin () {
+		int oldCoins = numCoins;
 		numCoins++;
+		listeners.firePropertyChange(new PropertyChangeEvent(nickName, "Coins", oldCoins, numCoins));
 	}
 
 	public void removeCoins(int coins) throws NotEnoughCoinsException {
 		if (numCoins < coins) throw new NotEnoughCoinsException();
+		int oldCoins = numCoins;
 		numCoins -= coins;
+		listeners.firePropertyChange(new PropertyChangeEvent(nickName, "Coins", oldCoins, numCoins));
 	}
 
 	public void setWizardType(WizardType wizardType) {

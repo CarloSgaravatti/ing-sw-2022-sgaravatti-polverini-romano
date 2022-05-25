@@ -48,6 +48,10 @@ public class Character1 extends CharacterCard {
 
     public void pickAndSendToIsland(RealmType studentType, Island island) throws StudentNotFoundException {
         Student student = studentContainer.pickStudent(studentType, true);
-        island.addStudent(student);
+        island.addStudents(student);
+    }
+
+    public List<Student> getStudents() {
+        return studentContainer.getStudents();
     }
 }

@@ -4,7 +4,8 @@ import it.polimi.ingsw.model.enumerations.TowerType;
 
 public class Legend {
     public static void printLegend(){
-        String[][] legend = IslandPrinter.drawIsland(1,1, TowerType.WHITE,1,2,3,4,5);
+        Integer[] islandStudents = new Integer[] {1, 2, 3, 4, 5};
+        String[][] legend = new IslandPrinter().getIsland(1, true,1,  TowerType.WHITE, islandStudents, 0);
         System.out.println("\t\t"+" Island Index");
         System.out.println("\t\t"+"       |");
         System.out.println("\t\t"+"       |");
