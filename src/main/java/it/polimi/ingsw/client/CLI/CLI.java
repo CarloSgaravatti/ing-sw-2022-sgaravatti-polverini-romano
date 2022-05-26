@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.CLI;
 
 import it.polimi.ingsw.client.CLI.utils.Colors;
+import it.polimi.ingsw.client.CLI.utils.LobbyPrintManager;
 import it.polimi.ingsw.client.CLI.utils.MapPrinter;
 import it.polimi.ingsw.client.CLI.utils.PrintEntryWindow;
 import it.polimi.ingsw.client.ConnectionToServer;
@@ -9,7 +10,7 @@ import it.polimi.ingsw.client.UserInterface;
 import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.enumerations.WizardType;
-import it.polimi.ingsw.utils.Pair;
+import it.polimi.ingsw.utils.Triplet;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -123,12 +124,16 @@ public class CLI implements Runnable, UserInterface {
     }
 
     @Override
-    public void displayGlobalLobby(int numGames, Map<Integer, Pair<Integer,String[]>> gamesInfo) {
+    public void displayGlobalLobby(int numGames, Map<Integer, Triplet<Integer, Boolean, String[]>> gamesInfo) {
         System.out.println("There are currently " + numGames + " games not started.");
         List<Integer> ids = new ArrayList<>(gamesInfo.keySet()); //TODO: for printing the lobby
+
+        LobbyPrintManager printManager = new LobbyPrintManager(gamesInfo);
+        printManager.printLobby();
+
         for (Integer i: gamesInfo.keySet()) {
-            Pair<Integer, String[]> gameInfo = gamesInfo.get(i);
-            String[] players = gameInfo.getSecond();
+            Triplet<Integer, Boolean, String[]> gameInfo = gamesInfo.get(i);
+            String[] players = gameInfo.getThird();
             System.out.println("- game id = " + i + " numPlayers = " + gameInfo.getFirst() + " players = " + Arrays.toString(players));
         }
     }
@@ -275,7 +280,7 @@ public class CLI implements Runnable, UserInterface {
         printer.initializeMap(modelView, nickname);
         printer.printMap();
         System.out.println();
-        printer.testIslandMapReplace(2);
+        printer.replaceIsland(2);
         printer.printMap();
     }
 
@@ -283,30 +288,34 @@ public class CLI implements Runnable, UserInterface {
     public synchronized void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case "CloudsRefill" -> printer.recomputeCloudMap();
-            case "IslandStudentsUpdate", "NoEntryTileUpdate" -> printer.testIslandMapReplace((Integer) evt.getNewValue());
+            case "IslandStudentsUpdate" -> printer.replaceIsland((Integer) evt.getNewValue());
             case "IslandTowerUpdate" -> {
-                printer.testIslandMapReplace((Integer) evt.getNewValue());
+                printer.replaceIsland((Integer) evt.getNewValue());
                 printer.recomputeSchoolMap(); //can be better
             }
             case "MotherNatureUpdate" -> {
-                printer.testIslandMapReplace((Integer) evt.getOldValue());
-                printer.testIslandMapReplace((Integer) evt.getNewValue());
+                printer.replaceIsland((Integer) evt.getOldValue());
+                printer.replaceIsland((Integer) evt.getNewValue());
             }
             case "IslandUnification" -> printer.recomputeIslandMap();
             case "SchoolDiningRoomUpdate", "CoinsUpdate", "SchoolSwap", "EntranceSwap" ->
-                    printer.testSchoolReplace((String) evt.getNewValue());
+                    printer.replaceSchool((String) evt.getNewValue());
             case "ProfessorUpdate" -> {
                 if (evt.getOldValue() != null) {
-                    printer.testSchoolReplace((String) evt.getOldValue());
+                    printer.replaceSchool((String) evt.getOldValue());
                 }
-                printer.testSchoolReplace((String) evt.getNewValue());
+                printer.replaceSchool((String) evt.getNewValue());
                 //or printer.recomputeSchoolMap()
             }
             case "PickFromCloud" -> {
-                printer.testCloudReplace((Integer) evt.getNewValue());
-                printer.testSchoolReplace((String) evt.getSource());
+                printer.replaceCloud((Integer) evt.getNewValue());
+                printer.replaceSchool((String) evt.getSource());
             }
-            case "CharacterStudents" -> printer.testCharacterReplace((Integer) evt.getNewValue());
+            case "CharacterStudents", "CharacterPrice" -> printer.replaceCharacter((Integer) evt.getNewValue());
+            case "NoEntryTileUpdate" -> {
+                printer.replaceCharacter((Integer) evt.getOldValue());
+                printer.replaceIsland((Integer) evt.getNewValue());
+            }
             //TODO: Characters
         }
     }

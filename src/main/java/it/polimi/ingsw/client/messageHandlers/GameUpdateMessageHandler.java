@@ -77,15 +77,15 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
 
     private void onSchoolDiningRoomUpdate(MessagePayload payload) {
         String playerName = payload.getAttribute("PlayerName").getAsString();
-        RealmType student = (RealmType) payload.getAttribute("Students").getAsObject(); //TODO: change after fixing school
-        RealmType[] students = new RealmType[1];
-        students[0] = student;
+        RealmType[] students = (RealmType[]) payload.getAttribute("Students").getAsObject();
+        System.out.println("Received school dining room update " + Arrays.toString(students));
         boolean isInsertion = payload.getAttribute("IsInsertion").getAsBoolean();
         getModelView().getPlayers().get(playerName).updateDiningRoom(students, isInsertion);
-        //Fixme after fixing school
+        //Fixme after fixing school (for character 11)
         if (isInsertion) {
             getModelView().getPlayers().get(playerName).updateEntrance(students, false);
         }
+        System.out.println("Firing school dining room update event");
         userInterface.firePropertyChange("SchoolDiningRoomUpdate", null, playerName);
     }
 
@@ -100,6 +100,7 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
 
     private void onIslandUnificationUpdate(MessagePayload payload) {
         Integer[] islandsId = (Integer[]) payload.getAttribute("IslandsId").getAsObject();
+        System.out.println("Received island unification of" + Arrays.toString(islandsId));
         SimpleIsland island = (SimpleIsland) payload.getAttribute("NewIsland").getAsObject();
         getModelView().getField().mergeIslands(Arrays.asList(islandsId), island.getIslandRepresentation());
         userInterface.firePropertyChange("IslandUnification", null, null);

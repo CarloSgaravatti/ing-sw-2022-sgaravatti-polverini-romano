@@ -35,7 +35,8 @@ public class MapPrinter {
     }
 
     public void printMap() {
-        int maxDimensionX = Math.max(Math.max(islandsMap.length, cloudsMap.length), characterMap.length);
+        int characterMapLength = (modelView.isExpert()) ? characterMap.length : 0;
+        int maxDimensionX = Math.max(Math.max(islandsMap.length, cloudsMap.length), characterMapLength);
         //FIXME: try to eliminate if else
         for (int i = 0; i < maxDimensionX; i++) {
             if (i < islandsMap.length) {
@@ -125,7 +126,7 @@ public class MapPrinter {
         }
     }
 
-    public void testIslandMapReplace(int islandId) {
+    public void replaceIsland(int islandId) {
         islandMapPrinter.changeOnlyIsland(islandId);
         islandsMap = islandMapPrinter.getIslandMap();
     }
@@ -135,7 +136,7 @@ public class MapPrinter {
         islandsMap = islandMapPrinter.getIslandMap();
     }
 
-    public void testSchoolReplace(String player) {
+    public void replaceSchool(String player) {
         schoolMapPrinter.changeOnlySchoolOf(player);
         schoolMap = schoolMapPrinter.getSchoolMap();
     }
@@ -145,7 +146,7 @@ public class MapPrinter {
         schoolMap = schoolMapPrinter.getSchoolMap();
     }
 
-    public void testCloudReplace(int cloudId) {
+    public void replaceCloud(int cloudId) {
         cloudMapPrinter.changeOnlyCloud(cloudId);
         cloudsMap = cloudMapPrinter.getCloudMap();
     }
@@ -155,7 +156,7 @@ public class MapPrinter {
         cloudsMap = cloudMapPrinter.getCloudMap();
     }
 
-    public void testCharacterReplace(int characterId) {
+    public void replaceCharacter(int characterId) {
         characterMapPrinter.changeOnlyCharacter(characterId);
         characterMap = characterMapPrinter.getCharacterMap();
     }

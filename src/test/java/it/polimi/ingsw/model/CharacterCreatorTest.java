@@ -21,10 +21,9 @@ class CharacterCreatorTest extends TestCase {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {1, 3, 5, 7, 9, 10, 11, 12})
+    @ValueSource(ints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12})
     void getCharacterTest(int characterId) {
         CharacterCard characterCard = characterCreator.getCharacter(characterId);
-        Assertions.assertEquals("it.polimi.ingsw.model.characters.Character" + characterId,
-                characterCard.getClass().getName());
+        Assertions.assertEquals(characterId, characterCard.getId());
     }
 }

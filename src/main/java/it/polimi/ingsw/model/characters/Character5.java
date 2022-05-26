@@ -43,7 +43,7 @@ public class Character5 extends CharacterCard implements NoEntryTileManager {
         if (noEntryTiles == 0) throw new IllegalStateException();
         island.insertNoEntryTile(this);
         noEntryTiles--;
-        firePropertyChange(new PropertyChangeEvent(this, "NoEntryTiles", null, islands.indexOf(island)));
+        firePropertyChange(new PropertyChangeEvent(this, "NoEntryTile", null, islands.indexOf(island)));
     }
 
     @Override

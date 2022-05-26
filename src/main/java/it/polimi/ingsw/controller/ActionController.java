@@ -39,8 +39,8 @@ public class ActionController {
 
 	//TODO: these methods should return a message to the client and not an exception
 	public void doAction(MessageFromClient message) throws IllegalArgumentException, AssistantAlreadyPlayedException,
-			StudentNotFoundException, NoSuchAssistantException, EmptyCloudException, FullDiningRoomException,
-			NotEnoughCoinsException, IllegalCharacterActionRequestedException, WrongTurnActionRequestedException {
+			StudentNotFoundException, NoSuchAssistantException, EmptyCloudException, NotEnoughCoinsException,
+			IllegalCharacterActionRequestedException, WrongTurnActionRequestedException {
 		String messageName = message.getClientMessageHeader().getMessageName();
 		MessagePayload payload = message.getMessagePayload();
 		if (!possibleActions.contains(messageName)) throw new IllegalArgumentException();
@@ -104,7 +104,7 @@ public class ActionController {
 	//Use of ? to not have unchecked warning (maybe we should change the message format to not use generics)
 	//TODO: maybe this method can be done better
 	public void studentMovement(MessagePayload payload) throws IllegalArgumentException, StudentNotFoundException,
-			FullDiningRoomException, WrongTurnActionRequestedException {
+			WrongTurnActionRequestedException {
 		if (turnPhase != TurnPhase.MOVE_STUDENTS){
 			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_TURN_ACTION, turnController.getActivePlayer().getNickName());
 			throw new WrongTurnActionRequestedException();
@@ -116,11 +116,20 @@ public class ActionController {
 			throw new IllegalArgumentException();
 		}
 		School school = turnController.getActivePlayer().getSchool();
+		List<Student> removedFromEntrance = new ArrayList<>();
 		for (Object studentType: toDiningRoom) {
-			if (school.moveFromEntranceToDiningRoom((RealmType) studentType)) {
+			removedFromEntrance.add(school.removeStudentEntrance((RealmType) studentType));
+		}
+		Student[] studentsFromEntrance = removedFromEntrance.toArray(new Student[0]);
+		try {
+			int coinsGained = school.insertDiningRoom(studentsFromEntrance, true);
+			for (int i = 0; i < coinsGained; i++) {
 				turnController.getActivePlayer().insertCoin();
 				gameController.getModel().takeCoinFromGeneralSupply();
 			}
+		} catch (FullDiningRoomException e) {
+			school.insertEntrance(removedFromEntrance.toArray(studentsFromEntrance));
+			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
 		}
 		while (!toIslands.isEmpty()) {
 			Pair<?, ?> pairStudentIsland = (Pair<?, ?>) toIslands.get(0);

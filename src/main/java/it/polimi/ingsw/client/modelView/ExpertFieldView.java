@@ -59,8 +59,17 @@ public class ExpertFieldView {
         islandsWithNoEntryTiles.replace(island, newIslandNoEntryTiles);
     }
 
+    public void insertNoEntryTileOnIsland(int island) {
+        if (islandsWithNoEntryTiles.containsKey(island)) {
+            updateIslandNoEntryTiles(islandsWithNoEntryTiles.get(island) + 1, island);
+        } else {
+            islandsWithNoEntryTiles.put(island, 1);
+        }
+    }
+
     public void updateCharacterStudents(int characterId, RealmType[] students) {
         Integer[] newStudents = new Integer[RealmType.values().length];
+        Arrays.fill(newStudents, 0);
         ModelView.insertStudents(newStudents, students);
         characterStudents.replace(characterId, newStudents);
     }

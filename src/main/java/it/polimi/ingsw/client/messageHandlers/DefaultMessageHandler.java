@@ -6,6 +6,7 @@ import it.polimi.ingsw.client.UserInterface;
 import it.polimi.ingsw.client.modelView.PlayerView;
 import it.polimi.ingsw.messages.*;
 import it.polimi.ingsw.utils.Pair;
+import it.polimi.ingsw.utils.Triplet;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -48,7 +49,7 @@ public class DefaultMessageHandler extends BaseMessageHandler {
     private void onGeneralLobbyMessage(MessagePayload payload) {
         int numGames = payload.getAttribute("NotStartedGames").getAsInt();
         Map<?, ?> gamesInfo = (Map<?, ?>) payload.getAttribute("GamesInfo").getAsObject();
-        getUserInterface().displayGlobalLobby(numGames, (Map<Integer, Pair<Integer, String[]>>) gamesInfo);
+        getUserInterface().displayGlobalLobby(numGames, (Map<Integer, Triplet<Integer, Boolean, String[]>>) gamesInfo);
         getUserInterface().askLobbyDecision();
     }
 

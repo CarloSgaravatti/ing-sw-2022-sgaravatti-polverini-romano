@@ -40,7 +40,7 @@ public class Character12 extends CharacterCard {
             school = p.getSchool();
             int numStudentsToRemove = Integer.min(school.getNumStudentsDiningRoom(studentType), MAX_STUDENTS_TO_REMOVE);
             for (int i = 0; i < numStudentsToRemove; i++) {
-                game.getBag().insertStudent(school.removeFromDiningRoom(studentType));
+                game.getBag().insertStudent(school.removeFromDiningRoom(studentType, true));
             }
         }
     }

@@ -47,7 +47,7 @@ public class IslandListener implements PropertyChangeListener {
 
     private void onIslandUnification(Integer[] islandIndexes, Island island){
         MessagePayload messagePayload = new MessagePayload();
-        messagePayload.setAttribute("islandIndexes", islandIndexes);
+        messagePayload.setAttribute("IslandsId", islandIndexes);
         RealmType[] newStudents = island.getStudents().stream().map(Student::getStudentType).toList().toArray(new RealmType[0]);
         SimpleIsland newIsland = new SimpleIsland(RealmType.getIntegerRepresentation(newStudents),
                 island.getNumTowers(), island.getTowerType(), island.getNoEntryTilePresents());

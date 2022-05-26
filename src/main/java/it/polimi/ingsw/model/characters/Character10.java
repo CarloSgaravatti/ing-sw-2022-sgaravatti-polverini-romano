@@ -40,13 +40,13 @@ public class Character10 extends CharacterCard {
             throw new IllegalArgumentException();
         }
         School school = super.getPlayerActive().getSchool();
-        List<Student> removedFromDiningRoom = new ArrayList<>();
-        for (RealmType s: diningRoom) {
-            removedFromDiningRoom.add(school.removeFromDiningRoom(s));
+        Student[] studentsFromDiningRoom = new Student[entrance.length];
+        Student[] studentsFromEntrance = new Student[entrance.length];
+        for (int i = 0; i < entrance.length; i++) {
+            studentsFromEntrance[i] = school.removeStudentEntrance(entrance[i]);
+            studentsFromDiningRoom[i] = school.removeFromDiningRoom(diningRoom[i], false);
         }
-        for (RealmType s: entrance) {
-            school.moveFromEntranceToDiningRoom(s);
-        }
-        school.insertEntrance(removedFromDiningRoom.toArray(new Student[0]));
+        school.insertDiningRoom(studentsFromEntrance, false);
+        school.insertEntrance(studentsFromDiningRoom);
     }
 }

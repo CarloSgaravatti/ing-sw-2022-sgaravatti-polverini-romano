@@ -46,6 +46,14 @@ public class ExpertGameMessageHandler extends BaseMessageHandler {
     }
 
     private void onCharacterPlayed(MessagePayload payload) {
+        int characterId = payload.getAttribute("CharacterId").getAsInt();
+        String playerName = payload.getAttribute("PlayerName").getAsString();
+        boolean coinUpdate = payload.getAttribute("IsWithCoinUpdate").getAsBoolean();
+        if (coinUpdate) {
+            int previousPrice = getModelView().getField().getExpertField().getCharacterPrice(characterId);
+            getModelView().getField().getExpertField().getCharacters().replace(characterId, previousPrice + 1);
+            userInterface.firePropertyChange("CharacterPrice", null, characterId);
+        }
         //TODO
     }
 
@@ -59,8 +67,8 @@ public class ExpertGameMessageHandler extends BaseMessageHandler {
     private void onNoEntryTileUpdate(MessagePayload payload) {
         int islandId = payload.getAttribute("IslandId").getAsInt();
         ExpertFieldView expertField = getModelView().getField().getExpertField();
-        expertField.updateIslandNoEntryTiles(expertField.getNoEntryTilesOnIsland(islandId) + 1, islandId);
-        userInterface.firePropertyChange("NoEntryTileUpdate", null, islandId);
+        expertField.insertNoEntryTileOnIsland(islandId);
+        userInterface.firePropertyChange("NoEntryTileUpdate", 5, islandId);
     }
 
     private void onSchoolSwap(MessagePayload payload) {
@@ -97,7 +105,7 @@ public class ExpertGameMessageHandler extends BaseMessageHandler {
         String playerName = payload.getAttribute("PlayerName").getAsString();
         int increment = payload.getAttribute("MovementIncrement").getAsInt();
         Pair<Integer, Integer> lastAssistantValues = getModelView().getPlayers().get(playerName).getLastPlayedAssistant();
-        getModelView().getPlayers().get(playerName).updateLastPlayedAssistant(lastAssistantValues.getFirst(),
-                lastAssistantValues.getSecond() + increment);
+        int newMotherNatureMovement = lastAssistantValues.getSecond() + increment;
+        getModelView().getPlayers().get(playerName).updateLastPlayedAssistant(lastAssistantValues.getFirst(), newMotherNatureMovement);
     }
 }

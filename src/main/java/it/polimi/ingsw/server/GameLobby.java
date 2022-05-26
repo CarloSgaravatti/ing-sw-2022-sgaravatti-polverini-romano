@@ -285,4 +285,8 @@ public class GameLobby {
         multicast(message, clientDisconnected);
         server.deleteGame(gameId);
     }
+
+    public boolean isExpertGame() {
+        return isExpertGame;
+    }
 }

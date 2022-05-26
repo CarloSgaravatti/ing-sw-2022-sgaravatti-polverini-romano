@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.client.CLI.utils.Colors;
 import it.polimi.ingsw.exceptions.EmptyBagException;
 import it.polimi.ingsw.listeners.*;
 import it.polimi.ingsw.model.effects.StudentContainer;
@@ -217,6 +218,7 @@ public class Game implements ModelObserver, PropertyChangeListener {
 		if (playerTakeProfessor != null) {
 			currPlayerProfessor.ifPresent(p -> p.getSchool().removeProfessor(studentType));
 			playerTakeProfessor.getSchool().insertProfessor(studentType);
+			System.out.println(Colors.YELLOW + "Update professor " + studentType + Colors.RESET);
 		}
 	}
 
@@ -270,8 +272,11 @@ public class Game implements ModelObserver, PropertyChangeListener {
 			islandIndexes.add(islandIndex);
 			islands.removeAll(islandToUnify);
 			Island newIsland = new IslandGroup(islandToUnify.toArray(new Island[0]));
+			newIsland.setMotherNaturePresent(true);
 			islands.add(indexToReplace, newIsland);
 			newIsland.addListener(this);
+			newIsland.addObserver(this);
+			System.out.println(Colors.YELLOW + "Unified islands " + islands.size() + Colors.RESET);
 			listeners.firePropertyChange( "IslandUnification", islandIndexes.toArray(new Integer[0]), newIsland);
 			if (islands.size() <= 3) checkWinners();
 		}

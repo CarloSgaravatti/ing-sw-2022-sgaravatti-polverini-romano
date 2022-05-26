@@ -5,6 +5,8 @@ import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.utils.Pair;
 import it.polimi.ingsw.utils.Triplet;
 
+import java.util.Arrays;
+
 import static it.polimi.ingsw.client.CLI.utils.MapPrinter.*;
 
 public class IslandMapPrinter {
@@ -20,6 +22,7 @@ public class IslandMapPrinter {
 
     public void initializeIslandMap() {
         int numIslands = fieldView.getIslandSize();
+        int previousLengthY = (islandMap != null) ? islandMap[0].length : 0;
         String[][] firstLine = new String[0][0];
         String[][] secondLine = new String[0][0];
         int position = fieldView.getMotherNaturePosition();
@@ -37,8 +40,21 @@ public class IslandMapPrinter {
                     island2Values.getThird(), island2Values.getFirst(), numNoEntryTiles);
             secondLine = appendMatrixInLine(island2, secondLine);
         }
+        firstLine = addAdditionalSpaces(previousLengthY, firstLine);
+        secondLine = addAdditionalSpaces(previousLengthY, secondLine);
         islandMap = firstLine;
         islandMap = appendMatrixInColumn(secondLine, islandMap);
+    }
+
+    private String[][] addAdditionalSpaces(int previousLengthY, String[][] matrix) {
+        if (matrix[0].length < previousLengthY) {
+            String[][] spacesMatrix = new String[matrix.length][previousLengthY - matrix[0].length];
+            for (String[] strings: spacesMatrix) {
+                Arrays.fill(strings, " ");
+            }
+            matrix = appendMatrixInLine(spacesMatrix, matrix);
+        }
+        return matrix;
     }
 
     public String[][] getIslandMap() {

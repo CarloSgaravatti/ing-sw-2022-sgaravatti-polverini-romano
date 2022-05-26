@@ -4,6 +4,7 @@ import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.enumerations.WizardType;
 import it.polimi.ingsw.utils.Pair;
+import it.polimi.ingsw.utils.Triplet;
 
 import java.beans.PropertyChangeListener;
 import java.util.List;
@@ -15,7 +16,7 @@ public interface UserInterface extends PropertyChangeListener{
 
     void askNickname();
 
-    void displayGlobalLobby(int numGames, Map<Integer, Pair<Integer,String[]>> gamesInfo);
+    void displayGlobalLobby(int numGames, Map<Integer, Triplet<Integer, Boolean, String[]>> gamesInfo);
 
     void displayStringMessage(String message);
 

@@ -33,18 +33,13 @@ public class IslandPrinter {
     private static final List<Pair<Integer, Integer>> BOTTOM_LEFT_POSITIONS =
             List.of(new Pair<>(5, 0), new Pair<>(6, 5), new Pair<>(1, 11), new Pair<>(2, 12));
     private static final Pair<Integer, Integer> MOTHER_NATURE_POSITION = new Pair<>(4, 13);
-    private static final Pair<Integer, Integer> NO_ENTRY_TILES_POSITION = new Pair<>(4, 12);
+    private static final Pair<Integer, Integer> NO_ENTRY_TILES_POSITION = new Pair<>(3, 12);
     public static final int ISLAND_SIZE_X = 7;
     public static final int ISLAND_SIZE_Y = 15;
 
     public IslandPrinter() {
         islandSkeleton = getIslandSkeleton();
     }
-
-    //TODO: some notes that might improve code readability and cli performance (not only for PrintIslands)
-    //  - this class will not have static methods
-    //  - class will have a constructor that loads an island skeleton in a final String[][] (without dynamic parts)
-    //  - method drawIsland (not static) will change the skeleton only in the dynamic parts
 
     public String[][] getIslandSkeleton() {
         String[][] islandSkeleton = new String[ISLAND_SIZE_X][ISLAND_SIZE_Y];

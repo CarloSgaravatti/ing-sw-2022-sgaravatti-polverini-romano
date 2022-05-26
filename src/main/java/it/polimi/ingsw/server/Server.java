@@ -3,6 +3,7 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.exceptions.DuplicateNicknameException;
 import it.polimi.ingsw.messages.*;
 import it.polimi.ingsw.utils.Pair;
+import it.polimi.ingsw.utils.Triplet;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -98,11 +99,12 @@ public class Server implements Runnable{
             payload.setAttribute("GamesInfo", new HashMap<>());
         } else {
             payload.setAttribute("NotStartedGames", waitingPlayersPerGameMap.size());
-            Map<Integer, Pair<Integer, String[]>> gamesToSendMap = new HashMap<>();
+            Map<Integer, Triplet<Integer, Boolean, String[]>> gamesToSendMap = new HashMap<>();
             for (Integer gameId: waitingPlayersPerGameMap.keySet()) {
-                Pair<Integer, String[]> gameInfo = new Pair<>();
+                Triplet<Integer, Boolean, String[]> gameInfo = new Triplet<>();
                 gameInfo.setFirst(gamesMap.get(gameId).getNumPlayers());
-                gameInfo.setSecond(gamesMap.get(gameId).getGameParticipants());
+                gameInfo.setSecond(gamesMap.get(gameId).isExpertGame());
+                gameInfo.setThird(gamesMap.get(gameId).getGameParticipants());
                 gamesToSendMap.put(gameId, gameInfo);
             }
             payload.setAttribute("GamesInfo", gamesToSendMap);

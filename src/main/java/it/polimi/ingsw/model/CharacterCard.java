@@ -68,11 +68,13 @@ public abstract class CharacterCard {
 	public void playCard(Player player) throws NotEnoughCoinsException {
 		player.removeCoins(this.coinPrice);
 		playerActive = player;
+		boolean areCoinsUpdated = false;
 		if (!coinPresent) {
+			areCoinsUpdated = true;
 			putCoin();
 		}
 		//TODO: change with id and nickname (also in CharacterListener)
-		firePropertyChange(new PropertyChangeEvent(this, "PlayCharacter", null, playerActive));
+		firePropertyChange(new PropertyChangeEvent(this.id, "PlayCharacter", areCoinsUpdated, playerActive.getNickName()));
 	}
 
 	//TODO: all the IllegalActionRequestedException must have a message

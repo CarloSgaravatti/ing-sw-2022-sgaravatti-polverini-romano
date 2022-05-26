@@ -3,7 +3,6 @@ package it.polimi.ingsw.listeners;
 import it.polimi.ingsw.messages.MessagePayload;
 import it.polimi.ingsw.messages.ServerMessageType;
 import it.polimi.ingsw.model.CharacterCard;
-import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.Student;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.server.RemoteView;
@@ -23,7 +22,7 @@ public class CharacterListener implements PropertyChangeListener {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch(evt.getPropertyName()) {
-            case "PlayCharacter" -> onCharacterPlay(((CharacterCard)evt.getSource()).getId(), ((Player)evt.getNewValue()).getNickName());
+            case "PlayCharacter" -> onCharacterPlay((Integer) evt.getSource(), (String) evt.getNewValue(), (Boolean) evt.getOldValue());
             case "Students" -> onStudentsChange(((CharacterCard)evt.getSource()).getId(), (Student[]) evt.getNewValue());
             case "EntranceSwap" -> onEntranceSwap(((CharacterCard) evt.getSource()).getPlayerActive().getNickName(),
                     (RealmType[]) evt.getOldValue(), (RealmType[]) evt.getNewValue());
@@ -33,10 +32,11 @@ public class CharacterListener implements PropertyChangeListener {
         }
     }
 
-    private void onCharacterPlay(int characterId, String namePlayer) {
+    private void onCharacterPlay(int characterId, String namePlayer, boolean isWithCoinsIncrement) {
         MessagePayload messagePayload = new MessagePayload();
         messagePayload.setAttribute("CharacterId", characterId);
-        messagePayload.setAttribute("NamePlayer", namePlayer);
+        messagePayload.setAttribute("PlayerName", namePlayer);
+        messagePayload.setAttribute("IsWithCoinUpdate", isWithCoinsIncrement);
         remoteView.sendMessage(messagePayload, "CharacterPlayed", ServerMessageType.GAME_UPDATE);
     }
 

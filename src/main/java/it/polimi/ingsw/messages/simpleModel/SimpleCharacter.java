@@ -3,7 +3,6 @@ package it.polimi.ingsw.messages.simpleModel;
 import it.polimi.ingsw.model.enumerations.RealmType;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 public class SimpleCharacter implements Serializable {
     private RealmType[] students = null;

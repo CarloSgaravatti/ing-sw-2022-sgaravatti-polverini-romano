@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Lobby {
     private final List<String[][]> lobby;
-    private int sID=0;
+    private int sID = 0;
 
     public Lobby(){
         this.lobby = createSkeleton();
@@ -21,21 +21,21 @@ public class Lobby {
     }
 
     public List<String[][]> createSkeleton(){
-        int count=0;
+        int count = 0;
         List<String[][]> skeleton = new ArrayList<>();
         String newGame = "NewGame";
         String[] newGameString = new String[7];
         String newGame1 = "Refresh";
         String[] refreshString = new String[7];
 
-        String[][] setup0 = new String[5][49];
-        String[][] setup1 = new String[4][49];
-        String[][] setup2 = new String[4][49];
-        String[][] setup3 = new String[5][49];
+        String[][] setup0 = new String[5][49]; //if only one game
+        String[][] setup1 = new String[4][49]; //starting if more than one game
+        String[][] setup2 = new String[4][49]; //in mezzo
+        String[][] setup3 = new String[5][49]; //fine
 
-        String[][] upperCommandBox = new String[2][49];
-        String[][] upperCommandBox1 = new String[3][49];
-        String[][] lowerCommandBox = new String[3][49];
+        String[][] upperCommandBox = new String[2][49]; //se ci sono giochi
+        String[][] upperCommandBox1 = new String[3][49]; //se non ci sono giochi
+        String[][] lowerCommandBox = new String[3][49]; //se ci sono giochi
 
         for(int i = 0 ; i < 7; i++){
             newGameString[i]= String.valueOf(newGame.charAt(i));
@@ -49,7 +49,7 @@ public class Lobby {
         upperCommandBox1[2][0] = UnicodeConstants.BOTTOM_LEFT.toString();
         upperCommandBox1[2][16] = UnicodeConstants.BOTTOM_RIGHT.toString();
         upperCommandBox1[2][8] = UnicodeConstants.T_UP.toString();
-        for(int i = 0 ; i < 2 ; i++){
+        for(int i = 0 ; i < 3 ; i++){
             int s = 0;
             int f = 0;
             for(int j = 0 ; j < 49; j++){
@@ -69,7 +69,7 @@ public class Lobby {
                 }
             }
         }
-        for(int i=0; i < 2;i++){
+        for(int i=0; i < 3;i++){
             for(int j=0; j<49;j++){
                 if(upperCommandBox1[i][j]==null){
                     upperCommandBox1[i][j] = " ";
@@ -256,7 +256,7 @@ public class Lobby {
                 }
             }
         }
-        for(int i = 0 ; i< 2;i++){
+        for(int i = 0 ; i< 3;i++){
             for( int j =0;j<49;j++){
                 if(lowerCommandBox[i][j]==null){
                     lowerCommandBox[i][j]= " ";
@@ -267,7 +267,44 @@ public class Lobby {
 
         return skeleton;
     }
+
     public List<String[][]> getSkeleton(){
         return lobby;
+    }
+
+    public String[][] getUpperCommandBox() {
+        return cloneMatrix(lobby.get(1));
+    }
+
+    public String[][] getUpperCommandBox1() {
+        return cloneMatrix(lobby.get(0));
+    }
+
+    public String[][] getSetup0() {
+        return cloneMatrix(lobby.get(2));
+    }
+
+    public String[][] getSetup1() {
+        return cloneMatrix(lobby.get(3));
+    }
+
+    public String[][] getSetup2() {
+        return cloneMatrix(lobby.get(4));
+    }
+
+    public String[][] getSetup3() {
+        return cloneMatrix(lobby.get(5));
+    }
+
+    public String[][] getLowerCommandBox() {
+        return cloneMatrix(lobby.get(6));
+    }
+
+    public String[][] cloneMatrix(String[][] matrix) {
+        String[][] clonedMatrix = new String[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++) {
+            clonedMatrix[i] = matrix[i].clone();
+        }
+        return clonedMatrix;
     }
 }

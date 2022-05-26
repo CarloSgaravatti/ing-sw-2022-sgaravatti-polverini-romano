@@ -69,8 +69,6 @@ public class School extends ProfessorPresenceObservable {
 	 * @return true if the player can take a coin, otherwise false
 	 * @throws FullDiningRoomException if the dining room if full for the student's Realm Type
 	 */
-	//This method is useful because a character card can give the opportunity to put a student
-	//directly in the dining room, without passing from the entrance.
 	public boolean insertDiningRoom (Student student) throws FullDiningRoomException {
 		if (diningRoom[student.getStudentType().ordinal()] >= gameConstants.getMaxStudentPerDiningRoom()) {
 			throw new FullDiningRoomException();
@@ -78,10 +76,7 @@ public class School extends ProfessorPresenceObservable {
 		studentDiningRoom.add(student);
 		diningRoom[student.getStudentType().ordinal()] ++;
 		int newStudentsDiningRoom = diningRoom[student.getStudentType().ordinal()];
-		notifyObservers(student.getStudentType());
-		//TODO: add a way to not notify when is a school swap (character 7)
-		player.firePropertyChange("DiningRoomIns", null, student.getStudentType());
-		//maybe the return condition can be done better
+		if (!professorTable[student.getStudentType().ordinal()]) notifyObservers(student.getStudentType());
 		return (newStudentsDiningRoom == 3 || newStudentsDiningRoom == 6 || newStudentsDiningRoom == 9);
 	}
 
@@ -92,6 +87,7 @@ public class School extends ProfessorPresenceObservable {
 	 * @throws StudentNotFoundException if the entrance doesn't have a student of specified Realm Type
 	 * @throws FullDiningRoomException if the dining room if full for the student's Realm Type
 	 */
+	@Deprecated
 	public boolean moveFromEntranceToDiningRoom (RealmType studentType) throws StudentNotFoundException,
 			FullDiningRoomException {
 		return insertDiningRoom(removeStudentEntrance(studentType));
@@ -203,12 +199,11 @@ public class School extends ProfessorPresenceObservable {
 	 * @return the student that has been removed from the dining room
 	 * @throws StudentNotFoundException if the dining room doesn't have any student of the specified type
 	 */
-	public Student removeFromDiningRoom (RealmType studentType) throws StudentNotFoundException {
+	public Student removeFromDiningRoom (RealmType studentType, boolean notify) throws StudentNotFoundException {
 		Student toEliminate = remove(diningRoom, studentDiningRoom, studentType);
 		studentDiningRoom.remove(toEliminate);
 		diningRoom[studentType.ordinal()] --;
-		//TODO: deprecated message, fix
-		player.firePropertyChange("DiningRoomRem", null, studentType);
+		if (notify) player.firePropertyChange("DiningRoomRem", null, new RealmType[]{studentType});
 		return toEliminate;
 	}
 
@@ -241,5 +236,25 @@ public class School extends ProfessorPresenceObservable {
 			if (isProfessorPresent(RealmType.values()[i])) numProfessor++;
 		}
 		return numProfessor;
+	}
+
+	public int insertDiningRoom(Student[] students, boolean notify) throws FullDiningRoomException {
+		int coinsGained = 0;
+		//TODO: maybe add to action controller
+		Integer[] studentsOfType = RealmType.getIntegerRepresentation(Arrays.stream(students)
+				.map(Student::getStudentType).toList().toArray(new RealmType[0]));
+		for(int i = 0; i < studentsOfType.length; i++) {
+			if (studentsOfType[i] + diningRoom[i] > gameConstants.getMaxStudentPerDiningRoom()) {
+				throw new FullDiningRoomException();
+			}
+		}
+		for (Student student: students) {
+			if(insertDiningRoom(student)) coinsGained++;
+		}
+		if (notify) {
+			player.firePropertyChange("DiningRoomIns", null, Arrays.stream(students)
+					.map(Student::getStudentType).toList().toArray(new RealmType[0]));
+		}
+		return coinsGained;
 	}
 }
