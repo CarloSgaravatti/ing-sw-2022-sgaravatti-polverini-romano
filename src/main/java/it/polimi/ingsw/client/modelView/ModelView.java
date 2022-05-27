@@ -18,29 +18,6 @@ public class ModelView {
         this.isExpert = isExpert;
     }
 
-    //Need to change, otherwise view knows game logic
-    public void updateIslandTower(int islandId, TowerType tower) {
-        Optional<TowerType> islandTower = Optional.ofNullable(field.getIsland(islandId).getThird());
-        islandTower.ifPresent(t -> {
-            Optional<String> playerWithIsland = getPlayerWithTower(t);
-            playerWithIsland.ifPresent(p -> {
-                int newTowers = players.get(p).getNumTowers() + field.getIsland(islandId).getSecond();
-                players.get(p).updateNumTowers(newTowers);
-            });
-        });
-        Optional<String> playerTower = getPlayerWithTower(tower);
-        playerTower.ifPresent(p -> {
-            int newTowers = players.get(p).getNumTowers() - field.getIsland(islandId).getSecond();
-            players.get(p).updateNumTowers(newTowers);
-        });
-        field.getIsland(islandId).setThird(tower);
-    }
-
-    private Optional<String> getPlayerWithTower(TowerType t) {
-        return players.keySet().stream()
-                .filter(p -> players.get(p).getPlayerTower() == t).findAny();
-    }
-
     public Map<String, PlayerView> getPlayers() {
         return players;
     }

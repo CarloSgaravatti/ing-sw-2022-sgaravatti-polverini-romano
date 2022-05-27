@@ -39,7 +39,8 @@ public class Character11 extends CharacterCard {
 
     public void pickAndSendToDiningRoom(RealmType studentType) throws StudentNotFoundException, FullDiningRoomException {
         School school = super.getPlayerActive().getSchool();
-        school.insertDiningRoom(studentContainer.pickStudent(studentType, true));
+        //school.insertDiningRoom(studentContainer.pickStudent(studentType, true));
+        school.insertDiningRoom(new Student[]{studentContainer.pickStudent(studentType, true)}, true, false);
     }
 
     public List<Student> getStudents() {

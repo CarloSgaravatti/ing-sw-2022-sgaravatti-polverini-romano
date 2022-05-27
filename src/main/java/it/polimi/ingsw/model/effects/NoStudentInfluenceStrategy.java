@@ -15,7 +15,7 @@ public class NoStudentInfluenceStrategy implements InfluenceStrategy {
 
     @Override
     public int getInfluence (Island island, Player player) {
-        int toSubtract = island.getNumStudentsOfType(studentType);
+        int toSubtract = player.getSchool().isProfessorPresent(studentType) ? island.getNumStudentsOfType(studentType) : 0;
         return influenceStrategy.getInfluence(island, player) - toSubtract;
     }
 

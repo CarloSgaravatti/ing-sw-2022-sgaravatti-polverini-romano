@@ -8,7 +8,6 @@ import java.util.List;
 public class Character3 extends CharacterCard {
     //Temporary solution, maybe it can be done with less brute force
     private final transient ModelObserver modelObserver;
-    //TODO: same as character 1
     private final List<Island> islands;
 
     public Character3(Game game) {

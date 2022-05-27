@@ -56,7 +56,7 @@ public class Player implements PropertyChangeListener{
 		for (int i = 0; i < assistants.size(); i++) {
 			if (assistants.get(i).getCardValue() == assistant) {
 				turnEffect.setOrderPrecedence(assistant);
-				turnEffect.incrementMotherNatureMovement(assistants.get(i).getMotherNatureMovement());
+				turnEffect.incrementMotherNatureMovement(assistants.get(i).getMotherNatureMovement(), false);
 				turnEffect.setFirstPlayedAssistant(isFirstPlayedAssistant);
 				Assistant removed = assistants.remove(i);
 				listeners.firePropertyChange(

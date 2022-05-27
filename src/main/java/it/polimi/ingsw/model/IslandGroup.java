@@ -12,7 +12,7 @@ public class IslandGroup extends Island {
 	private int numTowers;
 
 	public IslandGroup(Island ... islands) /*throws IllegalIslandGroupException*/ {
-		super(islands[0].getTowerType());
+		super(islands[0].getTowerType(), true);
 		this.islands = new ArrayList<>();
 		numTowers = 0;
 		for (Island i: islands) {

@@ -70,7 +70,7 @@ class PlayerTest extends TestCase {
 
     @Test
     void resetTurnEffectTest() {
-        playerToTest.getTurnEffect().incrementMotherNatureMovement(5);
+        playerToTest.getTurnEffect().incrementMotherNatureMovement(5, true);
         playerToTest.getTurnEffect().setOrderPrecedence(7);
         playerToTest.getTurnEffect().setProfessorPrecedence(true);
         playerToTest.resetTurnEffect();

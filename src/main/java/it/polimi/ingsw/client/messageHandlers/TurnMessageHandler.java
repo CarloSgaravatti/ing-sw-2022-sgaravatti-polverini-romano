@@ -8,25 +8,28 @@ import it.polimi.ingsw.controller.TurnPhase;
 import it.polimi.ingsw.messages.MessageFromServer;
 import it.polimi.ingsw.messages.MessagePayload;
 import it.polimi.ingsw.messages.ServerMessageHeader;
-import it.polimi.ingsw.messages.ServerMessageType;
-import it.polimi.ingsw.model.enumerations.RealmType;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class TurnMessageHandler extends BaseMessageHandler {
-    private final PropertyChangeSupport turnHandler = new PropertyChangeSupport(this);
-    private static final List<String> messageHandled = List.of("EndTurn", "ChangePhase", "EndGame", "ActionAck");
+    private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
+    private static final List<String> messageHandled = List.of("EndTurn", "ChangePhase", "EndGameWinner", "EndGameTied", "ActionAck");
 
     public TurnMessageHandler(ConnectionToServer connection, UserInterface userInterface, ModelView modelView) {
         super(connection, userInterface, modelView);
+        this.listeners.addPropertyChangeListener("NewTurn", userInterface);
+        this.listeners.addPropertyChangeListener("Winner", userInterface);
+        this.listeners.addPropertyChangeListener("Loser", userInterface);
+        this.listeners.addPropertyChangeListener("TieLoser", userInterface);
+        this.listeners.addPropertyChangeListener("Tie", userInterface);
     }
 
     public void setTurnHandler(PropertyChangeListener turnHandler) {
-        this.turnHandler.addPropertyChangeListener(turnHandler);
+        this.listeners.addPropertyChangeListener("ClientTurn", turnHandler);
+        this.listeners.addPropertyChangeListener("ActionAck", turnHandler);
     }
 
     @Override
@@ -40,7 +43,8 @@ public class TurnMessageHandler extends BaseMessageHandler {
         switch(header.getMessageName()) {
             case "EndTurn" -> onEndTurn(payload);
             case "ChangePhase" -> onChangePhase(payload);
-            case "EndGame" -> onEndGame(payload);
+            case "EndGameWinner" -> onWinner(payload);
+            case "EndGameTied" -> onTie(payload);
             case "ActionAck" -> onActionAck(payload);
         }
     }
@@ -60,16 +64,26 @@ public class TurnMessageHandler extends BaseMessageHandler {
         checkClientTurn(starter, (TurnPhase[]) payload.getAttribute("PossibleActions").getAsObject());
     }
 
-    private void onEndGame(MessagePayload payload) {
-        boolean isWin = payload.getAttribute("IsWinOrTie").getAsBoolean();
-        String[] winnersOrTiers = (String[]) payload.getAttribute("WinnersOrTiers").getAsObject();
+    private void onWinner(MessagePayload payload) {
+        String winner = (String) payload.getAttribute("Winner").getAsObject();
+        if (winner.equals(getUserInterface().getNickname())) {
+            listeners.firePropertyChange("Winner", null, null);
+        } else {
+            listeners.firePropertyChange("Loser", null, winner);
+        }
+    }
 
-        //TODO
+    private void onTie(MessagePayload payload) {
+        String[] tiers = (String[]) payload.getAttribute("Tiers").getAsObject();
+        if (Arrays.asList(tiers).contains(getUserInterface().getNickname())) {
+            listeners.firePropertyChange("Tie", null, tiers);
+        } else {
+            listeners.firePropertyChange("TieLoser", null, tiers);
+        }
     }
 
     private void onActionAck(MessagePayload payload) {
-        System.out.println("Ack");
-        turnHandler.firePropertyChange("ActionAck",
+        listeners.firePropertyChange("ActionAck",
                 payload.getAttribute("ActionName").getAsString(), payload.getAttribute("NewPossibleActions").getAsObject());
     }
 
@@ -77,9 +91,9 @@ public class TurnMessageHandler extends BaseMessageHandler {
         if (turnStarter.equals(getUserInterface().getNickname())) {
             getUserInterface().displayStringMessage("Now is your turn");
             getUserInterface().displayStringMessage(Arrays.toString(possibleActions)); //temporary
-            turnHandler.firePropertyChange("ClientTurn", null, possibleActions);
+            listeners.firePropertyChange("ClientTurn", null, possibleActions);
         } else {
-            getUserInterface().displayStringMessage("Now is " + turnStarter + "'s turn");
+            listeners.firePropertyChange("NewTurn", null, turnStarter);
         }
     }
 }

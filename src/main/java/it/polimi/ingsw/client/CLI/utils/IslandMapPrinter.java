@@ -32,13 +32,16 @@ public class IslandMapPrinter {
             String[][] island = islandPrinter.getIsland(i, position == i, islandValues.getSecond(),
                     islandValues.getThird(), islandValues.getFirst(), numNoEntryTiles);
             firstLine = appendMatrixInLine(island, firstLine);
-
-            int island2Idx = numIslands - i - 1;
-            numNoEntryTiles = getNoEntryTilesValue(island2Idx);
-            Triplet<Integer[], Integer, TowerType> island2Values = fieldView.getIsland(island2Idx);
-            String[][] island2 = islandPrinter.getIsland(island2Idx, position == island2Idx, island2Values.getSecond(),
-                    island2Values.getThird(), island2Values.getFirst(), numNoEntryTiles);
-            secondLine = appendMatrixInLine(island2, secondLine);
+            //If the islands are odd, first line will have more islands than second line (so second line will have
+            //an empty space instead of the island, this will be on the right side of the second line)
+            if (i < numIslands / 2) {
+                int island2Idx = numIslands - i - 1;
+                numNoEntryTiles = getNoEntryTilesValue(island2Idx);
+                Triplet<Integer[], Integer, TowerType> island2Values = fieldView.getIsland(island2Idx);
+                String[][] island2 = islandPrinter.getIsland(island2Idx, position == island2Idx, island2Values.getSecond(),
+                        island2Values.getThird(), island2Values.getFirst(), numNoEntryTiles);
+                secondLine = appendMatrixInLine(island2, secondLine);
+            }
         }
         firstLine = addAdditionalSpaces(previousLengthY, firstLine);
         secondLine = addAdditionalSpaces(previousLengthY, secondLine);

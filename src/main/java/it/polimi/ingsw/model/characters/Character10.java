@@ -29,7 +29,7 @@ public class Character10 extends CharacterCard {
         try {
             swap(fromEntrance, fromDiningRoom);
         } catch (StudentNotFoundException | FullDiningRoomException e) {
-            throw new IllegalCharacterActionRequestedException(); //TODO: these exception will have different return messages
+            throw new IllegalCharacterActionRequestedException();
         }
         firePropertyChange(new PropertyChangeEvent(this, "SchoolSwap", fromDiningRoom, fromEntrance));
     }
@@ -46,7 +46,7 @@ public class Character10 extends CharacterCard {
             studentsFromEntrance[i] = school.removeStudentEntrance(entrance[i]);
             studentsFromDiningRoom[i] = school.removeFromDiningRoom(diningRoom[i], false);
         }
-        school.insertDiningRoom(studentsFromEntrance, false);
+        school.insertDiningRoom(studentsFromEntrance, false, true);
         school.insertEntrance(studentsFromDiningRoom);
     }
 }

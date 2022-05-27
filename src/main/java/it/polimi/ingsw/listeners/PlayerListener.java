@@ -27,10 +27,10 @@ public class PlayerListener implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case ASSISTANT -> onAssistantPlay((Assistant) evt.getNewValue(), (String) evt.getSource());
-            case DINING_ROOM_INSERTION -> onDiningRoomChange(
-                    ((Player) evt.getSource()).getNickName(), (RealmType[]) evt.getNewValue(), true);
-            case DINING_ROOM_REMOVAL -> onDiningRoomChange(
-                    ((Player) evt.getSource()).getNickName(), (RealmType[]) evt.getNewValue(), false);
+            case DINING_ROOM_INSERTION -> onDiningRoomChange(((Player) evt.getSource()).getNickName(),
+                    (RealmType[]) evt.getNewValue(), true, (Boolean) evt.getOldValue());
+            case DINING_ROOM_REMOVAL -> onDiningRoomChange(((Player) evt.getSource()).getNickName(),
+                    (RealmType[]) evt.getNewValue(), false, false);
             case PROFESSOR -> onProfessorUpdate(((Player)evt.getSource()).getNickName(), (RealmType) evt.getNewValue());
             case COINS -> onCoinsUpdate((String) evt.getSource(), (Integer) evt.getOldValue(), (Integer) evt.getNewValue());
             case MOTHER_NATURE_MOVE -> onMotherNatureMovementIncrement(((Player)evt.getSource()).getNickName(), (Integer) evt.getNewValue());
@@ -46,11 +46,12 @@ public class PlayerListener implements PropertyChangeListener {
     }
 
     //TODO: protocol specify another argument, but maybe is not useful
-    private void onDiningRoomChange(String nickname, RealmType[] students, boolean isInsertion) {
+    private void onDiningRoomChange(String nickname, RealmType[] students, boolean isInsertion, boolean isFromEntrance) {
         MessagePayload messagePayload = new MessagePayload();
         messagePayload.setAttribute("Students", students);
         messagePayload.setAttribute("PlayerName", nickname);
         messagePayload.setAttribute("IsInsertion", isInsertion);
+        messagePayload.setAttribute("IsFromEntrance", isFromEntrance);
         view.sendBroadcast(messagePayload,"SchoolDiningRoomUpdate", ServerMessageType.GAME_UPDATE);
     }
 

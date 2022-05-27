@@ -35,8 +35,6 @@ public class GameController implements PropertyChangeListener {
 
 	public void startGame() {
 		game.start();
-		//TODO
-		//listeners.firePropertyChange("EndPhase", turnController.getCurrentPhase(), turnController.getActivePlayer().getNickName());
 		handleEndPhase();
 	}
 
@@ -105,7 +103,7 @@ public class GameController implements PropertyChangeListener {
 				PropertyChangeEvent event =
 						new PropertyChangeEvent(nicknamePlayer, "Action", actionName, newPossibleActions);
 				listeners.firePropertyChange(event);
-			} catch (Exception e) {
+			} catch (IllegalArgumentException e) {
 				//TODO: decide if it has to handled here or directly in the action controller class;
 				//	the exception will be transformed in an error message
 				e.printStackTrace();

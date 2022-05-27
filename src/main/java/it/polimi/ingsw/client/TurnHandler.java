@@ -1,7 +1,6 @@
 package it.polimi.ingsw.client;
 
 import it.polimi.ingsw.client.CLI.utils.Colors;
-import it.polimi.ingsw.controller.RoundPhase;
 import it.polimi.ingsw.controller.TurnPhase;
 import it.polimi.ingsw.messages.*;
 
@@ -23,6 +22,8 @@ public class TurnHandler implements PropertyChangeListener {
     private boolean turnAlreadyEnded = false;
     private boolean isInputErrorReceived = false;
 
+    //TODO: maybe there is a synchronization problem with the connection to server executor
+
     public TurnHandler(ConnectionToServer connection, UserInterface userInterface) {
         this.connection = connection;
         this.userInterface = userInterface;
@@ -38,7 +39,6 @@ public class TurnHandler implements PropertyChangeListener {
             }
             sendEndTurnMessage();
         } catch (InterruptedException e) {
-            //TODO
         }
     }
 
@@ -100,7 +100,6 @@ public class TurnHandler implements PropertyChangeListener {
     }
 
     public void handlePlayerTurn(final List<TurnPhase> possibleActions) {
-        System.out.println("Turn handler is starting");
         setTurnAlreadyEnded(false);
         setInputErrorReceived(false);
         setErrorReceived(false);
@@ -110,8 +109,6 @@ public class TurnHandler implements PropertyChangeListener {
             currentTurnActions.addAll(possibleActions);
             while (!currentTurnActions.isEmpty()) {
                 if (!isErrorReceived() && !isInputErrorReceived()) {
-                    //TODO: separate printing menu and getting action, so if an input error is received
-                    //  the printing menu is not printed on user interface
                     userInterface.printTurnMenu(currentTurnActions.stream().map(TurnPhase::getActionDescription).toList(),
                             currentTurnActions.stream().map(TurnPhase::getActionCommand).toList());
                 }
@@ -141,11 +138,9 @@ public class TurnHandler implements PropertyChangeListener {
                 } while (!isAckReceived());
             }
         }
-        System.out.println("Turn handler has quit the turn handling");
     }
 
     public void onAckReceived(List<TurnPhase> newPossibleActions, String actionToAck) {
-        System.out.println("AckOK");
         setAckReceived(true);
         if (actionToAck.equals("EndTurn")) {
             setTurnAlreadyEnded(true);

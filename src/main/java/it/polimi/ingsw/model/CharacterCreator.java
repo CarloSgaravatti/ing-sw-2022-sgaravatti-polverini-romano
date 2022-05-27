@@ -34,13 +34,9 @@ public class CharacterCreator {
         return switch (characterId) {
             case 2, 4, 6, 8 -> getCharacterWithoutInput(characterId);
             case 1 -> new Character1(game);
-            //case 2 -> new Character2();
             case 3 -> new Character3(game);
-            //case 4 -> new Character4();
             case 5 -> new Character5(game);
-            //case 6 -> new Character6();
             case 7 -> new Character7(game);
-            //case 8 -> new Character8();
             case 9 -> new Character9();
             case 10 -> new Character10();
             case 11 -> new Character11(game);
@@ -58,7 +54,7 @@ public class CharacterCreator {
             }
             case 4 -> {
                 action = player -> player.getTurnEffect()
-                        .incrementMotherNatureMovement(MOTHER_NATURE_INCREMENT);
+                        .incrementMotherNatureMovement(MOTHER_NATURE_INCREMENT, true);
                 yield new CharacterWithoutInput(1, 4, action);
             }
             case 6 -> {

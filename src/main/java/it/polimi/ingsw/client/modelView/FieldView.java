@@ -39,10 +39,18 @@ public class FieldView {
     public void mergeIslands(List<Integer> islands, Triplet<Integer[], Integer, TowerType> newIsland) {
         Optional<Integer> newIndex = islands.stream().min(Comparator.comparingInt(i -> i));
         if (newIndex.isEmpty()) return;
+        List<Triplet<Integer[], Integer, TowerType>> islandsToRemove = islands.stream().map(this.islands::get).toList();
+        this.islands.removeAll(islandsToRemove);
+        this.islands.add(newIndex.get(), newIsland);
+        int noEntryTiles = 0;
         for (Integer i: islands) {
-            this.islands.remove(this.islands.get(i));
+            noEntryTiles += expertField.getNoEntryTilesOnIsland(i);
+            expertField.resetNoEntryTilesOnIsland(i);
         }
-        this.islands.add(newIsland);
+        for (int i = 0; i < noEntryTiles; i++) {
+            expertField.insertNoEntryTileOnIsland(newIndex.get());
+        }
+        updateMotherNaturePosition(newIndex.get());
     }
 
     public void updateMotherNaturePosition(int newPosition) {

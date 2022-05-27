@@ -279,9 +279,9 @@ public class CLI implements Runnable, UserInterface {
         clearScreen();
         printer.initializeMap(modelView, nickname);
         printer.printMap();
-        System.out.println();
+        /*System.out.println();
         printer.replaceIsland(2);
-        printer.printMap();
+        printer.printMap();*/
     }
 
     @Override
@@ -298,7 +298,7 @@ public class CLI implements Runnable, UserInterface {
                 printer.replaceIsland((Integer) evt.getNewValue());
             }
             case "IslandUnification" -> printer.recomputeIslandMap();
-            case "SchoolDiningRoomUpdate", "CoinsUpdate", "SchoolSwap", "EntranceSwap" ->
+            case "SchoolDiningRoomUpdate", "CoinsUpdate", "SchoolSwap", "EntranceSwap", "EntranceUpdate" ->
                     printer.replaceSchool((String) evt.getNewValue());
             case "ProfessorUpdate" -> {
                 if (evt.getOldValue() != null) {
@@ -316,7 +316,17 @@ public class CLI implements Runnable, UserInterface {
                 printer.replaceCharacter((Integer) evt.getOldValue());
                 printer.replaceIsland((Integer) evt.getNewValue());
             }
-            //TODO: Characters
+            //Temporary messages
+            case "NewTurn" -> {
+                clearScreen();
+                printer.printMap();
+                System.out.println("Now is " + evt.getNewValue() + "'s turn");
+            }
+            case "Winner" -> System.out.println("You have won!");
+            case "Loser" -> System.out.println("You have lose. " + evt.getNewValue() + " has won");
+            case "Tie" -> System.out.println("It's a tie. These are the tiers: " + Arrays.toString((String[]) evt.getNewValue()));
+            case "TieLoser" -> System.out.println("You have lose, but nobody has won, these are the tiers" +
+                    Arrays.toString((String[]) evt.getNewValue()));
         }
     }
 }

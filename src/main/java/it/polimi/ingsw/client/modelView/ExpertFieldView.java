@@ -40,7 +40,11 @@ public class ExpertFieldView {
     }
 
     public Integer getNoEntryTilesOnIsland(int island) {
-        return islandsWithNoEntryTiles.get(island);
+        return (islandsWithNoEntryTiles.get(island) != null) ? islandsWithNoEntryTiles.get(island) : 0;
+    }
+
+    public void resetNoEntryTilesOnIsland(int island) {
+        islandsWithNoEntryTiles.remove(island);
     }
 
     public int getCharacterPrice(int characterId) {
@@ -65,6 +69,7 @@ public class ExpertFieldView {
         } else {
             islandsWithNoEntryTiles.put(island, 1);
         }
+        numNoEntryTilesOnCharacter = new Pair<>(numNoEntryTilesOnCharacter.getFirst(), numNoEntryTilesOnCharacter.getSecond() - 1);
     }
 
     public void updateCharacterStudents(int characterId, RealmType[] students) {

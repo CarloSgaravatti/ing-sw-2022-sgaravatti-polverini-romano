@@ -129,9 +129,10 @@ public class School extends ProfessorPresenceObservable {
 	 * @param students the Realm Type of the students to pick from the entrance
 	 * @throws StudentNotFoundException if the entrance doesn't have a student from the specified type
 	 */
+	@Deprecated
 	public void sendStudentToIsland (Island island, RealmType ... students) throws StudentNotFoundException {
 		for (RealmType studentType: students) {
-			island.addStudents(removeStudentEntrance(studentType));
+			island.addStudents(true, removeStudentEntrance(studentType));
 		}
 	}
 
@@ -238,9 +239,8 @@ public class School extends ProfessorPresenceObservable {
 		return numProfessor;
 	}
 
-	public int insertDiningRoom(Student[] students, boolean notify) throws FullDiningRoomException {
+	public int insertDiningRoom(Student[] students, boolean notify, boolean isFromEntrance) throws FullDiningRoomException {
 		int coinsGained = 0;
-		//TODO: maybe add to action controller
 		Integer[] studentsOfType = RealmType.getIntegerRepresentation(Arrays.stream(students)
 				.map(Student::getStudentType).toList().toArray(new RealmType[0]));
 		for(int i = 0; i < studentsOfType.length; i++) {
@@ -252,7 +252,7 @@ public class School extends ProfessorPresenceObservable {
 			if(insertDiningRoom(student)) coinsGained++;
 		}
 		if (notify) {
-			player.firePropertyChange("DiningRoomIns", null, Arrays.stream(students)
+			player.firePropertyChange("DiningRoomIns", isFromEntrance, Arrays.stream(students)
 					.map(Student::getStudentType).toList().toArray(new RealmType[0]));
 		}
 		return coinsGained;

@@ -12,7 +12,6 @@ import java.util.List;
 public class Character1 extends CharacterCard {
     private final int MAX_NUM_STUDENTS = 4;
     private final StudentContainer studentContainer;
-    //TODO: decide if this is necessary or it can be done better
     private final List<Island> islands;
 
     public Character1(Game game) {
@@ -48,7 +47,7 @@ public class Character1 extends CharacterCard {
 
     public void pickAndSendToIsland(RealmType studentType, Island island) throws StudentNotFoundException {
         Student student = studentContainer.pickStudent(studentType, true);
-        island.addStudents(student);
+        island.addStudents(false, student);
     }
 
     public List<Student> getStudents() {

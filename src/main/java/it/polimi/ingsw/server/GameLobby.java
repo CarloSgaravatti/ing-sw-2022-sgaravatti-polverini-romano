@@ -217,7 +217,6 @@ public class GameLobby {
         if (isExpertGame) {
             List<SimpleCharacter> characters = new ArrayList<>();
             for (CharacterCard c: game.getCharacterCards()) {
-                //characters.add(new SimpleCharacter(c.getId(), c.getPrice())); //TODO: modify (probably character cards need to be modified)
                 characters.add(getSimpleCharacter(c));
             }
             simpleField = new SimpleField(islandsView, clouds, characters, motherNaturePosition);

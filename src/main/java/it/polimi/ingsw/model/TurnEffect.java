@@ -45,8 +45,8 @@ public class TurnEffect {
         return motherNatureMovement;
     }
 
-    public void incrementMotherNatureMovement(int incr) {
-        if (motherNatureMovement != 0) player.firePropertyChange("MotherNatureMoveIncrement", null, incr);
+    public void incrementMotherNatureMovement(int incr, boolean notify) {
+        if (notify) player.firePropertyChange("MotherNatureMovementIncrement", null, incr);
         motherNatureMovement += incr;
     }
 

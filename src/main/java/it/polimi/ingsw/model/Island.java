@@ -32,9 +32,10 @@ public abstract class Island extends MotherNatureMovementObservable {
 		noEntryTilePresents = 0;
 	}
 
-	protected Island(TowerType towerType){
+	protected Island(TowerType towerType, boolean motherNaturePresent){
 		this();
 		this.towerType = towerType;
+		this.motherNaturePresent = motherNaturePresent;
 	}
 
 	public abstract void putTower(TowerType t);
@@ -97,15 +98,15 @@ public abstract class Island extends MotherNatureMovementObservable {
 	}
 
 	public void setTowerType(TowerType towerType) {
-		game.firePropertyChange("IslandTower", this.towerType, towerType);
+		//game.firePropertyChange("IslandTower", this.towerType, towerType);
 		this.towerType = towerType;
 	}
 
-	public void addStudents(Student ... students) {
+	public void addStudents(boolean isFromEntrance, Student... students) {
 		for (Student s: students) {
 			addStudent(s);
 		}
-		game.firePropertyChange("IslandStudents", null, Arrays.stream(students)
+		game.firePropertyChange("IslandStudents", isFromEntrance, Arrays.stream(students)
 				.map(Student::getStudentType).toList().toArray(new RealmType[0]));
 	}
 

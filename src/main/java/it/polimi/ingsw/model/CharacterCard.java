@@ -8,8 +8,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.List;
 
-//TODO: all additional methods in subclasses has to be private (after change in tests)
-
 /**
  * Abstract class CharacterCard provides all the behaviour that are common to all characters in the game.
  * ... TODO
@@ -73,7 +71,6 @@ public abstract class CharacterCard {
 			areCoinsUpdated = true;
 			putCoin();
 		}
-		//TODO: change with id and nickname (also in CharacterListener)
 		firePropertyChange(new PropertyChangeEvent(this.id, "PlayCharacter", areCoinsUpdated, playerActive.getNickName()));
 	}
 

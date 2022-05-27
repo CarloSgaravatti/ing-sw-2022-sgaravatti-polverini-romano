@@ -34,7 +34,7 @@ public class MapPrinter {
         //TODO: set dimensions of map parts
     }
 
-    public void printMap() {
+    public synchronized void printMap() {
         int characterMapLength = (modelView.isExpert()) ? characterMap.length : 0;
         int maxDimensionX = Math.max(Math.max(islandsMap.length, cloudsMap.length), characterMapLength);
         //FIXME: try to eliminate if else
@@ -109,7 +109,7 @@ public class MapPrinter {
         }
     }
 
-    public void initializeMap(ModelView modelView, String nickname) {
+    public synchronized void initializeMap(ModelView modelView, String nickname) {
         this.modelView = modelView;
         this.nickname = nickname;
         islandMapPrinter.setFieldView(modelView.getField());
@@ -126,37 +126,37 @@ public class MapPrinter {
         }
     }
 
-    public void replaceIsland(int islandId) {
+    public synchronized void replaceIsland(int islandId) {
         islandMapPrinter.changeOnlyIsland(islandId);
         islandsMap = islandMapPrinter.getIslandMap();
     }
 
-    public void recomputeIslandMap() {
+    public synchronized void recomputeIslandMap() {
         islandMapPrinter.initializeIslandMap();
         islandsMap = islandMapPrinter.getIslandMap();
     }
 
-    public void replaceSchool(String player) {
+    public synchronized void replaceSchool(String player) {
         schoolMapPrinter.changeOnlySchoolOf(player);
         schoolMap = schoolMapPrinter.getSchoolMap();
     }
 
-    public void recomputeSchoolMap() {
+    public synchronized void recomputeSchoolMap() {
         schoolMapPrinter.initializeSchoolMap();
         schoolMap = schoolMapPrinter.getSchoolMap();
     }
 
-    public void replaceCloud(int cloudId) {
+    public synchronized void replaceCloud(int cloudId) {
         cloudMapPrinter.changeOnlyCloud(cloudId);
         cloudsMap = cloudMapPrinter.getCloudMap();
     }
 
-    public void recomputeCloudMap() {
+    public synchronized void recomputeCloudMap() {
         cloudMapPrinter.initializeCloudMap();
         cloudsMap = cloudMapPrinter.getCloudMap();
     }
 
-    public void replaceCharacter(int characterId) {
+    public synchronized void replaceCharacter(int characterId) {
         characterMapPrinter.changeOnlyCharacter(characterId);
         characterMap = characterMapPrinter.getCharacterMap();
     }

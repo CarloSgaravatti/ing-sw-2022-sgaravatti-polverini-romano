@@ -128,7 +128,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
     }
 
     //Sending a message is a slow operation, it needs to be asynchronous from the caller of the method
-    public void asyncSend(final Object message){
+    public synchronized void asyncSend(final Object message){
         new Thread(() -> send(message)).start();
     }
 

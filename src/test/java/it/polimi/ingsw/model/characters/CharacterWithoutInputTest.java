@@ -37,7 +37,7 @@ class CharacterWithoutInputTest {
     @ValueSource(ints = {0, 5})
     void character4Test(int motherNatureMovement) {
         CharacterWithoutInput character4 = (CharacterWithoutInput) new CharacterCreator(null).getCharacter(4);
-        player.getTurnEffect().incrementMotherNatureMovement(motherNatureMovement);
+        player.getTurnEffect().incrementMotherNatureMovement(motherNatureMovement, false);
         try {
             character4.playCard(player);
         } catch (NotEnoughCoinsException e) {

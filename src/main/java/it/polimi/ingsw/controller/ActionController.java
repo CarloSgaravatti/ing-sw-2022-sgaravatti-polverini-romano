@@ -11,9 +11,7 @@ import it.polimi.ingsw.utils.Pair;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class ActionController {
 	private TurnPhase turnPhase;
@@ -22,6 +20,8 @@ public class ActionController {
 	private final List<String> possibleActions;
 	private final List<TurnPhase> currentTurnRemainingActions = new ArrayList<>();
 	private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
+
+	//TODO: substitute all illegal argument exceptions with booleans
 
 	public ActionController(GameController gameController, TurnController turnController) {
 		this.gameController = gameController;
@@ -35,34 +35,29 @@ public class ActionController {
 		listeners.addPropertyChangeListener(propertyName, listener);
 	}
 
-	//TODO: most operations are not atomic
-
-	//TODO: these methods should return a message to the client and not an exception
-	public void doAction(MessageFromClient message) throws IllegalArgumentException, AssistantAlreadyPlayedException,
-			StudentNotFoundException, NoSuchAssistantException, EmptyCloudException, NotEnoughCoinsException,
-			IllegalCharacterActionRequestedException, WrongTurnActionRequestedException {
+	public void doAction(MessageFromClient message) throws IllegalArgumentException {
 		String messageName = message.getClientMessageHeader().getMessageName();
 		MessagePayload payload = message.getMessagePayload();
 		if (!possibleActions.contains(messageName)) throw new IllegalArgumentException();
-		switch (messageName) {
-			case "PlayAssistant" -> playAssistant(payload);
-			case "MoveMotherNature" -> motherNatureMovement(payload);
-			case "MoveStudents" -> studentMovement(payload);
-			case "PickFromCloud" -> pickStudentsFromClouds(payload);
-			case "PlayCharacter" -> playCharacter(payload);
-			case "CharacterEffect" -> characterEffect(payload);
-			default -> throw new IllegalArgumentException();
+		try {
+			switch (messageName) {
+				case "PlayAssistant" -> playAssistant(payload);
+				case "MoveMotherNature" -> motherNatureMovement(payload);
+				case "MoveStudents" -> studentMovement(payload);
+				case "PickFromCloud" -> pickStudentsFromClouds(payload);
+				case "PlayCharacter" -> playCharacter(payload);
+				case "CharacterEffect" -> characterEffect(payload);
+				default -> throw new IllegalArgumentException();
+			}
+		} catch (WrongTurnActionRequestedException e) {
+			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_TURN_ACTION, turnController.getActivePlayer().getNickName());
+			throw new IllegalArgumentException();
 		}
 	}
 
-	public void playAssistant(MessagePayload payload) throws AssistantAlreadyPlayedException,
-			NoSuchAssistantException, WrongTurnActionRequestedException {
+	public void playAssistant(MessagePayload payload) throws WrongTurnActionRequestedException {
 		String playerName = turnController.getActivePlayer().getNickName();
-		if (turnPhase != TurnPhase.PLAY_ASSISTANT) {
-			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_TURN_ACTION, playerName);
-			//TODO: remove the exception
-			throw new WrongTurnActionRequestedException();
-		}
+		if (turnPhase != TurnPhase.PLAY_ASSISTANT) throw new WrongTurnActionRequestedException();
 		int assistantIdx = payload.getAttribute("Assistant").getAsInt();
 		List<Player> players = gameController.getModel().getPlayers();
 		List<Integer> assistantAlreadyPlayed = new ArrayList<>();
@@ -73,9 +68,15 @@ public class ActionController {
 				assistantAlreadyPlayed.add(assistant);
 			}
 		}
-		if (!turnController.getActivePlayer().playAssistant(assistantIdx, assistantAlreadyPlayed)){
+		try {
+			if (!turnController.getActivePlayer().playAssistant(assistantIdx, assistantAlreadyPlayed)) {
+				listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, playerName);
+				//throw new AssistantAlreadyPlayedException();
+				throw new IllegalArgumentException();
+			}
+		} catch (NoSuchAssistantException e) {
 			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, playerName);
-			throw new AssistantAlreadyPlayedException();
+			throw new IllegalArgumentException();
 		}
 		currentTurnRemainingActions.remove(TurnPhase.PLAY_ASSISTANT);
 		setTurnPhase(TurnPhase.TURN_ENDED); //planning phase is ended for this player
@@ -86,15 +87,12 @@ public class ActionController {
 
 	public void motherNatureMovement(MessagePayload payload) throws IllegalArgumentException,
 			WrongTurnActionRequestedException {
-		if (turnPhase != TurnPhase.MOVE_MOTHER_NATURE) {
-			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_TURN_ACTION, turnController.getActivePlayer().getNickName());
-			throw new WrongTurnActionRequestedException();
-		}
+		if (turnPhase != TurnPhase.MOVE_MOTHER_NATURE) throw new WrongTurnActionRequestedException();
 		int motherNatureMovement = payload.getAttribute("MotherNature").getAsInt();
 		int legalMotherNatureMovement = turnController.getActivePlayer().getTurnEffect().getMotherNatureMovement();
 		if (motherNatureMovement <= 0 || motherNatureMovement > legalMotherNatureMovement) {
 			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
-			throw new IllegalArgumentException(); //TODO: create a specific exception
+			throw new IllegalArgumentException();
 		}
 		gameController.getModel().moveMotherNature(motherNatureMovement);
 		currentTurnRemainingActions.remove(TurnPhase.MOVE_MOTHER_NATURE);
@@ -103,76 +101,88 @@ public class ActionController {
 
 	//Use of ? to not have unchecked warning (maybe we should change the message format to not use generics)
 	//TODO: maybe this method can be done better
-	public void studentMovement(MessagePayload payload) throws IllegalArgumentException, StudentNotFoundException,
-			WrongTurnActionRequestedException {
-		if (turnPhase != TurnPhase.MOVE_STUDENTS){
-			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_TURN_ACTION, turnController.getActivePlayer().getNickName());
-			throw new WrongTurnActionRequestedException();
-		}
+	public void studentMovement(MessagePayload payload) throws IllegalArgumentException, WrongTurnActionRequestedException {
+		if (turnPhase != TurnPhase.MOVE_STUDENTS) throw new WrongTurnActionRequestedException();
 		List<?> toDiningRoom = (List<?>) payload.getAttribute("StudentsToDR").getAsObject();
 		List<?> toIslands = new ArrayList<>((List<?>) payload.getAttribute("StudentsToIslands").getAsObject());
 		if (toDiningRoom.size() + toIslands.size() > 3){
 			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
 			throw new IllegalArgumentException();
 		}
+		if (!moveStudentsToDiningRoom(toDiningRoom)) throw new IllegalArgumentException(); //TODO: make all methods in action controller return a boolean
+		if (!moveStudentsToIslands(toIslands)) throw new IllegalArgumentException();
+		currentTurnRemainingActions.remove(TurnPhase.MOVE_STUDENTS);
+		setTurnPhase(TurnPhase.MOVE_MOTHER_NATURE);
+	}
+
+	private boolean moveStudentsToDiningRoom(List<?> students) {
 		School school = turnController.getActivePlayer().getSchool();
 		List<Student> removedFromEntrance = new ArrayList<>();
-		for (Object studentType: toDiningRoom) {
-			removedFromEntrance.add(school.removeStudentEntrance((RealmType) studentType));
+		try {
+			for (Object studentType : students) {
+				removedFromEntrance.add(school.removeStudentEntrance((RealmType) studentType));
+			}
+		} catch (StudentNotFoundException e) {
+			school.insertEntrance(removedFromEntrance.toArray(new Student[0]));
+			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+			return false;
 		}
 		Student[] studentsFromEntrance = removedFromEntrance.toArray(new Student[0]);
 		try {
-			int coinsGained = school.insertDiningRoom(studentsFromEntrance, true);
+			int coinsGained = school.insertDiningRoom(studentsFromEntrance, true, true);
 			for (int i = 0; i < coinsGained; i++) {
 				turnController.getActivePlayer().insertCoin();
 				gameController.getModel().takeCoinFromGeneralSupply();
 			}
 		} catch (FullDiningRoomException e) {
-			school.insertEntrance(removedFromEntrance.toArray(studentsFromEntrance));
+			school.insertEntrance(studentsFromEntrance);
 			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+			return false;
 		}
-		while (!toIslands.isEmpty()) {
-			Pair<?, ?> pairStudentIsland = (Pair<?, ?>) toIslands.get(0);
-			int islandIndex = (Integer) pairStudentIsland.getSecond();
-			if (!isValidIsland(islandIndex)){
-				listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
-				throw new IllegalArgumentException();
-			}
-			List<RealmType> studentsToIsland = new ArrayList<>();
-			studentsToIsland.add((RealmType) pairStudentIsland.getFirst());
-			toIslands.remove(pairStudentIsland);
-			List<Pair<?, ?>> toRemove = new ArrayList<>();
-			for (Object toIsland : toIslands) {
-				Pair<?, ?> pair = (Pair<?, ?>) toIsland;
-				if ((Integer) pair.getSecond() == islandIndex) {
-					studentsToIsland.add((RealmType) pair.getFirst());
-					toRemove.add(pair);
-				}
-			}
-			for (Object o: toRemove) toIslands.remove(o);
-			Island island = gameController.getModel().getIslands().get(islandIndex);
-			school.sendStudentToIsland(island, studentsToIsland.toArray(new RealmType[0]));
-		}
-		currentTurnRemainingActions.remove(TurnPhase.MOVE_STUDENTS);
-		setTurnPhase(TurnPhase.MOVE_MOTHER_NATURE);
+		return true;
 	}
 
-	public void pickStudentsFromClouds(MessagePayload payload) throws EmptyCloudException, WrongTurnActionRequestedException {
-		if (turnPhase != TurnPhase.SELECT_CLOUD){
-			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_TURN_ACTION, turnController.getActivePlayer().getNickName());
-			throw new WrongTurnActionRequestedException();
+	private boolean moveStudentsToIslands(List<?> students) {
+		School school = turnController.getActivePlayer().getSchool();
+		Map<Integer, List<Student>> studentsToIslands = new HashMap<>();
+		try {
+			for (Object toIsland : students) {
+				studentsToIslands.putIfAbsent((Integer) ((Pair<?, ?>) toIsland).getSecond(), new ArrayList<>());
+				Student fromEntrance = school.removeStudentEntrance((RealmType) ((Pair<?, ?>) toIsland).getFirst());
+				studentsToIslands.get((Integer) ((Pair<?, ?>) toIsland).getSecond()).add(fromEntrance);
+			}
+		} catch (StudentNotFoundException e) {
+			Student[] studentsFromEntrance = studentsToIslands.values().stream().flatMap(Collection::stream).toList().toArray(new Student[0]);
+			school.insertEntrance(studentsFromEntrance);
+			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+			return false;
 		}
+		for (Integer i: studentsToIslands.keySet()) {
+			if (!isValidIsland(i)){
+				listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+				return false;
+			}
+			gameController.getModel().getIslands().get(i).addStudents(true, studentsToIslands.get(i).toArray(new Student[0]));
+		}
+		return true;
+	}
+
+	public void pickStudentsFromClouds(MessagePayload payload) throws WrongTurnActionRequestedException {
+		if (turnPhase != TurnPhase.SELECT_CLOUD) throw new WrongTurnActionRequestedException();
 		int cloudIndex = payload.getAttribute("Cloud").getAsInt();
 		Cloud cloud = gameController.getModel().getClouds()[cloudIndex];
-		turnController.getActivePlayer().pickFromCloud(cloud);
+		try {
+			turnController.getActivePlayer().pickFromCloud(cloud);
+		} catch (EmptyCloudException e) {
+			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+			throw new IllegalArgumentException();
+		}
 		currentTurnRemainingActions.remove(TurnPhase.SELECT_CLOUD);
 		setTurnPhase(TurnPhase.TURN_ENDED);
 	}
 
-	public void playCharacter(MessagePayload payload) throws IllegalArgumentException,
-			NotEnoughCoinsException, IllegalCharacterActionRequestedException {
+	public void playCharacter(MessagePayload payload) throws IllegalArgumentException {
 		Player activePlayer = turnController.getActivePlayer();
-		//TODO: illegal argument exception is too general
 		if (activePlayer.getTurnEffect().isCharacterPlayed()) {
 			listeners.firePropertyChange("Error", ErrorMessageType.CHARACTER_ALREADY_PLAYED, turnController.getActivePlayer().getNickName());
 			throw new IllegalArgumentException();
@@ -184,9 +194,13 @@ public class ActionController {
 			throw new IllegalArgumentException();
         }
 		int coinToGeneralSupply = characterCard.getPrice();
-		//TODO: if player does not have enough coins this is not correct
 		if (!characterCard.isCoinPresent()) coinToGeneralSupply--;
-		characterCard.playCard(turnController.getActivePlayer());
+		try {
+			characterCard.playCard(turnController.getActivePlayer());
+		} catch (NotEnoughCoinsException e) {
+			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+			throw new IllegalArgumentException(); //TODO: return false
+		}
 		activePlayer.getTurnEffect().setCharacterPlayed(true);
 		activePlayer.getTurnEffect().setCharacterEffectConsumed(false);
 		gameController.getModel().insertCoinsInGeneralSupply(coinToGeneralSupply);
@@ -194,9 +208,8 @@ public class ActionController {
 		characterEffect(payload);
 	}
 
-	public void characterEffect(MessagePayload payload) throws IllegalCharacterActionRequestedException {
+	public void characterEffect(MessagePayload payload) {
 		String arguments = payload.getAttribute("Arguments").getAsString();
-		//if (payloadArgs.length == 0) return;
 		if (arguments == null) return;
 		String[] payloadArgs = arguments.split(" ");
 		int characterId = payload.getAttribute("CharacterId").getAsInt();
@@ -213,7 +226,12 @@ public class ActionController {
 			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
             throw new IllegalArgumentException();
         }
-		characterCard.useEffect(args);
+		try {
+			characterCard.useEffect(args);
+		} catch (IllegalCharacterActionRequestedException e) {
+			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+			throw new IllegalArgumentException(); //TODO: return false
+		}
 	}
 
 	public void refillClouds() {

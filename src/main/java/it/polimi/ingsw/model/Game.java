@@ -94,9 +94,8 @@ public class Game implements ModelObserver, PropertyChangeListener {
 		int initialPosition = motherNaturePositionIndex();
 		islands.get(initialPosition).setMotherNaturePresent(false);
 		int finalPosition = (initialPosition + movement) % islands.size();
-		islands.get(finalPosition).setMotherNaturePresent(true);
-		//fireMyEvent(initialPosition+1,i+1); //why +1 ?
 		listeners.firePropertyChange("MotherNature", initialPosition, finalPosition);
+		islands.get(finalPosition).setMotherNaturePresent(true);
 	}
 
 	public Cloud[] getClouds (){
@@ -215,10 +214,9 @@ public class Game implements ModelObserver, PropertyChangeListener {
 				}
 			}
 		}
-		if (playerTakeProfessor != null) {
+		if (playerTakeProfessor != null && !playerTakeProfessor.getSchool().isProfessorPresent(studentType)) {
 			currPlayerProfessor.ifPresent(p -> p.getSchool().removeProfessor(studentType));
 			playerTakeProfessor.getSchool().insertProfessor(studentType);
-			System.out.println(Colors.YELLOW + "Update professor " + studentType + Colors.RESET);
 		}
 	}
 
@@ -239,12 +237,18 @@ public class Game implements ModelObserver, PropertyChangeListener {
 		if (maxInfluenceOcc == 0) return;
 		Player playerMaxInfluence = players.get(playerInfluences.indexOf(maxInfluence));
 		if (maxInfluenceOcc == 1 && island.getTowerType() != playerMaxInfluence.getSchool().getTowerType()) {
+			Player previousOwner = null;
 			if (island.getTowerType() != null) {
-				getPlayerByTowerType(island.getTowerType()).getSchool().insertTower(island.getNumTowers());
+				previousOwner = getPlayerByTowerType(island.getTowerType());
+				previousOwner.getSchool().insertTower(island.getNumTowers());
 			}
 			playerMaxInfluence.getSchool().sendTowerToIsland(island);
+			listeners.firePropertyChange(new PropertyChangeEvent(
+					islands.indexOf(island), "IslandTower", previousOwner, playerMaxInfluence
+			));
 			updateIslandUnification(island);
 			if (playerMaxInfluence.getSchool().getNumTowers() == 0) checkWinners();
+			System.out.println(Colors.YELLOW + "Update island tower " + island + " " + island.getTowerType() + Colors.RESET);
 		}
 	}
 
@@ -272,7 +276,6 @@ public class Game implements ModelObserver, PropertyChangeListener {
 			islandIndexes.add(islandIndex);
 			islands.removeAll(islandToUnify);
 			Island newIsland = new IslandGroup(islandToUnify.toArray(new Island[0]));
-			newIsland.setMotherNaturePresent(true);
 			islands.add(indexToReplace, newIsland);
 			newIsland.addListener(this);
 			newIsland.addObserver(this);
@@ -291,7 +294,6 @@ public class Game implements ModelObserver, PropertyChangeListener {
 		}
 	}
 
-	//For testing
 	public int motherNaturePositionIndex() {
 		int i = 0;
 		while (!islands.get(i).isMotherNaturePresent()) {
@@ -323,7 +325,8 @@ public class Game implements ModelObserver, PropertyChangeListener {
 	public void checkWinners() {
 		List<Player> winnerOrTies = onGameEndEvent();
 		boolean isWin = winnerOrTies.size() == 1;
-		PropertyChangeEvent evt = new PropertyChangeEvent(winnerOrTies, "EndGame", null, isWin);
+		PropertyChangeEvent evt = new PropertyChangeEvent(winnerOrTies.stream()
+				.map(Player::getNickName).toList().toArray(new String[0]), "EndGame", null, isWin);
 		listeners.firePropertyChange(evt);
 	}
 

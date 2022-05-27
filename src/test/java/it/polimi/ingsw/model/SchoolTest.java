@@ -67,7 +67,7 @@ class SchoolTest extends TestCase {
         schoolTest.insertEntrance(student);
         try {
             Student studentRemoved = schoolTest.removeStudentEntrance(studentType);
-            schoolTest.insertDiningRoom(new Student[]{studentRemoved}, false);
+            schoolTest.insertDiningRoom(new Student[]{studentRemoved}, false, true);
             Assertions.assertEquals(previousStudents + 1, schoolTest.getNumStudentsDiningRoom(studentType));
         } catch(StudentNotFoundException | FullDiningRoomException e) {
             Assertions.fail();
@@ -141,7 +141,7 @@ class SchoolTest extends TestCase {
     void removeFromDiningRoomTest() {
         Student student = new Student(RealmType.YELLOW_GNOMES);
         try {
-            schoolTest.insertDiningRoom(new Student[]{student}, true);
+            schoolTest.insertDiningRoom(new Student[]{student}, true, true);
         } catch (FullDiningRoomException e) {
             Assertions.fail();
         }

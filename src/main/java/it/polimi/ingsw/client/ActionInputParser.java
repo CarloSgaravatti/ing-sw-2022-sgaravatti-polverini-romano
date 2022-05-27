@@ -47,7 +47,6 @@ public class ActionInputParser implements PropertyChangeListener {
             if (error == null) listeners.firePropertyChange(evt);
             else {
                 userInterface.displayStringMessage(Colors.RED + error + Colors.RESET);
-                //userInterface.insertAction(); //TODO: do better
                 listeners.firePropertyChange("InputError", null, evt.getPropertyName());
             }
         } catch (Exception e) {

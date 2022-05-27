@@ -32,12 +32,9 @@ public class PlayerView {
     }
 
     public void updateEntrance(RealmType[] students, boolean isInsertion) {
+        System.out.println("Updating entrance with students " + Arrays.toString(students));
         Integer[] entrance = schoolStudents.getFirst();
         updateStudents(entrance, students, isInsertion);
-        //TODO: eliminate this when everything is ok
-        for (int i = 0; i < schoolStudents.getFirst().length; i++) {
-            if (schoolStudents.getFirst()[i] < 0) System.out.println("Negative entrance, why this?");
-        }
     }
 
     private static void updateStudents(Integer[] studentContainer, RealmType[] students, boolean isInsertion) {
