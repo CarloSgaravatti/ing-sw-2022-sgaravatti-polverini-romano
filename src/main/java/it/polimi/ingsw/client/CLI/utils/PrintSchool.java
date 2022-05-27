@@ -77,10 +77,11 @@ public class PrintSchool {
         return schoolSkeleton;
     }
 
-    public String[][] addHeading(String nickname, int coins, boolean addCoins, String[][] school) {
-        String[][] schoolWithHeading = new String[school.length + 1][school[0].length];
+    public String[][] addHeading(String nickname, int coins, boolean addCoins, String[][] school, Pair<Integer, Integer> lastAssistant) {
+        String[][] schoolWithHeading = new String[school.length + 2][school[0].length];
         Arrays.fill(schoolWithHeading[0], " ");
-        for (int i = 1; i < schoolWithHeading.length; i++) {
+        Arrays.fill(schoolWithHeading[schoolWithHeading.length - 1], " ");
+        for (int i = 1; i < schoolWithHeading.length - 1; i++) {
             for (int j = 0; j < school[i - 1].length; j++) {
                 schoolWithHeading[i][j] = school[i - 1][j];
             }
@@ -94,6 +95,11 @@ public class PrintSchool {
         String nicknameHead = ((nickname.length() > 13) ? nickname.substring(0, 10) + "..." : nickname) + "'s school";
         for (int i = 0; i < nicknameHead.length(); i++) {
             schoolWithHeading[0][i + 1] = String.valueOf(nicknameHead.charAt(i));
+        }
+        String lastAssistantPrint = "Last assistant played: ";
+        if (lastAssistant != null)  lastAssistantPrint += lastAssistant.toString();
+        for (int i = 0; i < lastAssistantPrint.length(); i++) {
+            schoolWithHeading[schoolWithHeading.length - 1][i + 1] = String.valueOf(lastAssistantPrint.charAt(i));
         }
         return schoolWithHeading;
     }

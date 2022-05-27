@@ -64,8 +64,6 @@ public class DefaultMessageHandler extends BaseMessageHandler {
     }
 
     private void onErrorMessage(MessagePayload payload) {
-        //TODO: display error on user interface
-        getUserInterface().displayStringMessage("Received an error");
         turnHandler.firePropertyChange("Error", null, payload.getAttribute("ErrorType").getAsObject());
     }
 }

@@ -53,7 +53,9 @@ public class SchoolMapPrinter {
         Pair<Integer[], Integer[]> students = playerView.getSchoolStudents();
         String[][] school = schoolPrinter.getSchool(playerProfessors, students.getFirst(),
                 playerView.getNumTowers(), playerView.getPlayerTower(), students.getSecond());
-        return schoolPrinter.addHeading(player, modelView.getPlayers().get(player).getPlayerCoins(), modelView.isExpert(), school);
+        Pair<Integer, Integer> lastAssistant = modelView.getPlayers().get(player).getLastPlayedAssistant();
+        return schoolPrinter.addHeading(player, modelView.getPlayers().get(player).getPlayerCoins(),
+                modelView.isExpert(), school, lastAssistant);
     }
 
     private int getPositionOfSchool(String player) {

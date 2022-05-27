@@ -5,19 +5,9 @@ import java.util.List;
 
 public class Lobby {
     private final List<String[][]> lobby;
-    private int sID = 0;
 
     public Lobby(){
         this.lobby = createSkeleton();
-    }
-
-    public int startIndex(int id, String command){
-        switch(command){
-            case "<5" -> sID -= 5;
-            case "5>" -> sID += 5;
-        }
-
-        return sID;
     }
 
     //TODO: better reuse of code

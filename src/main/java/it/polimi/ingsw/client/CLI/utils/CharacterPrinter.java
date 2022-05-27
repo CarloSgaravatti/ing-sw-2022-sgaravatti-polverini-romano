@@ -16,7 +16,6 @@ public class CharacterPrinter {
     private static final Pair<Integer, Integer> ID_POSITION = new Pair<>(0, 4);
     private static final String[] LINE_1 = new String[] {"p","r","i","c","e"," ", "="};
     private static final Pair<Integer, Integer> PRICE_POSITION = new Pair<>(1, LINE_1.length + 1);
-    //TODO: image for characters without students or no entry tiles
     private static final List<Integer> STUDENTS_LINES = List.of(2, 3);
     private static final Pair<Integer, Integer> NO_ENTRY_TILE_POSITION = new Pair<>(3, 4);
     private static final Map<RealmType, UnicodeConstants> studentsUnicode =

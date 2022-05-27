@@ -3,7 +3,9 @@ package it.polimi.ingsw.client.CLI.utils;
 import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.utils.Pair;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class MapPrinter {
     private String[][] islandsMap;
@@ -71,8 +73,6 @@ public class MapPrinter {
             printMatrixRow((i < characterMap.length) ? characterMap[i] : null, characterMap[0].length, maxDimensionX, i);*/
             System.out.println();
         }
-
-        //temporary
         for (int i = 0; i < schoolMap.length; i++) {
             for (int j = 0; j < schoolMap[i].length; j++) {
                 System.out.print(schoolMap[i][j]);
@@ -81,8 +81,18 @@ public class MapPrinter {
         }
 
         //temporary
-        System.out.println("These are your assistants: " +
-                Arrays.toString(modelView.getClientPlayerAssistants().keySet().toArray(new Integer[0])));
+        if (modelView.getClientPlayerAssistants().isEmpty()) return;
+        StringBuilder assistants = new StringBuilder("These are your assistants: [");
+        List<Integer> assistantValues = new ArrayList<>(modelView.getClientPlayerAssistants().keySet());
+        for (int i = 0; i < assistantValues.size() - 1; i++) {
+            assistants.append("(").append(assistantValues.get(i)).append(",")
+                    .append(modelView.getClientPlayerAssistants().get(assistantValues.get(i))).append("),");
+        }
+        assistants.append("(").append(assistantValues.get(assistantValues.size() - 1)).append(",")
+                .append(modelView.getClientPlayerAssistants().get(assistantValues.get(assistantValues.size() - 1))).append(")]");
+        System.out.println(assistants);
+        //System.out.println("These are your assistants: " +
+        //        Arrays.toString(modelView.getClientPlayerAssistants().keySet().toArray(new Integer[0])));
     }
 
     public static void printMatrixRow(String[] matrixRow, int rowLength, int matrixRowDim, int numRows) {

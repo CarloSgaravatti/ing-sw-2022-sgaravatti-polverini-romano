@@ -15,8 +15,6 @@ public class PlayerSetupHandler implements PropertyChangeListener {
         this.connection = connection;
     }
 
-    //TODO: refresh lobby message
-
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {

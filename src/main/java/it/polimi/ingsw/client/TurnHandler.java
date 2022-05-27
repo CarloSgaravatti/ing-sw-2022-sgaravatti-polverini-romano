@@ -22,8 +22,6 @@ public class TurnHandler implements PropertyChangeListener {
     private boolean turnAlreadyEnded = false;
     private boolean isInputErrorReceived = false;
 
-    //TODO: maybe there is a synchronization problem with the connection to server executor
-
     public TurnHandler(ConnectionToServer connection, UserInterface userInterface) {
         this.connection = connection;
         this.userInterface = userInterface;

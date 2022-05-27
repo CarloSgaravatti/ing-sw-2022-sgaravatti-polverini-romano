@@ -19,9 +19,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.*;
 
-//TODO: fire property change listeners might be useful (instead of using return types, because it isn't always the same
-//  type that we want to return in some methods, i.e. askGameToPlay)
-
 public class CLI implements Runnable, UserInterface {
     private final String serverAddress;
     private final int serverPort;
@@ -36,7 +33,6 @@ public class CLI implements Runnable, UserInterface {
         Scanner sc = new Scanner(System.in);
         String serverAddress;
         int serverPort;
-        //Some visualization stuff ...
         System.out.println("Insert server ip address: ");
         System.out.print("> ");
         serverAddress = sc.next();
@@ -94,7 +90,6 @@ public class CLI implements Runnable, UserInterface {
         addListener(playerSetupHandler, "TowerChoice");
         addListener(playerSetupHandler, "WizardChoice");
         addListener(playerSetupHandler, "RefreshLobby");
-        //TODO: maybe use an executor service
         Thread t = new Thread(connectionToServer);
         t.start();
         try {
@@ -291,9 +286,7 @@ public class CLI implements Runnable, UserInterface {
     public void onGameInitialization(ModelView modelView) {
         printer = new MapPrinter(0, 0);
         this.modelView = modelView;
-        clearScreen();
         printer.initializeMap(modelView, nickname);
-        printer.printMap();
     }
 
     @Override
@@ -310,14 +303,13 @@ public class CLI implements Runnable, UserInterface {
                 printer.replaceIsland((Integer) evt.getNewValue());
             }
             case "IslandUnification" -> printer.recomputeIslandMap();
-            case "SchoolDiningRoomUpdate", "CoinsUpdate", "SchoolSwap", "EntranceSwap", "EntranceUpdate" ->
+            case "SchoolDiningRoomUpdate", "CoinsUpdate", "SchoolSwap", "EntranceSwap", "EntranceUpdate", "AssistantUpdate"->
                     printer.replaceSchool((String) evt.getNewValue());
             case "ProfessorUpdate" -> {
                 if (evt.getOldValue() != null) {
                     printer.replaceSchool((String) evt.getOldValue());
                 }
                 printer.replaceSchool((String) evt.getNewValue());
-                //or printer.recomputeSchoolMap()
             }
             case "PickFromCloud" -> {
                 printer.replaceCloud((Integer) evt.getNewValue());
