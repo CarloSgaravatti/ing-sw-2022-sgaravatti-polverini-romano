@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client.CLI.utils;
 
-import it.polimi.ingsw.utils.Pair;
 import it.polimi.ingsw.utils.Triplet;
 
 import java.util.ArrayList;

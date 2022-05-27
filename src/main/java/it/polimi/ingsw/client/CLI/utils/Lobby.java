@@ -20,6 +20,7 @@ public class Lobby {
         return sID;
     }
 
+    //TODO: better reuse of code
     public List<String[][]> createSkeleton(){
         int count = 0;
         List<String[][]> skeleton = new ArrayList<>();

@@ -15,6 +15,8 @@ public class PlayerSetupHandler implements PropertyChangeListener {
         this.connection = connection;
     }
 
+    //TODO: refresh lobby message
+
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
@@ -23,6 +25,7 @@ public class PlayerSetupHandler implements PropertyChangeListener {
             case "GameToPlay" -> onGameToPlayDecision((Integer) evt.getNewValue());
             case "TowerChoice" -> onTowerSelection((TowerType) evt.getNewValue());
             case "WizardChoice" -> onWizardSelection((WizardType) evt.getNewValue());
+            case "RefreshLobby" -> connection.sendMessage(new MessagePayload(), "RefreshGlobalLobby", ClientMessageType.GAME_SETUP);
         }
     }
 

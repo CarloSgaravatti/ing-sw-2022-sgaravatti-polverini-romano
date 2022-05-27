@@ -28,8 +28,6 @@ public interface UserInterface extends PropertyChangeListener{
 
     void askAction(List<String> actions, List<String> actionCommands);
 
-    void askLobbyDecision();
-
     void addListener(PropertyChangeListener listener, String propertyName);
 
     void onGameInitialization(ModelView modelView);

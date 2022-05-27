@@ -168,6 +168,10 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         String messageName = message.getClientMessageHeader().getMessageName();
         int gameId;
         switch (messageName) {
+            case "RefreshGlobalLobby" -> {
+                server.globalLobby(this, nickname);
+                return;
+            }
             case "NewGame" -> {
                 int numPlayers = message.getMessagePayload().getAttribute("NumPlayers").getAsInt();
                 boolean isExpertGame = message.getMessagePayload().getAttribute("GameRules").getAsBoolean();

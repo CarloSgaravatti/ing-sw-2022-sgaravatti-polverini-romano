@@ -51,7 +51,6 @@ public class CLI implements Runnable, UserInterface {
         this.serverPort = serverPort;
     }
 
-
     public void clearScreen(){
         try{
             String operatingSystem = System.getProperty("os.name");
@@ -87,8 +86,6 @@ public class CLI implements Runnable, UserInterface {
         System.out.println("Connection Established");
         clearScreen();
         PrintEntryWindow.printWelcome();
-        //askNickname();
-        //System.out.println(nickname);
         ConnectionToServer connectionToServer = new ConnectionToServer(socket, this);
         PlayerSetupHandler playerSetupHandler = new PlayerSetupHandler(connectionToServer);
         addListener(playerSetupHandler, "Nickname");
@@ -96,6 +93,7 @@ public class CLI implements Runnable, UserInterface {
         addListener(playerSetupHandler, "GameToPlay");
         addListener(playerSetupHandler, "TowerChoice");
         addListener(playerSetupHandler, "WizardChoice");
+        addListener(playerSetupHandler, "RefreshLobby");
         //TODO: maybe use an executor service
         Thread t = new Thread(connectionToServer);
         t.start();
@@ -110,11 +108,11 @@ public class CLI implements Runnable, UserInterface {
     @Override
     public void askNickname() {
         String nickname;
-        nickname = sc.next();
-        while (nickname == null || nickname.isBlank()){
+        do {
+            System.out.print("> ");
             nickname = sc.next();
-        }
-        this.nickname = nickname; //TODO: need to change
+        } while (nickname == null || nickname.isBlank());
+        this.nickname = nickname;
         listeners.firePropertyChange("Nickname", null, nickname);
     }
 
@@ -125,56 +123,70 @@ public class CLI implements Runnable, UserInterface {
 
     @Override
     public void displayGlobalLobby(int numGames, Map<Integer, Triplet<Integer, Boolean, String[]>> gamesInfo) {
+        clearScreen();
         System.out.println("There are currently " + numGames + " games not started.");
-        List<Integer> ids = new ArrayList<>(gamesInfo.keySet()); //TODO: for printing the lobby
-
         LobbyPrintManager printManager = new LobbyPrintManager(gamesInfo);
         printManager.printLobby();
-
-        for (Integer i: gamesInfo.keySet()) {
-            Triplet<Integer, Boolean, String[]> gameInfo = gamesInfo.get(i);
-            String[] players = gameInfo.getThird();
-            System.out.println("- game id = " + i + " numPlayers = " + gameInfo.getFirst() + " players = " + Arrays.toString(players));
+        String message = "Insert 'NewGame' to create a new game, 'Refresh' to update the global lobby";
+        if (numGames > 5) {
+            message += ", '>5' to view the next 5 games and '<5' to view the previous 5 games.";
+        } else message += ".";
+        message += " To enter a game lobby, insert the id of the game";
+        boolean decisionMade = false;
+        while (!decisionMade) {
+            System.out.println(message);
+            System.out.print("> ");
+            String input = sc.next();
+            switch (input) {
+                case ">5" -> {
+                    printManager.onNextFiveCommand();
+                    clearScreen();
+                    printManager.printLobby();
+                }
+                case "<5" -> {
+                    printManager.onPreviousFiveCommand();
+                    clearScreen();
+                    printManager.printLobby();
+                }
+                case "NewGame" -> {
+                    helpGameCreation();
+                    decisionMade = true;
+                }
+                case "Refresh" -> {
+                    listeners.firePropertyChange("RefreshLobby", null, null);
+                    decisionMade = true;
+                }
+                default -> {
+                    try {
+                        int gameId = Integer.parseInt(input);
+                        listeners.firePropertyChange("GameToPlay", null, gameId);
+                        decisionMade = true;
+                    }
+                    catch (NumberFormatException e) {
+                        System.out.println(Colors.RED + "Command not recognized!" + Colors.RESET);
+                    }
+                }
+            }
         }
     }
 
-    @Override
-    public void askLobbyDecision() {
-        String decision;
+    private void helpGameCreation() {
+        int numPlayers = 0;
         do {
-            System.out.println("Select what to do: [New/Game]");
-            decision = sc.next();
-        } while (!decision.equals("New") && !decision.equals("Game"));
-        if (decision.equals("New")) {
-            int numPlayers = 0;
-            do {
-                System.out.println("Insert number of players: [2/3]");
-                try {
-                    numPlayers = Integer.parseInt(sc.next());
-                }
-                catch (NumberFormatException e) {
-                    System.out.println(Colors.RED + "You have to insert a number!" + Colors.RESET);
-                }
-            } while (numPlayers != 2 && numPlayers != 3);
-            boolean rules;
-            System.out.println("Insert rules types: to create an expert game type 'expert', otherwise a simple game will be created");
-            rules = sc.next().equals("expert");
-            listeners.firePropertyChange("NewGame", numPlayers, rules);
-        } else {
-            int gameId = 0;
-            boolean inputOk = false;
-            System.out.println("Insert game id");
-            do {
-                try {
-                    gameId = Integer.parseInt(sc.next());
-                    inputOk = true;
-                }
-                catch (NumberFormatException e) {
-                    System.out.println(Colors.RED + "You have to insert a number!" + Colors.RESET);
-                }
-            } while(!inputOk);
-            listeners.firePropertyChange("GameToPlay", null, gameId);
-        }
+            System.out.println("Insert number of players: [2/3]");
+            System.out.print("> ");
+            try {
+                numPlayers = Integer.parseInt(sc.next());
+            }
+            catch (NumberFormatException e) {
+                System.out.println(Colors.RED + "You have to insert a number!" + Colors.RESET);
+            }
+        } while (numPlayers != 2 && numPlayers != 3);
+        boolean rules;
+        System.out.println("Insert rules types: to create an expert game type 'expert', otherwise a simple game will be created");
+        System.out.print("> ");
+        rules = sc.next().equals("expert");
+        listeners.firePropertyChange("NewGame", numPlayers, rules);
     }
 
     @Override
@@ -214,6 +226,7 @@ public class CLI implements Runnable, UserInterface {
         listeners.firePropertyChange("WizardChoice", null, choice);
     }
 
+    @Override
     public void displayLobbyInfo(int numPlayers, boolean rules, String[] waitingPlayers) {
         System.out.print("You entered the lobby, there are currently " + waitingPlayers.length + " players waiting.\n"
                 + "Their names are:");
@@ -222,6 +235,7 @@ public class CLI implements Runnable, UserInterface {
                 + ((rules) ? "expert" : "simple"));
     }
 
+    @Override
     public void printTurnMenu(List<String> actions, List<String> actionCommands) {
         clearScreen();
         printer.printMap();
@@ -231,6 +245,7 @@ public class CLI implements Runnable, UserInterface {
         }
     }
 
+    @Override
     public void askAction(List<String> actions, List<String> actionCommands) {
         if (sc.hasNext()) sc.nextLine(); //Don't know if there is a better way to rest the input
         String actionName = sc.next();
@@ -279,9 +294,6 @@ public class CLI implements Runnable, UserInterface {
         clearScreen();
         printer.initializeMap(modelView, nickname);
         printer.printMap();
-        /*System.out.println();
-        printer.replaceIsland(2);
-        printer.printMap();*/
     }
 
     @Override
