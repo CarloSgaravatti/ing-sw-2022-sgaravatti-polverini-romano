@@ -1,9 +1,6 @@
 package it.polimi.ingsw.client.CLI;
 
-import it.polimi.ingsw.client.CLI.utils.Colors;
-import it.polimi.ingsw.client.CLI.utils.LobbyPrintManager;
-import it.polimi.ingsw.client.CLI.utils.MapPrinter;
-import it.polimi.ingsw.client.CLI.utils.PrintEntryWindow;
+import it.polimi.ingsw.client.CLI.utils.*;
 import it.polimi.ingsw.client.ConnectionToServer;
 import it.polimi.ingsw.client.PlayerSetupHandler;
 import it.polimi.ingsw.client.UserInterface;
@@ -28,6 +25,7 @@ public class CLI implements Runnable, UserInterface {
     private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
     private ModelView modelView;
     private MapPrinter printer;
+    private UserHelper helper;
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -195,6 +193,7 @@ public class CLI implements Runnable, UserInterface {
         boolean towerChosen = false;
         TowerType choice = null;
         while (!towerChosen) {
+            System.out.print("> ");
             try {
                 choice = TowerType.valueOf(sc.next().toUpperCase());
                 towerChosen = true;
@@ -211,6 +210,7 @@ public class CLI implements Runnable, UserInterface {
         boolean wizardChosen = false;
         WizardType choice = null;
         while (!wizardChosen) {
+            System.out.print("> ");
             try {
                 choice = WizardType.valueOf(sc.next().toUpperCase());
                 wizardChosen = true;
@@ -236,21 +236,31 @@ public class CLI implements Runnable, UserInterface {
         printer.printMap();
         System.out.println("This is what you can do: ");
         for (int i = 0; i < actions.size(); i++) {
-            System.out.println(actions.get(i) + " (" + actionCommands.get(i) + ")");
+            System.out.println("\t- " + actions.get(i) + " (" + actionCommands.get(i) + ")");
         }
+        System.out.println("Remember, at the end of each action command type 'end'. To end your turn simply type 'EndTurn'." +
+                "If you need help type 'Help'");
     }
 
     @Override
     public void askAction(List<String> actions, List<String> actionCommands) {
-        if (sc.hasNext()) sc.nextLine(); //Don't know if there is a better way to rest the input
+        //if (sc.hasNext()) sc.nextLine(); //Don't know if there is a better way to rest the input
+        System.out.print("> ");
         String actionName = sc.next();
         if (actionName.equals("EndTurn")) {
             listeners.firePropertyChange(actionName, null, null);
             return;
         }
+        if (actionName.equals("Help")) {
+            helper.onHelpRequest();
+            printTurnMenu(actions, actionCommands);
+            askAction(actions, actionCommands);
+            return;
+        }
         String actionArgument = getActionArguments();
         while(!actionCommands.contains(actionName)) { //can be modified (for example by adding abbreviations)
             System.out.println(Colors.RED + "Action not recognized, retry" + Colors.RESET);
+            System.out.print("> ");
             actionName = sc.next();
             actionArgument = getActionArguments();
         }
@@ -287,10 +297,12 @@ public class CLI implements Runnable, UserInterface {
         printer = new MapPrinter(0, 0);
         this.modelView = modelView;
         printer.initializeMap(modelView, nickname);
+        helper = new UserHelper(modelView, sc);
     }
 
     @Override
     public synchronized void propertyChange(PropertyChangeEvent evt) {
+        String endGameMessage = null;
         switch (evt.getPropertyName()) {
             case "CloudsRefill" -> printer.recomputeCloudMap();
             case "IslandStudentsUpdate" -> printer.replaceIsland((Integer) evt.getNewValue());
@@ -320,17 +332,32 @@ public class CLI implements Runnable, UserInterface {
                 printer.replaceCharacter((Integer) evt.getOldValue());
                 printer.replaceIsland((Integer) evt.getNewValue());
             }
-            //Temporary messages
             case "NewTurn" -> {
                 clearScreen();
                 printer.printMap();
                 System.out.println("Now is " + evt.getNewValue() + "'s turn");
             }
-            case "Winner" -> System.out.println("You have won!");
-            case "Loser" -> System.out.println("You have lose. " + evt.getNewValue() + " has won");
-            case "Tie" -> System.out.println("It's a tie. These are the tiers: " + Arrays.toString((String[]) evt.getNewValue()));
-            case "TieLoser" -> System.out.println("You have lose, but nobody has won, these are the tiers" +
-                    Arrays.toString((String[]) evt.getNewValue()));
+            case "Winner" -> endGameMessage = "You have won!";
+            case "Loser" -> endGameMessage = "You have lose. " + evt.getNewValue() + " has won";
+            case "Tie" -> endGameMessage = "It's a tie. These are the tiers: " + Arrays.toString((String[]) evt.getNewValue());
+            case "TieLoser" -> endGameMessage = "You have lose, but nobody has won, these are the tiers" +
+                    Arrays.toString((String[]) evt.getNewValue());
+        }
+        if (endGameMessage != null) {
+            onEndGame(endGameMessage);
+        }
+    }
+
+    private void onEndGame(String message) {
+        System.out.println(message);
+        System.out.println();
+        System.out.println("Insert 'ok' to return to the global lobby or 'q' to quit the application");
+        String command;
+        do {
+            command = sc.next();
+        } while(!command.equals("q") && !command.equals("ok"));
+        if (command.equals("q")) {
+            //TODO: shutdown application (find how to do that)
         }
     }
 }

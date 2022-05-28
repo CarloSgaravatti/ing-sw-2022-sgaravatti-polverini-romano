@@ -33,7 +33,7 @@ public class Character1 extends CharacterCard {
         }
         try {
             island = islands.get(Integer.parseInt(args.get(1)));
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | IndexOutOfBoundsException e) {
             throw new IllegalCharacterActionRequestedException();
         }
         try {

@@ -40,7 +40,7 @@ public class JsonUtils {
         throw new NoSuchElementException();
     }
 
-    public static GameConstants constantsByNumPlayer(int numPlayer){
+    public static GameConstants constantsByNumPlayer(int numPlayer) {
         InputStream stream = JsonUtils.class.getResourceAsStream("/jsonConfigFiles/ConstantsByPlayers.json");
         if (stream == null) throw new NullPointerException();
         JsonReader jsonReader = new JsonReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
@@ -66,4 +66,22 @@ public class JsonUtils {
         return gameConstants;
     }
 
+    public static Triplet<String, String, String> getCharacterDescription(int characterId) throws NoSuchElementException {
+        InputStream stream = JsonUtils.class.getResourceAsStream("/jsonConfigFiles/CharactersDescription.json");
+        if (stream == null) throw new NullPointerException();
+        JsonReader jsonReader = new JsonReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+        JsonElement obj = JsonParser.parseReader(jsonReader);
+        JsonArray jsonArray = obj.getAsJsonArray();
+        for (JsonElement jsonElement : jsonArray){
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            if (jsonObject.get("characterId").getAsInt() == characterId) {
+                Triplet<String, String, String> characterInfo = new Triplet<>();
+                characterInfo.setFirst(jsonObject.get("description").getAsString());
+                characterInfo.setSecond(jsonObject.get("callInstructions").getAsString());
+                characterInfo.setThird(jsonObject.get("example").getAsString());
+                return characterInfo;
+            }
+        }
+        throw new NoSuchElementException();
+    }
 }

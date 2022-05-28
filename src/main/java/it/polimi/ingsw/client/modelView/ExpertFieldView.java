@@ -79,6 +79,10 @@ public class ExpertFieldView {
         characterStudents.replace(characterId, newStudents);
     }
 
+    public void updateNoEntryTilesOnCharacter(int newNoEntryTiles) {
+        numNoEntryTilesOnCharacter.setSecond(newNoEntryTiles);
+    }
+
     public Map<Integer, Integer> getCharacters() {
         return characters;
     }

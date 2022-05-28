@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.messageHandlers;
 
 import it.polimi.ingsw.client.ConnectionToServer;
+import it.polimi.ingsw.client.modelView.ExpertFieldView;
 import it.polimi.ingsw.client.modelView.FieldView;
 import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.client.UserInterface;
@@ -70,6 +71,15 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         int startingPosition = payload.getAttribute("InitialPosition").getAsInt();
         int newMotherNaturePosition = payload.getAttribute("FinalPosition").getAsInt();
         getModelView().getField().updateMotherNaturePosition(newMotherNaturePosition);
+        if (getModelView().isExpert() && getModelView().getField().getExpertField().areNoEntryTilesPresents()) {
+            ExpertFieldView expertField = getModelView().getField().getExpertField();
+            Integer previousNoEntryTiles = expertField.getNoEntryTilesOnIsland(newMotherNaturePosition);
+            Integer previousCharacterNoEntryTiles = expertField.getNumNoEntryTilesOnCharacter().getSecond();
+            if (previousNoEntryTiles != null && previousNoEntryTiles > 0) {
+                expertField.updateIslandNoEntryTiles(previousNoEntryTiles - 1, newMotherNaturePosition);
+                expertField.updateNoEntryTilesOnCharacter(previousCharacterNoEntryTiles + 1);
+            }
+        }
         userInterface.firePropertyChange("MotherNatureUpdate", startingPosition, newMotherNaturePosition);
     }
 
