@@ -33,16 +33,11 @@ public class DefaultMessageHandler extends BaseMessageHandler {
         }
         MessagePayload payload = message.getMessagePayload();
         switch (header.getMessageName()) {
-            case "NicknameRequest" -> onNicknameRequest(payload);
+            case "NicknameRequest" -> getUserInterface().askNickname();
             case "GlobalLobby" -> onGeneralLobbyMessage(payload);
             case "GameLobby" -> onGameLobbyMessage(payload);
             case "Error" -> onErrorMessage(payload);
         }
-    }
-
-    private void onNicknameRequest(MessagePayload payload) {
-        getUserInterface().displayStringMessage(payload.getAttribute("MessageInfo").getAsString());
-        getUserInterface().askNickname();
     }
 
     private void onGeneralLobbyMessage(MessagePayload payload) {

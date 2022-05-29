@@ -100,6 +100,7 @@ public class CLI implements Runnable, UserInterface {
 
     @Override
     public void askNickname() {
+        System.out.println("Insert a username:");
         String nickname;
         do {
             System.out.print("> ");

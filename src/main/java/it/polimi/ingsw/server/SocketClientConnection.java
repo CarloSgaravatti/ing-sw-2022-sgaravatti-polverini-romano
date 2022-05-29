@@ -20,7 +20,6 @@ public class SocketClientConnection implements Runnable, ClientConnection {
     private final Server server;
     private boolean active = false;
     private boolean setupDone = false; //If a player has a game, this is true
-    //private final EventListenerList listeners = new EventListenerList();
     private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
     private String nickname;
     private final ScheduledExecutorService pingManager = Executors.newScheduledThreadPool(1);
@@ -41,23 +40,10 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         try {
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
-
-            MessageFromServer pingMessage = new MessageFromServer(
-                    new ServerMessageHeader(null, ServerMessageType.PING_MESSAGE), null);
-            pingManager.scheduleAtFixedRate(() -> {
-                if (!isPingAckReceived()) {
-                    setActive(false);
-                    return;
-                }
-                asyncSend(pingMessage);
-                setPingAckReceived(false);
-                System.out.println("Ping sent to " + nickname);
-            }, 1, 1, TimeUnit.MINUTES);
-
-            //Send setup nickname message
             do {
                 initializeClient();
             } while (!isActive());
+            enablePing();
             while(isActive()){
                 readMessage();
             }
@@ -143,10 +129,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
     //TODO: there is a problem with pings when a client sends nickname after ping a ping ack
     public void initializeClient() throws IOException, ClassNotFoundException, ClassCastException {
         ServerMessageHeader header = new ServerMessageHeader("NicknameRequest", ServerMessageType.SERVER_MESSAGE);
-        MessagePayload payload = new MessagePayload();
-        String messageInfo = "Welcome to Eriantys!\nInsert a username";
-        payload.setAttribute("MessageInfo", messageInfo);
-        MessageFromServer message = new MessageFromServer(header, payload);
+        MessageFromServer message = new MessageFromServer(header, new MessagePayload());
         send(message);
         MessageFromClient answer = (MessageFromClient) in.readObject();
         String nickname = answer.getMessagePayload().getAttribute("Nickname").getAsString();
@@ -207,5 +190,19 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         MessagePayload payload = new MessagePayload();
         payload.setAttribute("ErrorType", error);
         asyncSend(new MessageFromServer(header, payload));
+    }
+
+    public void enablePing() {
+        MessageFromServer pingMessage = new MessageFromServer(
+                new ServerMessageHeader(null, ServerMessageType.PING_MESSAGE), null);
+        pingManager.scheduleAtFixedRate(() -> {
+            if (!isPingAckReceived()) {
+                setActive(false);
+                return;
+            }
+            asyncSend(pingMessage);
+            setPingAckReceived(false);
+            System.out.println("Ping sent to " + nickname);
+        }, 1, 1, TimeUnit.MINUTES);
     }
 }

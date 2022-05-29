@@ -1,0 +1,74 @@
+[
+  {
+    "characterId" : "1",
+    "description" : "Character 1 controls 4 students. You can pick a student from him and send it to an island.",
+    "callInstructions" : "To call character 1 effect you have to select a student that is present on him (by entering the abbreviation) and an island id.",
+    "example" : "PlayCharacter 1 R 2 end (select a RED_DRAGON and move it to island 2)"
+  },
+  {
+    "characterId" : "2",
+    "description" : "By playing character 2 you can take control of any professor even if you have the same number of students in the dining room of the player who currently controls it.",
+    "callInstructions" : "Character 2 doesn't take any arguments.",
+    "example" : "PlayCharacter 2 end"
+  },
+  {
+    "characterId" : "3",
+    "description" : "By playing character 3 you can choose an island that will behave as if mother nature have just been placed on it.",
+    "callInstructions" : "To play character 3 you have to insert an island id.",
+    "example" : "PlayCharacter 2 3 end (updates island 3)"
+  },
+  {
+    "characterId" : "4",
+    "description" : "By playing character 4 you can move mother nature up to 2 additional islands.",
+    "callInstructions" : "Character 2 doesn't take any arguments.",
+    "example" : "PlayCharacter 4 end"
+  },
+  {
+    "characterId" : "5",
+    "description" : "Characters 5 manage no entry tiles. A no entry tile can be inserted on an island that will no be updated even if mother nature is placed on that island. When mother nature is placed on the island, a no entry tile is removed from the island.",
+    "callInstructions" : "To play character 3 you have to insert an island id.",
+    "example" : "PlayCharacter 5 7 end (puts a no entry tile on island 7"
+  },
+  {
+    "characterId" : "6",
+    "description" : "If you play character 6, towers will not be counted for the islands influences during this turn.",
+    "callInstructions" : "Character 6 doesn't take any arguments.",
+    "example" : "PlayCharacter 6 end"
+  },
+  {
+    "characterId" : "7",
+    "description" : "Character 7 controls 6 students. You can take from 1 to 3 students from the character and replace them with the same number of students from your entrance.",
+    "callInstructions" : "To play character 7 you have to insert the number of students to swap, the students abbreviations that you want to take from the characters and the ones from your school entrance.",
+    "example" : "PlayCharacter 6 end"
+  },
+  {
+    "characterId" : "8",
+    "description" : "By playing character 8 you have 2 more points in the influence calculation during this turn.",
+    "callInstructions" : "Character 8 doesn't take any arguments.",
+    "example" : "PlayCharacter 8 end"
+  },
+  {
+    "characterId" : "9",
+    "description" : "By playing character 9 you can select a student type that will not count in the influence calculation this turn.",
+    "callInstructions" : "To play character 9 you have to insert a student abbreviation.",
+    "example" : "PlayCharacter 9 R end (RED_DRAGONS will not count for influences)"
+  },
+  {
+    "characterId" : "10",
+    "description" : "By playing character 10 you can swap 1 or 2 students between your entrance and your dining room.",
+    "callInstructions" : "To play character 10 you have to insert the number of students you want to swap (1 or 2), the students abbreviations from your entrance and the ones from your dining room.",
+    "example" : "PlayCharacter 10 2 R G B B (a RED_DRAGON and a GREEN_FROG will be placed on your dining room from the entrance, two BLUE_UNICORNS will be placed on your entrance from your dining room)"
+  },
+  {
+    "characterId" : "11",
+    "description" : "Character 11 controls 4 students. You can take a student from is and place it in your dining room.",
+    "callInstructions" : "To play character 11 you have to insert the student abbreviation that you want to take",
+    "example" : "PlayCharacter 11 R end (RED_DRAGONS will be placed to your dining room)"
+  },
+  {
+    "characterId" : "12",
+    "description" : "By playing character 12 you can choose a student type: up to 3 students of that student type will be removed from all dining rooms (including yours)",
+    "callInstructions" : "To play character 12 you have to insert a student abbreviation",
+    "example" : "PlayCharacter 12 R end (up to 3 RED_DRAGONS will be removed from all dining rooms)"
+  }
+]
