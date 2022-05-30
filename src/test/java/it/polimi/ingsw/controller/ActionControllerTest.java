@@ -14,6 +14,7 @@ import it.polimi.ingsw.model.gameConstants.GameConstants;
 import it.polimi.ingsw.utils.JsonUtils;
 import it.polimi.ingsw.utils.Pair;
 import junit.framework.TestCase;
+import org.apache.commons.compress.compressors.lz77support.LZ77Compressor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
@@ -27,41 +28,51 @@ import java.util.List;
 import java.util.Random;
 
 class ActionControllerTest extends TestCase {
-    ActionController actionController;
-    GameController gameController;
-    Player activePlayer; //Used to check values after the actions
-    GameConstants gameConstants;
-    RemoteViewStub viewActivePlayer;
+    private ActionController actionController;
+    private GameControllerStub gameController;
+    private Player activePlayer; //Used to check values after the actions
+    private GameConstants gameConstants;
+    private RemoteViewStub viewActivePlayer;
+
+    public static class GameControllerStub extends GameController {
+        public GameControllerStub() {
+            super(1, 2, true);
+            InitController initController = super.getInitController();
+            try {
+                initController.initializeGameComponents();
+            } catch (EmptyBagException e) {
+                Assertions.fail();
+            }
+            initController.addPlayer("player1");
+            initController.addPlayer("player2");
+            super.setGame();
+            initializeControllers();
+        }
+
+        public void setupGame() throws TowerTypeAlreadyTakenException, WizardTypeAlreadyTakenException {
+            getInitController().setupPlayerTower(getModel().getPlayers().get(0), TowerType.BLACK);
+            getInitController().setupPlayerWizard(getModel().getPlayers().get(0), WizardType.values()[0]);
+            getInitController().setupPlayerTower(getModel().getPlayers().get(1), TowerType.WHITE);
+            getInitController().setupPlayerWizard(getModel().getPlayers().get(1), WizardType.values()[1]);
+        }
+    }
 
     @BeforeEach
     void setup() {
         gameConstants = JsonUtils.constantsByNumPlayer(2);
-        gameController = new GameController(1, 2, true);
-        InitController initController = gameController.getInitController();
+        gameController = new GameControllerStub();
         try {
-            initController.initializeGameComponents();
-        } catch (EmptyBagException e) {
-            Assertions.fail();
-        }
-        initController.addPlayer("player1");
-        initController.addPlayer("player2");
-        gameController.setGame();
-        gameController.initializeControllers();
-        try {
-            initController.setupPlayerTower(gameController.getModel().getPlayers().get(0), TowerType.BLACK);
-            initController.setupPlayerWizard(gameController.getModel().getPlayers().get(0), WizardType.values()[0]);
-            initController.setupPlayerTower(gameController.getModel().getPlayers().get(1), TowerType.WHITE);
-            initController.setupPlayerWizard(gameController.getModel().getPlayers().get(1), WizardType.values()[1]);
+            gameController.setupGame();
         } catch (WizardTypeAlreadyTakenException | TowerTypeAlreadyTakenException e) {
             Assertions.fail();
         }
-        gameController.initializeControllers();
         actionController = gameController.getActionController();
         activePlayer = gameController.getTurnController().getActivePlayer();
         RemoteViewStub viewPlayer1 = new RemoteViewStub(1, "player1", gameController, null);
         RemoteViewStub viewPlayer2 = new RemoteViewStub(1, "player2", gameController, null);
         ErrorDispatcher errorDispatcher = new ErrorDispatcher(List.of(viewPlayer1, viewPlayer2));
         actionController.addListener("Error", errorDispatcher);
+        actionController.getCharacterController().addListener("Error", errorDispatcher);
         viewActivePlayer = (activePlayer.getNickName().equals("player1")) ? viewPlayer1 : viewPlayer2;
     }
 
@@ -192,11 +203,10 @@ class ActionControllerTest extends TestCase {
         Assertions.assertEquals(3, activePlayer.getSchool().getStudentsEntrance(RealmType.YELLOW_GNOMES));
     }
 
-    @RepeatedTest(3)
+    @RepeatedTest(5)
     void playCharacterTest() {
         CharacterCard characterCard = gameController.getModel().getCharacterCards()[new Random().nextInt(3)];
         int characterToPlay = characterCard.getId();
-        String arguments = null;
         for (int i = 0; i < characterCard.getPrice(); i++) activePlayer.insertCoin();
         ClientMessageHeader header =
                 new ClientMessageHeader("PlayCharacter", activePlayer.getNickName(), ClientMessageType.ACTION);
@@ -204,13 +214,17 @@ class ActionControllerTest extends TestCase {
         payload.setAttribute("CharacterId", characterToPlay);
         payload.setAttribute("Arguments", null);
         MessageFromClient message = new MessageFromClient(header, payload);
-        try {
-            actionController.doAction(message);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assertions.fail();
+        if (characterCard.requiresInput()) {
+            Assertions.assertThrows(IllegalArgumentException.class, () -> actionController.doAction(message));
+        } else {
+            try {
+                actionController.doAction(message);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assertions.fail();
+            }
+            Assertions.assertEquals(activePlayer, characterCard.getPlayerActive());
         }
-        Assertions.assertEquals(activePlayer, characterCard.getPlayerActive());
     }
 
     @Test
@@ -221,6 +235,7 @@ class ActionControllerTest extends TestCase {
                 new ClientMessageHeader("PlayCharacter", activePlayer.getNickName(), ClientMessageType.ACTION);
         MessagePayload payload = new MessagePayload();
         payload.setAttribute("CharacterId", characterToPlay);
+        payload.setAttribute("Arguments", null);
         MessageFromClient message = new MessageFromClient(header, payload);
         activePlayer.getTurnEffect().setCharacterPlayed(true);
         Assertions.assertThrows(IllegalArgumentException.class, () -> actionController.doAction(message));
@@ -232,19 +247,35 @@ class ActionControllerTest extends TestCase {
     }
 
     @Test
-    void notValidCharacterEffectTest() {
-        CharacterCard characterCard = gameController.getModel().getCharacterCards()[new Random().nextInt(3)];
-        int characterToPlay = characterCard.getId();
-        String arguments = "Y";//totally random argument, because it is not important, but arguments must be not empty
+    void notValidCharacterTest() {
         ClientMessageHeader header =
-                new ClientMessageHeader("CharacterEffect", activePlayer.getNickName(), ClientMessageType.ACTION);
+                new ClientMessageHeader("PlayCharacter", activePlayer.getNickName(), ClientMessageType.ACTION);
         MessagePayload payload = new MessagePayload();
-        payload.setAttribute("CharacterId", characterToPlay);
-        payload.setAttribute("Arguments", arguments);
+        payload.setAttribute("CharacterId", 15);
+        payload.setAttribute("Arguments", null);
         MessageFromClient message = new MessageFromClient(header, payload);
-        for (int i = 0; i < characterCard.getPrice(); i++) activePlayer.insertCoin();
-        activePlayer.getTurnEffect().setCharacterEffectConsumed(true);
-        //Character is already consumed, so it cannot be played anymore
+        Assertions.assertThrows(IllegalArgumentException.class, () -> actionController.doAction(message));
+        Assertions.assertEquals("Error", viewActivePlayer.getMessage().getServerMessageHeader().getMessageName());
+        Assertions.assertEquals(ServerMessageType.SERVER_MESSAGE,
+                viewActivePlayer.getMessage().getServerMessageHeader().getMessageType());
+        Assertions.assertEquals(ErrorMessageType.ILLEGAL_ARGUMENT,
+                viewActivePlayer.getMessage().getMessagePayload().getAttribute("ErrorType").getAsObject());
+    }
+
+    @Test
+    void notValidMoveStudentsAction() {
+        activePlayer.setSchool(new School(8, TowerType.BLACK,gameConstants, activePlayer));
+        List<Student> entrance = List.of(new Student(RealmType.YELLOW_GNOMES), new Student(RealmType.YELLOW_GNOMES),
+                new Student(RealmType.BLUE_UNICORNS), new Student(RealmType.RED_DRAGONS));
+        activePlayer.getSchool().insertEntrance(entrance.toArray(new Student[0]));
+        actionController.setTurnPhase(TurnPhase.MOVE_STUDENTS);
+        ClientMessageHeader header =
+                new ClientMessageHeader("MoveStudents", activePlayer.getNickName(), ClientMessageType.ACTION);
+        MessagePayload payload = new MessagePayload();
+        MessageFromClient message = new MessageFromClient(header, payload);
+        //Player doesn't have 3 yellow gnomes
+        payload.setAttribute("StudentsToDR", List.of(RealmType.YELLOW_GNOMES, RealmType.YELLOW_GNOMES, RealmType.YELLOW_GNOMES));
+        payload.setAttribute("StudentsToIslands", new ArrayList<>());
         Assertions.assertThrows(IllegalArgumentException.class, () -> actionController.doAction(message));
         Assertions.assertEquals("Error", viewActivePlayer.getMessage().getServerMessageHeader().getMessageName());
         Assertions.assertEquals(ServerMessageType.SERVER_MESSAGE,
@@ -267,6 +298,4 @@ class ActionControllerTest extends TestCase {
         ClientMessageHeader header = new ClientMessageHeader("IllegalAction", null, null);
         Assertions.assertThrows(IllegalArgumentException.class, () -> actionController.doAction(new MessageFromClient(header, null)));
     }
-
-    //TODO: one test for all characters that have an active effect?
 }

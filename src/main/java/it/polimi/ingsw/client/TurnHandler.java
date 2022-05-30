@@ -106,15 +106,20 @@ public class TurnHandler implements PropertyChangeListener {
             currentTurnActions.clear();
             currentTurnActions.addAll(possibleActions);
             while (!currentTurnActions.isEmpty()) {
+                List<String> currentTurnPossibleActions = new ArrayList<>();
+                currentTurnPossibleActions.add(currentTurnActions.get(0).getActionCommand());
+                if (currentTurnActions.contains(TurnPhase.PLAY_CHARACTER_CARD)) {
+                    currentTurnPossibleActions.add(TurnPhase.PLAY_CHARACTER_CARD.getActionCommand());
+                }
                 if (!isErrorReceived() && !isInputErrorReceived()) {
                     userInterface.printTurnMenu(currentTurnActions.stream().map(TurnPhase::getActionDescription).toList(),
-                            currentTurnActions.stream().map(TurnPhase::getActionCommand).toList());
+                            currentTurnActions.stream().map(TurnPhase::getActionCommand).toList(), currentTurnPossibleActions);
                 }
                 setInputErrorReceived(false);
                 setErrorReceived(false);
                 setAckReceived(false);
                 userInterface.askAction(currentTurnActions.stream().map(TurnPhase::getActionDescription).toList(),
-                        currentTurnActions.stream().map(TurnPhase::getActionCommand).toList());
+                        currentTurnActions.stream().map(TurnPhase::getActionCommand).toList(), currentTurnPossibleActions);
                 try {
                     while (!isAckReceived() && !isErrorReceived() && !isInputErrorReceived()) currentTurnActions.wait();
                 } catch (InterruptedException e) {

@@ -153,6 +153,7 @@ public class GameController implements PropertyChangeListener {
 		listeners.addPropertyChangeListener("Error", errorDispatcher);
 		initController.addListener("Error", errorDispatcher);
 		actionController.addListener("Error", errorDispatcher);
+		actionController.getCharacterController().addListener("Error", errorDispatcher);
 		listeners.addPropertyChangeListener("Action", ackDispatcher);
 		initController.addListener("Setup", ackDispatcher);
 		game.createListeners(views, lobby);

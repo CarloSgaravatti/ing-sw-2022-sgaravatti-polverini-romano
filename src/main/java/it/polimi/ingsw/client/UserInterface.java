@@ -26,11 +26,11 @@ public interface UserInterface extends PropertyChangeListener{
 
     void displayLobbyInfo(int numPlayers, boolean rules, String[] waitingPlayers);
 
-    void askAction(List<String> actions, List<String> actionCommands);
+    void askAction(List<String> actions, List<String> actionCommands, List<String> currentPossibleActions);
 
     void addListener(PropertyChangeListener listener, String propertyName);
 
     void onGameInitialization(ModelView modelView);
 
-    void printTurnMenu(List<String> actions, List<String> actionCommands); //maybe this is not correct and have to be done with listeners
+    void printTurnMenu(List<String> actions, List<String> actionCommands, List<String> currentPossibleActions); //maybe this is not correct and have to be done with listeners
 }

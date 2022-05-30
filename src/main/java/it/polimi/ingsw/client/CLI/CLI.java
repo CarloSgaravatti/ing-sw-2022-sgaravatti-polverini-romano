@@ -232,19 +232,21 @@ public class CLI implements Runnable, UserInterface {
     }
 
     @Override
-    public void printTurnMenu(List<String> actions, List<String> actionCommands) {
+    public void printTurnMenu(List<String> actions, List<String> actionCommands, List<String> currentPossibleActions) {
         clearScreen();
         printer.printMap();
         System.out.println("This is what you can do: ");
         for (int i = 0; i < actions.size(); i++) {
-            System.out.println("\t- " + actions.get(i) + " (" + actionCommands.get(i) + ")");
+            String actionCommand = ((currentPossibleActions.contains(actionCommands.get(i))) ? Colors.YELLOW : "") +
+                    actionCommands.get(i) + Colors.RESET;
+            System.out.println("\t- " + actions.get(i) + " (" + actionCommand + ")");
         }
         System.out.println("Remember, at the end of each action command type 'end'. To end your turn simply type 'EndTurn'." +
                 "If you need help type 'Help'");
     }
 
     @Override
-    public void askAction(List<String> actions, List<String> actionCommands) {
+    public void askAction(List<String> actions, List<String> actionCommands, List<String> currentPossibleActions) {
         //if (sc.hasNext()) sc.nextLine(); //Don't know if there is a better way to rest the input
         System.out.print("> ");
         String actionName = sc.next();
@@ -254,8 +256,8 @@ public class CLI implements Runnable, UserInterface {
         }
         if (actionName.equals("Help")) {
             helper.onHelpRequest();
-            printTurnMenu(actions, actionCommands);
-            askAction(actions, actionCommands);
+            printTurnMenu(actions, actionCommands, currentPossibleActions);
+            askAction(actions, actionCommands, currentPossibleActions);
             return;
         }
         String actionArgument = getActionArguments();

@@ -17,6 +17,7 @@ public class ActionController {
 	private TurnPhase turnPhase;
 	private final TurnController turnController;
 	private final GameController gameController;
+	private final CharacterController characterController;
 	private final List<String> possibleActions;
 	private final List<TurnPhase> currentTurnRemainingActions = new ArrayList<>();
 	private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
@@ -26,6 +27,7 @@ public class ActionController {
 	public ActionController(GameController gameController, TurnController turnController) {
 		this.gameController = gameController;
 		this.turnController = turnController;
+		this.characterController = new CharacterController(gameController.getModel());
 		turnPhase = TurnPhase.PLAY_ASSISTANT;
 		possibleActions = JsonUtils.getRulesByDifficulty(gameController.isExpertGame());
 		currentTurnRemainingActions.add(TurnPhase.PLAY_ASSISTANT);
@@ -46,7 +48,7 @@ public class ActionController {
 				case "MoveStudents" -> studentMovement(payload);
 				case "PickFromCloud" -> pickStudentsFromClouds(payload);
 				case "PlayCharacter" -> playCharacter(payload);
-				case "CharacterEffect" -> characterEffect(payload);
+				//case "CharacterEffect" -> characterEffect(payload);
 				default -> throw new IllegalArgumentException();
 			}
 		} catch (WrongTurnActionRequestedException e) {
@@ -182,56 +184,26 @@ public class ActionController {
 	}
 
 	public void playCharacter(MessagePayload payload) throws IllegalArgumentException {
-		Player activePlayer = turnController.getActivePlayer();
-		if (activePlayer.getTurnEffect().isCharacterPlayed()) {
-			listeners.firePropertyChange("Error", ErrorMessageType.CHARACTER_ALREADY_PLAYED, turnController.getActivePlayer().getNickName());
-			throw new IllegalArgumentException();
-        }
-		int characterId = payload.getAttribute("CharacterId").getAsInt();
-		CharacterCard characterCard = gameController.getModel().getCharacterById(characterId);
-		if (characterCard == null) {
-			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
-			throw new IllegalArgumentException();
-        }
-		int coinToGeneralSupply = characterCard.getPrice();
-		if (!characterCard.isCoinPresent()) coinToGeneralSupply--;
-		try {
-			characterCard.playCard(turnController.getActivePlayer());
-		} catch (NotEnoughCoinsException e) {
-			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
-			throw new IllegalArgumentException(); //TODO: return false
-		}
-		activePlayer.getTurnEffect().setCharacterPlayed(true);
-		activePlayer.getTurnEffect().setCharacterEffectConsumed(false);
-		gameController.getModel().insertCoinsInGeneralSupply(coinToGeneralSupply);
-		currentTurnRemainingActions.remove(TurnPhase.PLAY_CHARACTER_CARD);
-		characterEffect(payload);
-	}
-
-	public void characterEffect(MessagePayload payload) {
 		String arguments = payload.getAttribute("Arguments").getAsString();
-		if (arguments == null) return;
-		String[] payloadArgs = arguments.split(" ");
-		int characterId = payload.getAttribute("CharacterId").getAsInt();
-		System.out.println(turnController.getActivePlayer().getNickName() + " has played character " + characterId +
-				" with arguments " + Arrays.toString(payloadArgs) + payloadArgs.length);
-		List<String> args = new ArrayList<>(Arrays.asList(payloadArgs));
-		if (turnController.getActivePlayer().getTurnEffect().isCharacterEffectConsumed()) {
-            //TODO: check if "ILLEGAL ARGUMENT" is correct in this case
-			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
-            throw new IllegalArgumentException();
-        }
-		CharacterCard characterCard = gameController.getModel().getCharacterById(characterId);
+		List<String> args;
+		int id = payload.getAttribute("CharacterId").getAsInt();
+		if (arguments == null) args = new ArrayList<>();
+		else {
+			String[] payloadArgs = arguments.split(" ");
+			args = new ArrayList<>(Arrays.asList(payloadArgs));
+		}
+		CharacterCard characterCard = gameController.getModel().getCharacterById(id);
 		if (characterCard == null) {
 			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
-            throw new IllegalArgumentException();
-        }
-		try {
-			characterCard.useEffect(args);
-		} catch (IllegalCharacterActionRequestedException e) {
-			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
-			throw new IllegalArgumentException(); //TODO: return false
+			throw new IllegalArgumentException();
 		}
+		try {
+			characterController.handleCharacterAction(args, characterCard, turnController.getActivePlayer());
+		} catch (NotEnoughCoinsException | IllegalCharacterActionRequestedException e) {
+			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+			throw new IllegalArgumentException();
+		}
+		currentTurnRemainingActions.remove(TurnPhase.PLAY_CHARACTER_CARD);
 	}
 
 	public void refillClouds() {
@@ -273,5 +245,9 @@ public class ActionController {
 
 	public List<TurnPhase> getCurrentTurnRemainingActions() {
 		return currentTurnRemainingActions;
+	}
+
+	public CharacterController getCharacterController() {
+		return characterController;
 	}
 }
