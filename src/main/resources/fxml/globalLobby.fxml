@@ -14,7 +14,7 @@
           <TableColumn fx:id="gameIdCol" prefWidth="75.0" text="Game Id" />
           <TableColumn fx:id="numPlayersCol" prefWidth="173.0" text="Num Players" />
             <TableColumn fx:id="rulesCol" prefWidth="135.0" text="Rules" />
-            <TableColumn fx:id="rulesCol1" prefWidth="151.0" text="Players Connected" />
+            <TableColumn fx:id="playersConnectedCol" prefWidth="151.0" text="Players Connected" />
         </columns>
       </TableView>
       <Text fx:id="messageLobby" layoutX="233.0" layoutY="139.0" strokeType="OUTSIDE" strokeWidth="0.0" text="You are viewing the global lobby">
@@ -22,11 +22,11 @@
             <Font size="36.0" />
          </font>
       </Text>
-      <Button fx:id="participateGame" layoutX="671.0" layoutY="468.0" mnemonicParsing="false" onAction="#participateGame" text="Participate" />
-      <Button fx:id="newGameButton" layoutX="670.0" layoutY="539.0" mnemonicParsing="false" onAction="#submitNewGame" text="New game" />
+      <Button layoutX="671.0" layoutY="468.0" mnemonicParsing="false" onAction="#participateGame" text="Participate" />
+      <Button layoutX="670.0" layoutY="539.0" mnemonicParsing="false" onAction="#submitNewGame" text="New game" />
       <Label layoutX="229.0" layoutY="518.0" text="Num players" />
       <Label layoutX="448.0" layoutY="518.0" text="Rules" />
-      <Button fx:id="refreshButton" layoutX="226.0" layoutY="468.0" mnemonicParsing="false" onAction="#onRefresh" text="Refresh" />
+      <Button layoutX="226.0" layoutY="468.0" mnemonicParsing="false" onAction="#onRefresh" text="Refresh" />
       <ChoiceBox fx:id="numPlayersChoice" layoutX="229.0" layoutY="539.0" prefWidth="150.0" />
       <ChoiceBox fx:id="rulesChoice" layoutX="448.0" layoutY="539.0" prefWidth="150.0" />
    </children>

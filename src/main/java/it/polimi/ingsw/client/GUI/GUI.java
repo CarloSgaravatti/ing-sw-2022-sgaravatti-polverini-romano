@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.GUI;
 import it.polimi.ingsw.client.ConnectionToServer;
 import it.polimi.ingsw.client.GUI.controllers.FXMLController;
 import it.polimi.ingsw.client.GUI.controllers.GlobalLobbyController;
+import it.polimi.ingsw.client.GUI.controllers.MainSceneController;
 import it.polimi.ingsw.client.GUI.controllers.WelcomeController;
 import it.polimi.ingsw.client.UserInterface;
 import it.polimi.ingsw.client.modelView.ModelView;
@@ -23,6 +24,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class GUI extends Application implements UserInterface {
     private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
@@ -30,8 +33,11 @@ public class GUI extends Application implements UserInterface {
     private boolean nicknameSent = false;
     private Stage stage;
     private Scene scene;
-
     private FXMLController currentSceneController;
+    //This executor is used to not use the javafx thread to compute actions (so javafx thread is only
+    //used for javafx stuffs)
+    private final ExecutorService responseHandlerExecutor = Executors.newSingleThreadExecutor();
+    private Thread connectionHandlerThread;
 
     public GUI() {
 
@@ -120,7 +126,17 @@ public class GUI extends Application implements UserInterface {
 
     @Override
     public void onGameInitialization(ModelView modelView) {
-
+        FXMLLoader loader = new FXMLLoader(GUI.class.getResource("/fxml/mainScene.fxml"));
+        try {
+            scene = new Scene(loader.load());
+        } catch (IOException e) {
+            //TODO
+        }
+        stage.setScene(scene);
+        currentSceneController = loader.getController();
+        currentSceneController.addListener(this);
+        ((MainSceneController) currentSceneController).initializeBoard(modelView);
+        stage.show();
     }
 
     @Override
@@ -142,7 +158,7 @@ public class GUI extends Application implements UserInterface {
 
     private void checkEventFromControllers(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("Nickname")) this.nickname = (String) evt.getNewValue();
-        listeners.firePropertyChange(evt);
+        responseHandlerExecutor.submit(() -> listeners.firePropertyChange(evt));
     }
 
     public void doSetup(String serverIp, int serverPort, String nickname) {
@@ -158,8 +174,10 @@ public class GUI extends Application implements UserInterface {
         }
         System.out.println("Connection Established");
         ConnectionToServer connectionToServer = new ConnectionToServer(socket, this);
-        Thread t = new Thread(connectionToServer);
-        t.start();
+        connectionHandlerThread = new Thread(connectionToServer);
+        connectionHandlerThread.start();
+        //TODO: find a way to shutdown connection to server
+        stage.setOnCloseRequest(event -> connectionToServer.setActive(false));
     }
 
     public void onError(ErrorMessageType error) {

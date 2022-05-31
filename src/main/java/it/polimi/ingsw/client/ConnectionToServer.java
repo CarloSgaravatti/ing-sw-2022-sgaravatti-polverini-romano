@@ -18,6 +18,7 @@ public class ConnectionToServer implements Runnable {
     private MessageHandler firstMessageHandler;
     private final ExecutorService messageHandlerExecutor = Executors.newSingleThreadExecutor();
     private String nickname;
+    private boolean active = true;
 
     public ConnectionToServer(Socket socket, UserInterface view) {
         try {
@@ -45,7 +46,7 @@ public class ConnectionToServer implements Runnable {
     @Override
     public void run() {
         try {
-            while (true) { //while(isActive()) ?
+            while (isActive()) { //while(isActive()) ?
                 MessageFromServer message = (MessageFromServer) inputStream.readObject();
                 //System.out.println("Received " + message.getServerMessageHeader().getMessageName());
                 if (message.getServerMessageHeader().getMessageType() != ServerMessageType.PING_MESSAGE) {
@@ -69,6 +70,7 @@ public class ConnectionToServer implements Runnable {
             System.err.println(e.getMessage());
             e.printStackTrace();
         } finally {
+            messageHandlerExecutor.shutdown();
             try {
                 inputStream.close();
                 outputStream.close();
@@ -104,5 +106,13 @@ public class ConnectionToServer implements Runnable {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public synchronized boolean isActive() {
+        return active;
+    }
+
+    public synchronized void setActive(boolean active) {
+        this.active = active;
     }
 }

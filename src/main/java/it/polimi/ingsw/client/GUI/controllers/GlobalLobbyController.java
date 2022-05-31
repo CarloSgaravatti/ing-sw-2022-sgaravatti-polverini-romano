@@ -29,6 +29,8 @@ public class GlobalLobbyController extends FXMLController implements Initializab
     @FXML
     private TableColumn<LobbyInfo, Integer> gameIdCol;
     @FXML
+    public TableColumn<LobbyInfo, Integer> playersConnectedCol;
+    @FXML
     private ChoiceBox<String> rulesChoice;
     @FXML
     private ChoiceBox<Integer> numPlayersChoice;
@@ -46,6 +48,7 @@ public class GlobalLobbyController extends FXMLController implements Initializab
         gameIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         numPlayersCol.setCellValueFactory(new PropertyValueFactory<>("numPlayers"));
         rulesCol.setCellValueFactory(new PropertyValueFactory<>("rules"));
+        playersConnectedCol.setCellValueFactory(new PropertyValueFactory<>("connectedPlayers"));
         numPlayersChoice.getItems().addAll(2, 3);
         rulesChoice.getItems().addAll("simple", "expert");
     }
