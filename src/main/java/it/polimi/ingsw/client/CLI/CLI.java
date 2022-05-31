@@ -80,7 +80,7 @@ public class CLI implements Runnable, UserInterface {
         }
         System.out.println("Connection Established");
         clearScreen();
-        PrintEntryWindow.printWelcome();
+        PrintStaticMessage.printWelcome();
         ConnectionToServer connectionToServer = new ConnectionToServer(socket, this);
         Thread t = new Thread(connectionToServer);
         t.start();
@@ -307,11 +307,23 @@ public class CLI implements Runnable, UserInterface {
                 printer.printMap();
                 System.out.println("Now is " + evt.getNewValue() + "'s turn");
             }
-            case "Winner" -> endGameMessage = "You have won!";
-            case "Loser" -> endGameMessage = "You have lose. " + evt.getNewValue() + " has won";
-            case "Tie" -> endGameMessage = "It's a tie. These are the tiers: " + Arrays.toString((String[]) evt.getNewValue());
-            case "TieLoser" -> endGameMessage = "You have lose, but nobody has won, these are the tiers" +
-                    Arrays.toString((String[]) evt.getNewValue());
+            case "Winner" ->{
+                PrintStaticMessage.printWin();
+                endGameMessage = "You have won!";
+            }
+            case "Loser" -> {
+                PrintStaticMessage.printLoose();
+                endGameMessage = "You have lose. " + evt.getNewValue() + " has won";
+            }
+            case "Tie" -> {
+                PrintStaticMessage.printTie();
+                endGameMessage = "It's a tie. These are the tiers: " + Arrays.toString((String[]) evt.getNewValue());
+            }
+            case "TieLoser" -> {
+                PrintStaticMessage.printLoose();
+                endGameMessage = "You have lose, but nobody has won, these are the tiers" +
+                        Arrays.toString((String[]) evt.getNewValue());
+            }
         }
         if (endGameMessage != null) {
             onEndGame(endGameMessage);
