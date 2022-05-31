@@ -3,7 +3,7 @@ package it.polimi.ingsw.messages;
 //TODO: all errors must have a message associated (a String attribute with the message)
 public enum ErrorMessageType {
     DUPLICATE_NICKNAME,
-    UNRECOGNIZE_MESSAGE,
+    UNRECOGNIZED_MESSAGE,
     INVALID_REQUEST_GAME_ALREADY_STARTED,
     INVALID_REQUEST_GAME_NOT_FOUND,
     SETUP_ALREADY_DONE, //if a client send a setup message when he has already done setups

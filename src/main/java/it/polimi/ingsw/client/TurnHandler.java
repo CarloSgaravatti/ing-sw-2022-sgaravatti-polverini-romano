@@ -156,7 +156,7 @@ public class TurnHandler implements PropertyChangeListener {
     }
 
     public void onErrorReceived(ErrorMessageType errorType) {
-        userInterface.displayStringMessage(Colors.RED + "Received error: " + errorType + Colors.RESET);
+        //userInterface.displayStringMessage(Colors.RED + "Received error: " + errorType + Colors.RESET);
         setErrorReceived(true);
         synchronized (currentTurnActions) {
             currentTurnActions.notify();

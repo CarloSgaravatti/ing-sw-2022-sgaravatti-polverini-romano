@@ -59,6 +59,7 @@ public class DefaultMessageHandler extends BaseMessageHandler {
     }
 
     private void onErrorMessage(MessagePayload payload) {
+        getUserInterface().onError((ErrorMessageType) payload.getAttribute("ErrorType").getAsObject());
         turnHandler.firePropertyChange("Error", null, payload.getAttribute("ErrorType").getAsObject());
     }
 }

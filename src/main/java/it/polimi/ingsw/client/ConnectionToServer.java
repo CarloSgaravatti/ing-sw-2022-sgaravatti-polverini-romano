@@ -28,6 +28,13 @@ public class ConnectionToServer implements Runnable {
             //TODO
             e.printStackTrace();
         }
+        PlayerSetupHandler playerSetupHandler = new PlayerSetupHandler(this);
+        view.addListener(playerSetupHandler, "Nickname");
+        view.addListener(playerSetupHandler, "NewGame");
+        view.addListener(playerSetupHandler, "GameToPlay");
+        view.addListener(playerSetupHandler, "TowerChoice");
+        view.addListener(playerSetupHandler, "WizardChoice");
+        view.addListener(playerSetupHandler, "RefreshLobby");
     }
 
     public void addFirstMessageHandler(MessageHandler newHandler) {
@@ -40,6 +47,7 @@ public class ConnectionToServer implements Runnable {
         try {
             while (true) { //while(isActive()) ?
                 MessageFromServer message = (MessageFromServer) inputStream.readObject();
+                //System.out.println("Received " + message.getServerMessageHeader().getMessageName());
                 if (message.getServerMessageHeader().getMessageType() != ServerMessageType.PING_MESSAGE) {
                     //TODO: delete try catch after everything is ok
                     messageHandlerExecutor.submit(() -> {
@@ -85,6 +93,7 @@ public class ConnectionToServer implements Runnable {
     public void sendMessage(MessagePayload payload, String messageName, ClientMessageType messageType) {
         ClientMessageHeader header = new ClientMessageHeader(messageName, nickname, messageType);
         MessageFromClient message = new MessageFromClient(header, payload);
+        //System.out.println("Sending " + messageName);
         asyncWriteToServer(message);
     }
 

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="701.0" prefWidth="987.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.GlobalLobbyController">
+   <children>
+      <TableView fx:id="globalLobbyTable" layoutX="226.0" layoutY="240.0" prefHeight="200.0" prefWidth="535.0">
+        <columns>
+          <TableColumn fx:id="gameIdCol" prefWidth="75.0" text="Game Id" />
+          <TableColumn fx:id="numPlayersCol" prefWidth="173.0" text="Num Players" />
+            <TableColumn fx:id="rulesCol" prefWidth="135.0" text="Rules" />
+            <TableColumn fx:id="rulesCol1" prefWidth="151.0" text="Players Connected" />
+        </columns>
+      </TableView>
+      <Text fx:id="messageLobby" layoutX="233.0" layoutY="139.0" strokeType="OUTSIDE" strokeWidth="0.0" text="You are viewing the global lobby">
+         <font>
+            <Font size="36.0" />
+         </font>
+      </Text>
+      <Button fx:id="participateGame" layoutX="671.0" layoutY="468.0" mnemonicParsing="false" onAction="#participateGame" text="Participate" />
+      <Button fx:id="newGameButton" layoutX="670.0" layoutY="539.0" mnemonicParsing="false" onAction="#submitNewGame" text="New game" />
+      <Label layoutX="229.0" layoutY="518.0" text="Num players" />
+      <Label layoutX="448.0" layoutY="518.0" text="Rules" />
+      <Button fx:id="refreshButton" layoutX="226.0" layoutY="468.0" mnemonicParsing="false" onAction="#onRefresh" text="Refresh" />
+      <ChoiceBox fx:id="numPlayersChoice" layoutX="229.0" layoutY="539.0" prefWidth="150.0" />
+      <ChoiceBox fx:id="rulesChoice" layoutX="448.0" layoutY="539.0" prefWidth="150.0" />
+   </children>
+</AnchorPane>

@@ -149,7 +149,7 @@ public class InitController implements PropertyChangeListener {
 				}
 			}
 			default -> {
-				listeners.firePropertyChange("Error", ErrorMessageType.UNRECOGNIZE_MESSAGE, nicknameSender);
+				listeners.firePropertyChange("Error", ErrorMessageType.UNRECOGNIZED_MESSAGE, nicknameSender);
 				return;
 			}
 		}

@@ -3,8 +3,6 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.exceptions.DuplicateNicknameException;
 import it.polimi.ingsw.messages.*;
 
-import javax.swing.event.EventListenerList;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
@@ -162,7 +160,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
             }
             case "GameToPlay" -> gameId = message.getMessagePayload().getAttribute("GameId").getAsInt();
             default -> {
-                sendError(ErrorMessageType.UNRECOGNIZE_MESSAGE);
+                sendError(ErrorMessageType.UNRECOGNIZED_MESSAGE);
                 return;
             }
         }

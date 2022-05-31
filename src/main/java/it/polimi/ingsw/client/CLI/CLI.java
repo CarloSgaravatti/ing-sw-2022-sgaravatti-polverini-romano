@@ -5,6 +5,7 @@ import it.polimi.ingsw.client.ConnectionToServer;
 import it.polimi.ingsw.client.PlayerSetupHandler;
 import it.polimi.ingsw.client.UserInterface;
 import it.polimi.ingsw.client.modelView.ModelView;
+import it.polimi.ingsw.messages.ErrorMessageType;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.enumerations.WizardType;
 import it.polimi.ingsw.utils.Triplet;
@@ -81,13 +82,6 @@ public class CLI implements Runnable, UserInterface {
         clearScreen();
         PrintEntryWindow.printWelcome();
         ConnectionToServer connectionToServer = new ConnectionToServer(socket, this);
-        PlayerSetupHandler playerSetupHandler = new PlayerSetupHandler(connectionToServer);
-        addListener(playerSetupHandler, "Nickname");
-        addListener(playerSetupHandler, "NewGame");
-        addListener(playerSetupHandler, "GameToPlay");
-        addListener(playerSetupHandler, "TowerChoice");
-        addListener(playerSetupHandler, "WizardChoice");
-        addListener(playerSetupHandler, "RefreshLobby");
         Thread t = new Thread(connectionToServer);
         t.start();
         try {
@@ -241,58 +235,31 @@ public class CLI implements Runnable, UserInterface {
                     actionCommands.get(i) + Colors.RESET;
             System.out.println("\t- " + actions.get(i) + " (" + actionCommand + ")");
         }
-        System.out.println("Remember, at the end of each action command type 'end'. To end your turn simply type 'EndTurn'." +
-                "If you need help type 'Help'");
+        System.out.println("To end your turn simply type 'EndTurn'. If you need help type 'Help'");
     }
 
     @Override
     public void askAction(List<String> actions, List<String> actionCommands, List<String> currentPossibleActions) {
-        //if (sc.hasNext()) sc.nextLine(); //Don't know if there is a better way to rest the input
         System.out.print("> ");
         String actionName = sc.next();
         if (actionName.equals("EndTurn")) {
             listeners.firePropertyChange(actionName, null, null);
-            return;
-        }
-        if (actionName.equals("Help")) {
+        }else if (actionName.equals("Help")) {
             helper.onHelpRequest();
             printTurnMenu(actions, actionCommands, currentPossibleActions);
             askAction(actions, actionCommands, currentPossibleActions);
-            return;
-        }
-        String actionArgument = getActionArguments();
-        while(!actionCommands.contains(actionName)) { //can be modified (for example by adding abbreviations)
+        } else if (actionCommands.contains(actionName)){
+            String action = sc.nextLine();
+            String correctedAction = action;
+            for (int i = 0; action.charAt(i) == ' '; i++) {
+                correctedAction = correctedAction.substring(1);
+            }
+            listeners.firePropertyChange(actionName, null, correctedAction);
+        } else {
+            String action = sc.nextLine(); //to reset input
             System.out.println(Colors.RED + "Action not recognized, retry" + Colors.RESET);
-            System.out.print("> ");
-            actionName = sc.next();
-            actionArgument = getActionArguments();
+            askAction(actions, actionCommands, currentPossibleActions);
         }
-        //Don't know why but this second version doesn't work
-        /*System.out.println("To end your turn type 'EndTurn'. Remember to type end at the end of your action.");
-        actionCommands.add("EndTurn");
-        String actionName;
-        String actionArgument;
-        boolean actionRecognized;
-        do {
-            actionName = sc.next();
-            actionArgument = getActionArguments();
-            actionRecognized = actionCommands.contains(actionName);
-            if (!actionRecognized) System.out.println(Colors.RED + "Action not recognized, retry" + Colors.RESET);
-        } while (!actionRecognized)*/
-        listeners.firePropertyChange(actionName, null, actionArgument);
-    }
-
-    private String getActionArguments() {
-        StringBuilder actionArgument = new StringBuilder();
-        String nextArg = sc.next();
-        if (!nextArg.equals("end")) actionArgument.append(nextArg);
-        boolean endAction = false;
-        while (!endAction) {
-            nextArg = sc.next();
-            if (!nextArg.equals("end")) actionArgument.append(" ").append(nextArg);
-            else endAction = true;
-        }
-        return actionArgument.toString();
     }
 
     @Override
@@ -362,5 +329,9 @@ public class CLI implements Runnable, UserInterface {
         if (command.equals("q")) {
             //TODO: shutdown application (find how to do that)
         }
+    }
+
+    public void onError(ErrorMessageType error) {
+        System.out.println(Colors.RED + "Received error: " + error + Colors.RESET);
     }
 }

@@ -10,17 +10,17 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class UserHelper {
-    private static String PLAY_ASSISTANT_HELP = "You have to insert the assistant id of the assistant you want to play.\n" +
+    private static final String PLAY_ASSISTANT_HELP = "You have to insert the assistant id of the assistant you want to play.\n" +
             "For example: PlayAssistant 2 end";
-    private static String MOVE_STUDENTS_HELP = "You have to move 3 students, you can move them to the dining (type 'ToDiningRoom')" +
+    private static final String MOVE_STUDENTS_HELP = "You have to move 3 students, you can move them to the dining (type 'ToDiningRoom')" +
             " or to an island (type 'ToIsland' and insert also an island id). Each student is identified by his" +
             " abbreviation (Y for YELLOW_GNOMES, B for BLUE_UNICORNS, G for GREEN_FROGS, R for RED_DRAGONS" +
             " and P for PINK_FAIRES.\n" +
-            "For example: Move students Y ToDiningRoom B ToIsland 3 R ToDiningRoom end";
-    private static String MOVE_MOTHER_NATURE_HELP = "You have to insert the number of movements that mother nature will do.\n" +
-            "For example: MoveMotherNature 3 end";
-    private static String PICK_FROM_CLOUD_HELP = "You have to select a cloud to take students from it to your entrance.\n" +
-            "For example: PickFromCloud 1 end";
+            "For example: Move students Y ToDiningRoom B ToIsland 3 R ToDiningRoom";
+    private static final String MOVE_MOTHER_NATURE_HELP = "You have to insert the number of movements that mother nature will do.\n" +
+            "For example: MoveMotherNature 3";
+    private static final String PICK_FROM_CLOUD_HELP = "You have to select a cloud to take students from it to your entrance.\n" +
+            "For example: PickFromCloud 1";
     private ModelView modelView;
     private List<String> commandsToBeHelped;
     private final Scanner sc;
