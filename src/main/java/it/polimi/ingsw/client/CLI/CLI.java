@@ -308,18 +308,22 @@ public class CLI implements Runnable, UserInterface {
                 System.out.println("Now is " + evt.getNewValue() + "'s turn");
             }
             case "Winner" ->{
+                clearScreen();
                 PrintStaticMessage.printWin();
                 endGameMessage = "You have won!";
             }
             case "Loser" -> {
+                clearScreen();
                 PrintStaticMessage.printLoose();
                 endGameMessage = "You have lose. " + evt.getNewValue() + " has won";
             }
             case "Tie" -> {
+                clearScreen();
                 PrintStaticMessage.printTie();
                 endGameMessage = "It's a tie. These are the tiers: " + Arrays.toString((String[]) evt.getNewValue());
             }
             case "TieLoser" -> {
+                clearScreen();
                 PrintStaticMessage.printLoose();
                 endGameMessage = "You have lose, but nobody has won, these are the tiers" +
                         Arrays.toString((String[]) evt.getNewValue());
