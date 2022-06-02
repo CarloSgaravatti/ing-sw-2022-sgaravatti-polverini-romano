@@ -1,10 +1,7 @@
 package it.polimi.ingsw.client.GUI;
 
 import it.polimi.ingsw.client.ConnectionToServer;
-import it.polimi.ingsw.client.GUI.controllers.FXMLController;
-import it.polimi.ingsw.client.GUI.controllers.GlobalLobbyController;
-import it.polimi.ingsw.client.GUI.controllers.MainSceneController;
-import it.polimi.ingsw.client.GUI.controllers.WelcomeController;
+import it.polimi.ingsw.client.GUI.controllers.*;
 import it.polimi.ingsw.client.UserInterface;
 import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.messages.ErrorMessageType;
@@ -24,6 +21,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -101,12 +99,39 @@ public class GUI extends Application implements UserInterface {
 
     @Override
     public void askTowerChoice(TowerType[] freeTowers) {
-
+        Platform.runLater(() -> {
+            FXMLLoader fxmlLoader = new FXMLLoader(GUI.class.getResource("/fxml/setupScene.fxml"));
+            try {
+                scene = new Scene(fxmlLoader.load());
+            } catch (IOException e) {
+                //TODO
+            }
+            String css = Objects.requireNonNull(this.getClass().getResource("/css/application.css")).toExternalForm();
+            scene.getStylesheets().addAll(css);
+            this.stage.setScene(scene);
+            SetupChoiceSceneController sceneController = fxmlLoader.getController();
+            sceneController.addListener(this);
+            sceneController.setSceneWithTowers(freeTowers);
+            currentSceneController = sceneController;
+            this.stage.show();
+        });
     }
 
     @Override
     public void askWizardChoice(WizardType[] freeWizards) {
-
+        Platform.runLater(() -> {
+            FXMLLoader fxmlLoader = new FXMLLoader(GUI.class.getResource("/fxml/setupScene.fxml"));
+            try {
+                scene = new Scene(fxmlLoader.load());
+            } catch (IOException e) {
+                //TODO
+            }
+            this.stage.setScene(scene);
+            SetupChoiceSceneController sceneController = fxmlLoader.getController();
+            sceneController.addListener(this);
+            sceneController.setSceneWithWizards(freeWizards);
+            this.stage.show();
+        });
     }
 
     @Override
@@ -126,17 +151,19 @@ public class GUI extends Application implements UserInterface {
 
     @Override
     public void onGameInitialization(ModelView modelView) {
-        FXMLLoader loader = new FXMLLoader(GUI.class.getResource("/fxml/mainScene.fxml"));
-        try {
-            scene = new Scene(loader.load());
-        } catch (IOException e) {
-            //TODO
-        }
-        stage.setScene(scene);
-        currentSceneController = loader.getController();
-        currentSceneController.addListener(this);
-        ((MainSceneController) currentSceneController).initializeBoard(modelView);
-        stage.show();
+        Platform.runLater(() -> {
+            FXMLLoader loader = new FXMLLoader(GUI.class.getResource("/fxml/mainScene.fxml"));
+            try {
+                scene = new Scene(loader.load());
+            } catch (IOException e) {
+                //TODO
+            }
+            stage.setScene(scene);
+            currentSceneController = loader.getController();
+            currentSceneController.addListener(this);
+            ((MainSceneController) currentSceneController).initializeBoard(modelView);
+            stage.show();
+        });
     }
 
     @Override

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="713.0" prefWidth="1213.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.SetupChoiceSceneController">
+   <children>
+      <BorderPane layoutX="289.0" layoutY="201.0" prefHeight="312.0" prefWidth="617.0" style="-fx-border-color: black; -fx-border-radius: 10px;">
+         <center>
+            <HBox fx:id="hBox" prefHeight="231.0" prefWidth="479.0" BorderPane.alignment="CENTER" />
+         </center>
+         <bottom>
+            <AnchorPane prefHeight="42.0" prefWidth="617.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label fx:id="bottomText" layoutX="2.0" layoutY="11.0" prefHeight="21.0" prefWidth="465.0" style="-fx-alignment: top-right;" text="You have chosen..." />
+                  <Button fx:id="confirmChoice" layoutX="480.0" layoutY="6.0" mnemonicParsing="false" text="Confirm Choice" />
+               </children>
+            </AnchorPane>
+         </bottom>
+         <top>
+            <AnchorPane prefHeight="44.0" prefWidth="617.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label fx:id="upperText" layoutY="12.0" prefHeight="21.0" prefWidth="617.0" style="-fx-alignment: center;" text="You have to choose a " />
+               </children>
+            </AnchorPane>
+         </top>
+         <left>
+            <AnchorPane prefHeight="226.0" prefWidth="48.0" BorderPane.alignment="CENTER" />
+         </left>
+         <right>
+            <AnchorPane prefHeight="226.0" prefWidth="44.0" BorderPane.alignment="CENTER" />
+         </right>
+      </BorderPane>
+   </children>
+</AnchorPane>

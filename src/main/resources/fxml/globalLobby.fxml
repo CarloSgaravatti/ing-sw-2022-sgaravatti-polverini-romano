@@ -9,25 +9,41 @@
 
 <AnchorPane prefHeight="701.0" prefWidth="987.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.GlobalLobbyController">
    <children>
-      <TableView fx:id="globalLobbyTable" layoutX="226.0" layoutY="240.0" prefHeight="200.0" prefWidth="535.0">
-        <columns>
-          <TableColumn fx:id="gameIdCol" prefWidth="75.0" text="Game Id" />
-          <TableColumn fx:id="numPlayersCol" prefWidth="173.0" text="Num Players" />
-            <TableColumn fx:id="rulesCol" prefWidth="135.0" text="Rules" />
-            <TableColumn fx:id="playersConnectedCol" prefWidth="151.0" text="Players Connected" />
-        </columns>
-      </TableView>
-      <Text fx:id="messageLobby" layoutX="233.0" layoutY="139.0" strokeType="OUTSIDE" strokeWidth="0.0" text="You are viewing the global lobby">
+      <Text fx:id="messageLobby" layoutY="116.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-text-alignment: center;" text="You are viewing the global lobby" wrappingWidth="987.0">
          <font>
             <Font size="36.0" />
          </font>
       </Text>
-      <Button layoutX="671.0" layoutY="468.0" mnemonicParsing="false" onAction="#participateGame" text="Participate" />
-      <Button layoutX="670.0" layoutY="539.0" mnemonicParsing="false" onAction="#submitNewGame" text="New game" />
-      <Label layoutX="229.0" layoutY="518.0" text="Num players" />
-      <Label layoutX="448.0" layoutY="518.0" text="Rules" />
-      <Button layoutX="226.0" layoutY="468.0" mnemonicParsing="false" onAction="#onRefresh" text="Refresh" />
-      <ChoiceBox fx:id="numPlayersChoice" layoutX="229.0" layoutY="539.0" prefWidth="150.0" />
-      <ChoiceBox fx:id="rulesChoice" layoutX="448.0" layoutY="539.0" prefWidth="150.0" />
+      <BorderPane layoutX="207.0" layoutY="165.0" prefHeight="399.0" prefWidth="629.0">
+         <center>
+            <TableView fx:id="globalLobbyTable" prefHeight="242.0" prefWidth="629.0" BorderPane.alignment="CENTER">
+              <columns>
+                <TableColumn fx:id="gameIdCol" prefWidth="92.0" text="Game Id" />
+                <TableColumn fx:id="numPlayersCol" prefWidth="187.0" text="Num Players" />
+                  <TableColumn fx:id="rulesCol" prefWidth="143.0" text="Rules" />
+                  <TableColumn fx:id="playersConnectedCol" prefWidth="147.0" text="Players Connected" />
+              </columns>
+            </TableView>
+         </center>
+         <top>
+            <AnchorPane prefHeight="40.0" prefWidth="633.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Button layoutY="5.0" mnemonicParsing="false" onAction="#onRefresh" text="Refresh" />
+                  <Button layoutX="539.0" layoutY="6.0" mnemonicParsing="false" onAction="#participateGame" text="Participate" />
+               </children>
+            </AnchorPane>
+         </top>
+         <bottom>
+            <AnchorPane prefHeight="101.0" prefWidth="629.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label layoutX="14.0" layoutY="18.0" text="Num players" />
+                  <ChoiceBox fx:id="numPlayersChoice" layoutX="9.0" layoutY="40.0" prefWidth="150.0" />
+                  <Label layoutX="202.0" layoutY="18.0" text="Rules" />
+                  <ChoiceBox fx:id="rulesChoice" layoutX="188.0" layoutY="41.0" prefWidth="150.0" />
+                  <Button layoutX="396.0" layoutY="41.0" mnemonicParsing="false" onAction="#submitNewGame" text="New game" />
+               </children>
+            </AnchorPane>
+         </bottom>
+      </BorderPane>
    </children>
 </AnchorPane>
