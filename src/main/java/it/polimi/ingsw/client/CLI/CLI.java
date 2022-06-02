@@ -344,6 +344,8 @@ public class CLI implements Runnable, UserInterface {
         } while(!command.equals("q") && !command.equals("ok"));
         if (command.equals("q")) {
             //TODO: shutdown application (find how to do that)
+            clearScreen();
+            System.exit(0); // it works but I don't know if is correct
         }
     }
 
