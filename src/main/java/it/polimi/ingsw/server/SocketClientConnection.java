@@ -128,7 +128,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
     public void initializeClient() throws IOException, ClassNotFoundException, ClassCastException {
         ServerMessageHeader header = new ServerMessageHeader("NicknameRequest", ServerMessageType.SERVER_MESSAGE);
         MessageFromServer message = new MessageFromServer(header, new MessagePayload());
-        send(message);
+        asyncSend(message);
         MessageFromClient answer = (MessageFromClient) in.readObject();
         String nickname = answer.getMessagePayload().getAttribute("Nickname").getAsString();
         try {

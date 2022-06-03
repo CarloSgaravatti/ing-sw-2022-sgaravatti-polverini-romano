@@ -9,6 +9,7 @@ import it.polimi.ingsw.messages.ErrorMessageType;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.enumerations.WizardType;
 import it.polimi.ingsw.utils.Triplet;
+import org.fusesource.jansi.AnsiConsole;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -27,9 +28,11 @@ public class CLI implements Runnable, UserInterface {
     private ModelView modelView;
     private MapPrinter printer;
     private UserHelper helper;
+    private InputManager inputManager;
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
+        //AnsiConsole.systemInstall();
         String serverAddress;
         int serverPort;
         System.out.println("Insert server ip address: ");
@@ -84,8 +87,12 @@ public class CLI implements Runnable, UserInterface {
         ConnectionToServer connectionToServer = new ConnectionToServer(socket, this);
         Thread t = new Thread(connectionToServer);
         t.start();
+        inputManager = new InputManager(sc);
+        Thread inputThread = new Thread(inputManager);
+        inputThread.start();
         try {
             t.join();
+            inputThread.join();
         } catch (InterruptedException e) {
             //TODO
             t.interrupt(); //is this ok?
@@ -97,10 +104,13 @@ public class CLI implements Runnable, UserInterface {
         System.out.println("Insert a username:");
         String nickname;
         do {
+            inputManager.setInputPermitted(true);
             System.out.print("> ");
-            nickname = sc.next();
+            //nickname = sc.next();
+            nickname = inputManager.getLastInput();
         } while (nickname == null || nickname.isBlank());
         this.nickname = nickname;
+        inputManager.setInputPermitted(false);
         listeners.firePropertyChange("Nickname", null, nickname);
     }
 
@@ -123,8 +133,11 @@ public class CLI implements Runnable, UserInterface {
         boolean decisionMade = false;
         while (!decisionMade) {
             System.out.println(message);
+            inputManager.setInputPermitted(true);
             System.out.print("> ");
-            String input = sc.next();
+            //String input = sc.next();
+            String input = inputManager.getLastInput();
+            inputManager.setInputPermitted(false);
             switch (input) {
                 case ">5" -> {
                     printManager.onNextFiveCommand();
@@ -160,11 +173,13 @@ public class CLI implements Runnable, UserInterface {
 
     private void helpGameCreation() {
         int numPlayers = 0;
+        inputManager.setInputPermitted(true);
         do {
             System.out.println("Insert number of players: [2/3]");
             System.out.print("> ");
             try {
-                numPlayers = Integer.parseInt(sc.next());
+                //numPlayers = Integer.parseInt(sc.next());
+                numPlayers = Integer.parseInt(inputManager.getLastInput());
             }
             catch (NumberFormatException e) {
                 System.out.println(Colors.RED + "You have to insert a number!" + Colors.RESET);
@@ -173,7 +188,9 @@ public class CLI implements Runnable, UserInterface {
         boolean rules;
         System.out.println("Insert rules types: to create an expert game type 'expert', otherwise a simple game will be created");
         System.out.print("> ");
-        rules = sc.next().equals("expert");
+        //rules = sc.next().equals("expert");
+        rules = inputManager.getLastInput().equals("expert");
+        inputManager.setInputPermitted(false);
         listeners.firePropertyChange("NewGame", numPlayers, rules);
     }
 
@@ -187,15 +204,18 @@ public class CLI implements Runnable, UserInterface {
         System.out.println("You have to choose a tower, these are the options: " + Arrays.toString(freeTowers));
         boolean towerChosen = false;
         TowerType choice = null;
+        inputManager.setInputPermitted(true);
         while (!towerChosen) {
             System.out.print("> ");
             try {
-                choice = TowerType.valueOf(sc.next().toUpperCase());
+                //choice = TowerType.valueOf(sc.next().toUpperCase());
+                choice = TowerType.valueOf(inputManager.getLastInput().toUpperCase());
                 towerChosen = true;
             } catch (IllegalArgumentException e) {
                 System.out.println(Colors.RED + "Not a valid input, retry" + Colors.RESET);
             }
         }
+        inputManager.setInputPermitted(false);
         listeners.firePropertyChange("TowerChoice", null, choice);
     }
 
@@ -204,15 +224,18 @@ public class CLI implements Runnable, UserInterface {
         System.out.println("You have to choose a wizard, these are the options: " + Arrays.toString(freeWizards));
         boolean wizardChosen = false;
         WizardType choice = null;
+        inputManager.setInputPermitted(true);
         while (!wizardChosen) {
             System.out.print("> ");
             try {
-                choice = WizardType.valueOf(sc.next().toUpperCase());
+                //choice = WizardType.valueOf(sc.next().toUpperCase());
+                choice = WizardType.valueOf(inputManager.getLastInput().toUpperCase());
                 wizardChosen = true;
             } catch (IllegalArgumentException e) {
                 System.out.println(Colors.RED + "Not a valid input, retry" + Colors.RESET);
             }
         }
+        inputManager.setInputPermitted(false);
         listeners.firePropertyChange("WizardChoice", null, choice);
     }
 
@@ -241,7 +264,11 @@ public class CLI implements Runnable, UserInterface {
     @Override
     public void askAction(List<String> actions, List<String> actionCommands, List<String> currentPossibleActions) {
         System.out.print("> ");
-        String actionName = sc.next();
+        inputManager.setInputPermitted(true);
+        String command = inputManager.getLastInput();
+        inputManager.setInputPermitted(false);
+        //String actionName = sc.next();
+        String actionName = command.split(" ")[0];
         if (actionName.equals("EndTurn")) {
             listeners.firePropertyChange(actionName, null, null);
         }else if (actionName.equals("Help")) {
@@ -249,14 +276,15 @@ public class CLI implements Runnable, UserInterface {
             printTurnMenu(actions, actionCommands, currentPossibleActions);
             askAction(actions, actionCommands, currentPossibleActions);
         } else if (actionCommands.contains(actionName)){
-            String action = sc.nextLine();
+            //String action = sc.nextLine();
+            String action = command.substring(actionName.length());
             String correctedAction = action;
-            for (int i = 0; action.charAt(i) == ' '; i++) {
+            for (int i = 0; i < action.length() && action.charAt(i) == ' '; i++) {
                 correctedAction = correctedAction.substring(1);
             }
             listeners.firePropertyChange(actionName, null, correctedAction);
         } else {
-            String action = sc.nextLine(); //to reset input
+            //String action = sc.nextLine(); //to reset input
             System.out.println(Colors.RED + "Action not recognized, retry" + Colors.RESET);
             askAction(actions, actionCommands, currentPossibleActions);
         }
@@ -338,11 +366,15 @@ public class CLI implements Runnable, UserInterface {
         System.out.println(message);
         System.out.println();
         System.out.println("Insert 'ok' to return to the global lobby or 'q' to quit the application");
+        inputManager.setInputPermitted(true);
         String command;
         do {
-            command = sc.next();
+            //command = sc.next();
+            command = inputManager.getLastInput();
         } while(!command.equals("q") && !command.equals("ok"));
+        inputManager.setInputPermitted(false);
         if (command.equals("q")) {
+            inputManager.setActive(false);
             //TODO: shutdown application (find how to do that)
             clearScreen();
             System.exit(0); // it works but I don't know if is correct

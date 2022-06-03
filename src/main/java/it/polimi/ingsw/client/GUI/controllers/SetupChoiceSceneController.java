@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.GUI.controllers;
 
+import it.polimi.ingsw.client.GUI.constants.Constants;
 import it.polimi.ingsw.messages.ErrorMessageType;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.enumerations.WizardType;
@@ -28,12 +29,6 @@ public class SetupChoiceSceneController extends FXMLController {
     @FXML
     private Label bottomText;
     private List<ImageView> images;
-    private static final Map<TowerType, String> towerImages = Map.of(TowerType.BLACK, "/images/black_tower.png",
-            TowerType.WHITE, "/images/white_tower.png", TowerType.GREY, "/images/grey_tower.png");
-    private static final Map<WizardType, String> wizardImages = Map.of(WizardType.values()[0], "/images/assistants/CarteTOT_back_1@3x.png",
-            WizardType.values()[1], "/images/assistants/CarteTOT_back_11@3x.png",
-            WizardType.values()[2], "/images/assistants/CarteTOT_back_21@3x.png",
-            WizardType.values()[3], "/images/assistants/CarteTOT_back_31@3x.png");
     private final EventHandler<MouseEvent> towerEventHandler = mouseEvent -> {
         ImageView imageClicked = (ImageView) mouseEvent.getTarget();
         TowerType tower = TowerType.valueOf(imageClicked.getId());
@@ -59,7 +54,7 @@ public class SetupChoiceSceneController extends FXMLController {
         bottomText.setText("");
         images = new ArrayList<>();
         for (TowerType tower: towersFree) {
-            Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(towerImages.get(tower))));
+            Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(Constants.towerImages.get(tower))));
             images.add(createImageView(image, tower.toString(), towerEventHandler));
         }
         addImagesToScene();
@@ -70,7 +65,7 @@ public class SetupChoiceSceneController extends FXMLController {
         bottomText.setText("");
         images = new ArrayList<>();
         for (WizardType wizard: wizardsFree) {
-            Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(wizardImages.get(wizard))));
+            Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(Constants.wizardImages.get(wizard))));
             images.add(createImageView(image, wizard.toString(), wizardEventHandler));
         }
         addImagesToScene();
@@ -90,16 +85,5 @@ public class SetupChoiceSceneController extends FXMLController {
     private void addImagesToScene() {
         hBox.getChildren().clear();
         hBox.getChildren().addAll(images);
-        /*double imageXPosition = imagesAnchor.getLayoutX();
-        double imageYPosition = imagesAnchor.getLayoutY();
-        double imageSize = imagesAnchor.getPrefWidth() / images.size();
-        for (ImageView imageView: images) {
-            imagesAnchor.getChildren().add(imageView);
-            imageView.setX(imageXPosition);
-            imageView.setY(imageYPosition);
-            imageView.setPreserveRatio(true);
-            imageView.setFitWidth(imageSize);
-            imageXPosition += imageSize;
-        }*/
     }
 }

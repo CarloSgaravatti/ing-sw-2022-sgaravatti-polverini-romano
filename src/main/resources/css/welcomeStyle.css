@@ -1,0 +1,8 @@
+.anchor-pane {
+    -fx-background-image: url("../images/background/Eriantys.jpg");
+    -fx-background-size: stretch;
+}
+
+.pane {
+    -fx-background-color: burlywood;
+}

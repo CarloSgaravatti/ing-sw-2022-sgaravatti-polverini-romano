@@ -50,6 +50,7 @@ public class GUI extends Application implements UserInterface {
         this.stage = stage;
         this.stage.setTitle("Eriantys");
         this.stage.setScene(scene);
+        this.stage.setFullScreen(true);
         this.stage.show(); //display the stage on the screen
         this.stage.centerOnScreen();
 
@@ -106,7 +107,7 @@ public class GUI extends Application implements UserInterface {
             } catch (IOException e) {
                 //TODO
             }
-            String css = Objects.requireNonNull(this.getClass().getResource("/css/application.css")).toExternalForm();
+            String css = Objects.requireNonNull(this.getClass().getResource("/css/setupScene.css")).toExternalForm();
             scene.getStylesheets().addAll(css);
             this.stage.setScene(scene);
             SetupChoiceSceneController sceneController = fxmlLoader.getController();
@@ -161,7 +162,7 @@ public class GUI extends Application implements UserInterface {
             stage.setScene(scene);
             currentSceneController = loader.getController();
             currentSceneController.addListener(this);
-            ((MainSceneController) currentSceneController).initializeBoard(modelView);
+            ((MainSceneController) currentSceneController).initializeBoard(modelView, this.nickname);
             stage.show();
         });
     }

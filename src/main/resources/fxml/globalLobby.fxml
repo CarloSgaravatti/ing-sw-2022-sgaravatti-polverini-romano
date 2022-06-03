@@ -1,27 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="701.0" prefWidth="987.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.GlobalLobbyController">
+<AnchorPane prefHeight="1080.0" prefWidth="1920.0" stylesheets="@../css/globalStyle.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.GlobalLobbyController">
    <children>
-      <Text fx:id="messageLobby" layoutY="116.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-text-alignment: center;" text="You are viewing the global lobby" wrappingWidth="987.0">
+      <Text fx:id="messageLobby" layoutY="115.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-text-alignment: center;" text="You are viewing the global lobby" wrappingWidth="1940.0">
          <font>
             <Font size="36.0" />
          </font>
       </Text>
-      <BorderPane layoutX="207.0" layoutY="165.0" prefHeight="399.0" prefWidth="629.0">
+      <BorderPane layoutX="580.0" layoutY="281.0" prefHeight="540.0" prefWidth="780.0">
          <center>
             <TableView fx:id="globalLobbyTable" prefHeight="242.0" prefWidth="629.0" BorderPane.alignment="CENTER">
               <columns>
                 <TableColumn fx:id="gameIdCol" prefWidth="92.0" text="Game Id" />
-                <TableColumn fx:id="numPlayersCol" prefWidth="187.0" text="Num Players" />
-                  <TableColumn fx:id="rulesCol" prefWidth="143.0" text="Rules" />
-                  <TableColumn fx:id="playersConnectedCol" prefWidth="147.0" text="Players Connected" />
+                <TableColumn fx:id="numPlayersCol" prefWidth="226.0" text="Num Players" />
+                  <TableColumn fx:id="rulesCol" prefWidth="177.0" text="Rules" />
+                  <TableColumn fx:id="playersConnectedCol" prefWidth="284.0" text="Players Connected" />
               </columns>
             </TableView>
          </center>
@@ -29,7 +26,7 @@
             <AnchorPane prefHeight="40.0" prefWidth="633.0" BorderPane.alignment="CENTER">
                <children>
                   <Button layoutY="5.0" mnemonicParsing="false" onAction="#onRefresh" text="Refresh" />
-                  <Button layoutX="539.0" layoutY="6.0" mnemonicParsing="false" onAction="#participateGame" text="Participate" />
+                  <Button layoutX="676.0" layoutY="5.0" mnemonicParsing="false" onAction="#participateGame" text="Participate" />
                </children>
             </AnchorPane>
          </top>
