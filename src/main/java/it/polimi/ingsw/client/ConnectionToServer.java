@@ -2,7 +2,6 @@ package it.polimi.ingsw.client;
 
 import it.polimi.ingsw.client.messageHandlers.DefaultMessageHandler;
 import it.polimi.ingsw.client.messageHandlers.MessageHandler;
-import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.messages.*;
 
 import java.io.IOException;
@@ -16,7 +15,7 @@ public class ConnectionToServer implements Runnable {
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
     private MessageHandler firstMessageHandler;
-    private final ExecutorService messageHandlerExecutor = Executors.newSingleThreadExecutor();
+    private ExecutorService messageHandlerExecutor = Executors.newSingleThreadExecutor();
     private String nickname;
     private boolean active = true;
 
@@ -39,7 +38,7 @@ public class ConnectionToServer implements Runnable {
     }
 
     public void addFirstMessageHandler(MessageHandler newHandler) {
-        newHandler.setNextHandler(firstMessageHandler);
+        if (firstMessageHandler!= null) newHandler.setNextHandler(firstMessageHandler);
         firstMessageHandler = newHandler;
     }
 
@@ -114,5 +113,16 @@ public class ConnectionToServer implements Runnable {
 
     public synchronized void setActive(boolean active) {
         this.active = active;
+    }
+
+    public void reset() {
+        messageHandlerExecutor.shutdownNow();
+        messageHandlerExecutor = Executors.newSingleThreadExecutor();
+        System.out.println("Reset");
+    }
+
+    public void reset(MessageHandler messageHandler) {
+        reset();
+        firstMessageHandler = messageHandler;
     }
 }

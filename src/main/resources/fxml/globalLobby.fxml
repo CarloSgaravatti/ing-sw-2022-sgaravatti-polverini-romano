@@ -26,7 +26,7 @@
             <AnchorPane prefHeight="40.0" prefWidth="633.0" BorderPane.alignment="CENTER">
                <children>
                   <Button layoutY="5.0" mnemonicParsing="false" onAction="#onRefresh" text="Refresh" />
-                  <Button layoutX="676.0" layoutY="5.0" mnemonicParsing="false" onAction="#participateGame" text="Participate" />
+                  <Button layoutX="708.0" layoutY="5.0" mnemonicParsing="false" onAction="#participateGame" text="Participate" />
                </children>
             </AnchorPane>
          </top>

@@ -2,14 +2,12 @@ package it.polimi.ingsw.client.CLI;
 
 import it.polimi.ingsw.client.CLI.utils.*;
 import it.polimi.ingsw.client.ConnectionToServer;
-import it.polimi.ingsw.client.PlayerSetupHandler;
 import it.polimi.ingsw.client.UserInterface;
 import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.messages.ErrorMessageType;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.enumerations.WizardType;
 import it.polimi.ingsw.utils.Triplet;
-import org.fusesource.jansi.AnsiConsole;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -29,6 +27,7 @@ public class CLI implements Runnable, UserInterface {
     private MapPrinter printer;
     private UserHelper helper;
     private InputManager inputManager;
+    private boolean isGameFinished = false;
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -137,6 +136,7 @@ public class CLI implements Runnable, UserInterface {
             System.out.print("> ");
             //String input = sc.next();
             String input = inputManager.getLastInput();
+            isGameFinished = false;
             inputManager.setInputPermitted(false);
             switch (input) {
                 case ">5" -> {
@@ -269,14 +269,16 @@ public class CLI implements Runnable, UserInterface {
         inputManager.setInputPermitted(false);
         //String actionName = sc.next();
         String actionName = command.split(" ")[0];
-        if (actionName.equals("EndTurn")) {
+        if (isGameFinished) {
+            //if someone disconnects, this is a sort of rollback (last input does not concern this method)
+           inputManager.restoreLastInput(command);
+        } else if (actionName.equals("EndTurn")) {
             listeners.firePropertyChange(actionName, null, null);
         }else if (actionName.equals("Help")) {
             helper.onHelpRequest();
             printTurnMenu(actions, actionCommands, currentPossibleActions);
             askAction(actions, actionCommands, currentPossibleActions);
-        } else if (actionCommands.contains(actionName)){
-            //String action = sc.nextLine();
+        } else if (actionCommands.contains(actionName)) {
             String action = command.substring(actionName.length());
             String correctedAction = action;
             for (int i = 0; i < action.length() && action.charAt(i) == ' '; i++) {
@@ -284,7 +286,6 @@ public class CLI implements Runnable, UserInterface {
             }
             listeners.firePropertyChange(actionName, null, correctedAction);
         } else {
-            //String action = sc.nextLine(); //to reset input
             System.out.println(Colors.RED + "Action not recognized, retry" + Colors.RESET);
             askAction(actions, actionCommands, currentPossibleActions);
         }
@@ -356,6 +357,10 @@ public class CLI implements Runnable, UserInterface {
                 endGameMessage = "You have lose, but nobody has won, these are the tiers" +
                         Arrays.toString((String[]) evt.getNewValue());
             }
+            case "Disconnection" -> {
+                clearScreen();
+                endGameMessage = evt.getNewValue() + " have disconnected";
+            }
         }
         if (endGameMessage != null) {
             onEndGame(endGameMessage);
@@ -375,9 +380,11 @@ public class CLI implements Runnable, UserInterface {
         inputManager.setInputPermitted(false);
         if (command.equals("q")) {
             inputManager.setActive(false);
-            //TODO: shutdown application (find how to do that)
             clearScreen();
-            System.exit(0); // it works but I don't know if is correct
+            System.exit(0);
+        } else {
+            isGameFinished = true;
+            listeners.firePropertyChange("RefreshLobby", null, null);
         }
     }
 

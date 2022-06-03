@@ -8,22 +8,6 @@
 <?import javafx.scene.layout.*?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: powderblue;" stylesheets="@../css/globalStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.MainSceneController">
-   <center>
-      <GridPane BorderPane.alignment="CENTER">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-      </GridPane>
-   </center>
    <left>
       <AnchorPane prefHeight="595.0" prefWidth="484.0" BorderPane.alignment="CENTER">
          <children>
@@ -40,24 +24,36 @@
          </children></AnchorPane>
    </left>
    <right>
-      <AnchorPane prefHeight="595.0" prefWidth="508.0" BorderPane.alignment="CENTER" />
+      <AnchorPane prefHeight="595.0" prefWidth="484.0" BorderPane.alignment="CENTER" />
    </right>
    <bottom>
       <AnchorPane prefHeight="321.0" prefWidth="1920.0" BorderPane.alignment="CENTER">
          <children>
-            <ImageView fx:id="clientSchool" fitHeight="275.0" fitWidth="583.0" layoutX="669.0" layoutY="23.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../images/schools/Plancia_DEF2.png" />
-               </image>
-            </ImageView>
-            <ImageView fx:id="clientAssistant" fitHeight="219.0" fitWidth="161.0" layoutX="1349.0" layoutY="51.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../images/assistants/CarteTOT_back_11@3x.png" />
-               </image>
-            </ImageView>
+            <AnchorPane layoutX="551.0" layoutY="33.0" prefHeight="255.0" prefWidth="817.0">
+               <children>
+                  <ImageView fx:id="clientSchool" fitHeight="275.0" fitWidth="583.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/schools/Plancia_DEF2.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fx:id="clientAssistant" fitHeight="219.0" fitWidth="161.0" layoutX="673.0" layoutY="17.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/assistants/CarteTOT_back_11@3x.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </AnchorPane>
          </children></AnchorPane>
    </bottom>
    <top>
       <AnchorPane prefHeight="164.0" prefWidth="1920.0" BorderPane.alignment="CENTER" />
    </top>
+   <center>
+      <VBox fx:id="map">
+         <children>
+            <FlowPane fx:id="islandMap" prefHeight="595.0" prefWidth="1113.0" BorderPane.alignment="CENTER" />
+            <HBox fx:id="cloudBox" prefHeight="427.0" prefWidth="952.0" />
+         </children>
+      </VBox>
+   </center>
 </BorderPane>

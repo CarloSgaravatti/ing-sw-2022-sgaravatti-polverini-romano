@@ -9,7 +9,6 @@ public class InputManager implements Runnable{
     private boolean inputPermitted = false;
     private boolean active = true;
     private final Scanner sc;
-
     private final Object getInputLock = new Object();
 
     public InputManager(Scanner sc) {
@@ -30,6 +29,7 @@ public class InputManager implements Runnable{
                 String input = sc.nextLine();
                 if (isInputPermitted()) {
                     lastInput = input.split("\n")[0];
+                    System.out.println(lastInput);
                     getInputLock.notify();
                 }
                 else System.out.println(Colors.RED + "You are not permitted to insert an input at this moment, " +
@@ -71,5 +71,11 @@ public class InputManager implements Runnable{
 
     public synchronized void setActive(boolean active) {
         this.active = active;
+    }
+
+    public void restoreLastInput(String lastInput) {
+        synchronized (getInputLock) {
+            this.lastInput = lastInput;
+        }
     }
 }

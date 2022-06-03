@@ -58,7 +58,7 @@ public class Server implements Runnable{
         gamesMap.remove(gameId);
         waitingPlayersPerGameMap.remove(gameId);
         for(String clientName: participants.keySet()) {
-            globalLobby(participants.get(clientName), clientName);
+            //globalLobby(participants.get(clientName), clientName);
             participants.get(clientName).setSetupDone(false);
         }
     }

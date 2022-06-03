@@ -1,6 +1,8 @@
 package it.polimi.ingsw.client.GUI.controllers;
 
 import it.polimi.ingsw.client.GUI.constants.Constants;
+import it.polimi.ingsw.client.GUI.items.CloudImage;
+import it.polimi.ingsw.client.GUI.items.IslandImage;
 import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.client.modelView.PlayerView;
 import it.polimi.ingsw.messages.ErrorMessageType;
@@ -8,17 +10,19 @@ import it.polimi.ingsw.utils.Pair;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class MainSceneController extends FXMLController {
     private ModelView modelView;
     private Pair<String, PlayerView> client;
     private Pair<String, PlayerView> secondPlayer;
     private Pair<String, PlayerView> thirdPlayer;
+    private final Map<Integer, Pair<Integer, Integer>> islandsPositionInGrid = new HashMap<>();
     @FXML
     private ImageView clientSchool;
     @FXML
@@ -29,6 +33,12 @@ public class MainSceneController extends FXMLController {
     private ImageView secondPlayerAssistant;
     @FXML
     private ImageView clientAssistant;
+    @FXML
+    private VBox map;
+    @FXML
+    private FlowPane islandMap;
+    @FXML
+    private HBox cloudBox;
 
     public void initializeBoard(ModelView modelView, String clientNickname) {
         this.modelView = modelView;
@@ -51,6 +61,18 @@ public class MainSceneController extends FXMLController {
         if (playersNicknames.size() == 3) {
             String thirdPlayerNickname = playersNicknames.get((clientIndex + 1 ) % playersNicknames.size());
             thirdPlayer = new Pair<>(thirdPlayerNickname, playersView.get(thirdPlayerNickname));
+        }
+        initializeMap();
+    }
+
+    private void initializeMap() {
+        double islandImageWidth = 2 * islandMap.getWidth()  / modelView.getField().getIslandSize();
+        for (int i = 0; i < modelView.getField().getIslandSize(); i++) {
+            islandMap.getChildren().add(new IslandImage(i, modelView.getField(), islandImageWidth));
+        }
+        double cloudImageWidth = 2 * islandMap.getWidth() / modelView.getField().getCloudStudents().size();
+        for (int i = 0; i < modelView.getField().getCloudStudents().size(); i++) {
+            cloudBox.getChildren().add(new CloudImage(i, modelView.getField(), islandImageWidth));
         }
     }
     @Override
