@@ -7,13 +7,14 @@ import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.client.modelView.PlayerView;
 import it.polimi.ingsw.messages.ErrorMessageType;
 import it.polimi.ingsw.utils.Pair;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.*;
+import javafx.scene.transform.Translate;
 
 import java.util.*;
 
@@ -39,6 +40,10 @@ public class MainSceneController extends FXMLController {
     private FlowPane islandMap;
     @FXML
     private HBox cloudBox;
+    @FXML
+    private VBox clientBox;
+    @FXML
+    private HBox secondPlayerBox;
 
     public void initializeBoard(ModelView modelView, String clientNickname) {
         this.modelView = modelView;
@@ -63,6 +68,7 @@ public class MainSceneController extends FXMLController {
             thirdPlayer = new Pair<>(thirdPlayerNickname, playersView.get(thirdPlayerNickname));
         }
         initializeMap();
+        initializeAccordions();
     }
 
     private void initializeMap() {
@@ -78,5 +84,53 @@ public class MainSceneController extends FXMLController {
     @Override
     public void onError(ErrorMessageType error) {
 
+    }
+
+    public void initializeAccordions() {
+        clientBox.setPrefHeight(AnchorPane.USE_COMPUTED_SIZE);
+        clientBox.setMaxHeight(AnchorPane.USE_PREF_SIZE);
+        secondPlayerBox.setPrefWidth(AnchorPane.USE_COMPUTED_SIZE);
+        secondPlayerBox.setMaxWidth(AnchorPane.USE_PREF_SIZE);
+        double clientBoxTranslation = ((AnchorPane)clientBox.getChildren().get(1)).getHeight();
+        double secondPlayerBoxTranslation = ((AnchorPane)secondPlayerBox.getChildren().get(0)).getWidth();
+        System.out.println(clientBoxTranslation);
+        System.out.println(secondPlayerBoxTranslation);
+        clientBox.setTranslateY(clientBoxTranslation);
+        secondPlayerBox.setTranslateX(-secondPlayerBoxTranslation);
+    }
+
+    public void viewSchool(ActionEvent actionEvent) {
+        double clientBoxTranslation = ((AnchorPane)clientBox.getChildren().get(1)).getHeight();
+        Button clientButton = (Button) actionEvent.getTarget();
+        //clientBox.getTransforms().clear();
+        Translate translation = new Translate();
+        translation.setX(0);
+        if (clientButton.getText().equals("^")) {
+            translation.setY(-clientBoxTranslation);
+            //clientBox.setTranslateY(-((AnchorPane)clientBox.getChildren().get(1)).getHeight());
+            clientButton.setText("v");
+        } else {
+            translation.setY(clientBoxTranslation);
+            //clientBox.setTranslateY(((AnchorPane)clientBox.getChildren().get(1)).getHeight());
+            clientButton.setText("^");
+        }
+        clientBox.getTransforms().add(translation);
+    }
+
+    public void viewSecondPlayerSchool(ActionEvent actionEvent) {
+        double secondPlayerBoxTranslation = ((AnchorPane)secondPlayerBox.getChildren().get(0)).getWidth();
+        Button secondPlayerButton = (Button) actionEvent.getTarget();
+        Translate translation = new Translate();
+        translation.setY(0);
+        if (secondPlayerButton.getText().equals(">")) {
+            translation.setX(secondPlayerBoxTranslation);
+            //secondPlayerBox.setTranslateX(((AnchorPane)secondPlayerBox.getChildren().get(0)).getWidth());
+            secondPlayerButton.setText("<");
+        } else {
+            translation.setX(-secondPlayerBoxTranslation);
+            //secondPlayerBox.setTranslateX(-((AnchorPane)secondPlayerBox.getChildren().get(0)).getWidth());
+            secondPlayerButton.setText(">");
+        }
+        secondPlayerBox.getTransforms().add(translation);
     }
 }

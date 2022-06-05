@@ -15,7 +15,7 @@ public class CloudImage extends AnchorPane {
     public CloudImage(int cloudId, FieldView fieldView, double imageWidth) {
         super();
         Image image = new Image(Objects.requireNonNull(getClass()
-                .getResourceAsStream("/images/clouds/cloud_card_" + (new Random().nextInt(5) + 1) + ".png")));
+                .getResourceAsStream("/images/clouds/cloud_card_" + (new Random().nextInt(4) + 1) + ".png")));
         /*BackgroundImage backgroundImage = new BackgroundImage(image, null, null, null, null);
         Background background = new Background(backgroundImage);
         super.setBackground(background);*/

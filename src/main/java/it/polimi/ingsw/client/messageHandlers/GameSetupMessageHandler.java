@@ -27,6 +27,7 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
     public void handleMessage(MessageFromServer message) {
         ServerMessageHeader header = message.getServerMessageHeader();
         if(header.getMessageType() != ServerMessageType.GAME_SETUP && !header.getMessageName().equals("SetupAck")) {
+            System.out.println("Game setup message handler has passed message " + header.getMessageName());
             getNextHandler().handleMessage(message);
             return;
         }

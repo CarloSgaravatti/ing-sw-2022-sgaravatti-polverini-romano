@@ -43,12 +43,14 @@ public class FieldView {
         this.islands.removeAll(islandsToRemove);
         this.islands.add(newIndex.get(), newIsland);
         int noEntryTiles = 0;
-        for (Integer i: islands) {
-            noEntryTiles += expertField.getNoEntryTilesOnIsland(i);
-            expertField.resetNoEntryTilesOnIsland(i);
-        }
-        for (int i = 0; i < noEntryTiles; i++) {
-            expertField.insertNoEntryTileOnIsland(newIndex.get());
+        if (expertField != null) {
+            for (Integer i : islands) {
+                noEntryTiles += expertField.getNoEntryTilesOnIsland(i);
+                expertField.resetNoEntryTilesOnIsland(i);
+            }
+            for (int i = 0; i < noEntryTiles; i++) {
+                expertField.insertNoEntryTileOnIsland(newIndex.get());
+            }
         }
         updateMotherNaturePosition(newIndex.get());
     }

@@ -69,7 +69,7 @@ public class ConnectionToServer implements Runnable {
             System.err.println(e.getMessage());
             e.printStackTrace();
         } finally {
-            messageHandlerExecutor.shutdown();
+            messageHandlerExecutor.shutdownNow();
             try {
                 inputStream.close();
                 outputStream.close();
@@ -79,10 +79,12 @@ public class ConnectionToServer implements Runnable {
         }
     }
 
-    public Thread asyncWriteToServer(Object message) {
+    public synchronized Thread asyncWriteToServer(Object message) {
         Thread t = new Thread(() -> {
             try {
+                outputStream.reset();
                 outputStream.writeObject(message);
+                outputStream.flush();
             } catch (IOException e) {
                 //TODO
             }

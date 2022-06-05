@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.MainSceneV2Controller">
+   <children>
+      <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0">
+         <center>
+            <GridPane fx:id="islandsGrid" hgap="30.0" prefHeight="880.0" prefWidth="1536.0" vgap="20.0" BorderPane.alignment="CENTER">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+            </GridPane>
+         </center>
+         <left>
+            <VBox fx:id="cloudBox" prefHeight="880.0" prefWidth="384.0" BorderPane.alignment="CENTER" />
+         </left>
+         <top>
+            <AnchorPane prefHeight="198.0" prefWidth="1920.0" BorderPane.alignment="CENTER" />
+         </top>
+         <right>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+         </right>
+         <bottom>
+            <AnchorPane prefHeight="79.0" prefWidth="1920.0" BorderPane.alignment="CENTER" />
+         </bottom>
+      </BorderPane>
+      <VBox fx:id="playersBox" layoutY="463.0" prefHeight="563.0" prefWidth="1922.0">
+         <children>
+            <AnchorPane prefHeight="45.0" prefWidth="1922.0">
+               <children>
+                  <Button layoutX="673.0" layoutY="-4.0" mnemonicParsing="false" onAction="#onAccordionButtonPress" prefHeight="51.0" prefWidth="565.0" text="^" />
+               </children>
+            </AnchorPane>
+            <AnchorPane prefHeight="483.0" prefWidth="1922.0">
+               <children>
+                  <TabPane layoutX="2.0" layoutY="-2.0" prefHeight="572.0" prefWidth="1920.0" style="-fx-background-color: burlywood;" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                      <Tab text="Your Assistants">
+                           <content>
+                              <AnchorPane>
+                                 <children>
+                                    <FlowPane fx:id="assistantsPane" hgap="50.0" layoutX="104.0" layoutY="28.0" prefHeight="460.0" prefWidth="1700.0" vgap="15.0" />
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                      </Tab>
+                      <Tab text="Your School">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="533.0" prefWidth="1920.0">
+                                 <children>
+                                    <AnchorPane fx:id="clientSchoolPane" layoutX="283.0" layoutY="66.0" prefHeight="400.0" prefWidth="1354.0">
+                                       <children>
+                                          <ImageView fitHeight="400.0" fitWidth="900.0" layoutX="50.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../images/schools/Plancia_DEF2.png" />
+                                             </image>
+                                          </ImageView>
+                                          <ImageView fitHeight="322.0" fitWidth="200.0" layoutX="1080.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../images/assistants/CarteTOT_back_11@3x.png" />
+                                             </image>
+                                          </ImageView>
+                                       </children>
+                                    </AnchorPane>
+                                 </children>
+                              </AnchorPane>
+                        </content>
+                      </Tab>
+                        <Tab text="Second Player School">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="323.0" prefWidth="1920.0">
+                                 <children>
+                                    <AnchorPane fx:id="secondPlayerSchoolPane" layoutX="283.0" layoutY="66.0" prefHeight="400.0" prefWidth="1354.0">
+                                       <children>
+                                          <ImageView fitHeight="400.0" fitWidth="900.0" layoutX="50.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../images/schools/Plancia_DEF2.png" />
+                                             </image>
+                                          </ImageView>
+                                          <ImageView fitHeight="322.0" fitWidth="200.0" layoutX="1080.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../images/assistants/CarteTOT_back_21@3x.png" />
+                                             </image>
+                                          </ImageView>
+                                       </children>
+                                    </AnchorPane>
+                                 </children>
+                              </AnchorPane>
+                          </content>
+                        </Tab>
+                        <Tab text="Third Player School">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <AnchorPane fx:id="thirdPlayerSchoolPane" layoutX="283.0" layoutY="66.0" prefHeight="400.0" prefWidth="1354.0">
+                                       <children>
+                                          <ImageView fitHeight="400.0" fitWidth="900.0" layoutX="50.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../images/schools/Plancia_DEF2.png" />
+                                             </image>
+                                          </ImageView>
+                                          <ImageView fitHeight="322.0" fitWidth="200.0" layoutX="1080.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../images/assistants/CarteTOT_back_31@3x.png" />
+                                             </image>
+                                          </ImageView>
+                                       </children>
+                                    </AnchorPane>
+                                 </children>
+                              </AnchorPane>
+                          </content>
+                        </Tab>
+                    </tabs>
+                  </TabPane>
+               </children>
+            </AnchorPane>
+         </children>
+      </VBox>
+   </children>
+   <stylesheets>
+      <URL value="@../css/globalStyle.css" />
+      <URL value="@../css/mainScene.css" />
+   </stylesheets>
+</AnchorPane>

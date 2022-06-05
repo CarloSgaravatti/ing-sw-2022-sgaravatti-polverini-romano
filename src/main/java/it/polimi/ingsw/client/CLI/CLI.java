@@ -296,7 +296,7 @@ public class CLI implements Runnable, UserInterface {
         printer = new MapPrinter(0, 0);
         this.modelView = modelView;
         printer.initializeMap(modelView, nickname);
-        helper = new UserHelper(modelView, sc);
+        helper = new UserHelper(modelView, inputManager);
     }
 
     @Override

@@ -18,16 +18,19 @@ public class ActionInputParser implements PropertyChangeListener {
     private static final String NOT_A_STUDENT = "Student abbreviation not valid";
     private static final String ISLAND_NOT_FOUND = "There isn't such an island";
     private static final String UNRECOGNISED_COMMAND = "Not a valid command";
-    private static final String WRONG_STUDENT_NUMBER = "You have to select exactly 3 students";
+    private static final String WRONG_STUDENT_NUMBER_2 = "You have to select exactly 3 students";
+    private static final String WRONG_STUDENT_NUMBER_3 = "You have to select exactly 4 students";
     private static final String WRONG_MOTHER_NATURE_MOVEMENT = "You can only move mother nature between 1 and ";
     private static final String CLOUD_NOT_FOUND = "There isn't such a cloud";
     private static final String CHARACTER_NOT_FOUND = "There isn't such a character";
+    private final int studentsToMove;
 
     public ActionInputParser(PropertyChangeListener messageConstructor, TurnHandler turnHandler, UserInterface userInterface, ModelView modelView) {
         this.listeners.addPropertyChangeListener(messageConstructor);
         this.listeners.addPropertyChangeListener("InputError", turnHandler);
         this.userInterface = userInterface;
         this.modelView = modelView;
+        studentsToMove = (modelView.getPlayers().size() == 2) ? 3 : 4;
     }
 
     @Override
@@ -98,7 +101,10 @@ public class ActionInputParser implements PropertyChangeListener {
             i++;
             numStudentsMoved++;
         }
-        if (numStudentsMoved != 3) return WRONG_STUDENT_NUMBER;
+        if (numStudentsMoved != studentsToMove) {
+            if (modelView.getPlayers().size() == 2) return WRONG_STUDENT_NUMBER_2;
+            return WRONG_STUDENT_NUMBER_3;
+        }
         return null;
     }
 

@@ -1,0 +1,7 @@
+.assistant-image {
+    -fx-cursor: hand;
+}
+
+.assistant-image:hover {
+    -fx-effect: dropshadow(gaussian, yellow, 10, 1, 0, 0);
+}

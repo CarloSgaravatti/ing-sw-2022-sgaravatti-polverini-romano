@@ -57,7 +57,7 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         System.out.println(playerName + " has played assistant " + assistant);
         getModelView().getPlayers().get(playerName).updateLastPlayedAssistant(assistant, motherNatureMovement);
         if (getUserInterface().getNickname().equals(playerName)) getModelView().removeAssistant(assistant);
-        userInterface.firePropertyChange("AssistantUpdate", null, playerName);
+        userInterface.firePropertyChange("AssistantUpdate", assistant, playerName);
     }
 
     private void onProfessorUpdate(MessagePayload payload) {

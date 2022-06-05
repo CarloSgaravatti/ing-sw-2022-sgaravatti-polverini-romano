@@ -2,6 +2,7 @@ package it.polimi.ingsw.client.GUI;
 
 import it.polimi.ingsw.client.ConnectionToServer;
 import it.polimi.ingsw.client.GUI.controllers.*;
+import it.polimi.ingsw.client.GUI.items.AssistantsTab;
 import it.polimi.ingsw.client.UserInterface;
 import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.messages.ErrorMessageType;
@@ -35,7 +36,6 @@ public class GUI extends Application implements UserInterface {
     //This executor is used to not use the javafx thread to compute actions (so javafx thread is only
     //used for javafx stuffs)
     private final ExecutorService responseHandlerExecutor = Executors.newSingleThreadExecutor();
-    private Thread connectionHandlerThread;
 
     public GUI() {
 
@@ -153,28 +153,33 @@ public class GUI extends Application implements UserInterface {
     @Override
     public void onGameInitialization(ModelView modelView) {
         Platform.runLater(() -> {
-            FXMLLoader loader = new FXMLLoader(GUI.class.getResource("/fxml/mainScene.fxml"));
+            FXMLLoader loader = new FXMLLoader(GUI.class.getResource("/fxml/mainSceneV2.fxml"));
             try {
                 scene = new Scene(loader.load());
             } catch (IOException e) {
                 //TODO
             }
             stage.setScene(scene);
+            stage.setFullScreen(true);
             currentSceneController = loader.getController();
+            ((MainSceneV2Controller) currentSceneController).initializeBoard(modelView, this.nickname);
             currentSceneController.addListener(this);
-            ((MainSceneController) currentSceneController).initializeBoard(modelView, this.nickname);
             stage.show();
         });
     }
 
     @Override
     public void printTurnMenu(List<String> actions, List<String> actionCommands, List<String> currentPossibleActions) {
-
+        Platform.runLater(() -> {
+            ((MainSceneV2Controller) currentSceneController).onTurn(currentPossibleActions);
+            stage.setFullScreen(true);
+        });
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
+            case "AssistantUpdate" -> onAssistantUpdate((Integer) evt.getOldValue(), (String) evt.getNewValue());
             case "IslandStudents" -> {}
             case "IslandTower" -> {}
             //...
@@ -182,6 +187,17 @@ public class GUI extends Application implements UserInterface {
             default -> checkEventFromControllers(evt);
             //default -> listeners.firePropertyChange(evt);
         }
+    }
+
+    private void onAssistantUpdate(int assistant, String player) {
+        Platform.runLater(() -> {
+            MainSceneV2Controller controller = ((MainSceneV2Controller) currentSceneController);
+            if (player.equals(nickname)) {
+                AssistantsTab assistantsTab = controller.getAssistantsTab();
+                assistantsTab.removeAssistantFromDeck(assistant);
+            }
+            controller.setAssistantImage(player, assistant);
+        });
     }
 
     private void checkEventFromControllers(PropertyChangeEvent evt) {
@@ -202,7 +218,7 @@ public class GUI extends Application implements UserInterface {
         }
         System.out.println("Connection Established");
         ConnectionToServer connectionToServer = new ConnectionToServer(socket, this);
-        connectionHandlerThread = new Thread(connectionToServer);
+        Thread connectionHandlerThread = new Thread(connectionToServer);
         connectionHandlerThread.start();
         //TODO: find a way to shutdown connection to server
         stage.setOnCloseRequest(event -> connectionToServer.setActive(false));

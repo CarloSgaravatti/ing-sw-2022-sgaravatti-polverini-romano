@@ -117,9 +117,11 @@ public class ActionController {
 		//TODO: make all methods in action controller return a boolean and not IllegalArgumentException
 		try {
 			int coinsGained = school.insertDiningRoom(studentsToDiningRoom, true, true);
-			for (int i = 0; i < coinsGained; i++) {
-				turnController.getActivePlayer().insertCoin();
-				gameController.getModel().takeCoinFromGeneralSupply();
+			if (gameController.isExpertGame()) {
+				for (int i = 0; i < coinsGained; i++) {
+					turnController.getActivePlayer().insertCoin();
+					gameController.getModel().takeCoinFromGeneralSupply();
+				}
 			}
 		} catch (FullDiningRoomException e) {
 			school.insertEntrance(studentsToDiningRoom);
