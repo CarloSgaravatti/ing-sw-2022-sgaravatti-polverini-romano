@@ -5,3 +5,26 @@
 .assistant-image:hover {
     -fx-effect: dropshadow(gaussian, yellow, 10, 1, 0, 0);
 }
+
+.school-pane {
+    -fx-background-image: url("../images/schools/Plancia_DEF2.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: stretch;
+}
+
+.island-pane1, .island-pane2, .island-pane3 {
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: stretch;
+}
+
+.island-pane1 {
+    -fx-background-image: url("../images/islands/island1.png");
+}
+
+.island-pane2 {
+    -fx-background-image: url("../images/islands/island2.png");
+}
+
+.island-pane3 {
+    -fx-background-image: url("../images/islands/island3.png");
+}

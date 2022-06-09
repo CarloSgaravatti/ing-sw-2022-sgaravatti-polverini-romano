@@ -29,7 +29,6 @@ public class InputManager implements Runnable{
                 String input = sc.nextLine();
                 if (isInputPermitted()) {
                     lastInput = input.split("\n")[0];
-                    System.out.println(lastInput);
                     getInputLock.notify();
                 }
                 else System.out.println(Colors.RED + "You are not permitted to insert an input at this moment, " +

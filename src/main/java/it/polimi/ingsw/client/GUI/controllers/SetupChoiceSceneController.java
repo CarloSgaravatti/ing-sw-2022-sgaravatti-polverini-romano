@@ -20,14 +20,10 @@ import java.util.Map;
 import java.util.Objects;
 
 public class SetupChoiceSceneController extends FXMLController {
-    @FXML
-    private HBox hBox;
-    @FXML
-    private Label upperText;
-    @FXML
-    private Button confirmChoice;
-    @FXML
-    private Label bottomText;
+    @FXML private HBox hBox;
+    @FXML private Label upperText;
+    @FXML private Button confirmChoice;
+    @FXML private Label bottomText;
     private List<ImageView> images;
     private final EventHandler<MouseEvent> towerEventHandler = mouseEvent -> {
         ImageView imageClicked = (ImageView) mouseEvent.getTarget();
@@ -50,35 +46,41 @@ public class SetupChoiceSceneController extends FXMLController {
     }
 
     public void setSceneWithTowers(TowerType[] towersFree) {
+        double maxWidth = hBox.getWidth() / towersFree.length;
         upperText.setText("You have to choose a tower");
         bottomText.setText("");
         images = new ArrayList<>();
         for (TowerType tower: towersFree) {
             Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(Constants.towerImages.get(tower))));
-            images.add(createImageView(image, tower.toString(), towerEventHandler));
+            images.add(createImageView(image, tower.toString(), towerEventHandler, maxWidth));
         }
         addImagesToScene();
     }
 
     public void setSceneWithWizards(WizardType[] wizardsFree) {
+        double maxWidth = hBox.getWidth() / wizardsFree.length;
         upperText.setText("You have to choose a wizard");
         bottomText.setText("");
         images = new ArrayList<>();
         for (WizardType wizard: wizardsFree) {
             Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(Constants.wizardImages.get(wizard))));
-            images.add(createImageView(image, wizard.toString(), wizardEventHandler));
+            images.add(createImageView(image, wizard.toString(), wizardEventHandler, maxWidth));
         }
         addImagesToScene();
     }
 
-    private ImageView createImageView(Image image, String id, EventHandler<MouseEvent> handler) {
+    private ImageView createImageView(Image image, String id, EventHandler<MouseEvent> handler, double maxWidth) {
         ImageView imageView = new ImageView();
         imageView.setImage(image);
         imageView.setId(id);
         imageView.getStyleClass().addAll("clickableImage");
         imageView.addEventHandler(MouseEvent.MOUSE_CLICKED, handler);
         imageView.setPreserveRatio(true);
-        imageView.setFitHeight(hBox.getPrefHeight());
+        if ((image.getRequestedWidth() / image.getRequestedHeight()) * hBox.getHeight() > maxWidth) {
+            imageView.setFitWidth(maxWidth);
+        } else {
+            imageView.setFitHeight(hBox.getHeight());
+        }
         return imageView;
     }
 

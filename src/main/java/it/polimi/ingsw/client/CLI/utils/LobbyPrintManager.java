@@ -17,12 +17,24 @@ public class LobbyPrintManager {
         lobbyIds = new ArrayList<>(lobbyInfo.keySet());
     }
 
-    public void onNextFiveCommand() {
-        currentStartingIdx += 5;
+    public boolean onNextFiveCommand() {
+        if (lobbyInfo.size() - currentStartingIdx > 5) {
+            currentStartingIdx += 5;
+            return true;
+        } else {
+            System.out.println(Colors.RED + "There isn't another page" + Colors.RESET);
+            return false;
+        }
     }
 
-    public void onPreviousFiveCommand() {
-        currentStartingIdx -= 5;
+    public boolean onPreviousFiveCommand() {
+        if (currentStartingIdx >= 5) {
+            currentStartingIdx -= 5;
+            return true;
+        } else {
+            System.out.println(Colors.RED + "There isn't a previous page" + Colors.RESET);
+            return false;
+        }
     }
 
     public void printLobby() {
@@ -30,11 +42,15 @@ public class LobbyPrintManager {
             case 0 -> printMatrix(lobby.getUpperCommandBox1());
             case 1 -> {
                 Triplet<Integer, Boolean, String[]> gameInfo = lobbyInfo.get(lobbyIds.get(currentStartingIdx));
-                String[][] setup0 = insertSetupInfo(lobby.getSetup0(), lobbyIds.get(currentStartingIdx), gameInfo.getFirst(),
-                        gameInfo.getSecond(), gameInfo.getThird());
-                printMatrix(MapPrinter.appendMatrixInColumn(setup0, lobby.getUpperCommandBox()));
+                String[][] setup0 = insertSetupInfo((currentStartingIdx == 0) ? lobby.getSetup0() : lobby.getSetup6(),
+                        lobbyIds.get(currentStartingIdx), gameInfo.getFirst(), gameInfo.getSecond(), gameInfo.getThird());
+                String[][] lobbyPrint = MapPrinter.appendMatrixInColumn(setup0, lobby.getUpperCommandBox());
+                if (currentStartingIdx != 0) {
+                    lobbyPrint = MapPrinter.appendMatrixInColumn(lobby.getLowerCommandBoxLeft(), lobbyPrint);
+                }
+                printMatrix(lobbyPrint);
             }
-            case 2, 3, 4 -> {
+            case 2, 3, 4, 5 -> {
                 Triplet<Integer, Boolean, String[]> gameInfo = lobbyInfo.get(lobbyIds.get(currentStartingIdx));
                 String[][] setup1 = insertSetupInfo(lobby.getSetup1(), lobbyIds.get(currentStartingIdx), gameInfo.getFirst(),
                         gameInfo.getSecond(), gameInfo.getThird());
@@ -46,11 +62,11 @@ public class LobbyPrintManager {
                     lobbyPrint = MapPrinter.appendMatrixInColumn(setup2, lobbyPrint);
                 }
                 Triplet<Integer, Boolean, String[]> lastGame = lobbyInfo.get(lobbyIds.get(lobbyInfo.size() - 1));
-                String[][] setup3 = insertSetupInfo(lobby.getSetup3(), lobbyIds.get(lobbyInfo.size() - 1), lastGame.getFirst(),
-                        lastGame.getSecond(), lastGame.getThird());
-                lobbyPrint = MapPrinter.appendMatrixInColumn(setup3, lobbyPrint);
+                String[][] finalSetup = insertSetupInfo((currentStartingIdx != 0) ? lobby.getSetup8() : lobby.getSetup4(),
+                        lobbyIds.get(lobbyInfo.size() - 1), lastGame.getFirst(), lastGame.getSecond(), lastGame.getThird());
+                lobbyPrint = MapPrinter.appendMatrixInColumn(finalSetup, lobbyPrint);
                 if (currentStartingIdx != 0) {
-                    lobbyPrint = MapPrinter.appendMatrixInColumn(lobby.getLowerCommandBox(), lobbyPrint);
+                    lobbyPrint = MapPrinter.appendMatrixInColumn(lobby.getLowerCommandBoxLeft(), lobbyPrint);
                 }
                 printMatrix(lobbyPrint);
             }
@@ -66,10 +82,11 @@ public class LobbyPrintManager {
                     lobbyPrint = MapPrinter.appendMatrixInColumn(setup2, lobbyPrint);
                 }
                 Triplet<Integer, Boolean, String[]> lastGame = lobbyInfo.get(lobbyIds.get(currentStartingIdx + 4));
-                String[][] setup3 = insertSetupInfo(lobby.getSetup3(), lobbyIds.get(currentStartingIdx + 4), lastGame.getFirst(),
-                        lastGame.getSecond(), lastGame.getThird());
-                lobbyPrint = MapPrinter.appendMatrixInColumn(setup3, lobbyPrint);
-                lobbyPrint = MapPrinter.appendMatrixInColumn(lobby.getLowerCommandBox(), lobbyPrint);
+                String[][] finalSetup = insertSetupInfo((currentStartingIdx != 0) ? lobby.getSetup3() : lobby.getSetup5(),
+                        lobbyIds.get(currentStartingIdx + 4), lastGame.getFirst(), lastGame.getSecond(), lastGame.getThird());
+                lobbyPrint = MapPrinter.appendMatrixInColumn(finalSetup, lobbyPrint);
+                lobbyPrint = MapPrinter.appendMatrixInColumn((currentStartingIdx == 0) ? lobby.getLowerCommandBoxRight() :
+                        lobby.getLowerCommandBox(), lobbyPrint);
                 printMatrix(lobbyPrint);
             }
         }

@@ -125,6 +125,7 @@ public class ActionController {
 			}
 		} catch (FullDiningRoomException e) {
 			school.insertEntrance(studentsToDiningRoom);
+			school.insertEntrance(studentsToIslands.values().stream().flatMap(Collection::stream).toList().toArray(new Student[0]));
 			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
 			throw new IllegalArgumentException();
 		}

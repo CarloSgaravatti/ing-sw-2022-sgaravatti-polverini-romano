@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.GUI.constants;
 
+import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.enumerations.WizardType;
 
@@ -12,4 +13,11 @@ public class Constants {
             WizardType.values()[1], "/images/assistants/CarteTOT_back_11@3x.png",
             WizardType.values()[2], "/images/assistants/CarteTOT_back_21@3x.png",
             WizardType.values()[3], "/images/assistants/CarteTOT_back_31@3x.png");
+
+    public static final Map<RealmType, String> studentsImages =
+            Map.of(RealmType.YELLOW_GNOMES, "/images/students/student_yellow.png",
+                    RealmType.BLUE_UNICORNS, "/images/students/student_blue.png",
+                    RealmType.GREEN_FROGS, "/images/students/student_green.png",
+                    RealmType.PINK_FAIRES, "/images/students/student_pink.png",
+                    RealmType.RED_DRAGONS, "/images/students/student_red.png");
 }

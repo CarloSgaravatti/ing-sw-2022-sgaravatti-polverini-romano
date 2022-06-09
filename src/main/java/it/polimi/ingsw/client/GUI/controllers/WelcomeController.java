@@ -9,12 +9,10 @@ import javafx.scene.control.TextField;
 public class WelcomeController extends FXMLController {
     private GUI gui;
     private boolean serverParametersOk = false;
-    @FXML
-    private TextField serverPort;
-    @FXML
-    private TextField serverIp;
-    @FXML
-    private TextField username;
+    @FXML private TextField serverPort;
+    @FXML private TextField serverIp;
+    @FXML private TextField username;
+
     @FXML
     void onSubmit(ActionEvent event) {
         if (serverParametersOk) {

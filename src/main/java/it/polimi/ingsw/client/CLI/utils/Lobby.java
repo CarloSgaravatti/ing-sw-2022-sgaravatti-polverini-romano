@@ -10,7 +10,7 @@ public class Lobby {
         this.lobby = createSkeleton();
     }
 
-    //TODO: better reuse of code
+    //TODO: delete setup 5 or 7 (they are the same thing?)
     public List<String[][]> createSkeleton(){
         int count = 0;
         List<String[][]> skeleton = new ArrayList<>();

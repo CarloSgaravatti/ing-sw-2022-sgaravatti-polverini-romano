@@ -72,14 +72,14 @@ public class MainSceneController extends FXMLController {
     }
 
     private void initializeMap() {
-        double islandImageWidth = 2 * islandMap.getWidth()  / modelView.getField().getIslandSize();
+        /*double islandImageWidth = 2 * islandMap.getWidth()  / modelView.getField().getIslandSize();
         for (int i = 0; i < modelView.getField().getIslandSize(); i++) {
             islandMap.getChildren().add(new IslandImage(i, modelView.getField(), islandImageWidth));
         }
         double cloudImageWidth = 2 * islandMap.getWidth() / modelView.getField().getCloudStudents().size();
         for (int i = 0; i < modelView.getField().getCloudStudents().size(); i++) {
             cloudBox.getChildren().add(new CloudImage(i, modelView.getField(), islandImageWidth));
-        }
+        }*/
     }
     @Override
     public void onError(ErrorMessageType error) {

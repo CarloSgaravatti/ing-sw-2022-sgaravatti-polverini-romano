@@ -88,10 +88,18 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         RealmType[] students = (RealmType[]) payload.getAttribute("Students").getAsObject();
         boolean isInsertion = payload.getAttribute("IsInsertion").getAsBoolean();
         getModelView().getPlayers().get(playerName).updateDiningRoom(students, isInsertion);
-        if (isInsertion && payload.getAttribute("IsFromEntrance").getAsBoolean()) {
+        boolean isFromEntrance = payload.getAttribute("IsFromEntrance").getAsBoolean();
+        if (isInsertion && isFromEntrance) {
             getModelView().getPlayers().get(playerName).updateEntrance(students, false);
         }
-        userInterface.firePropertyChange("SchoolDiningRoomUpdate", null, playerName);
+        //userInterface.firePropertyChange("SchoolDiningRoomUpdate", null, playerName);
+        if (isInsertion) {
+            userInterface.firePropertyChange(
+                    new PropertyChangeEvent(playerName, "DiningRoomInsertion", isFromEntrance, students));
+        } else {
+            userInterface.firePropertyChange(
+                    new PropertyChangeEvent(playerName, "DiningRoomRemoval", null, students));
+        }
     }
 
     private void onIslandStudentsUpdate(MessagePayload payload) {

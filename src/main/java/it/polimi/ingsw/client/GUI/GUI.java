@@ -6,6 +6,7 @@ import it.polimi.ingsw.client.GUI.items.AssistantsTab;
 import it.polimi.ingsw.client.UserInterface;
 import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.messages.ErrorMessageType;
+import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.model.enumerations.WizardType;
 import it.polimi.ingsw.utils.Triplet;
@@ -26,6 +27,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+//TODO: delete most of set full scene (I have put them because i need to switch to gui from cli window playing all in localhost)
 public class GUI extends Application implements UserInterface {
     private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
     private String nickname;
@@ -157,12 +159,17 @@ public class GUI extends Application implements UserInterface {
             try {
                 scene = new Scene(loader.load());
             } catch (IOException e) {
-                //TODO
+                e.printStackTrace();
             }
             stage.setScene(scene);
             stage.setFullScreen(true);
             currentSceneController = loader.getController();
-            ((MainSceneV2Controller) currentSceneController).initializeBoard(modelView, this.nickname);
+            //TODO: delete try catch when everything is ok
+            try {
+                ((MainSceneV2Controller) currentSceneController).initializeBoard(modelView, this.nickname);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             currentSceneController.addListener(this);
             stage.show();
         });
@@ -171,7 +178,7 @@ public class GUI extends Application implements UserInterface {
     @Override
     public void printTurnMenu(List<String> actions, List<String> actionCommands, List<String> currentPossibleActions) {
         Platform.runLater(() -> {
-            ((MainSceneV2Controller) currentSceneController).onTurn(currentPossibleActions);
+            ((MainSceneV2Controller) currentSceneController).onTurn(actionCommands, currentPossibleActions);
             stage.setFullScreen(true);
         });
     }
@@ -182,11 +189,30 @@ public class GUI extends Application implements UserInterface {
             case "AssistantUpdate" -> onAssistantUpdate((Integer) evt.getOldValue(), (String) evt.getNewValue());
             case "IslandStudents" -> {}
             case "IslandTower" -> {}
+            case "MotherNatureUpdate" -> onMotherNatureMovement((Integer) evt.getOldValue(), (Integer) evt.getNewValue());
+            case "DiningRoomInsertion" -> onDiningRoomUpdate((String) evt.getSource(), (RealmType[]) evt.getNewValue(), (Boolean) evt.getOldValue());
             //...
             //events that come from gui controllers
             default -> checkEventFromControllers(evt);
             //default -> listeners.firePropertyChange(evt);
         }
+    }
+
+    private void onMotherNatureMovement(int oldIsland, int newIsland) {
+        Platform.runLater(() -> {
+            this.stage.setFullScreen(true);
+            ((MainSceneV2Controller) currentSceneController).moveMotherNature(oldIsland, newIsland);
+        });
+    }
+
+    private void onDiningRoomUpdate(String player, RealmType[] students, boolean fromEntrance) {
+        Platform.runLater(() -> {
+            this.stage.setFullScreen(true);
+            if (fromEntrance) {
+                ((MainSceneV2Controller) currentSceneController).moveStudentsToDiningRoom(player, students);
+            }
+            //TODO: else is from character 11
+        });
     }
 
     private void onAssistantUpdate(int assistant, String player) {

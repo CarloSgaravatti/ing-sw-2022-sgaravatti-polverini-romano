@@ -18,22 +18,14 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 public class GlobalLobbyController extends FXMLController implements Initializable {
-    @FXML
-    private Text messageLobby;
-    @FXML
-    private TableView<LobbyInfo> globalLobbyTable;
-    @FXML
-    private TableColumn<LobbyInfo, String> rulesCol;
-    @FXML
-    private TableColumn<LobbyInfo, Integer> numPlayersCol;
-    @FXML
-    private TableColumn<LobbyInfo, Integer> gameIdCol;
-    @FXML
-    public TableColumn<LobbyInfo, Integer> playersConnectedCol;
-    @FXML
-    private ChoiceBox<String> rulesChoice;
-    @FXML
-    private ChoiceBox<Integer> numPlayersChoice;
+    @FXML private Text messageLobby;
+    @FXML private TableView<LobbyInfo> globalLobbyTable;
+    @FXML private TableColumn<LobbyInfo, String> rulesCol;
+    @FXML private TableColumn<LobbyInfo, Integer> numPlayersCol;
+    @FXML private TableColumn<LobbyInfo, Integer> gameIdCol;
+    @FXML public TableColumn<LobbyInfo, Integer> playersConnectedCol;
+    @FXML private ChoiceBox<String> rulesChoice;
+    @FXML private ChoiceBox<Integer> numPlayersChoice;
 
     public void constructTable(Map<Integer, Triplet<Integer, Boolean, String[]>> lobbyInfo) {
         List<LobbyInfo> lobby = new ArrayList<>();

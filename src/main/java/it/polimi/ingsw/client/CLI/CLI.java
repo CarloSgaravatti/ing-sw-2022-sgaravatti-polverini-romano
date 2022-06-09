@@ -126,7 +126,7 @@ public class CLI implements Runnable, UserInterface {
         printManager.printLobby();
         String message = "Insert 'NewGame' to create a new game, 'Refresh' to update the global lobby";
         if (numGames > 5) {
-            message += ", '>5' to view the next 5 games and '<5' to view the previous 5 games.";
+            message += ", '5>' to view the next 5 games and '<5' to view the previous 5 games.";
         } else message += ".";
         message += " To enter a game lobby, insert the id of the game";
         boolean decisionMade = false;
@@ -139,15 +139,17 @@ public class CLI implements Runnable, UserInterface {
             isGameFinished = false;
             inputManager.setInputPermitted(false);
             switch (input) {
-                case ">5" -> {
-                    printManager.onNextFiveCommand();
-                    clearScreen();
-                    printManager.printLobby();
+                case "5>" -> {
+                    if (printManager.onNextFiveCommand()) {
+                        clearScreen();
+                        printManager.printLobby();
+                    }
                 }
                 case "<5" -> {
-                    printManager.onPreviousFiveCommand();
-                    clearScreen();
-                    printManager.printLobby();
+                    if (printManager.onPreviousFiveCommand()) {
+                        clearScreen();
+                        printManager.printLobby();
+                    }
                 }
                 case "NewGame" -> {
                     helpGameCreation();
@@ -314,7 +316,8 @@ public class CLI implements Runnable, UserInterface {
                 printer.replaceIsland((Integer) evt.getNewValue());
             }
             case "IslandUnification" -> printer.recomputeIslandMap();
-            case "SchoolDiningRoomUpdate", "CoinsUpdate", "SchoolSwap", "EntranceSwap", "EntranceUpdate", "AssistantUpdate"->
+            case "DiningRoomInsertion", "DiningRoomRemoval" -> printer.replaceSchool((String) evt.getSource());
+            case /*"SchoolDiningRoomUpdate", */"CoinsUpdate", "SchoolSwap", "EntranceSwap", "EntranceUpdate", "AssistantUpdate"->
                     printer.replaceSchool((String) evt.getNewValue());
             case "ProfessorUpdate" -> {
                 if (evt.getOldValue() != null) {

@@ -25,9 +25,9 @@ public class AssistantsTab {
     public AssistantsTab(FlowPane assistantContainer, ModelView modelView) {
         this.assistantContainer = assistantContainer;
         this.modelView = modelView;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 1; i <= 10; i++) {
             Image image = new Image(Objects.requireNonNull(getClass()
-                    .getResourceAsStream("/images/assistants/Assistant" + (i + 1) + ".png")));
+                    .getResourceAsStream("/images/assistants/Assistant" + i + ".png")));
             ImageView imageView = new ImageView(image);
             imageView.setPreserveRatio(true);
             imageView.setFitHeight((assistantContainer.getHeight() - assistantContainer.getVgap()) / 2);
@@ -61,5 +61,9 @@ public class AssistantsTab {
 
     public void setAssistantSelectable(boolean assistantSelectable) {
         isAssistantSelectable = assistantSelectable;
+    }
+
+    public FlowPane getAssistantContainer() {
+        return assistantContainer;
     }
 }

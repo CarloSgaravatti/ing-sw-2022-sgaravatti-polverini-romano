@@ -12,7 +12,7 @@ public class CloudImage extends AnchorPane {
     private int cloudId;
     private FieldView fieldView;
 
-    public CloudImage(int cloudId, FieldView fieldView, double imageWidth) {
+    public CloudImage(int cloudId, FieldView fieldView, double imageHeight) {
         super();
         Image image = new Image(Objects.requireNonNull(getClass()
                 .getResourceAsStream("/images/clouds/cloud_card_" + (new Random().nextInt(4) + 1) + ".png")));
@@ -20,11 +20,15 @@ public class CloudImage extends AnchorPane {
         Background background = new Background(backgroundImage);
         super.setBackground(background);*/
         ImageView islandImage = new ImageView();
-        islandImage.setFitWidth(imageWidth);
+        islandImage.setFitHeight(imageHeight);
         islandImage.setPreserveRatio(true);
         islandImage.setImage(image);
         super.getChildren().add(islandImage);
         this.cloudId = cloudId;
         this.fieldView = fieldView;
+    }
+
+    public int getCloudId() {
+        return cloudId;
     }
 }

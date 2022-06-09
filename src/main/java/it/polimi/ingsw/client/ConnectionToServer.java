@@ -86,7 +86,8 @@ public class ConnectionToServer implements Runnable {
                 outputStream.writeObject(message);
                 outputStream.flush();
             } catch (IOException e) {
-                //TODO
+                //TODO: is this ok
+                asyncWriteToServer(message);
             }
         });
         t.start();
@@ -120,7 +121,6 @@ public class ConnectionToServer implements Runnable {
     public void reset() {
         messageHandlerExecutor.shutdownNow();
         messageHandlerExecutor = Executors.newSingleThreadExecutor();
-        System.out.println("Reset");
     }
 
     public void reset(MessageHandler messageHandler) {

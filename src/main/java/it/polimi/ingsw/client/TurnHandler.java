@@ -27,50 +27,11 @@ public class TurnHandler implements PropertyChangeListener {
         this.userInterface = userInterface;
     }
 
-    /*@Deprecated
-    public void handlePlayerTurn(RoundPhase currentPhase) {
-        try {
-            if (currentPhase == RoundPhase.PLANNING) {
-                //planningPhase();
-            } else {
-                //actionPhase();
-            }
-            sendEndTurnMessage();
-        } catch (InterruptedException e) {
-        }
-    }
-
-   private void planningPhase() throws InterruptedException {
-        currentTurnActions.clear();
-        currentTurnActions.add("PlayAssistant");
-        setAckReceived(false);
-        do {
-            setErrorReceived(false);
-            //userInterface.askAction(currentTurnActions);
-            synchronized (waitAckOrErrorLock) {
-                while (!isAckReceived() && !isErrorReceived()) waitAckOrErrorLock.wait();
-            }
-        } while (!isAckReceived());
-    }
-
-    private void actionPhase() throws InterruptedException {
-        currentTurnActions.clear();
-        currentTurnActions.addAll(turnActions);
-        while(!currentTurnActions.isEmpty()) {
-            setAckReceived(false);
-            setErrorReceived(false);
-            //userInterface.askAction(currentTurnActions);
-            synchronized (waitAckOrErrorLock) {
-                while (!isAckReceived() && !isErrorReceived()) waitAckOrErrorLock.wait();
-            }
-        }
-    }*/
-
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case "ActionAck" -> onAckReceived(List.of((TurnPhase[]) evt.getNewValue()), (String) evt.getOldValue());
-            case "Error" -> onErrorReceived((ErrorMessageType) evt.getNewValue());
+            case "Error" -> onErrorReceived();
             case "InputError" -> onInputError();
             //TODO: delete try catch when everything is ok
             case "ClientTurn" -> clientTurnHandler.submit(() -> {
@@ -155,8 +116,7 @@ public class TurnHandler implements PropertyChangeListener {
         }
     }
 
-    public void onErrorReceived(ErrorMessageType errorType) {
-        //userInterface.displayStringMessage(Colors.RED + "Received error: " + errorType + Colors.RESET);
+    public void onErrorReceived() {
         setErrorReceived(true);
         synchronized (currentTurnActions) {
             currentTurnActions.notify();

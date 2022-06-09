@@ -60,7 +60,7 @@
       </TitledPane>
    </children>
    <stylesheets>
-      <URL value="@../css/welcomeStyle.css" />
       <URL value="@../css/globalStyle.css" />
+      <URL value="@../css/welcomeStyle.css" />
    </stylesheets>
 </AnchorPane>
