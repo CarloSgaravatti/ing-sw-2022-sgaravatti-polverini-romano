@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.GUI.controllers;
 
 import it.polimi.ingsw.client.GUI.items.*;
+import it.polimi.ingsw.client.modelView.ExpertFieldView;
 import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.client.modelView.PlayerView;
 import it.polimi.ingsw.messages.ErrorMessageType;
@@ -24,9 +25,10 @@ import java.net.URL;
 import java.util.*;
 import java.util.List;
 
-public class MainSceneV2Controller extends FXMLController implements Initializable {
+public class GameMainSceneController extends FXMLController implements Initializable {
     private ModelView modelView;
     private String clientNickname;
+    @FXML private AnchorPane root;
     @FXML private AnchorPane islandsMap;
     @FXML private HBox cloudBox;
     @FXML private VBox playersBox;
@@ -37,11 +39,17 @@ public class MainSceneV2Controller extends FXMLController implements Initializab
     @FXML private Menu turnManagement;
     @FXML private ImageView bag;
     @FXML private Button accordionButton;
+    @FXML private VBox characterBox;
+    @FXML private AnchorPane character;
+    @FXML private CharacterController characterController;
     private AssistantsTab assistantsTab;
     private final Map<String, Pair<Integer, SchoolBox>> playersSchools = new HashMap<>();
+    private Map<Integer, CharacterImage> characters;
     private IslandMap islands;
     private boolean studentsDraggable;
     private boolean motherNatureDraggable;
+    private boolean cloudSelectable;
+    private boolean characterSelectable;
     private final EventHandler<MouseEvent> assistantEventHandler = mouseEvent -> {
         if (assistantsTab.isAssistantSelectable()) {
             ImageView assistantImage = (ImageView) mouseEvent.getTarget();
@@ -89,6 +97,7 @@ public class MainSceneV2Controller extends FXMLController implements Initializab
         System.out.println(yTranslation);
         playersBox.setTranslateY(yTranslation);*/
         //accordionButton.fire();
+        //root.getChildren().remove(character);
     }
 
     @Override
@@ -100,6 +109,17 @@ public class MainSceneV2Controller extends FXMLController implements Initializab
     public void initializeBoard(ModelView modelView, String clientNickname) {
         this.modelView = modelView;
         this.clientNickname = clientNickname;
+        if (modelView.isExpert()) {
+            characters = new HashMap<>();
+            ExpertFieldView expertField = modelView.getField().getExpertField();
+            for (Integer character: expertField.getCharacters().keySet()) {
+                CharacterImage characterImage = new CharacterImage(character, characterBox.getWidth() / 1.5, expertField);
+                characterBox.getChildren().add(characterImage);
+                characters.put(character, characterImage);
+            }
+            setOnCharactersSelection();
+            characterController.init(root, this);
+        }
         double yTranslation = ((AnchorPane) playersBox.getChildren().get(1)).getHeight();
         System.out.println(yTranslation);
         playersBox.setTranslateY(yTranslation);
@@ -108,7 +128,6 @@ public class MainSceneV2Controller extends FXMLController implements Initializab
         for (int i = 0; i < numClouds; i++) {
             cloudBox.getChildren().add(new CloudImage(i, modelView.getField(), cloudImageHeight));
         }
-        //cloudBox.setSpacing((cloudBox.getWidth() - (((CloudImage)cloudBox.getChildren().get(0)).getWidth() * numClouds)) / numClouds);
         TabPane tabs = (TabPane) ((AnchorPane) playersBox.getChildren().get(1)).getChildren().get(0);
         assistantsTab = new AssistantsTab(assistantsPane, modelView);
         assistantsTab.setEventHandler(MouseEvent.MOUSE_CLICKED, assistantEventHandler);
@@ -133,10 +152,10 @@ public class MainSceneV2Controller extends FXMLController implements Initializab
 
     public void onTurn(List<String> actionCommands, List<String> possibleActions) {
         turnManagement.getItems().clear();
-        for (int i = 0; i < actionCommands.size(); i++) {
-            MenuItem action = new MenuItem(actionCommands.get(i));
+        for (String actionCommand : actionCommands) {
+            MenuItem action = new MenuItem(actionCommand);
             turnManagement.getItems().add(action);
-            switch (actionCommands.get(i)) {
+            switch (actionCommand) {
                 case "PlayAssistant" -> action.setOnAction(event -> onStartPlayAssistant());
                 case "MoveStudents" -> action.setOnAction(event -> onStartMoveStudents());
                 case "MoveMotherNature" -> action.setOnAction(event -> onStartMoveMotherNature());
@@ -166,11 +185,28 @@ public class MainSceneV2Controller extends FXMLController implements Initializab
     }
 
     public void onStartPickFromCloud() {
+        cloudSelectable = true;
         moveAccordionDown();
     }
 
     public void onStartPlayCharacter() {
+        characterSelectable = true;
+        moveAccordionDown();
+        for (CharacterImage characterImage: characters.values()) {
+            characterImage.getStyleClass().add("selectable-character");
+        }
+    }
 
+    public void setOnCharactersSelection() {
+        EventHandler<MouseEvent> characterEventHandler = mouseEvent -> {
+            if (characterSelectable) {
+                CharacterImage character = (CharacterImage) ((ImageView) mouseEvent.getTarget()).getParent();
+                int characterId = character.getCharacterId();
+                this.character.setTranslateX(-root.getWidth());
+                characterController.show(characterId, root);
+            }
+        };
+        characters.values().forEach(c -> c.addEventHandler(MouseEvent.MOUSE_CLICKED, characterEventHandler));
     }
 
     public void moveMotherNature(int oldPosition, int newPosition) {
@@ -189,8 +225,36 @@ public class MainSceneV2Controller extends FXMLController implements Initializab
 
     public void moveStudentsToIsland(String player, int islandId, RealmType ... students) {
         moveAccordionUp();
+        AnchorPane tabPaneFather = (AnchorPane) playersBox.getChildren().get(1);
         TabPane tabs = (TabPane) ((AnchorPane) playersBox.getChildren().get(1)).getChildren().get(0);
         tabs.getSelectionModel().select(tabs.getTabs().get(playersSchools.get(player).getFirst()));
+        Pair<Double, Double> tabPaneGlobalPosition = new Pair<>(tabPaneFather.getLayoutX() + tabs.getLayoutX() + playersBox.getLayoutX(),
+                tabPaneFather.getLayoutY() + tabs.getLayoutY() + playersBox.getLayoutY());
+        Pair<Double, Double> islandLayout = new Pair<>(islandsMap.getLayoutX() + islands.getIslandPosition(islandId).getFirst(),
+                islandsMap.getLayoutY() + islands.getIslandPosition(islandId).getSecond());
+        moveAccordionUp();
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ignored) {}
+        for (RealmType student: students) {
+            SchoolBox playerSchool = playersSchools.get(player).getSecond();
+            Pair<Double, Double> studentRelativePosition = playerSchool.getEntranceStudentLayout(student);
+            playerSchool.removeFromEntrance(student, false);
+            StudentImage fakeStudent = new StudentImage(playerSchool.getDimStudentsRadius(), student);
+            AnchorPane.setTopAnchor(fakeStudent, studentRelativePosition.getSecond() + tabPaneGlobalPosition.getSecond());
+            AnchorPane.setLeftAnchor(fakeStudent, studentRelativePosition.getFirst() + tabPaneGlobalPosition.getFirst());
+            root.getChildren().add(fakeStudent);
+            TranslateTransition transition = new TranslateTransition(Duration.millis(2000), fakeStudent);
+            transition.setByX(fakeStudent.getLayoutX() - islandLayout.getFirst());
+            transition.setByY(fakeStudent.getLayoutY() - islandLayout.getSecond());
+            moveAccordionDown();
+            transition.play();
+            transition.setOnFinished(actionEvent -> {
+                root.getChildren().remove(fakeStudent);
+                //TODO: add student to island
+            });
+        }
+
     }
 
     public AssistantsTab getAssistantsTab() {
@@ -203,26 +267,34 @@ public class MainSceneV2Controller extends FXMLController implements Initializab
         playersSchools.get(player).getSecond().setAssistantImage(image);
     }
 
-    private void moveAccordionDown() {
+    public void moveAccordionDown() {
         if (accordionButton.getText().equals("v")) {
             accordionButton.fire();
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                //TODO
-            }
         }
     }
 
-    private void moveAccordionUp() {
+    public void moveAccordionUp() {
         if (accordionButton.getText().equals("^")) {
             accordionButton.fire();
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                //TODO
-            }
         }
+    }
+
+    public ModelView getModelView() {
+        return modelView;
+    }
+
+    public SchoolBox getSchoolOfClient() {
+        TabPane tabs = (TabPane) ((AnchorPane) playersBox.getChildren().get(1)).getChildren().get(0);
+        tabs.getSelectionModel().select(tabs.getTabs().get(playersSchools.get(clientNickname).getFirst()));
+        return playersSchools.get(clientNickname).getSecond();
+    }
+
+    public IslandMap getIslands() {
+        return islands;
+    }
+
+    public String getClientNickname() {
+        return clientNickname;
     }
 
     class DragAndDropManager {
@@ -267,7 +339,7 @@ public class MainSceneV2Controller extends FXMLController implements Initializab
         private final EventHandler<DragEvent> dropOnDiningRoom = dragEvent -> {
             if (!studentsDraggable) return;
             playersSchools.get(clientNickname).getSecond().insertInDiningRoom(lastStudentDragged);
-            playersSchools.get(clientNickname).getSecond().removeFromEntrance(lastStudentDragged);
+            playersSchools.get(clientNickname).getSecond().removeFromEntrance(lastStudentDragged, true);
             action.append(dragEvent.getDragboard().getString()).append(" ToDiningRoom ");
             studentsMoved++;
             if (studentsMoved == studentsToMove) {
@@ -288,7 +360,7 @@ public class MainSceneV2Controller extends FXMLController implements Initializab
                     (AnchorPane) ((Rectangle) dragEvent.getTarget()).getParent();
             String islandId = island.getId().substring("Island".length());
             if (studentsDraggable) {
-                playersSchools.get(clientNickname).getSecond().removeFromEntrance(lastStudentDragged);
+                playersSchools.get(clientNickname).getSecond().removeFromEntrance(lastStudentDragged, true);
                 action.append(dragEvent.getDragboard().getString()).append(" ToIsland ").append(islandId).append(" ");
                 studentsMoved++;
                 if (studentsMoved == studentsToMove) {

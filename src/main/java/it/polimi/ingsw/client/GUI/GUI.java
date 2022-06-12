@@ -31,6 +31,7 @@ import java.util.concurrent.Executors;
 public class GUI extends Application implements UserInterface {
     private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
     private String nickname;
+    private ModelView modelView;
     private boolean nicknameSent = false;
     private Stage stage;
     private Scene scene;
@@ -154,8 +155,9 @@ public class GUI extends Application implements UserInterface {
 
     @Override
     public void onGameInitialization(ModelView modelView) {
+        this.modelView = modelView;
         Platform.runLater(() -> {
-            FXMLLoader loader = new FXMLLoader(GUI.class.getResource("/fxml/mainSceneV2.fxml"));
+            FXMLLoader loader = new FXMLLoader(GUI.class.getResource("/fxml/gameMainScene.fxml"));
             try {
                 scene = new Scene(loader.load());
             } catch (IOException e) {
@@ -166,7 +168,7 @@ public class GUI extends Application implements UserInterface {
             currentSceneController = loader.getController();
             //TODO: delete try catch when everything is ok
             try {
-                ((MainSceneV2Controller) currentSceneController).initializeBoard(modelView, this.nickname);
+                ((GameMainSceneController) currentSceneController).initializeBoard(modelView, this.nickname);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -178,7 +180,7 @@ public class GUI extends Application implements UserInterface {
     @Override
     public void printTurnMenu(List<String> actions, List<String> actionCommands, List<String> currentPossibleActions) {
         Platform.runLater(() -> {
-            ((MainSceneV2Controller) currentSceneController).onTurn(actionCommands, currentPossibleActions);
+            ((GameMainSceneController) currentSceneController).onTurn(actionCommands, currentPossibleActions);
             stage.setFullScreen(true);
         });
     }
@@ -187,7 +189,7 @@ public class GUI extends Application implements UserInterface {
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case "AssistantUpdate" -> onAssistantUpdate((Integer) evt.getOldValue(), (String) evt.getNewValue());
-            case "IslandStudents" -> {}
+            case "IslandStudentsUpdate" -> onIslandStudentsUpdate((Integer) evt.getSource(), (RealmType[]) evt.getNewValue(), (Boolean) evt.getOldValue());
             case "IslandTower" -> {}
             case "MotherNatureUpdate" -> onMotherNatureMovement((Integer) evt.getOldValue(), (Integer) evt.getNewValue());
             case "DiningRoomInsertion" -> onDiningRoomUpdate((String) evt.getSource(), (RealmType[]) evt.getNewValue(), (Boolean) evt.getOldValue());
@@ -201,7 +203,18 @@ public class GUI extends Application implements UserInterface {
     private void onMotherNatureMovement(int oldIsland, int newIsland) {
         Platform.runLater(() -> {
             this.stage.setFullScreen(true);
-            ((MainSceneV2Controller) currentSceneController).moveMotherNature(oldIsland, newIsland);
+            ((GameMainSceneController) currentSceneController).moveMotherNature(oldIsland, newIsland);
+        });
+    }
+
+    private void onIslandStudentsUpdate(Integer islandId, RealmType[] students, boolean fromEntrance) {
+        Platform.runLater(() -> {
+            this.stage.setFullScreen(true);
+            if (fromEntrance) {
+                String currentPlayer = this.modelView.getCurrentActivePlayer();
+                ((GameMainSceneController) currentSceneController).moveStudentsToIsland(currentPlayer, islandId, students);
+            }
+            //TODO: else is from character 1
         });
     }
 
@@ -209,7 +222,7 @@ public class GUI extends Application implements UserInterface {
         Platform.runLater(() -> {
             this.stage.setFullScreen(true);
             if (fromEntrance) {
-                ((MainSceneV2Controller) currentSceneController).moveStudentsToDiningRoom(player, students);
+                ((GameMainSceneController) currentSceneController).moveStudentsToDiningRoom(player, students);
             }
             //TODO: else is from character 11
         });
@@ -217,7 +230,7 @@ public class GUI extends Application implements UserInterface {
 
     private void onAssistantUpdate(int assistant, String player) {
         Platform.runLater(() -> {
-            MainSceneV2Controller controller = ((MainSceneV2Controller) currentSceneController);
+            GameMainSceneController controller = ((GameMainSceneController) currentSceneController);
             if (player.equals(nickname)) {
                 AssistantsTab assistantsTab = controller.getAssistantsTab();
                 assistantsTab.removeAssistantFromDeck(assistant);

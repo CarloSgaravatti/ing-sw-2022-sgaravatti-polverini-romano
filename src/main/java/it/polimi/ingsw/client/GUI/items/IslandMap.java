@@ -76,6 +76,8 @@ public class IslandMap {
         motherNature.setOpacity(0);
         islands.get(oldPosition).setMotherNature(false, motherNature);
         islands.get(oldPosition).setMotherNature(true, fakeMotherNature);
+        fakeMotherNature.setLayoutX(oldIsland.getWidth() / 2);
+        fakeMotherNature.setLayoutY(oldIsland.getHeight() / 2);
         islands.get(newPosition).setMotherNature(true, motherNature);
         Pair<Double, Double> lastPos = new Pair<>(oldIsland.getLayoutX(), oldIsland.getLayoutY());
         AnchorPane newIsland = islands.get(newPosition).getIslandPane();
@@ -87,14 +89,18 @@ public class IslandMap {
         transition.setDuration(Duration.millis(1500));
         transition.play();
         transition.setOnFinished(actionEvent -> {
-            /*islands.get(oldPosition).setMotherNature(false, motherNature);
-            motherNature.setOpacity(0);
-            islands.get(newPosition).setMotherNature(true, motherNature);
-            motherNature.setTranslateX(lastPos.getFirst() - newPos.getFirst());
-            motherNature.setTranslateY(lastPos.getSecond() - newPos.getSecond());*/
             islands.get(oldPosition).setMotherNature(false, fakeMotherNature);
             motherNature.setOpacity(1);
         });
+    }
+
+    public List<IslandImage> getIslandImages() {
+        return islands;
+    }
+
+    public Pair<Double, Double> getIslandPosition(int islandId) {
+        IslandImage islandImage = islands.get(islandId);
+        return new Pair<>(islandImage.getIslandPane().getLayoutX(), islandImage.getIslandPane().getLayoutY());
     }
 
     /*public void computeMap() {

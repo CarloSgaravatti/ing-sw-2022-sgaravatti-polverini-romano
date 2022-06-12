@@ -105,12 +105,14 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
     private void onIslandStudentsUpdate(MessagePayload payload) {
         int islandId = payload.getAttribute("IslandId").getAsInt();
         RealmType[] students = (RealmType[]) payload.getAttribute("Students").getAsObject();
-        if (payload.getAttribute("IsFromEntrance").getAsBoolean()) {
+        boolean isFromEntrance = payload.getAttribute("IsFromEntrance").getAsBoolean();
+        if (isFromEntrance) {
             getModelView().getPlayers().get(getModelView().getCurrentActivePlayer()).updateEntrance(students, false);
             userInterface.firePropertyChange("EntranceUpdate", null, getModelView().getCurrentActivePlayer());
         }
         getModelView().getField().updateIslandStudents(islandId, students);
-        userInterface.firePropertyChange("IslandStudentsUpdate", null, islandId);
+        userInterface.firePropertyChange(
+                new PropertyChangeEvent(islandId, "IslandStudentsUpdate", isFromEntrance, students));
     }
 
     private void onIslandUnificationUpdate(MessagePayload payload) {

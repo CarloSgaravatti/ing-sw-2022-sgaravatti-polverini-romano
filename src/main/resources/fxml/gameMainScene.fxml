@@ -10,7 +10,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: azure;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.MainSceneV2Controller">
+<AnchorPane fx:id="root" prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: azure;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.GameMainSceneController">
    <children>
       <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0">
          <center>
@@ -43,10 +43,13 @@
             </AnchorPane>
          </center>
          <left>
-            <VBox alignment="CENTER" prefHeight="874.0" prefWidth="228.0" BorderPane.alignment="CENTER">
+            <VBox fx:id="characterBox" alignment="CENTER" prefHeight="874.0" prefWidth="228.0" spacing="20.0" BorderPane.alignment="CENTER">
                <BorderPane.margin>
-                  <Insets left="10.0" />
-               </BorderPane.margin></VBox>
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+               </BorderPane.margin>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding></VBox>
          </left>
          <top>
             <AnchorPane prefHeight="79.0" prefWidth="1920.0" BorderPane.alignment="CENTER">
@@ -384,6 +387,7 @@
             </AnchorPane>
          </children>
       </VBox>
+      <fx:include source="character.fxml" fx:id="character"/>
    </children>
    <stylesheets>
       <URL value="@../css/globalStyle.css" />

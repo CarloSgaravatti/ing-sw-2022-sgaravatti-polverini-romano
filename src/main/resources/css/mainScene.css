@@ -1,8 +1,8 @@
-.assistant-image {
+.assistant-image, .selectable-character {
     -fx-cursor: hand;
 }
 
-.assistant-image:hover {
+.assistant-image:hover, .selectable-character:hover {
     -fx-effect: dropshadow(gaussian, yellow, 10, 1, 0, 0);
 }
 
@@ -27,4 +27,27 @@
 
 .island-pane3 {
     -fx-background-image: url("../images/islands/island3.png");
+}
+
+.selectable-item:hover {
+    -fx-effect: dropshadow(gaussian, yellow, 10, 1, 0, 0);
+    -fx-cursor: hand
+}
+
+.selected-student {
+    -fx-effect: dropshadow(gaussian, yellow, 10, 1, 0, 0);
+}
+
+.character-buttons {
+    -fx-cursor: hand;
+    -fx-background-color: saddlebrown;
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-border-color: black;
+    -fx-border-radius: 5;
+    -fx-border-width: 2;
+}
+
+.character-buttons:hover {
+    -fx-background-color: chocolate;
 }

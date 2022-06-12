@@ -16,6 +16,7 @@ import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -26,13 +27,15 @@ public class SchoolBox {
     private final double dimStudentsRadius;
     private final AnchorPane entrance;
     private final AnchorPane diningRoom;
+    private final AnchorPane container;
     private EventHandler<MouseEvent> dragStartStudentHandler;
     private static final List<RealmType> diningRoomOrder = List.of(RealmType.GREEN_FROGS, RealmType.RED_DRAGONS,
             RealmType.YELLOW_GNOMES, RealmType.PINK_FAIRES, RealmType.BLUE_UNICORNS);
 
-    public SchoolBox(String player, AnchorPane anchorPane, PlayerView playerView) {
-        school = (AnchorPane) anchorPane.getChildren().get(0);
-        lastAssistantPlayed = (ImageView) anchorPane.getChildren().get(1);
+    public SchoolBox(String player, AnchorPane container, PlayerView playerView) {
+        this.container = container;
+        school = (AnchorPane) container.getChildren().get(0);
+        lastAssistantPlayed = (ImageView) container.getChildren().get(1);
         Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(Constants.wizardImages.get(playerView.getPlayerWizard()))));
         lastAssistantPlayed.setImage(image);
         this.playerView = playerView;
@@ -64,7 +67,7 @@ public class SchoolBox {
         }
     }
 
-    public void insertStudentEntrance(RealmType student) {
+    public synchronized void insertStudentEntrance(RealmType student) {
         List<Node> students = entrance.getChildren().stream().toList();
         Integer emptyIndex = findFirstEmpty(students);
         if (emptyIndex == null) return;
@@ -79,13 +82,13 @@ public class SchoolBox {
         return students.indexOf(studentEmpty.get());
     }
 
-    public void removeFromEntrance(RealmType studentType) {
+    public synchronized void removeFromEntrance(RealmType studentType, boolean isClientSchool) {
         Optional<Node> student = entrance.getChildren().stream()
                 .filter(s -> ((StudentImage) s).getStudentType() == studentType)
                 .findFirst();
         student.ifPresent(s -> {
             ((StudentImage) s).reset();
-            s.removeEventHandler(MouseEvent.DRAG_DETECTED, dragStartStudentHandler);
+            if (isClientSchool) s.removeEventHandler(MouseEvent.DRAG_DETECTED, dragStartStudentHandler);
         });
     }
 
@@ -101,7 +104,7 @@ public class SchoolBox {
         diningRoom.setOnDragDropped(dropHandler);
     }
 
-    public void insertInDiningRoom(RealmType student) {
+    public synchronized void insertInDiningRoom(RealmType student) {
         int studentIdx = diningRoomOrder.indexOf(student);
         List<Node> studentsLine = diningRoom.getChildren().subList(studentIdx * 10, (studentIdx + 1) * 10);
         int i = 0;
@@ -116,15 +119,20 @@ public class SchoolBox {
                 .findFirst();
         studentNode.ifPresent(student -> {
             StudentImage studentImage = (StudentImage) student;
+            StudentImage fakeStudent = new StudentImage(studentImage);
+            fakeStudent.setStudent(studentType);
+            entrance.getChildren().remove(studentImage);
+            entrance.getChildren().add(fakeStudent);
             Pair<Double, Double> firstFreeDiningRoom = findFirstFreePosition(studentType);
             double xTranslation = diningRoom.getLayoutX() + firstFreeDiningRoom.getFirst() - studentImage.getLayoutX();
             double yTranslation = diningRoom.getLayoutY() + firstFreeDiningRoom.getSecond() - studentImage.getLayoutY();
-            TranslateTransition transition = new TranslateTransition(Duration.millis(500), studentImage);
+            TranslateTransition transition = new TranslateTransition(Duration.millis(2000), fakeStudent);
             transition.setByX(xTranslation);
             transition.setByY(yTranslation);
+            transition.setDelay(Duration.millis(500)); //let the button event finish
             transition.play();
             transition.setOnFinished(actionEvent -> {
-                entrance.getChildren().remove(studentImage);
+                entrance.getChildren().remove(fakeStudent);
                 insertInDiningRoom(studentType);
             });
             
@@ -137,5 +145,26 @@ public class SchoolBox {
         int i = 0;
         while (studentsLine.get(i).getOpacity() == 1) i++;
         return new Pair<>(studentsLine.get(i).getLayoutX(), studentsLine.get(i).getLayoutY());
+    }
+
+    public AnchorPane getEntrancePane() {
+        return entrance;
+    }
+
+    public AnchorPane getDiningRoomPane() {
+        return diningRoom;
+    }
+
+    public Pair<Double, Double> getEntranceStudentLayout(RealmType student) throws NoSuchElementException {
+        Optional<Node> studentPresent = entrance.getChildren().stream()
+                .filter(s -> s.getOpacity() == 1 &&  ((StudentImage) s).getStudentType() == student).findFirst();
+        if (studentPresent.isEmpty()) throw new NoSuchElementException();
+        double xPosition = container.getLayoutX() + school.getLayoutX() + entrance.getLayoutX() + studentPresent.get().getLayoutX();
+        double yPosition = container.getLayoutY() + school.getLayoutY() + entrance.getLayoutY() + studentPresent.get().getLayoutY();
+        return new Pair<>(xPosition, yPosition);
+    }
+
+    public double getDimStudentsRadius() {
+        return dimStudentsRadius;
     }
 }

@@ -4,6 +4,7 @@ import it.polimi.ingsw.messages.ErrorMessageType;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javafx.stage.Modality;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -31,6 +32,7 @@ public abstract class FXMLController {
     public void displayAlert(String message) {
         ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
         Dialog<String> dialog = new Dialog<>();
+        dialog.initModality(Modality.WINDOW_MODAL);
         dialog.setTitle("Error");
         dialog.setContentText(message);
         dialog.getDialogPane().getButtonTypes().add(okButton);

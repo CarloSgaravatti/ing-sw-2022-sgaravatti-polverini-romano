@@ -61,7 +61,7 @@
   },
   {
     "characterId" : "11",
-    "description" : "Character 11 controls 4 students. You can take a student from is and place it in your dining room.",
+    "description" : "Character 11 controls 4 students. You can take a student from it and place it in your dining room.",
     "callInstructions" : "To play character 11 you have to insert the student abbreviation that you want to take",
     "example" : "PlayCharacter 11 R (RED_DRAGONS will be placed to your dining room)"
   },

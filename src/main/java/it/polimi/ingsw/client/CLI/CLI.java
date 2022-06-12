@@ -306,7 +306,7 @@ public class CLI implements Runnable, UserInterface {
         String endGameMessage = null;
         switch (evt.getPropertyName()) {
             case "CloudsRefill" -> printer.recomputeCloudMap();
-            case "IslandStudentsUpdate" -> printer.replaceIsland((Integer) evt.getNewValue());
+            case "IslandStudentsUpdate" -> printer.replaceIsland((Integer) evt.getSource());
             case "IslandTowerUpdate" -> {
                 printer.replaceIsland((Integer) evt.getNewValue());
                 printer.recomputeSchoolMap(); //can be better

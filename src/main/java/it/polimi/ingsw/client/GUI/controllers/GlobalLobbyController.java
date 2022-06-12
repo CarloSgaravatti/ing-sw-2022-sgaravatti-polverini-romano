@@ -70,7 +70,7 @@ public class GlobalLobbyController extends FXMLController implements Initializab
 
     @FXML
     void onRefresh(ActionEvent event) {
-        firePropertyChange("Refresh", null, null);
+        firePropertyChange("RefreshLobby", null, null);
     }
 
     @Override
