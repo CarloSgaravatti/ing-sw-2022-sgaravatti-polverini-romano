@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.characters;
 
+import it.polimi.ingsw.exceptions.IllegalCharacterActionRequestedException;
 import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
 import it.polimi.ingsw.model.CharacterCreator;
 import it.polimi.ingsw.model.Player;
@@ -10,6 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -67,5 +70,12 @@ class CharacterWithoutInputTest {
         }
         Assertions.assertTrue(player.getTurnEffect().getInfluenceStrategy() instanceof GainInfluenceStrategy);
         Assertions.assertEquals(2, player.getTurnEffect().getAdditionalInfluence());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {2, 4, 6, 8})
+    void useEffectTest(int characterId) {
+        CharacterWithoutInput character = (CharacterWithoutInput) new CharacterCreator(null).getCharacter(characterId);
+        Assertions.assertThrows(IllegalCharacterActionRequestedException.class, () -> character.useEffect(Map.of()));
     }
 }

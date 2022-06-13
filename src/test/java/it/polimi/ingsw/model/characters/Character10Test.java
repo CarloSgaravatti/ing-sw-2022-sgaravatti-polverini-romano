@@ -15,11 +15,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 class Character10Test extends TestCase {
     Character10 character10;
@@ -50,40 +52,11 @@ class Character10Test extends TestCase {
 
     @Test
     void useEffectTest() {
-        List<String> args = new ArrayList<>();
-        args.add("2");
-        for (int i = 0; i< 2; i++) {
-            args.add("Y");
-        }
-        for (int i = 0; i< 2; i++) {
-            args.add("B");
-        }
+        RealmType[] entrance = new RealmType[] {RealmType.YELLOW_GNOMES, RealmType.YELLOW_GNOMES};
+        RealmType[] diningRoom = new RealmType[] {RealmType.BLUE_UNICORNS, RealmType.BLUE_UNICORNS};
+        Map<String, Object> input = Map.of("EntranceStudents", entrance, "DiningRoomStudents", diningRoom);
         try {
-            character10.useEffect(args);
-        } catch (IllegalCharacterActionRequestedException e) {
-            Assertions.fail();
-        }
-    }
-
-    @ParameterizedTest
-    @ValueSource(ints = {-1, 3})
-    void useEffectExceptionTest(int toPick) {
-        List<String> args = new ArrayList<>();
-        args.add(Integer.toString(toPick));
-        Assertions.assertThrows(IllegalCharacterActionRequestedException.class,
-                () -> character10.useEffect(args));
-    }
-
-    @Test
-    void swapTest() {
-        RealmType[] entrance = new RealmType[2];
-        RealmType[] diningRoom = new RealmType[2];
-        for (int i = 0; i < 2; i++) {
-            entrance[i] = RealmType.YELLOW_GNOMES;
-            diningRoom[i] = RealmType.BLUE_UNICORNS;
-        }
-        try {
-            character10.swap(entrance, diningRoom);
+            character10.useEffect(input);
         } catch (Exception e) {
             Assertions.fail();
         }
@@ -94,20 +67,40 @@ class Character10Test extends TestCase {
     }
 
     @Test
-    void swapDifferentLengthExceptionTest() {
-        RealmType[] entrance = new RealmType[2];
-        RealmType[] diningRoom = new RealmType[1];
-        Arrays.fill(entrance, RealmType.BLUE_UNICORNS);
-        Arrays.fill(diningRoom, RealmType.YELLOW_GNOMES);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> character10.swap(entrance, diningRoom));
+    void useEffectEntranceStudentsNotFound() {
+        //entrance does not have red dragons
+        RealmType[] entrance = new RealmType[] {RealmType.RED_DRAGONS, RealmType.RED_DRAGONS};
+        RealmType[] diningRoom = new RealmType[] {RealmType.BLUE_UNICORNS, RealmType.BLUE_UNICORNS};
+        Map<String, Object> input = Map.of("EntranceStudents", entrance, "DiningRoomStudents", diningRoom);
+        try {
+            character10.useEffect(input);
+        } catch (Exception e) {
+            Assertions.fail();
+        }
+        Assertions.assertEquals(2, player.getSchool().getStudentsEntrance(RealmType.YELLOW_GNOMES));
+        Assertions.assertEquals(2, player.getSchool().getNumStudentsDiningRoom(RealmType.BLUE_UNICORNS));
+        Assertions.assertEquals(0, player.getSchool().getNumStudentsDiningRoom(RealmType.YELLOW_GNOMES));
+        Assertions.assertEquals(0, player.getSchool().getStudentsEntrance(RealmType.BLUE_UNICORNS));
+        Assertions.assertEquals(0, player.getSchool().getStudentsEntrance(RealmType.RED_DRAGONS));
+        Assertions.assertEquals(0, player.getSchool().getNumStudentsDiningRoom(RealmType.RED_DRAGONS));
     }
 
     @Test
-    void swapWrongLengthExceptionTest() {
-        RealmType[] entrance = new RealmType[5];
-        RealmType[] diningRoom = new RealmType[5];
-        Arrays.fill(entrance, RealmType.BLUE_UNICORNS);
-        Arrays.fill(diningRoom, RealmType.YELLOW_GNOMES);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> character10.swap(entrance, diningRoom));
+    void useEffectDiningRoomStudentsNotFound() {
+        //dining does not have green frogs
+        RealmType[] entrance = new RealmType[] {RealmType.YELLOW_GNOMES, RealmType.YELLOW_GNOMES};
+        RealmType[] diningRoom = new RealmType[] {RealmType.GREEN_FROGS, RealmType.GREEN_FROGS};
+        Map<String, Object> input = Map.of("EntranceStudents", entrance, "DiningRoomStudents", diningRoom);
+        try {
+            character10.useEffect(input);
+        } catch (Exception e) {
+            Assertions.fail();
+        }
+        Assertions.assertEquals(2, player.getSchool().getStudentsEntrance(RealmType.YELLOW_GNOMES));
+        Assertions.assertEquals(2, player.getSchool().getNumStudentsDiningRoom(RealmType.BLUE_UNICORNS));
+        Assertions.assertEquals(0, player.getSchool().getNumStudentsDiningRoom(RealmType.YELLOW_GNOMES));
+        Assertions.assertEquals(0, player.getSchool().getStudentsEntrance(RealmType.BLUE_UNICORNS));
+        Assertions.assertEquals(0, player.getSchool().getStudentsEntrance(RealmType.GREEN_FROGS));
+        Assertions.assertEquals(0, player.getSchool().getNumStudentsDiningRoom(RealmType.GREEN_FROGS));
     }
 }

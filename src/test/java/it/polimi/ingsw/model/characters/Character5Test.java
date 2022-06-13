@@ -12,19 +12,16 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 class Character5Test extends TestCase {
     Character5 character5;
     Island island;
     Game game;
-    GameConstants gameConstants;
 
     @BeforeEach
     void setupCharacter5() {
-        gameConstants = JsonUtils.constantsByNumPlayer(3);
+        GameConstants gameConstants = JsonUtils.constantsByNumPlayer(3);
         List<Island> islands = new ArrayList<>();
         for (int i = 0; i < gameConstants.getNumIslands(); i++) {
             islands.add(new SingleIsland());
@@ -40,24 +37,15 @@ class Character5Test extends TestCase {
 
     @Test
     void useEffectTest() {
-        List<String> args = new ArrayList<>();
-        args.add(Integer.toString(game.getIslands().indexOf(island)));
+        Map<String, Object> input = Map.of("Island", island);
         try {
-            character5.useEffect(args);
+            character5.useEffect(input);
         } catch (IllegalCharacterActionRequestedException e) {
             Assertions.fail();
         }
         Assertions.assertEquals(3, character5.getNoEntryTiles());
         island.setMotherNaturePresent(true);
         Assertions.assertEquals(4, character5.getNoEntryTiles());
-    }
-
-    @Test
-    void useEffectExceptionTest() {
-        List<String> args = new ArrayList<>();
-        args.add(Integer.toString(20));
-        Assertions.assertThrows(IllegalCharacterActionRequestedException.class,
-                () -> character5.useEffect(args));
     }
 
     @Test

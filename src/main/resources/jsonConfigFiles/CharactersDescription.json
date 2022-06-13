@@ -15,7 +15,7 @@
     "characterId" : "3",
     "description" : "By playing character 3 you can choose an island that will behave as if mother nature have just been placed on it.",
     "callInstructions" : "To play character 3 you have to insert an island id.",
-    "example" : "PlayCharacter 2 3 (updates island 3)"
+    "example" : "PlayCharacter 3 3 (updates island 3)"
   },
   {
     "characterId" : "4",
@@ -39,7 +39,7 @@
     "characterId" : "7",
     "description" : "Character 7 controls 6 students. You can take from 1 to 3 students from the character and replace them with the same number of students from your entrance.",
     "callInstructions" : "To play character 7 you have to insert the number of students to swap, the students abbreviations that you want to take from the characters and the ones from your school entrance.",
-    "example" : "PlayCharacter 6"
+    "example" : "PlayCharacter 7 2 R B G G (move a RED_DRAGON and a BLUE_UNICORN form the character to your entrance and two GREEN_FROGS from your entrance to the character)"
   },
   {
     "characterId" : "8",

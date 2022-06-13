@@ -8,7 +8,9 @@ import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.School;
 
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Character7 extends CharacterCard {
     private final int MAX_NUM_STUDENTS = 6;
@@ -20,37 +22,30 @@ public class Character7 extends CharacterCard {
     }
 
     @Override
-    public void useEffect(List<String> args) throws IllegalCharacterActionRequestedException {
-        int studentsToPick = Integer.parseInt(args.get(0));
-        if (studentsToPick > 3 || studentsToPick <= 0) {
-            throw new IllegalCharacterActionRequestedException();
-        }
-        RealmType[] toPick = RealmType.getRealmsByAbbreviations(args.subList(1, studentsToPick + 1));
-        RealmType[] fromEntrance = RealmType.getRealmsByAbbreviations(args.
-                subList(studentsToPick + 1, (2 * studentsToPick) + 1));
+    public void useEffect(Map<String, Object> arguments) throws IllegalCharacterActionRequestedException {
+        //Character controller checks the students number
+        RealmType[] toPick = (RealmType[]) arguments.get("CharacterStudents");
+        RealmType[] fromEntrance = (RealmType[]) arguments.get("EntranceStudents");
+        List<Student> toEntrance = new ArrayList<>();
+        List<Student> toCharacter = new ArrayList<>();
+        School school = super.getPlayerActive().getSchool();
         try {
-            pickAndSwapStudents(toPick, fromEntrance);
+            for (int i = 0; i < toPick.length; i++) {
+                toEntrance.add(studentContainer.pickStudent(toPick[i], false));
+            }
+            for (int i = 0; i < toPick.length; i++) {
+                toCharacter.add(school.removeStudentEntrance(fromEntrance[i]));
+            }
         } catch (StudentNotFoundException e) {
+            school.insertEntrance(toCharacter.toArray(new Student[0]));
+            toEntrance.forEach(studentContainer::insertStudent);
             throw new IllegalCharacterActionRequestedException();
         }
+        toCharacter.forEach(studentContainer::insertStudent);
+        school.insertEntrance(toEntrance.toArray(new Student[0]));
+        firePropertyChange(new PropertyChangeEvent(this, "EntranceSwap", fromEntrance, toPick));
         firePropertyChange(new PropertyChangeEvent(
                 this, "Students", null, studentContainer.getStudents().toArray(new Student[0])));
-        firePropertyChange(new PropertyChangeEvent(this, "EntranceSwap", fromEntrance, toPick));
-    }
-
-    public void pickAndSwapStudents(RealmType[] toPick, RealmType[] fromEntrance) throws StudentNotFoundException {
-        if (toPick.length != fromEntrance.length || toPick.length > 3 || toPick.length <= 0) {
-            throw new IllegalArgumentException();
-        }
-        Student[] toEntrance = new Student[toPick.length];
-        School school = super.getPlayerActive().getSchool();
-        for (int i = 0; i < toPick.length; i++) {
-            toEntrance[i] = studentContainer.pickStudent(toPick[i], false);
-        }
-        for (RealmType s: fromEntrance) {
-            studentContainer.insertStudent(school.removeStudentEntrance(s));
-        }
-        school.insertEntrance(toEntrance);
     }
 
     //For testing

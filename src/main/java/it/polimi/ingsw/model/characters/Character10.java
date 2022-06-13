@@ -10,6 +10,7 @@ import it.polimi.ingsw.model.School;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Character10 extends CharacterCard {
 
@@ -18,35 +19,25 @@ public class Character10 extends CharacterCard {
     }
 
     @Override
-    public void useEffect(List<String> args) throws IllegalCharacterActionRequestedException {
-        int studentsToPick = Integer.parseInt(args.get(0));
-        if (studentsToPick > 2 || studentsToPick <= 0) {
-            throw new IllegalCharacterActionRequestedException();
-        }
-        RealmType[] fromEntrance = RealmType.getRealmsByAbbreviations(args.subList(1, studentsToPick + 1));
-        RealmType[] fromDiningRoom = RealmType.getRealmsByAbbreviations(args.
-                subList(studentsToPick + 1, (2 * studentsToPick) + 1));
-        try {
-            swap(fromEntrance, fromDiningRoom);
-        } catch (StudentNotFoundException | FullDiningRoomException e) {
-            throw new IllegalCharacterActionRequestedException();
-        }
-        firePropertyChange(new PropertyChangeEvent(this, "SchoolSwap", fromDiningRoom, fromEntrance));
-    }
-
-    public void swap(RealmType[] entrance, RealmType[] diningRoom) throws StudentNotFoundException,
-            FullDiningRoomException {
-        if (entrance.length != diningRoom.length || entrance.length <= 0 || entrance.length > 2) {
-            throw new IllegalArgumentException();
-        }
+    public void useEffect(Map<String, Object> arguments) throws IllegalCharacterActionRequestedException {
+        RealmType[] entrance = (RealmType[]) arguments.get("EntranceStudents");
+        RealmType[] diningRoom = (RealmType[]) arguments.get("DiningRoomStudents");
         School school = super.getPlayerActive().getSchool();
-        Student[] studentsFromDiningRoom = new Student[entrance.length];
-        Student[] studentsFromEntrance = new Student[entrance.length];
-        for (int i = 0; i < entrance.length; i++) {
-            studentsFromEntrance[i] = school.removeStudentEntrance(entrance[i]);
-            studentsFromDiningRoom[i] = school.removeFromDiningRoom(diningRoom[i], false);
+        List<Student> studentsFromDiningRoom = new ArrayList<>();
+        List<Student> studentsFromEntrance = new ArrayList<>();
+        try {
+            for (int i = 0; i < entrance.length; i++) {
+                studentsFromEntrance.add(school.removeStudentEntrance(entrance[i]));
+                studentsFromDiningRoom.add(school.removeFromDiningRoom(diningRoom[i], false));
+            }
+            school.insertDiningRoom(studentsFromEntrance.toArray(new Student[0]), false, true);
+        } catch (StudentNotFoundException | FullDiningRoomException e) {
+            studentsFromEntrance.forEach(school::insertEntrance);
+            try {
+                school.insertDiningRoom(studentsFromDiningRoom.toArray(new Student[0]), false, false);
+            } catch (FullDiningRoomException ignored) {}
         }
-        school.insertDiningRoom(studentsFromEntrance, false, true);
-        school.insertEntrance(studentsFromDiningRoom);
+        studentsFromDiningRoom.forEach(school::insertEntrance);
+        firePropertyChange(new PropertyChangeEvent(this, "SchoolSwap", diningRoom, entrance));
     }
 }

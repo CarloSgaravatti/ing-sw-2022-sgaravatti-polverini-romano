@@ -8,6 +8,7 @@ import it.polimi.ingsw.model.enumerations.RealmType;
 
 import java.beans.PropertyChangeEvent;
 import java.util.List;
+import java.util.Map;
 
 public class Character1 extends CharacterCard {
     private final int MAX_NUM_STUDENTS = 4;
@@ -20,34 +21,19 @@ public class Character1 extends CharacterCard {
         this.islands = game.getIslands();
     }
 
-    //To call this character you need to pass an RT abbreviation and an island index
-    //I am ignoring additional arguments, but is just an idea
     @Override
-    public void useEffect(List<String> args) throws IllegalCharacterActionRequestedException {
-        RealmType studentType;
-        Island island;
+    public void useEffect(Map<String, Object> arguments) throws IllegalCharacterActionRequestedException {
+        RealmType studentType = (RealmType) arguments.get("Student");
+        Island island = (Island) arguments.get("Island");
+        Student student;
         try {
-            studentType = RealmType.getRealmByAbbreviation(args.get(0));
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new IllegalCharacterActionRequestedException();
-        }
-        try {
-            island = islands.get(Integer.parseInt(args.get(1)));
-        } catch (NumberFormatException | IndexOutOfBoundsException e) {
-            throw new IllegalCharacterActionRequestedException();
-        }
-        try {
-            pickAndSendToIsland(studentType, island);
+            student = studentContainer.pickStudent(studentType, true);
         } catch (StudentNotFoundException e) {
             throw new IllegalCharacterActionRequestedException();
         }
+        island.addStudents(false, student);
         firePropertyChange(new PropertyChangeEvent(
                 this, "Students", null, studentContainer.getStudents().toArray(new Student[0])));
-    }
-
-    public void pickAndSendToIsland(RealmType studentType, Island island) throws StudentNotFoundException {
-        Student student = studentContainer.pickStudent(studentType, true);
-        island.addStudents(false, student);
     }
 
     public List<Student> getStudents() {

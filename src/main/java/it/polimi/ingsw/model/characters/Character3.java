@@ -4,6 +4,7 @@ import it.polimi.ingsw.exceptions.IllegalCharacterActionRequestedException;
 import it.polimi.ingsw.model.*;
 
 import java.util.List;
+import java.util.Map;
 
 public class Character3 extends CharacterCard {
     //Temporary solution, maybe it can be done with less brute force
@@ -15,21 +16,10 @@ public class Character3 extends CharacterCard {
         this.modelObserver = game;
         islands = game.getIslands();
     }
-    @Override
-    public void useEffect(List<String> args) throws IllegalCharacterActionRequestedException {
-        Island island;
-        int islandIndex;
-        try {
-            islandIndex = Integer.parseInt(args.get(0));
-        } catch (NumberFormatException e) {
-            throw new IllegalCharacterActionRequestedException();
-        }
-        if (islandIndex < 0 || islandIndex >= islands.size()) throw new IllegalCharacterActionRequestedException();
-        island = islands.get(islandIndex);
-        chooseIslandToUpdate(island);
-    }
 
-    public void chooseIslandToUpdate(Island island) {
+    @Override
+    public void useEffect(Map<String, Object> arguments) {
+        Island island = (Island) arguments.get("Island");
         modelObserver.updateIslandTower(island);
     }
 }

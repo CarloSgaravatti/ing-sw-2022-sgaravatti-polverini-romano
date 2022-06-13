@@ -7,6 +7,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Abstract class CharacterCard provides all the behaviour that are common to all characters in the game.
@@ -78,15 +79,13 @@ public abstract class CharacterCard {
 
 	/**
 	 * Method useEffect provides a way on which a player can use the character effect during the turn
-	 * after the time he has played the character (playing a character and using the effect are two operations
-	 * that can be done in separated times). This is a default implementation that is valid all for a few character
-	 * (in particular characters 2,4,6 and 8) and it throws all the time the exception. The specified arguments
+	 * after the time he has played the character (only for characters that have some inputs). The specified arguments
 	 * represent an encoding of the parameters that a character card needs to perform his action.
-	 * @param args the encoding of the character parameters
+	 * @param arguments the character parameters
 	 * @throws IllegalCharacterActionRequestedException if the parameters are not correct, or if the character does not
 	 * provide any effect that can be used after the player plays the card
 	 */
-	public abstract void useEffect(List<String> args) throws IllegalCharacterActionRequestedException;
+	public abstract void useEffect(Map<String, Object> arguments) throws IllegalCharacterActionRequestedException;
 
 	/**
 	 * Returns the last player that has played this character (even if he has already terminated his turn)

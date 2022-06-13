@@ -12,6 +12,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -230,8 +231,11 @@ public class GameMainSceneController extends FXMLController implements Initializ
         tabs.getSelectionModel().select(tabs.getTabs().get(playersSchools.get(player).getFirst()));
         Pair<Double, Double> tabPaneGlobalPosition = new Pair<>(tabPaneFather.getLayoutX() + tabs.getLayoutX() + playersBox.getLayoutX(),
                 tabPaneFather.getLayoutY() + tabs.getLayoutY() + playersBox.getLayoutY());
-        Pair<Double, Double> islandLayout = new Pair<>(islandsMap.getLayoutX() + islands.getIslandPosition(islandId).getFirst(),
-                islandsMap.getLayoutY() + islands.getIslandPosition(islandId).getSecond());
+        AnchorPane borderPaneTop = (AnchorPane) ((BorderPane) islandsMap.getParent()).getTop();
+        double islandMapLayoutY = BorderPane.getMargin(islandsMap).getTop() + /*BorderPane.getMargin(borderPaneTop).getTop() +*/ borderPaneTop.getHeight();
+        double islandMapLayoutX = BorderPane.getMargin(islandsMap).getLeft() + BorderPane.getMargin(character).getLeft() + character.getWidth();
+        Pair<Double, Double> islandLayout = new Pair<>(islandMapLayoutX + islands.getIslandPosition(islandId).getFirst(),
+                islandMapLayoutY + islands.getIslandPosition(islandId).getSecond());
         moveAccordionUp();
         try {
             Thread.sleep(500);

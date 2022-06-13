@@ -8,6 +8,7 @@ import it.polimi.ingsw.model.effects.InfluenceStrategy;
 import it.polimi.ingsw.model.effects.NoStudentInfluenceStrategy;
 
 import java.util.List;
+import java.util.Map;
 
 public class Character9 extends CharacterCard {
 
@@ -16,17 +17,8 @@ public class Character9 extends CharacterCard {
     }
 
     @Override
-    public void useEffect(List<String> args) throws IllegalCharacterActionRequestedException {
-        RealmType studentType;
-        try {
-            studentType = RealmType.getRealmByAbbreviation(args.get(0));
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new IllegalCharacterActionRequestedException();
-        }
-        chooseStudentType(studentType);
-    }
-
-    public void chooseStudentType(RealmType studentType) {
+    public void useEffect(Map<String, Object> arguments) {
+        RealmType studentType = (RealmType) arguments.get("Student");
         TurnEffect activeTurnEffect = super.getPlayerActive().getTurnEffect();
         InfluenceStrategy activeInfluenceStrategy = activeTurnEffect.getInfluenceStrategy();
         activeTurnEffect.setInfluenceStrategy(new NoStudentInfluenceStrategy(activeInfluenceStrategy, studentType));

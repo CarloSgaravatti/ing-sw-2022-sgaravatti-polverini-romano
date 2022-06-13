@@ -32,7 +32,6 @@ public class PlayerView {
     }
 
     public void updateEntrance(RealmType[] students, boolean isInsertion) {
-        System.out.println("Updating entrance with students " + Arrays.toString(students));
         Integer[] entrance = schoolStudents.getFirst();
         updateStudents(entrance, students, isInsertion);
     }

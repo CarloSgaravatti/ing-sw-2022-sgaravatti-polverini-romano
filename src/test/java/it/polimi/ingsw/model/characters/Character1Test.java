@@ -3,6 +3,7 @@ package it.polimi.ingsw.model.characters;
 import it.polimi.ingsw.exceptions.IllegalCharacterActionRequestedException;
 import it.polimi.ingsw.exceptions.StudentNotFoundException;
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.effects.StudentContainer;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.gameConstants.GameConstants;
 import it.polimi.ingsw.utils.JsonUtils;
@@ -12,72 +13,60 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 class Character1Test extends TestCase {
-    Game game;
-    CharacterCreator characterCreator;
+    CharacterGameStub game;
     Character1 character1;
-    GameConstants gameConstants;
+
+    public static class CharacterGameStub extends Game {
+
+        public CharacterGameStub(List<Island> islands, GameConstants gameConstants) {
+            super(islands, null, gameConstants, true);
+        }
+
+        @Override
+        public void updateStudentContainer(StudentContainer studentContainer) {
+            studentContainer.insertStudent(new Student(RealmType.RED_DRAGONS));
+        }
+    }
 
     @BeforeEach
     void setup() {
-        gameConstants = JsonUtils.constantsByNumPlayer(3);
+        GameConstants gameConstants = JsonUtils.constantsByNumPlayer(3);
         List<Island> islands = new ArrayList<>();
         for (int i = 0; i < 12; i++) islands.add(new SingleIsland());
-        game = new Game(islands, null, gameConstants, true); //clouds are not important for this class
-        for (int i = 0; i < 120; i++) game.getBag().insertStudent(new Student(RealmType.values()[i /24]));
-        characterCreator = new CharacterCreator(game);
+        game = new CharacterGameStub(islands, gameConstants);
+        //for (int i = 0; i < 120; i++) game.getBag().insertStudent(new Student(RealmType.values()[i /24]));
+        CharacterCreator characterCreator = new CharacterCreator(game);
         character1 = (Character1) characterCreator.getCharacter(1);
     }
 
-    @Test
-    void creationTest() {
-        Assertions.assertEquals(1, character1.getId());
-        Assertions.assertEquals(1, character1.getPrice());
-    }
-
     @ParameterizedTest
-    @EnumSource(RealmType.class)
+    @EnumSource(value = RealmType.class, names = {"RED_DRAGONS"})
     void useEffectTest(RealmType studentType) {
-        int islandIndex = new Random().nextInt(game.getIslands().size());
-        Island island = game.getIslands().get(islandIndex);
+        Island island = game.getIslands().get(new Random().nextInt(game.getIslands().size()));
         int previousStudents = island.getNumStudentsOfType(studentType);
-        String realmTypeAbbreviation = studentType.getAbbreviation();
-        List<String> args = new ArrayList<>();
-        args.add(realmTypeAbbreviation);
-        args.add(Integer.toString(islandIndex));
+        Map<String, Object> input = new HashMap<>();
+        input.put("Student", studentType);
+        input.put("Island", island);
         try {
-            character1.useEffect(args);
+            character1.useEffect(input);
             Assertions.assertEquals(previousStudents + 1, island.getNumStudentsOfType(studentType));
         } catch (IllegalCharacterActionRequestedException e) {
-            //it's ok, because the student container initialization is random
+            Assertions.fail();
         }
-    }
-
-    @Test
-    void useEffectWithExceptionTest() {
-        List<String> args = new ArrayList<>();
-        args.add("A"); //Not a valid realm type abbreviation
-        Assertions.assertThrows(IllegalCharacterActionRequestedException.class,
-                () -> character1.useEffect(args));
     }
 
     @ParameterizedTest
-    @EnumSource(RealmType.class)
-    void pickAndSendToIslandTest(RealmType studentType) {
-        Island island = game.getIslands().get((new Random()).nextInt(game.getIslands().size()));
-        int previousStudents = island.getNumStudentsOfType(studentType);
-        try {
-            character1.pickAndSendToIsland(studentType, island);
-            Assertions.assertEquals(previousStudents + 1, island.getNumStudentsOfType(studentType));
-        } catch (StudentNotFoundException e) {
-            //it's ok, because the student container initialization is random
-        }
+    @EnumSource(value = RealmType.class, names = {"YELLOW_GNOMES", "BLUE_UNICORNS", "GREEN_FROGS", "PINK_FAIRES"})
+    void useEffectStudentNotFoundTest(RealmType studentType) {
+        Island island = game.getIslands().get(new Random().nextInt(game.getIslands().size()));
+        Map<String, Object> input = new HashMap<>();
+        input.put("Student", studentType);
+        input.put("Island", island);
+        Assertions.assertThrows(IllegalCharacterActionRequestedException.class, () -> character1.useEffect(input));
     }
-
-
 }

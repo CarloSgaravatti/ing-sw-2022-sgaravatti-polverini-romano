@@ -10,6 +10,7 @@ import it.polimi.ingsw.model.School;
 
 import java.beans.PropertyChangeEvent;
 import java.util.List;
+import java.util.Map;
 
 public class Character11 extends CharacterCard {
     private final int MAX_NUM_STUDENTS = 4;
@@ -21,26 +22,16 @@ public class Character11 extends CharacterCard {
     }
 
     @Override
-    public void useEffect(List<String> args) throws IllegalCharacterActionRequestedException {
-        RealmType studentType;
+    public void useEffect(Map<String, Object> arguments) throws IllegalCharacterActionRequestedException {
+        RealmType studentType = (RealmType) arguments.get("Student");
+        School school = getPlayerActive().getSchool();
         try {
-            studentType = RealmType.getRealmByAbbreviation(args.get(0));
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new IllegalCharacterActionRequestedException();
-        }
-        try {
-            pickAndSendToDiningRoom(studentType);
-        } catch (StudentNotFoundException | FullDiningRoomException e) {
+            school.insertDiningRoom(new Student[] {studentContainer.pickStudent(studentType, true)}, true, false);
+        } catch (FullDiningRoomException | StudentNotFoundException e) {
             throw new IllegalCharacterActionRequestedException();
         }
         firePropertyChange(new PropertyChangeEvent(
                 this, "Students", null, getStudents().toArray(new Student[0])));
-    }
-
-    public void pickAndSendToDiningRoom(RealmType studentType) throws StudentNotFoundException, FullDiningRoomException {
-        School school = super.getPlayerActive().getSchool();
-        //school.insertDiningRoom(studentContainer.pickStudent(studentType, true));
-        school.insertDiningRoom(new Student[]{studentContainer.pickStudent(studentType, true)}, true, false);
     }
 
     public List<Student> getStudents() {

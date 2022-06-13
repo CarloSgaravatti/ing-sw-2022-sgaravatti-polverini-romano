@@ -122,13 +122,6 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         userInterface.firePropertyChange("IslandUnification", null, null);
     }
 
-    /*private void onIslandTowerUpdate(MessagePayload payload) {
-        int island = payload.getAttribute("IslandId").getAsInt();
-        TowerType tower = (TowerType) payload.getAttribute("TowerType").getAsObject();
-        getModelView().updateIslandTower(island, tower);
-        userInterface.firePropertyChange("IslandTowerUpdate", null, island);
-    }*/
-
     private void onIslandTowerUpdate(MessagePayload payload) {
         int island = payload.getAttribute("IslandId").getAsInt();
         TowerType tower = (TowerType) payload.getAttribute("TowerType").getAsObject();

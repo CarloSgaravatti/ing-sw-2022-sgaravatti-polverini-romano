@@ -1,14 +1,14 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.exceptions.IllegalCharacterActionRequestedException;
-import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
-import it.polimi.ingsw.exceptions.TowerTypeAlreadyTakenException;
-import it.polimi.ingsw.exceptions.WizardTypeAlreadyTakenException;
+import it.polimi.ingsw.exceptions.*;
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.effects.StudentContainer;
+import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.gameConstants.GameConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -38,6 +38,11 @@ class CharacterControllerTest {
         public List<Island> getIslands() {
             return new ArrayList<>(List.of(new SingleIsland(), new SingleIsland(), new SingleIsland(), new SingleIsland(),
                     new SingleIsland(), new SingleIsland()));
+        }
+
+        @Override
+        public void updateStudentContainer(StudentContainer studentContainer) {
+            studentContainer.insertStudent(new Student(RealmType.RED_DRAGONS));
         }
     }
 
@@ -93,12 +98,22 @@ class CharacterInputArgumentProvider implements ArgumentsProvider {
                 Arguments.of(List.of("3"), 9, false),
                 Arguments.of(List.of("5"), 3, true),
                 Arguments.of(List.of("2"), 5, true),
+                Arguments.of(List.of("X"), 5, false),
                 Arguments.of(new ArrayList<>(), 2, true),
+                Arguments.of(new ArrayList<>(), 4, true),
+                Arguments.of(new ArrayList<>(), 6, true),
+                Arguments.of(new ArrayList<>(), 8, true),
                 Arguments.of(List.of("Y"), 4, false),
                 Arguments.of(List.of("1", "Y", "B"), 10, true),
                 Arguments.of(List.of("3", "B", "Y", "R", "P", "P", "G"), 9, false),
                 Arguments.of(List.of("2", "T", "Y", "X", "P"), 9, false),
-                Arguments.of(List.of("X"), 3, false)
+                Arguments.of(List.of("X"), 3, false),
+                Arguments.of(List.of("R", "2"), 1, true),
+                Arguments.of(List.of("2", "R"), 1, false),
+                Arguments.of(List.of("X", "20"), 1, false),
+                Arguments.of(List.of("R"), 1, false),
+                Arguments.of(List.of("2", "R", "G", "B", "Y"), 7, true),
+                Arguments.of(List.of("2", "R", "G", "B"), 7, false)
         );
     }
 }

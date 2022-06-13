@@ -18,17 +18,17 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 class Character11Test extends TestCase {
     Character11 character11;
     Player player;
-    GameConstants gameConstants;
 
     @BeforeEach
     void setupCharacter11() {
-        gameConstants = JsonUtils.constantsByNumPlayer(2);
-        Game game = new Game(null, null, gameConstants, true);
+        GameConstants gameConstants = JsonUtils.constantsByNumPlayer(2);
+        Game game = new Character1Test.CharacterGameStub(null, gameConstants);
         CharacterCreator characterCreator = new CharacterCreator(game);
         game.createAllStudentsForBag();
         character11 = (Character11) characterCreator.getCharacter(11);
@@ -45,44 +45,24 @@ class Character11Test extends TestCase {
     @ParameterizedTest
     @EnumSource(RealmType.class)
     void useEffectTest(RealmType studentType) {
-        List<String> args = new ArrayList<>();
-        args.add(studentType.getAbbreviation());
+        Map<String, Object> input = Map.of("Student", studentType);
         int expected = 0;
         Optional<Student> student = character11.getStudents().stream()
                 .filter(s -> s.getStudentType() == studentType)
                 .findAny();
         if (student.isPresent()) expected = 1;
         try {
-            character11.useEffect(args);
+            character11.useEffect(input);
         } catch (IllegalCharacterActionRequestedException e) {
             if (expected == 1) Assertions.fail();
         }
         Assertions.assertEquals(expected, player.getSchool().getNumStudentsDiningRoom(studentType));
     }
 
-    @Test
-    void useEffectExceptionTest() {
-        List<String> args = new ArrayList<>();
-        args.add("A"); //Not a valid realm type abbreviation
-        Assertions.assertThrows(IllegalCharacterActionRequestedException.class,
-                () -> character11.useEffect(args));
-    }
-
     @ParameterizedTest
-    @EnumSource(RealmType.class)
-    void pickAndSendToDiningRoomTest(RealmType studentType) {
-        int expected = 0;
-        Optional<Student> student = character11.getStudents().stream()
-                .filter(s -> s.getStudentType() == studentType)
-                .findAny();
-        if (student.isPresent()) expected = 1;
-        try {
-            character11.pickAndSendToDiningRoom(studentType);
-        } catch (StudentNotFoundException e) {
-            if (expected == 1) Assertions.fail();
-        } catch (FullDiningRoomException e) {
-            Assertions.fail();
-        }
-        Assertions.assertEquals(expected, player.getSchool().getNumStudentsDiningRoom(studentType));
+    @EnumSource(value = RealmType.class, names = {"YELLOW_GNOMES", "BLUE_UNICORNS", "GREEN_FROGS", "PINK_FAIRES"})
+    void useEffectStudentNotFound(RealmType studentType) {
+        Map<String, Object> input = Map.of("Student", studentType);
+        Assertions.assertThrows(IllegalCharacterActionRequestedException.class, () -> character11.useEffect(input));
     }
 }

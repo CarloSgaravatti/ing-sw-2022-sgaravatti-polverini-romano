@@ -387,7 +387,7 @@
             </AnchorPane>
          </children>
       </VBox>
-      <fx:include source="character.fxml" fx:id="character"/>
+      <fx:include fx:id="character" source="character.fxml" />
    </children>
    <stylesheets>
       <URL value="@../css/globalStyle.css" />

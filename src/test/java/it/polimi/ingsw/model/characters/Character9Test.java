@@ -15,6 +15,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 class Character9Test extends TestCase {
     Character9 character9;
@@ -34,33 +35,11 @@ class Character9Test extends TestCase {
 
     @ParameterizedTest
     @EnumSource(RealmType.class)
-    void useEffectTest(RealmType studentType) {
-        List<String> args = new ArrayList<>();
-        args.add(studentType.getAbbreviation());
-        try {
-            character9.useEffect(args);
-        } catch (IllegalCharacterActionRequestedException e) {
-            Assertions.fail();
-        }
+    void useEffect2Test(RealmType studentType) {
+        Map<String, Object> input = Map.of("Student", studentType);
+        character9.useEffect(input);
         Assertions.assertTrue(player.getTurnEffect().getInfluenceStrategy() instanceof NoStudentInfluenceStrategy);
         NoStudentInfluenceStrategy noStudent = (NoStudentInfluenceStrategy) player.getTurnEffect().getInfluenceStrategy();
         Assertions.assertEquals(studentType, noStudent.getStudentType());
-    }
-
-    @Test
-    void useEffectExceptionTest() {
-        List<String> args = new ArrayList<>();
-        args.add("A"); //Not a valid realm type abbreviation
-        Assertions.assertThrows(IllegalCharacterActionRequestedException.class,
-                () -> character9.useEffect(args));
-    }
-
-    @ParameterizedTest
-    @EnumSource(RealmType.class)
-    void chooseStudentTypeTest(RealmType realmType) {
-        character9.chooseStudentType(realmType);
-        Assertions.assertTrue(player.getTurnEffect().getInfluenceStrategy() instanceof NoStudentInfluenceStrategy);
-        NoStudentInfluenceStrategy noStudent = (NoStudentInfluenceStrategy) player.getTurnEffect().getInfluenceStrategy();
-        Assertions.assertEquals(realmType, noStudent.getStudentType());
     }
 }

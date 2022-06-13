@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.CharacterCard;
 import it.polimi.ingsw.model.Player;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class CharacterWithoutInput extends CharacterCard {
@@ -33,7 +34,8 @@ public class CharacterWithoutInput extends CharacterCard {
         return false;
     }
 
-    public void useEffect(List<String> args) throws IllegalCharacterActionRequestedException {
+    @Override
+    public void useEffect(Map<String, Object> arguments) throws IllegalCharacterActionRequestedException {
         throw new IllegalCharacterActionRequestedException();
     }
 }

@@ -10,11 +10,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class CharacterCreatorTest extends TestCase {
     CharacterCreator characterCreator;
-    GameConstants gameConstants;
 
     @BeforeEach
     void setup() {
-        gameConstants = JsonUtils.constantsByNumPlayer(3);
+        GameConstants gameConstants = JsonUtils.constantsByNumPlayer(3);
         Game game = new Game(null, null, gameConstants, true);
         characterCreator = new CharacterCreator(game);
         game.createAllStudentsForBag();
