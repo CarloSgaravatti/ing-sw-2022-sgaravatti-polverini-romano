@@ -317,7 +317,7 @@ public class CLI implements Runnable, UserInterface {
             }
             case "IslandUnification" -> printer.recomputeIslandMap();
             case "DiningRoomInsertion", "DiningRoomRemoval" -> printer.replaceSchool((String) evt.getSource());
-            case /*"SchoolDiningRoomUpdate", */"CoinsUpdate", "SchoolSwap", "EntranceSwap", "EntranceUpdate", "AssistantUpdate"->
+            case "CoinsUpdate", "SchoolSwap", "EntranceSwap", "EntranceUpdate", "AssistantUpdate"->
                     printer.replaceSchool((String) evt.getNewValue());
             case "ProfessorUpdate" -> {
                 if (evt.getOldValue() != null) {
@@ -391,7 +391,8 @@ public class CLI implements Runnable, UserInterface {
         }
     }
 
-    public void onError(ErrorMessageType error) {
-        System.out.println(Colors.RED + "Received error: " + error + Colors.RESET);
+    @Override
+    public void onError(ErrorMessageType error, String info) {
+        System.out.println(Colors.RED + "Received error " + error + ": " + info + Colors.RESET);
     }
 }

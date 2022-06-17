@@ -6,7 +6,6 @@ import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -65,7 +64,11 @@ public abstract class CharacterCard {
 	 * @throws NotEnoughCoinsException if the player doesn't have enough coins to play the character
 	 */
 	public void playCard(Player player) throws NotEnoughCoinsException {
-		player.removeCoins(this.coinPrice);
+		try {
+			player.removeCoins(this.coinPrice);
+		} catch (NotEnoughCoinsException e) {
+			throw new NotEnoughCoinsException(id);
+		}
 		playerActive = player;
 		boolean areCoinsUpdated = false;
 		if (!coinPresent) {
@@ -103,10 +106,19 @@ public abstract class CharacterCard {
 		return id;
 	}
 
+	/**
+	 * Binds the specified PropertyChangeListener to a character card
+	 * @param listener the listener (a CharacterListener)
+	 * @see it.polimi.ingsw.listeners.CharacterListener
+	 */
 	public void addListener(PropertyChangeListener listener) {
 		listeners.addPropertyChangeListener(listener);
 	}
 
+	/**
+	 * Fire a property change event
+	 * @param evt the event that is fired
+	 */
 	public void firePropertyChange(PropertyChangeEvent evt) {
 		listeners.firePropertyChange(evt);
 	}

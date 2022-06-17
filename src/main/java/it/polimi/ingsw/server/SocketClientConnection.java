@@ -64,7 +64,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
                     "message name = " + message.getClientMessageHeader().getMessageName() + " " +
                     "message type = " + message.getClientMessageHeader().getMessageType());
             if (!setupDone) {
-                sendError(ErrorMessageType.CLIENT_WITHOUT_GAME);
+                sendError(ErrorMessageType.CLIENT_WITHOUT_GAME, "Before doing this you have to select a game to play");
             } else {
                 //TODO: delete try catch when everything is ok
                 messageExecutor.submit(() -> {
@@ -137,13 +137,13 @@ public class SocketClientConnection implements Runnable, ClientConnection {
             server.globalLobby(this, nickname);
             this.nickname = nickname;
         } catch (DuplicateNicknameException e) {
-            sendError(ErrorMessageType.DUPLICATE_NICKNAME);
+            sendError(ErrorMessageType.DUPLICATE_NICKNAME, e.getMessage());
         }
     }
 
     public void handleGameSetup(MessageFromClient message) {
         if (isSetupDone()) {
-            sendError(ErrorMessageType.SETUP_ALREADY_DONE);
+            sendError(ErrorMessageType.SETUP_ALREADY_DONE, "You have already done your choices");
             return;
         }
         String messageName = message.getClientMessageHeader().getMessageName();
@@ -160,7 +160,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
             }
             case "GameToPlay" -> gameId = message.getMessagePayload().getAttribute("GameId").getAsInt();
             default -> {
-                sendError(ErrorMessageType.UNRECOGNIZED_MESSAGE);
+                sendError(ErrorMessageType.UNRECOGNIZED_MESSAGE, "Your message was not recognized");
                 return;
             }
         }
@@ -183,10 +183,11 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         isPingAckReceived = pingAckReceived;
     }
 
-    public void sendError(ErrorMessageType error) {
+    public void sendError(ErrorMessageType error, String description) {
         ServerMessageHeader header = new ServerMessageHeader("Error", ServerMessageType.SERVER_MESSAGE);
         MessagePayload payload = new MessagePayload();
         payload.setAttribute("ErrorType", error);
+        payload.setAttribute("ErrorInfo", description);
         asyncSend(new MessageFromServer(header, payload));
     }
 

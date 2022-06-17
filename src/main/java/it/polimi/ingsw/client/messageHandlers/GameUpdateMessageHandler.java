@@ -64,7 +64,8 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         String newOwner = payload.getAttribute("PlayerName").getAsString();
         RealmType professor = (RealmType) payload.getAttribute("ProfessorType").getAsObject();
         Optional<String> lastOwner = getModelView().getField().updateProfessorOwner(professor, newOwner);
-        userInterface.firePropertyChange("ProfessorUpdate", lastOwner.orElse(null), newOwner);
+        userInterface.firePropertyChange(new PropertyChangeEvent(professor, "ProfessorUpdate",
+                lastOwner.orElse(null), newOwner));
     }
 
     private void onMotherNatureMovement(MessagePayload payload) {

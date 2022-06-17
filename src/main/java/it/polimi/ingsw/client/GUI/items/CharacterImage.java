@@ -50,7 +50,6 @@ public class CharacterImage extends AnchorPane {
         studentsBox.getChildren().clear();
         RealmType[] students = RealmType.getRealmsFromIntegerRepresentation(expertField.characterStudents(characterId));
         studentRadius = (studentsBox.getMaxWidth() - (5 * students.length)) / (2 * students.length);
-        System.out.println("Radius: " + studentRadius);
         for (RealmType student: students) {
             StudentImage studentImage = new StudentImage(studentRadius, student);
             studentsBox.getChildren().add(studentImage);

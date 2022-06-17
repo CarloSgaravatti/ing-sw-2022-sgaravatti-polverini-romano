@@ -1,6 +1,6 @@
 package it.polimi.ingsw.client.GUI.controllers;
 
-import it.polimi.ingsw.client.GUI.items.IslandImage;
+import it.polimi.ingsw.client.GUI.items.IslandSubScene;
 import it.polimi.ingsw.client.GUI.items.StudentImage;
 import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.messages.ErrorMessageType;
@@ -74,8 +74,6 @@ public class CharacterController extends FXMLController {
         root.setOpacity(0);
         root.setLayoutX((mainSceneRoot.getWidth() - root.getWidth()) / 2);
         root.setLayoutY((mainSceneRoot.getHeight() - root.getHeight()) / 2);
-        System.out.println(root.getLayoutX() + " " + root.getLayoutY() + " " + root.getWidth() + " " + root.getHeight());
-        System.out.println(root.getLayoutX() + " " + root.getLayoutY() + " " + root.getPrefWidth() + " " + root.getPrefHeight());
         translation = mainSceneRoot.getWidth();
         root.setTranslateX(translation);
     }
@@ -432,18 +430,18 @@ public class CharacterController extends FXMLController {
         private void islandSelection(Label label) {
             root.setTranslateX(translation);
             gameMainSceneController.moveAccordionDown();
-            List<IslandImage> islands = gameMainSceneController.getIslands().getIslandImages();
-            islands.forEach(i -> i.getIslandPane().getStyleClass().add("selectable-item"));
+            List<IslandSubScene> islands = gameMainSceneController.getIslands().getIslands();
+            islands.forEach(i -> i.getStyleClass().add("selectable-item"));
             EventHandler<MouseEvent> islandSelection = mouseEvent -> {
                 AnchorPane anchorPane = (AnchorPane) mouseEvent.getTarget();
                 String islandId = anchorPane.getId().substring("Island".length());
                 root.setTranslateX(0);
-                islands.forEach(i -> i.getIslandPane().getStyleClass().remove("selectable-item"));
+                islands.forEach(i -> i.getStyleClass().remove("selectable-item"));
                 actions.put(ActionType.SELECT_ISLAND, List.of(islandId));
                 actionsNeeded.remove(ActionType.SELECT_ISLAND);
                 label.setText("You have selected island " + islandId + ".\nClick here if you want to change.");
             };
-            islands.forEach(i -> i.getIslandPane().addEventHandler(MouseEvent.MOUSE_CLICKED, islandSelection));
+            islands.forEach(i -> i.addEventHandler(MouseEvent.MOUSE_CLICKED, islandSelection));
         }
 
         private void reset() {

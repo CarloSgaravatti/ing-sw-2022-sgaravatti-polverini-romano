@@ -36,5 +36,5 @@ public interface UserInterface extends PropertyChangeListener{
 
     void printTurnMenu(List<String> actions, List<String> actionCommands, List<String> currentPossibleActions); //maybe this is not correct and have to be done with listeners
 
-    void onError(ErrorMessageType error);
+    void onError(ErrorMessageType error, String info);
 }

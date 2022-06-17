@@ -2,27 +2,21 @@ package it.polimi.ingsw.client.GUI.items;
 
 import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.utils.Pair;
-import javafx.animation.Animation;
 import javafx.animation.TranslateTransition;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.image.Image;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class IslandMap {
     private final AnchorPane container;
     private final ModelView modelView;
-    private final List<IslandImage> islands = new ArrayList<>();
-    private final Rectangle motherNature;
+    private final List<IslandSubScene> islandsSubScenes = new ArrayList<>();
     private EventHandler<DragEvent> dragOverHandler;
     private EventHandler<DragEvent> dropHandler;
     private EventHandler<MouseEvent> dragMotherNatureStart;
@@ -30,28 +24,25 @@ public class IslandMap {
     public IslandMap(AnchorPane container, ModelView modelView) {
         this.container = container;
         this.modelView = modelView;
-        /*for (int i = 0; i < modelView.getField().getIslandSize(); i++) {
-            islands.add(new IslandImage(i, modelView.getField(), 50));
-        }*/
         initializeMap();
-        AnchorPane islandPane = islands.get(0).getIslandPane();
-        motherNature = new Rectangle(islandPane.getWidth() / 5, islandPane.getHeight() / 5);
-        motherNature.setLayoutX(islandPane.getWidth() / 2);
-        motherNature.setLayoutY(islandPane.getHeight() / 2);
-        motherNature.setFill(new ImagePattern(new Image(Objects
-                .requireNonNull(getClass().getResourceAsStream("/images/mother_nature.png")))));
-        islands.get(modelView.getField().getMotherNaturePosition()).setMotherNature(true, motherNature);
+        islandsSubScenes.get(modelView.getField().getMotherNaturePosition()).setMotherNature(true);
     }
 
     public void initializeMap() {
         List<Node> islands = container.getChildren().subList(0, 12);
-        for (int i = 0; i < islands.size(); i++) {
-            IslandImage island = new IslandImage(i, modelView.getField(), (AnchorPane)islands.get(i));
-            /*Node node = islands.get(i);
-            island.setLayoutX(node.getLayoutX());
-            island.setLayoutY(node.getLayoutY());
-            container.getChildren().set(i, island);*/
-            this.islands.add(island);
+        for (int i = 0; i < 12; i++) {
+            Pair<Double, Double> layout = new Pair<>(islands.get(i).getLayoutX(), islands.get(i).getLayoutY());
+            IslandSubScene islandSubScene = new IslandSubScene();
+            islandSubScene.init(modelView.getField().getIsland(i).getFirst(), i);
+            islandSubScene.setLayoutX(layout.getFirst());
+            islandSubScene.setLayoutY(layout.getSecond());
+            //container.getChildren().add(i, islandSubScene);
+            islandsSubScenes.add(islandSubScene);
+        }
+        //Need to do this because otherwise there is ConcurrentModificationException
+        for (int i = 0; i < islandsSubScenes.size(); i++) {
+            container.getChildren().remove(i);
+            container.getChildren().add(i, islandsSubScenes.get(i));
         }
     }
 
@@ -60,25 +51,49 @@ public class IslandMap {
         this.dragOverHandler = dragOverIsland;
         this.dropHandler = dropOnIsland;
         this.dragMotherNatureStart = dragMotherNatureStartHandler;
-        this.motherNature.setOnDragDetected(dragMotherNatureStartHandler);
-        for (IslandImage island: islands) {
+        //this.motherNature.setOnDragDetected(dragMotherNatureStartHandler);
+        /*for (IslandImage island: islands) {
             island.getIslandPane().setOnDragOver(dragOverIsland);
             island.getIslandPane().setOnDragDropped(dropOnIsland);
-            //island.setDragStartHandler(dragMotherNatureStartHandler);
+        }*/
+        for (IslandSubScene island: islandsSubScenes) {
+            island.setOnDragOver(dragOverIsland);
+            island.setOnDragDropped(dropOnIsland);
+            island.getMotherNature().setOnDragDetected(dragMotherNatureStartHandler);
         }
     }
 
     public void moveMotherNature(int oldPosition, int newPosition) {
-        AnchorPane oldIsland = islands.get(oldPosition).getIslandPane();
+        AnchorPane motherNature = new AnchorPane();
+        motherNature.getStyleClass().add("mother-nature");
+        motherNature.setPrefWidth(islandsSubScenes.get(0).getMotherNature().getWidth());
+        motherNature.setPrefHeight(islandsSubScenes.get(0).getMotherNature().getHeight());
+        Pair<Double, Double> motherNatureIslandLayout = islandsSubScenes.get(0).getMotherNatureLayout();
+        motherNature.setLayoutX(motherNatureIslandLayout.getFirst() + islandsSubScenes.get(oldPosition).getLayoutX());
+        motherNature.setLayoutY(motherNatureIslandLayout.getSecond() + islandsSubScenes.get(oldPosition).getLayoutY());
+        container.getChildren().add(motherNature);
+        TranslateTransition transition2 = new TranslateTransition();
+        transition2.setByX(islandsSubScenes.get(newPosition).getLayoutX() - islandsSubScenes.get(oldPosition).getLayoutX());
+        transition2.setByY(islandsSubScenes.get(newPosition).getLayoutY() - islandsSubScenes.get(oldPosition).getLayoutY());
+        transition2.setNode(motherNature);
+        transition2.setDuration(Duration.millis(1500));
+        islandsSubScenes.get(oldPosition).setMotherNature(false);
+        transition2.play();
+        transition2.setOnFinished(actionEvent -> {
+            islandsSubScenes.get(newPosition).setMotherNature(true);
+            container.getChildren().remove(motherNature);
+        });
+        /*AnchorPane oldIsland = islands.get(oldPosition).getIslandPane();
         Rectangle fakeMotherNature = new Rectangle(oldIsland.getWidth() / 5, oldIsland.getHeight() / 5);
         fakeMotherNature.setFill(new ImagePattern(new Image(Objects
                 .requireNonNull(getClass().getResourceAsStream("/images/mother_nature.png")))));
         motherNature.setOpacity(0);
         islands.get(oldPosition).setMotherNature(false, motherNature);
         islands.get(oldPosition).setMotherNature(true, fakeMotherNature);
+        //islandsSubScenes.get()
         fakeMotherNature.setLayoutX(oldIsland.getWidth() / 2);
         fakeMotherNature.setLayoutY(oldIsland.getHeight() / 2);
-        islands.get(newPosition).setMotherNature(true, motherNature);
+        islands.get(newPosition).setMotherNature(true, this.motherNature);
         Pair<Double, Double> lastPos = new Pair<>(oldIsland.getLayoutX(), oldIsland.getLayoutY());
         AnchorPane newIsland = islands.get(newPosition).getIslandPane();
         Pair<Double, Double> newPos = new Pair<>(newIsland.getLayoutX(), newIsland.getLayoutY());
@@ -91,41 +106,16 @@ public class IslandMap {
         transition.setOnFinished(actionEvent -> {
             islands.get(oldPosition).setMotherNature(false, fakeMotherNature);
             motherNature.setOpacity(1);
-        });
+        });*/
     }
 
-    public List<IslandImage> getIslandImages() {
-        return islands;
+    public List<IslandSubScene> getIslands() {
+        return islandsSubScenes;
     }
 
     public Pair<Double, Double> getIslandPosition(int islandId) {
-        IslandImage islandImage = islands.get(islandId);
-        return new Pair<>(islandImage.getIslandPane().getLayoutX(), islandImage.getIslandPane().getLayoutY());
+        IslandSubScene island = islandsSubScenes.get(islandId);
+        return new Pair<>(island.getLayoutX() + island.getWidth() / 2,
+                island.getLayoutY() + island.getHeight() / 2);
     }
-
-    /*public void computeMap() {
-        double angleStep = 2 * Math.PI / islands.size();
-        for (int i = 0; i < islands.size(); i++) {
-            Pair<Double, Double> position = getEllipsePositionByAngle(angleStep * i, i < (islands.size() + 1)/ 2);
-            AnchorPane.setLeftAnchor(islands.get(i), position.getFirst());
-            AnchorPane.setTopAnchor(islands.get(i), position.getSecond());
-            container.getChildren().add(islands.get(i));
-        }
-    }
-
-    //angle must be between 0 and 2pi
-    public Pair<Double, Double> getEllipsePositionByAngle(double angle, boolean invert) {
-        double ellipseA = container.getWidth() / 2;
-        double ellipseB = container.getHeight() / 2; //ellipse is x/a^2 + y/b^2 = 1
-        double angularCoefficient = Math.tan(angle); //y = x * tan(angle)
-        double xPosition = (ellipseA * ellipseB) /
-                Math.pow(Math.pow(ellipseB, 2) + Math.pow(ellipseA * angularCoefficient, 2), 0.5);
-        //xPosition = (angle > (3 * Math.PI) / 2 || angle < Math.PI / 2) ? xPosition : -xPosition;
-        if (invert) xPosition = -xPosition;
-        double yPosition = -xPosition * angularCoefficient;
-        //y is inverted from the usual position because javafx has an opposite orientation for the y coordinate
-        //ellipse is centered in the center of the container
-        System.out.println("angle = " + angle + " position = (" + xPosition + "," + (-yPosition) + ")");
-        return new Pair<>(xPosition + ellipseA, yPosition + ellipseB );
-    }*/
 }

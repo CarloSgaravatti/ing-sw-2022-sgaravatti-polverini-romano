@@ -66,6 +66,10 @@ public class Cloud {
 		return (studentsPresents) ? students : null;
 	}
 
+	/**
+	 * Binds a PropertyChangeListener to the cloud. Events will be fired when a player pick students from the cloud
+	 * @param listener the listener that will be added
+	 */
 	public void addListener(PropertyChangeListener listener) {
 		game.addPropertyChangeListener(listener);
 	}

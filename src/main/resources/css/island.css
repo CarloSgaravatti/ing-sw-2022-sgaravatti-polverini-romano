@@ -1,0 +1,33 @@
+.mother-nature, .red-student, .blue-student, .green-student, .yellow-student, .pink-student, .no-entry-tile {
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+
+
+.mother-nature {
+    -fx-background-image: url("../images/mother_nature.png");
+}
+
+.red-student {
+    -fx-background-image: url("../images/students/student_red.png");
+}
+
+.blue-student {
+    -fx-background-image: url("../images/students/student_blue.png");
+}
+
+.yellow-student {
+    -fx-background-image: url("../images/students/student_yellow.png");
+}
+
+.pink-student {
+    -fx-background-image: url("../images/students/student_pink.png");
+}
+
+.green-student {
+    -fx-background-image: url("../images/students/student_green.png");
+}
+
+.no-entry-tile {
+    -fx-background-image: url("../images/deny_island_icon.png");
+}

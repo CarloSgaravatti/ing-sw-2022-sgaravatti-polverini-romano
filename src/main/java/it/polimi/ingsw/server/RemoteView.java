@@ -39,8 +39,8 @@ public class RemoteView extends View implements PropertyChangeListener {
         gameLobby.broadcast(messageFromServer);
     }
 
-    public void sendError(ErrorMessageType error) {
-        connection.sendError(error);
+    public void sendError(ErrorMessageType error, String description) {
+        connection.sendError(error, description);
     }
 
     @Override

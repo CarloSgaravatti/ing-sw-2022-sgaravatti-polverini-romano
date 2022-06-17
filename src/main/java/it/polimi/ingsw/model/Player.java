@@ -65,7 +65,7 @@ public class Player implements PropertyChangeListener{
 				return true;
 			}
 		}
-		throw new NoSuchAssistantException();
+		throw new NoSuchAssistantException(assistant);
 	}
 
 	public void setAssistants(List<Assistant> assistants){

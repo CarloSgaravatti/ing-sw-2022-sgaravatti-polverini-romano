@@ -13,12 +13,10 @@ import java.util.Map;
 public class Character1 extends CharacterCard {
     private final int MAX_NUM_STUDENTS = 4;
     private final StudentContainer studentContainer;
-    private final List<Island> islands;
 
     public Character1(Game game) {
         super(1, 1);
         studentContainer = new StudentContainer(MAX_NUM_STUDENTS, game);
-        this.islands = game.getIslands();
     }
 
     @Override
@@ -29,7 +27,7 @@ public class Character1 extends CharacterCard {
         try {
             student = studentContainer.pickStudent(studentType, true);
         } catch (StudentNotFoundException e) {
-            throw new IllegalCharacterActionRequestedException();
+            throw new IllegalCharacterActionRequestedException(e);
         }
         island.addStudents(false, student);
         firePropertyChange(new PropertyChangeEvent(

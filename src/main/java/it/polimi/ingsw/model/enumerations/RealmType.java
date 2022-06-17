@@ -60,6 +60,14 @@ public enum RealmType {
         return result;
     }
 
+    /**
+     * Return an <CODE>Integer[]</CODE> representation of the specified realm types. This representation consent an easier
+     * management of students for firing events. The integer representation have the same length of the number of enum
+     * constants of this class; also, <CODE>res[i]</CODE> is the number of elements of the specified array that are equal to
+     * <CODE>RealmType.values()[i]</CODE>
+     * @param realmTypes the student types that will be converted to an integer representation
+     * @return the integer representation.
+     */
     public static Integer[] getIntegerRepresentation(RealmType[] realmTypes) {
         Integer[] res = new Integer[values().length];
         Arrays.fill(res, 0);
@@ -69,6 +77,13 @@ public enum RealmType {
         return res;
     }
 
+    /**
+     * Get an array of realm types from its integer representation. The result is ordered following the RealmType enum
+     * constants order: for example, if <CODE>students[0] == 3</CODE> all elements from 0 to 2 of the resulting array will
+     * be <CODE>RealmType.YELLOW_GNOMES</CODE>
+     * @param students the integer representation
+     * @return the array of RealmType that corresponds to the integer representation.
+     */
     public static RealmType[] getRealmsFromIntegerRepresentation(Integer[] students) {
         List<RealmType> realmTypes = new ArrayList<>();
         for (int j = 0; j < students.length; j++) {

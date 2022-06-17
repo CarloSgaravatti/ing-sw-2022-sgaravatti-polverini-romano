@@ -70,7 +70,6 @@ public class GUI extends Application implements UserInterface {
 
     @Override
     public void askNickname() {
-        System.out.println(nickname);
         if (nickname != null && !nicknameSent) {
             listeners.firePropertyChange("Nickname", null, nickname);
             nicknameSent = true;
@@ -190,9 +189,12 @@ public class GUI extends Application implements UserInterface {
         switch (evt.getPropertyName()) {
             case "AssistantUpdate" -> onAssistantUpdate((Integer) evt.getOldValue(), (String) evt.getNewValue());
             case "IslandStudentsUpdate" -> onIslandStudentsUpdate((Integer) evt.getSource(), (RealmType[]) evt.getNewValue(), (Boolean) evt.getOldValue());
-            case "IslandTower" -> {}
+            case "IslandTowerUpdate" -> {} //TODO
+            case "IslandUnification" -> {} //TODO
             case "MotherNatureUpdate" -> onMotherNatureMovement((Integer) evt.getOldValue(), (Integer) evt.getNewValue());
             case "DiningRoomInsertion" -> onDiningRoomUpdate((String) evt.getSource(), (RealmType[]) evt.getNewValue(), (Boolean) evt.getOldValue());
+            case "ProfessorUpdate" -> onProfessorUpdate((RealmType) evt.getSource(), (String) evt.getOldValue(), (String) evt.getNewValue());
+            case "DiningRoomRemoval" -> {} //TODO
             //...
             //events that come from gui controllers
             default -> checkEventFromControllers(evt);
@@ -210,7 +212,7 @@ public class GUI extends Application implements UserInterface {
     private void onIslandStudentsUpdate(Integer islandId, RealmType[] students, boolean fromEntrance) {
         Platform.runLater(() -> {
             this.stage.setFullScreen(true);
-            if (fromEntrance) {
+            if (fromEntrance && !modelView.getCurrentActivePlayer().equals(nickname)) {
                 String currentPlayer = this.modelView.getCurrentActivePlayer();
                 ((GameMainSceneController) currentSceneController).moveStudentsToIsland(currentPlayer, islandId, students);
             }
@@ -221,10 +223,18 @@ public class GUI extends Application implements UserInterface {
     private void onDiningRoomUpdate(String player, RealmType[] students, boolean fromEntrance) {
         Platform.runLater(() -> {
             this.stage.setFullScreen(true);
-            if (fromEntrance) {
+            if (fromEntrance && !player.equals(nickname)) {
                 ((GameMainSceneController) currentSceneController).moveStudentsToDiningRoom(player, students);
             }
             //TODO: else is from character 11
+        });
+    }
+
+    private void onProfessorUpdate(RealmType professor, String lastOwner, String newOwner) {
+        Platform.runLater(() -> {
+            this.stage.setFullScreen(true);
+            ((GameMainSceneController) currentSceneController).insertProfessorAnimation(newOwner, professor);
+            if (lastOwner != null) ((GameMainSceneController) currentSceneController).getSchoolBox(lastOwner).removeProfessor(professor);
         });
     }
 
@@ -246,7 +256,6 @@ public class GUI extends Application implements UserInterface {
 
     public void doSetup(String serverIp, int serverPort, String nickname) {
         this.nickname = nickname;
-        System.out.println(nickname);
         Socket socket;
         try {
             socket = new Socket(serverIp, serverPort);
@@ -263,7 +272,7 @@ public class GUI extends Application implements UserInterface {
         stage.setOnCloseRequest(event -> connectionToServer.setActive(false));
     }
 
-    public void onError(ErrorMessageType error) {
+    public void onError(ErrorMessageType error, String info) {
         Platform.runLater(() -> currentSceneController.onError(error));
     }
 }

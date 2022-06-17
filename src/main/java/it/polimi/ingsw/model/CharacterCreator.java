@@ -45,6 +45,14 @@ public class CharacterCreator {
         };
     }
 
+    /**
+     * Creates a character with the specified id that doesn't require any input from a player to be played in the turn
+     * (these characters are 2, 4, 6 and 8). The method define also the effect (in base of the character id) that the created
+     * character will have.
+     * @param characterId the id of the character that will be created
+     * @return the created character
+     * @throws IllegalArgumentException if the id is not valid (if it isn't 2, 4, 6 or 8)
+     */
     private CharacterWithoutInput getCharacterWithoutInput(int characterId) throws IllegalArgumentException {
         Consumer<Player> action;
         return switch (characterId) {

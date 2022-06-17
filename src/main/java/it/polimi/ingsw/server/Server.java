@@ -125,7 +125,7 @@ public class Server implements Runnable{
     }
 
     private void handleLobbyError(ErrorMessageType error,  ClientConnection client, String clientName) {
-        client.sendError(error);
+        client.sendError(error, "The game lobby requested was not found");
         globalLobby(client, clientName);
     }
 

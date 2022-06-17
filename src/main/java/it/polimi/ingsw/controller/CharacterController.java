@@ -9,6 +9,7 @@ import it.polimi.ingsw.model.Island;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.enumerations.RealmType;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
@@ -32,17 +33,17 @@ public class CharacterController {
             throws IllegalCharacterActionRequestedException, NotEnoughCoinsException, IllegalArgumentException {
         characterInput.clear();
         if (activePlayer.getTurnEffect().isCharacterPlayed()) {
-            listeners.firePropertyChange("Error", ErrorMessageType.CHARACTER_ALREADY_PLAYED, activePlayer.getNickName());
+            listeners.firePropertyChange(new PropertyChangeEvent(activePlayer.getNickName(), "Error",
+                    ErrorMessageType.CHARACTER_ALREADY_PLAYED, "You cannot play a character, you have already played one in this turn"));
             throw new IllegalArgumentException();
         }
         if (!checkCharacterInput(args, characterCard)) {
-            listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, activePlayer.getNickName());
-            throw new IllegalCharacterActionRequestedException();
+            throw new IllegalCharacterActionRequestedException(characterCard.getId());
         }
         int coinToGeneralSupply = characterCard.getPrice();
         if (!characterCard.isCoinPresent()) coinToGeneralSupply--;
         characterCard.playCard(activePlayer);
-        activePlayer.getTurnEffect().setCharacterEffectConsumed(false);
+        activePlayer.getTurnEffect().setCharacterEffectConsumed(false); //TODO: delete
         if (characterCard.requiresInput()) characterCard.useEffect(characterInput);
         activePlayer.getTurnEffect().setCharacterPlayed(true);
         game.insertCoinsInGeneralSupply(coinToGeneralSupply);

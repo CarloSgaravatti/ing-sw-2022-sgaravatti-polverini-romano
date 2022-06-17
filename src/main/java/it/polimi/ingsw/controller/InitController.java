@@ -90,18 +90,6 @@ public class InitController implements PropertyChangeListener {
 		playersWithWizard.put(player.getNickName(), wizard);
 	}
 
-	/*@Deprecated
-	public void setupSchools() throws EmptyBagException {
-		for(int i = 0; i < game.getNumPlayers(); i++){
-			School school = game.getPlayers().get(i).getSchool();
-			school.addObserver(game);
-			int studentPerSchool = gameConstants.getNumStudentsInEntrance();
-			for(int j = 0; j < studentPerSchool;j++){
-				school.insertEntrance(game.getBag().pickStudent());
-			}
-		}
-	}*/
-
 	private Cloud[] createClouds(){
 		Cloud[] clouds = new Cloud[numPlayers];
 		for (int i = 0; i < numPlayers; i++) {
@@ -134,7 +122,8 @@ public class InitController implements PropertyChangeListener {
 				try {
 					setupPlayerTower(player, tower);
 				} catch (TowerTypeAlreadyTakenException e) {
-					listeners.firePropertyChange("Error", ErrorMessageType.TOWER_ALREADY_TAKEN, nicknameSender);
+					listeners.firePropertyChange(new PropertyChangeEvent(nicknameSender, "Error",
+							ErrorMessageType.TOWER_ALREADY_TAKEN, e.getMessage()));
 					return;
 				}
 			}
@@ -144,12 +133,14 @@ public class InitController implements PropertyChangeListener {
 				try {
 					setupPlayerWizard(player, wizard);
 				} catch (WizardTypeAlreadyTakenException e) {
-					listeners.firePropertyChange("Error", ErrorMessageType.WIZARD_ALREADY_TAKEN, nicknameSender);
+					listeners.firePropertyChange(new PropertyChangeEvent(nicknameSender, "Error",
+							ErrorMessageType.WIZARD_ALREADY_TAKEN, e.getMessage()));
 					return;
 				}
 			}
 			default -> {
-				listeners.firePropertyChange("Error", ErrorMessageType.UNRECOGNIZED_MESSAGE, nicknameSender);
+				listeners.firePropertyChange(new PropertyChangeEvent(nicknameSender, "Error",
+						ErrorMessageType.UNRECOGNIZED_MESSAGE, "Your message was not recognized."));
 				return;
 			}
 		}

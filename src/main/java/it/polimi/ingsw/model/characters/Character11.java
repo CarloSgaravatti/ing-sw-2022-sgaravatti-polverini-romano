@@ -28,7 +28,7 @@ public class Character11 extends CharacterCard {
         try {
             school.insertDiningRoom(new Student[] {studentContainer.pickStudent(studentType, true)}, true, false);
         } catch (FullDiningRoomException | StudentNotFoundException e) {
-            throw new IllegalCharacterActionRequestedException();
+            throw new IllegalCharacterActionRequestedException(e);
         }
         firePropertyChange(new PropertyChangeEvent(
                 this, "Students", null, getStudents().toArray(new Student[0])));

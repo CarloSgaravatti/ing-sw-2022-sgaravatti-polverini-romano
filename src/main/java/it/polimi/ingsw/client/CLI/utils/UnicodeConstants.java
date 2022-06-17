@@ -1,5 +1,10 @@
 package it.polimi.ingsw.client.CLI.utils;
 
+/**
+ * Enumeration UnicodeConstants provide all the constants of the unicode standard that are used
+ * for printing the CLI board. Each constant have the corresponding unicode value associated and can
+ * also be associated white an ANSI color code (the unicode value will be concatenated to an ANSI code)
+ */
 public enum UnicodeConstants {
 
     CROSS("\u256c"),

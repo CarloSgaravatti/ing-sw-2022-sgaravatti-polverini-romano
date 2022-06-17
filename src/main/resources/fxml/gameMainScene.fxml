@@ -26,11 +26,11 @@
                   <AnchorPane layoutX="857.0" layoutY="43.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
                   <AnchorPane layoutX="1090.0" layoutY="118.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
                   <AnchorPane layoutX="1230.0" layoutY="290.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
-                  <AnchorPane layoutX="1090.0" layoutY="500.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane" />
-                  <AnchorPane layoutX="857.0" layoutY="575.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane" />
-                  <AnchorPane layoutX="597.0" layoutY="610.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane" />
-                  <AnchorPane layoutX="353.0" layoutY="570.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane" />
-                  <AnchorPane layoutX="144.0" layoutY="500.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane" />
+                  <AnchorPane layoutX="1090.0" layoutY="500.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
+                  <AnchorPane layoutX="857.0" layoutY="575.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
+                  <AnchorPane layoutX="597.0" layoutY="610.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
+                  <AnchorPane layoutX="353.0" layoutY="570.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
+                  <AnchorPane layoutX="144.0" layoutY="500.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
                   <HBox fx:id="cloudBox" alignment="CENTER" layoutX="306.0" layoutY="297.0" prefHeight="137.0" prefWidth="771.0" spacing="40.0">
                      <children>
                         <ImageView fx:id="bag" fitHeight="111.0" fitWidth="105.0" pickOnBounds="true" preserveRatio="true">
@@ -163,7 +163,7 @@
                                                       <Circle fill="DODGERBLUE" layoutX="34.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
                                                       <Circle fill="DODGERBLUE" layoutX="78.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
                                                       <Circle fill="DODGERBLUE" layoutX="120.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="164.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                      <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
                                                       <Circle fill="DODGERBLUE" layoutX="206.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
                                                       <Circle fill="DODGERBLUE" layoutX="249.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
                                                       <Circle fill="DODGERBLUE" layoutX="291.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
@@ -182,6 +182,15 @@
                                                       <Circle fill="DODGERBLUE" layoutX="420.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
                                                    </children>
                                                 </AnchorPane>
+                                                <AnchorPane layoutX="618.0" prefHeight="390.0" prefWidth="87.0">
+                                                   <children>
+                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="67.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="132.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="196.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                   </children>
+                                                </AnchorPane>
                                              </children>
                                           </AnchorPane>
                                           <ImageView fitHeight="322.0" fitWidth="200.0" layoutX="1080.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true">
@@ -189,6 +198,12 @@
                                                 <Image url="@../images/assistants/CarteTOT_back_11@3x.png" />
                                              </image>
                                           </ImageView>
+                                          <VBox layoutX="5.0" layoutY="44.0">
+                                             <children>
+                                                <Circle fill="DODGERBLUE" layoutX="25.0" layoutY="64.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="21.0" prefWidth="39.0" text="1" />
+                                             </children>
+                                          </VBox>
                                        </children>
                                     </AnchorPane>
                                  </children>
@@ -256,7 +271,7 @@
                                                       <Circle fill="DODGERBLUE" layoutX="34.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
                                                       <Circle fill="DODGERBLUE" layoutX="78.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
                                                       <Circle fill="DODGERBLUE" layoutX="120.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="164.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                      <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
                                                       <Circle fill="DODGERBLUE" layoutX="206.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
                                                       <Circle fill="DODGERBLUE" layoutX="249.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
                                                       <Circle fill="DODGERBLUE" layoutX="291.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
@@ -275,6 +290,15 @@
                                                       <Circle fill="DODGERBLUE" layoutX="420.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
                                                    </children>
                                                 </AnchorPane>
+                                                <AnchorPane layoutX="618.0" prefHeight="390.0" prefWidth="87.0">
+                                                   <children>
+                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="67.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="132.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="196.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                   </children>
+                                                </AnchorPane>
                                              </children>
                                           </AnchorPane>
                                           <ImageView fitHeight="322.0" fitWidth="200.0" layoutX="1080.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true">
@@ -282,6 +306,12 @@
                                                 <Image url="@../images/assistants/CarteTOT_back_21@3x.png" />
                                              </image>
                                           </ImageView>
+                                          <VBox layoutX="5.0" layoutY="44.0">
+                                             <children>
+                                                <Circle fill="DODGERBLUE" layoutX="25.0" layoutY="64.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                <Label alignment="CENTER" prefHeight="21.0" prefWidth="41.0" text="1" />
+                                             </children>
+                                          </VBox>
                                        </children>
                                     </AnchorPane>
                                  </children>
@@ -349,7 +379,7 @@
                                                       <Circle fill="DODGERBLUE" layoutX="34.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
                                                       <Circle fill="DODGERBLUE" layoutX="78.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
                                                       <Circle fill="DODGERBLUE" layoutX="120.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="164.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                      <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
                                                       <Circle fill="DODGERBLUE" layoutX="206.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
                                                       <Circle fill="DODGERBLUE" layoutX="249.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
                                                       <Circle fill="DODGERBLUE" layoutX="291.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
@@ -368,6 +398,15 @@
                                                       <Circle fill="DODGERBLUE" layoutX="420.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
                                                    </children>
                                                 </AnchorPane>
+                                                <AnchorPane layoutX="618.0" prefHeight="390.0" prefWidth="87.0">
+                                                   <children>
+                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="67.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="132.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="196.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                   </children>
+                                                </AnchorPane>
                                              </children>
                                           </AnchorPane>
                                           <ImageView fitHeight="322.0" fitWidth="200.0" layoutX="1080.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true">
@@ -375,6 +414,12 @@
                                                 <Image url="@../images/assistants/CarteTOT_back_31@3x.png" />
                                              </image>
                                           </ImageView>
+                                          <VBox layoutX="5.0" layoutY="44.0">
+                                             <children>
+                                                <Circle fill="DODGERBLUE" layoutX="25.0" layoutY="64.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                <Label alignment="CENTER" prefHeight="21.0" prefWidth="43.0" text="1" />
+                                             </children>
+                                          </VBox>
                                        </children>
                                     </AnchorPane>
                                  </children>
@@ -392,5 +437,6 @@
    <stylesheets>
       <URL value="@../css/globalStyle.css" />
       <URL value="@../css/mainScene.css" />
+      <URL value="@../css/island.css" />
    </stylesheets>
 </AnchorPane>

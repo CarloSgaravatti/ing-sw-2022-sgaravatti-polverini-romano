@@ -30,16 +30,16 @@ public class Character7 extends CharacterCard {
         List<Student> toCharacter = new ArrayList<>();
         School school = super.getPlayerActive().getSchool();
         try {
-            for (int i = 0; i < toPick.length; i++) {
-                toEntrance.add(studentContainer.pickStudent(toPick[i], false));
+            for (RealmType realmType : toPick) {
+                toEntrance.add(studentContainer.pickStudent(realmType, false));
             }
-            for (int i = 0; i < toPick.length; i++) {
-                toCharacter.add(school.removeStudentEntrance(fromEntrance[i]));
+            for (RealmType realmType : fromEntrance) {
+                toCharacter.add(school.removeStudentEntrance(realmType));
             }
         } catch (StudentNotFoundException e) {
             school.insertEntrance(toCharacter.toArray(new Student[0]));
             toEntrance.forEach(studentContainer::insertStudent);
-            throw new IllegalCharacterActionRequestedException();
+            throw new IllegalCharacterActionRequestedException(e);
         }
         toCharacter.forEach(studentContainer::insertStudent);
         school.insertEntrance(toEntrance.toArray(new Student[0]));

@@ -19,10 +19,11 @@ public class ErrorDispatcher implements PropertyChangeListener {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         ErrorMessageType error = (ErrorMessageType) evt.getOldValue();
-        String errorCommitter = (String) evt.getNewValue();
+        String errorCommitter = (String) evt.getSource();
+        String errorInfo = (String) evt.getNewValue();
         for (RemoteView view: clients) {
             if (view.getPlayerNickname().equals(errorCommitter)) {
-                view.sendError(error);
+                view.sendError(error, errorInfo);
                 return;
             }
         }

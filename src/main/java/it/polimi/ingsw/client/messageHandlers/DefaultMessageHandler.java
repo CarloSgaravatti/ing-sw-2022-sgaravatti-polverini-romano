@@ -66,8 +66,10 @@ public class DefaultMessageHandler extends BaseMessageHandler {
     }
 
     private void onErrorMessage(MessagePayload payload) {
-        getUserInterface().onError((ErrorMessageType) payload.getAttribute("ErrorType").getAsObject());
-        listeners.firePropertyChange("Error", null, payload.getAttribute("ErrorType").getAsObject());
+        ErrorMessageType errorMessageType = (ErrorMessageType) payload.getAttribute("ErrorType").getAsObject();
+        String errorInfo = payload.getAttribute("ErrorInfo").getAsString();
+        getUserInterface().onError(errorMessageType, errorInfo);
+        listeners.firePropertyChange("Error", null, errorMessageType);
     }
 
     private void onPlayerDisconnection(MessagePayload payload) {

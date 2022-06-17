@@ -71,7 +71,7 @@ public class School extends ProfessorPresenceObservable {
 	 */
 	public boolean insertDiningRoom (Student student) throws FullDiningRoomException {
 		if (diningRoom[student.getStudentType().ordinal()] >= gameConstants.getMaxStudentPerDiningRoom()) {
-			throw new FullDiningRoomException();
+			throw new FullDiningRoomException(student.getStudentType());
 		}
 		studentDiningRoom.add(student);
 		diningRoom[student.getStudentType().ordinal()] ++;
@@ -188,7 +188,12 @@ public class School extends ProfessorPresenceObservable {
 	 * @throws StudentNotFoundException if the entrance doesn't have any student of the specified type
 	 */
 	public Student removeStudentEntrance(RealmType studentType) throws StudentNotFoundException {
-		Student toEliminate = remove(entrance, studentEntrance, studentType);
+		Student toEliminate;
+		try {
+			toEliminate = remove(entrance, studentEntrance, studentType);
+		} catch (StudentNotFoundException e) {
+			throw new StudentNotFoundException(studentType, "entrance");
+		}
 		studentEntrance.remove(toEliminate);
 		entrance[studentType.ordinal()] --;
 		return toEliminate;
@@ -201,7 +206,12 @@ public class School extends ProfessorPresenceObservable {
 	 * @throws StudentNotFoundException if the dining room doesn't have any student of the specified type
 	 */
 	public Student removeFromDiningRoom (RealmType studentType, boolean notify) throws StudentNotFoundException {
-		Student toEliminate = remove(diningRoom, studentDiningRoom, studentType);
+		Student toEliminate;
+		try {
+			toEliminate = remove(diningRoom, studentDiningRoom, studentType);
+		} catch (StudentNotFoundException e) {
+			throw new StudentNotFoundException(studentType, "dining room");
+		}
 		studentDiningRoom.remove(toEliminate);
 		diningRoom[studentType.ordinal()] --;
 		if (notify) player.firePropertyChange("DiningRoomRem", null, new RealmType[]{studentType});
@@ -245,7 +255,7 @@ public class School extends ProfessorPresenceObservable {
 				.map(Student::getStudentType).toList().toArray(new RealmType[0]));
 		for(int i = 0; i < studentsOfType.length; i++) {
 			if (studentsOfType[i] + diningRoom[i] > gameConstants.getMaxStudentPerDiningRoom()) {
-				throw new FullDiningRoomException();
+				throw new FullDiningRoomException(RealmType.values()[i]);
 			}
 		}
 		for (Student student: students) {

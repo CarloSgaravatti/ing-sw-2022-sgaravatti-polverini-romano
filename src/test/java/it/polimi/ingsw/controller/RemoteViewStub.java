@@ -19,7 +19,7 @@ public class RemoteViewStub extends RemoteView {
     }
 
     @Override
-    public void sendError(ErrorMessageType error) {
+    public void sendError(ErrorMessageType error, String description) {
         MessagePayload payload = new MessagePayload();
         payload.setAttribute("ErrorType", error);
         sendMessage(payload, "Error", ServerMessageType.SERVER_MESSAGE);

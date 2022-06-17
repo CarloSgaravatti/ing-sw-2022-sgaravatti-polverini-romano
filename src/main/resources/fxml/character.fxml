@@ -9,7 +9,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="root" prefHeight="633.0" prefWidth="940.0" style="-fx-background-color: burlywood; -fx-border-color: saddlebrown; -fx-border-radius: 15; -fx-background-radius: 15; -fx-border-style: solid; -fx-border-width: 5;" stylesheets="@../css/mainScene.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.CharacterController">
+<AnchorPane fx:id="root" opacity="0.0" prefHeight="633.0" prefWidth="940.0" style="-fx-background-color: burlywood; -fx-border-color: saddlebrown; -fx-border-radius: 15; -fx-background-radius: 15; -fx-border-style: solid; -fx-border-width: 5;" stylesheets="@../css/mainScene.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.CharacterController">
    <children>
       <ImageView fx:id="characterImage" fitHeight="329.0" fitWidth="322.0" layoutX="362.0" layoutY="126.0" pickOnBounds="true" preserveRatio="true">
          <image>

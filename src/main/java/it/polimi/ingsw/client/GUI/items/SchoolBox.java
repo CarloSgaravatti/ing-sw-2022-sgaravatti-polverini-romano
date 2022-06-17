@@ -4,6 +4,7 @@ import it.polimi.ingsw.client.GUI.constants.Constants;
 import it.polimi.ingsw.client.modelView.PlayerView;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.utils.Pair;
+import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -12,6 +13,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
@@ -28,11 +31,12 @@ public class SchoolBox {
     private final AnchorPane entrance;
     private final AnchorPane diningRoom;
     private final AnchorPane container;
+    private final AnchorPane professorTable;
     private EventHandler<MouseEvent> dragStartStudentHandler;
     private static final List<RealmType> diningRoomOrder = List.of(RealmType.GREEN_FROGS, RealmType.RED_DRAGONS,
             RealmType.YELLOW_GNOMES, RealmType.PINK_FAIRES, RealmType.BLUE_UNICORNS);
 
-    public SchoolBox(String player, AnchorPane container, PlayerView playerView) {
+    public SchoolBox(String player, AnchorPane container, PlayerView playerView, boolean isExpertGame) {
         this.container = container;
         school = (AnchorPane) container.getChildren().get(0);
         lastAssistantPlayed = (ImageView) container.getChildren().get(1);
@@ -42,7 +46,14 @@ public class SchoolBox {
         dimStudentsRadius = school.getHeight() * 75 / 1454;
         entrance = (AnchorPane) school.getChildren().get(1);
         diningRoom = (AnchorPane) school.getChildren().get(2);
+        professorTable = (AnchorPane) school.getChildren().get(3);
         initializeSchool();
+        VBox vBox = (VBox) container.getChildren().get(2);
+        if (isExpertGame) {
+            //TODO: do better
+            Image imageCoin = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/schools/coin.png")));
+            ((Circle)vBox.getChildren().get(0)).setFill(new ImagePattern(imageCoin));
+        } else container.getChildren().remove(vBox);
     }
 
     public void setAssistantImage(Image image) {
@@ -53,6 +64,7 @@ public class SchoolBox {
     public void initializeSchool() {
         initializeStudents(entrance);
         initializeStudents(diningRoom);
+        initializeProfessors();
         RealmType[] entranceStudents = RealmType.getRealmsFromIntegerRepresentation(playerView.getSchoolStudents().getFirst());
         for (int i = 0; i < entranceStudents.length; i++) {
             ((StudentImage) entrance.getChildren().get(i)).setStudent(entranceStudents[i]);
@@ -60,11 +72,39 @@ public class SchoolBox {
     }
 
     private void initializeStudents(AnchorPane container) {
-        List<Node> students = container.getChildren().stream().toList();
+        List<Node> students = container.getChildren();
         for (int i = 0; i < students.size(); i++) {
             Circle circle = (Circle) students.get(i);
             container.getChildren().set(i, new StudentImage(circle));
         }
+    }
+
+    private void initializeProfessors() {
+        List<Node> professors = professorTable.getChildren();
+        for (int i = 0; i < professors.size(); i++) {
+            Circle circle = (Circle) professors.get(i);
+            ProfessorImage professor = new ProfessorImage(circle.getRadius(), circle.getLayoutX(), circle.getLayoutY());
+            professor.setRealmType(diningRoomOrder.get(i));
+            professor.setOpacity(0);
+            professorTable.getChildren().set(i, professor);
+        }
+    }
+
+    public void insertProfessor(RealmType professorType) {
+        //System.out.println("Inserting professor " + professorType);
+        ProfessorImage professorImage = (ProfessorImage) professorTable.getChildren().get(diningRoomOrder.indexOf(professorType));
+        professorImage.setOpacity(1);
+        /*FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000), professorImage);
+        fadeTransition.setDelay(Duration.millis(500));
+        fadeTransition.setFromValue(0.1);
+        fadeTransition.setToValue(1);
+        fadeTransition.setAutoReverse(true);
+        fadeTransition.setOnFinished(actionEvent -> professorImage.setOpacity(1));*/
+    }
+
+    public void removeProfessor(RealmType professorType) {
+        ProfessorImage professorImage = (ProfessorImage) professorTable.getChildren().get(diningRoomOrder.indexOf(professorType));
+        professorImage.setOpacity(0);
     }
 
     public synchronized void insertStudentEntrance(RealmType student) {

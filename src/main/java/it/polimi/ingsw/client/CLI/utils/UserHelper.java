@@ -10,6 +10,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+/**
+ * Class UserHelper provides all the information to the player regarding how to call an action during the turn. It can be called
+ * by entering the 'help' command during the turn. By entering the name of the action for which help is needed, this class
+ * provides an explanation of what the action do and provides also an example of how to call it.
+ */
 public class UserHelper {
     private static final String PLAY_ASSISTANT_HELP = "You have to insert the assistant id of the assistant you want to play.\n" +
             "For example: PlayAssistant 2 end";
@@ -27,16 +32,27 @@ public class UserHelper {
             "For example: MoveMotherNature 3";
     private static final String PICK_FROM_CLOUD_HELP = "You have to select a cloud to take students from it to your entrance.\n" +
             "For example: PickFromCloud 1";
-    private ModelView modelView;
-    private List<String> commandsToBeHelped;
+    private final ModelView modelView;
+    private final List<String> commandsToBeHelped;
     private final InputManager inputManager;
 
+    /**
+     * Construct a UserHelper that will look to the specified model view to know what information provide to the player who request
+     * help (for example the 'MoveStudents' action is different from 2 to 3 players in terms of number of students to move). The
+     * specified input manager will be used to obtain the type of action that needs to be clarified to the user.
+     * @param modelView the model view used for the game
+     * @param inputManager the input manager from which input are taken
+     */
     public UserHelper(ModelView modelView, InputManager inputManager) {
         this.modelView = modelView;
         commandsToBeHelped = JsonUtils.getRulesByDifficulty(modelView.isExpert());
         this.inputManager = inputManager;
     }
 
+    /**
+     * Handles that help request of the user. First it requests the type of action that needs to be clarified and the prints
+     * all the information about that action.
+     */
     public void onHelpRequest() {
         inputManager.setInputPermitted(true);
         String command;
@@ -76,6 +92,10 @@ public class UserHelper {
         inputManager.setInputPermitted(false);
     }
 
+    /**
+     * Obtains (from a Json file) and prints information about a character with the specified id
+     * @param characterId the character id of which information will be printed
+     */
     private void printCharacterInfo(int characterId) {
         Triplet<String, String, String> info = JsonUtils.getCharacterDescription(characterId);
         System.out.println("Character description: " + info.getFirst());

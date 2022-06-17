@@ -9,12 +9,10 @@ import java.util.Map;
 public class Character3 extends CharacterCard {
     //Temporary solution, maybe it can be done with less brute force
     private final transient ModelObserver modelObserver;
-    private final List<Island> islands;
 
     public Character3(Game game) {
         super(3, 3);
         this.modelObserver = game;
-        islands = game.getIslands();
     }
 
     @Override

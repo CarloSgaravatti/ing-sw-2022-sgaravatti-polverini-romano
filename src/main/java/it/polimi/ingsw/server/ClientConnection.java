@@ -14,5 +14,5 @@ public interface ClientConnection {
 
     void setSetupDone(boolean setupDone);
 
-    void sendError(ErrorMessageType error);
+    void sendError(ErrorMessageType error, String description);
 }

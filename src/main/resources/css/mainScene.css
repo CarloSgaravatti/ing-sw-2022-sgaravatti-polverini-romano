@@ -29,7 +29,7 @@
     -fx-background-image: url("../images/islands/island3.png");
 }
 
-.selectable-item:hover {
+.selectable-item:hover, .cloud:hover {
     -fx-effect: dropshadow(gaussian, yellow, 10, 1, 0, 0);
     -fx-cursor: hand
 }

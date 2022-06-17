@@ -13,7 +13,7 @@ import java.util.Map;
 public class Character5 extends CharacterCard implements NoEntryTileManager {
     private int noEntryTiles;
     private final static int NUM_NO_ENTRY_TILES_MAX = 4;
-    private final List<Island> islands;
+    private transient final List<Island> islands;
 
     public Character5(Game game) {
         super(2, 5);

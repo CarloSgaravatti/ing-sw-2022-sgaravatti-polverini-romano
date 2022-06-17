@@ -74,13 +74,15 @@ public class GameController implements PropertyChangeListener {
 		String nicknamePlayer = message.getClientMessageHeader().getNicknameSender();
 		String actionName = message.getClientMessageHeader().getMessageName();
 		if (!nicknamePlayer.equals(turnController.getActivePlayer().getNickName())) {
-			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_TURN, nicknamePlayer);
+			listeners.firePropertyChange(new PropertyChangeEvent(nicknamePlayer, "Error",
+					ErrorMessageType.ILLEGAL_TURN, "This isn't your turn."));
 			return;
 		}
 		if (actionName.equals("EndTurn")) {
 			boolean isTurnEnded = actionController.checkIfTurnIsEnded();
 			if (!isTurnEnded) {
-				listeners.firePropertyChange("Error", ErrorMessageType.TURN_NOT_FINISHED, nicknamePlayer);
+				listeners.firePropertyChange(new PropertyChangeEvent(nicknamePlayer, "Error",
+						ErrorMessageType.TURN_NOT_FINISHED, "You can't end your turn now."));
 				return;
 			}
 			listeners.firePropertyChange(new PropertyChangeEvent(nicknamePlayer, "Action", actionName, new TurnPhase[0]));
@@ -112,9 +114,7 @@ public class GameController implements PropertyChangeListener {
 	}
 
 	private void handleEndPhase() {
-		/*if (turnController.getCurrentPhase() == RoundPhase.ACTION) {
-			actionController.refillClouds();
-		}*/if (turnController.getCurrentPhase() == RoundPhase.PLANNING && game.isLastRound()) {
+		if (turnController.getCurrentPhase() == RoundPhase.PLANNING && game.isLastRound()) {
 			game.checkWinners();
 			return;
 		} else if (turnController.getCurrentPhase() == RoundPhase.PLANNING){

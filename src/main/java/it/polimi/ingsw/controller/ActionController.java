@@ -9,6 +9,7 @@ import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.utils.JsonUtils;
 import it.polimi.ingsw.utils.Pair;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.*;
@@ -53,7 +54,7 @@ public class ActionController {
 				default -> throw new IllegalArgumentException();
 			}
 		} catch (WrongTurnActionRequestedException e) {
-			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_TURN_ACTION, turnController.getActivePlayer().getNickName());
+			fireError(ErrorMessageType.ILLEGAL_TURN_ACTION, e.getMessage());
 			throw new IllegalArgumentException();
 		}
 	}
@@ -73,11 +74,11 @@ public class ActionController {
 		}
 		try {
 			if (!turnController.getActivePlayer().playAssistant(assistantIdx, assistantAlreadyPlayed)) {
-				listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, playerName);
+				fireError(ErrorMessageType.ILLEGAL_ARGUMENT, "You can't play this assistant");
 				throw new IllegalArgumentException();
 			}
 		} catch (NoSuchAssistantException e) {
-			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, playerName);
+			fireError(ErrorMessageType.ILLEGAL_ARGUMENT, e.getMessage());
 			throw new IllegalArgumentException();
 		}
 		currentTurnRemainingActions.remove(TurnPhase.PLAY_ASSISTANT);
@@ -93,7 +94,7 @@ public class ActionController {
 		int motherNatureMovement = payload.getAttribute("MotherNature").getAsInt();
 		int legalMotherNatureMovement = turnController.getActivePlayer().getTurnEffect().getMotherNatureMovement();
 		if (motherNatureMovement <= 0 || motherNatureMovement > legalMotherNatureMovement) {
-			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+			fireError(ErrorMessageType.ILLEGAL_ARGUMENT, "You can't move mother nature by this positions");
 			throw new IllegalArgumentException();
 		}
 		gameController.getModel().moveMotherNature(motherNatureMovement);
@@ -107,8 +108,8 @@ public class ActionController {
 		if (turnPhase != TurnPhase.MOVE_STUDENTS) throw new WrongTurnActionRequestedException();
 		List<?> toDiningRoom = (List<?>) payload.getAttribute("StudentsToDR").getAsObject();
 		List<?> toIslands = new ArrayList<>((List<?>) payload.getAttribute("StudentsToIslands").getAsObject());
-		if (toDiningRoom.size() + toIslands.size() > studentsToMove){
-			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+		if (toDiningRoom.size() + toIslands.size() != studentsToMove){
+			fireError(ErrorMessageType.ILLEGAL_ARGUMENT, "You have to move " + studentsToMove + " students");
 			throw new IllegalArgumentException();
 		}
 		School school = turnController.getActivePlayer().getSchool();
@@ -126,7 +127,7 @@ public class ActionController {
 		} catch (FullDiningRoomException e) {
 			school.insertEntrance(studentsToDiningRoom);
 			school.insertEntrance(studentsToIslands.values().stream().flatMap(Collection::stream).toList().toArray(new Student[0]));
-			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+			fireError(ErrorMessageType.ILLEGAL_ARGUMENT, e.getMessage());
 			throw new IllegalArgumentException();
 		}
 		for (Integer i: studentsToIslands.keySet()) {
@@ -145,7 +146,7 @@ public class ActionController {
 			}
 		} catch (StudentNotFoundException e) {
 			school.insertEntrance(removedFromEntrance.toArray(new Student[0]));
-			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+			fireError(ErrorMessageType.ILLEGAL_ARGUMENT, e.getMessage());
 			throw new IllegalArgumentException();
 		}
 		return removedFromEntrance.toArray(new Student[0]);
@@ -157,7 +158,7 @@ public class ActionController {
 		for (Object island: students) {
 			int islandId = (Integer) ((Pair<?, ?>) island).getSecond();
 			if (!isValidIsland(islandId)){
-				listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+				fireError(ErrorMessageType.ILLEGAL_ARGUMENT, "Island not found");
 				throw new IllegalArgumentException();
 			}
 		}
@@ -170,7 +171,7 @@ public class ActionController {
 		} catch (StudentNotFoundException e) {
 			Student[] studentsFromEntrance = studentsToIslands.values().stream().flatMap(Collection::stream).toList().toArray(new Student[0]);
 			school.insertEntrance(studentsFromEntrance);
-			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+			fireError(ErrorMessageType.ILLEGAL_ARGUMENT, e.getMessage());
 			throw new IllegalArgumentException();
 		}
 		return studentsToIslands;
@@ -183,7 +184,7 @@ public class ActionController {
 		try {
 			turnController.getActivePlayer().pickFromCloud(cloud);
 		} catch (EmptyCloudException e) {
-			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+			fireError(ErrorMessageType.ILLEGAL_ARGUMENT, e.getMessage());
 			throw new IllegalArgumentException();
 		}
 		currentTurnRemainingActions.remove(TurnPhase.SELECT_CLOUD);
@@ -201,13 +202,13 @@ public class ActionController {
 		}
 		CharacterCard characterCard = gameController.getModel().getCharacterById(id);
 		if (characterCard == null) {
-			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+			fireError(ErrorMessageType.ILLEGAL_ARGUMENT, "Character not found");
 			throw new IllegalArgumentException();
 		}
 		try {
 			characterController.handleCharacterAction(args, characterCard, turnController.getActivePlayer());
 		} catch (NotEnoughCoinsException | IllegalCharacterActionRequestedException e) {
-			listeners.firePropertyChange("Error", ErrorMessageType.ILLEGAL_ARGUMENT, turnController.getActivePlayer().getNickName());
+			fireError(ErrorMessageType.ILLEGAL_ARGUMENT, e.getMessage());
 			throw new IllegalArgumentException();
 		}
 		currentTurnRemainingActions.remove(TurnPhase.PLAY_CHARACTER_CARD);
@@ -256,5 +257,10 @@ public class ActionController {
 
 	public CharacterController getCharacterController() {
 		return characterController;
+	}
+
+	private void fireError(ErrorMessageType errorType, String errorInfo) {
+		listeners.firePropertyChange(new PropertyChangeEvent(turnController.getActivePlayer().getNickName(),
+				"Error", errorType, errorInfo));
 	}
 }
