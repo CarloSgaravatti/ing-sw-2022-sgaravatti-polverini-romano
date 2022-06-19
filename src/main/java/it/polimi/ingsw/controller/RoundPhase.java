@@ -2,6 +2,11 @@ package it.polimi.ingsw.controller;
 
 import java.util.List;
 
+/**
+ * Enum class RoundPhase contains all possible phases of the round, each phase has a list of actions that can be done
+ * during it.
+ * @see TurnPhase
+ */
 public enum RoundPhase {
 	PLANNING(List.of(TurnPhase.PLAY_ASSISTANT)),
 	ACTION(List.of(TurnPhase.MOVE_STUDENTS,

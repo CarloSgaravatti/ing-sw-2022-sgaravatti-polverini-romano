@@ -84,6 +84,12 @@ public class IslandSubScene extends AnchorPane implements Initializable {
         }
     }
 
+    public int getNumNoEntryTile() {
+        Label label = (Label) noEntryTile.getChildren().get(0);
+        return Integer.parseInt(label.getText());
+    }
+
+
     public AnchorPane getMotherNature() {
         return motherNature;
     }
@@ -94,6 +100,10 @@ public class IslandSubScene extends AnchorPane implements Initializable {
 
     public int getIslandId() {
         return islandId;
+    }
+
+    public void setIslandId(int islandId) {
+        this.islandId = islandId;
     }
 
     @Override

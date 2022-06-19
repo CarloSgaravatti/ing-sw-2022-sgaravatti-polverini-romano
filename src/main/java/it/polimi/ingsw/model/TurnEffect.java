@@ -6,6 +6,15 @@ import it.polimi.ingsw.model.effects.NormalInfluenceStrategy;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
+/**
+ * Class Turn effect represent all information of a player during his turn; this information is valid only during the
+ * player turn and is reset at the end of the turn. This class contains: the last assistant card value that is played
+ * (for order calculation), the maximum value of mother nature movement that the player can request, the addition influence
+ * that a player have during the turn (if he plays character 8), a boolean that specifies if the player has a precedence
+ * in the professor assignment (if he plays character 2), a boolean that specifies if the player has already played
+ * a character during the turn and the current way of calculating the influence of an island (characters can modify
+ * the way to calculate the influence).
+ */
 public class TurnEffect {
     private int motherNatureMovement;
     private int orderPrecedence;
@@ -17,6 +26,10 @@ public class TurnEffect {
     private boolean characterEffectConsumed; //for those characters who have an active effect for all turn
     private final PropertyChangeSupport player = new PropertyChangeSupport(this);
 
+    /**
+     * Construct a TurnEffect which has all value reset. The created object is observed by the specified listener
+     * @param player the listener which will listen to the object
+     */
     public TurnEffect(PropertyChangeListener player) {
         reset();
         this.player.addPropertyChangeListener(player);

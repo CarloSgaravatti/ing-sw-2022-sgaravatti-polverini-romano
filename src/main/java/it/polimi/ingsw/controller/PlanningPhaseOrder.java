@@ -7,6 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * PlanningPhaseOrder is a strategy for the order of play calculation that is used to calculate the order at the
+ * beginning of a new Planning Phase.
+ * @see it.polimi.ingsw.controller.PhaseOrder
+ */
 public class PlanningPhaseOrder implements PhaseOrder {
 	private boolean isFirstRound = true;
 	private final List<Player> playersClockOrder;

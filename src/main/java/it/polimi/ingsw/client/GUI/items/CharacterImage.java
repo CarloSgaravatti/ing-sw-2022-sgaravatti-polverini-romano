@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public class CharacterImage extends AnchorPane {
     private final int characterId;
-    private ExpertFieldView expertField;
+    private final ExpertFieldView expertField;
     private HBox studentsBox;
     private double studentRadius;
 
@@ -30,6 +30,7 @@ public class CharacterImage extends AnchorPane {
         imageView.setPreserveRatio(true);
         imageView.setImage(image);
         super.getChildren().add(imageView);
+        super.setHeight(imageView.getFitHeight());
         if (expertField.isCharacterWithStudents(characterId)) {
             studentsBox = new HBox();
             studentsBox.setMaxWidth(super.getWidth());
@@ -56,11 +57,16 @@ public class CharacterImage extends AnchorPane {
         }
     }
 
-    public void removeStudent(RealmType student) {
+    public void removeNoEntryTile() {
 
     }
 
-    public void removeNoEntryTile() {
-
+    public void putCoin() {
+        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/schools/coin.png")));
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(super.getWidth() / 4);
+        imageView.setPreserveRatio(true);
+        imageView.setLayoutY(super.getHeight() / 2);
+        super.getChildren().add(imageView);
     }
 }

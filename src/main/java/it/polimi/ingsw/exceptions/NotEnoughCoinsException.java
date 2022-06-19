@@ -1,5 +1,8 @@
 package it.polimi.ingsw.exceptions;
 
+/**
+ * NotEnoughCoinsException is thrown when a client tries to play a character, but he hasn't got enough coins to play it
+ */
 public class NotEnoughCoinsException extends Exception {
     private final int characterId;
 

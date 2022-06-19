@@ -54,13 +54,12 @@ public class ExpertGameMessageHandler extends BaseMessageHandler {
             getModelView().getField().getExpertField().getCharacters().replace(characterId, previousPrice + 1);
             userInterface.firePropertyChange("CharacterPrice", null, characterId);
         }
-        //TODO
+        userInterface.firePropertyChange("CharacterPlayed", null, characterId);
     }
 
     private void onCharacterStudents(MessagePayload payload) {
         int characterId = payload.getAttribute("CharacterId").getAsInt();
         RealmType[] newStudents = (RealmType[]) payload.getAttribute("Students").getAsObject();
-        System.out.println("Received character students " + Arrays.toString(newStudents));
         getModelView().getField().getExpertField().updateCharacterStudents(characterId, newStudents);
         userInterface.firePropertyChange("CharacterStudents", null, characterId);
     }
@@ -104,7 +103,6 @@ public class ExpertGameMessageHandler extends BaseMessageHandler {
 
     private void onMotherNatureMovementIncrement(MessagePayload payload) {
         String playerName = payload.getAttribute("PlayerName").getAsString();
-        System.out.println("Received mother nature movement increment for player " + playerName);
         int increment = payload.getAttribute("MovementIncrement").getAsInt();
         Pair<Integer, Integer> lastAssistantValues = getModelView().getPlayers().get(playerName).getLastPlayedAssistant();
         int newMotherNatureMovement = lastAssistantValues.getSecond() + increment;

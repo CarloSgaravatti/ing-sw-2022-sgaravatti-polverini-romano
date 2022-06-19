@@ -3,7 +3,7 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.enumerations.RealmType;
 
 /**
- *
+ * Class Student represent a Student in the game, which is associated to a specific RealmType
  */
 public class Student {
 	private final RealmType studentType;

@@ -2,7 +2,7 @@ package it.polimi.ingsw.client.GUI;
 
 import it.polimi.ingsw.client.ConnectionToServer;
 import it.polimi.ingsw.client.GUI.controllers.*;
-import it.polimi.ingsw.client.GUI.items.AssistantsTab;
+import it.polimi.ingsw.client.GUI.items.*;
 import it.polimi.ingsw.client.UserInterface;
 import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.messages.ErrorMessageType;
@@ -21,9 +21,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -179,7 +177,7 @@ public class GUI extends Application implements UserInterface {
     @Override
     public void printTurnMenu(List<String> actions, List<String> actionCommands, List<String> currentPossibleActions) {
         Platform.runLater(() -> {
-            ((GameMainSceneController) currentSceneController).onTurn(actionCommands, currentPossibleActions);
+            ((GameMainSceneController) currentSceneController).onTurnV2(actionCommands, currentPossibleActions);
             stage.setFullScreen(true);
         });
     }
@@ -189,17 +187,56 @@ public class GUI extends Application implements UserInterface {
         switch (evt.getPropertyName()) {
             case "AssistantUpdate" -> onAssistantUpdate((Integer) evt.getOldValue(), (String) evt.getNewValue());
             case "IslandStudentsUpdate" -> onIslandStudentsUpdate((Integer) evt.getSource(), (RealmType[]) evt.getNewValue(), (Boolean) evt.getOldValue());
-            case "IslandTowerUpdate" -> {} //TODO
-            case "IslandUnification" -> {} //TODO
+            case "IslandTowerUpdate" -> onTowerUpdate((TowerType) evt.getOldValue(), (Integer) evt.getNewValue());
+            case "IslandUnification" -> onIslandsUnification(new ArrayList<>(Arrays.asList((Integer[]) evt.getNewValue())));
             case "MotherNatureUpdate" -> onMotherNatureMovement((Integer) evt.getOldValue(), (Integer) evt.getNewValue());
-            case "DiningRoomInsertion" -> onDiningRoomUpdate((String) evt.getSource(), (RealmType[]) evt.getNewValue(), (Boolean) evt.getOldValue());
+            case "DiningRoomInsertion" -> onDiningRoomUpdate((String) evt.getSource(), (RealmType[]) evt.getNewValue(), (Boolean) evt.getOldValue(), true);
             case "ProfessorUpdate" -> onProfessorUpdate((RealmType) evt.getSource(), (String) evt.getOldValue(), (String) evt.getNewValue());
-            case "DiningRoomRemoval" -> {} //TODO
-            //...
+            case "DiningRoomRemoval" -> onDiningRoomUpdate((String) evt.getSource(), (RealmType[]) evt.getNewValue(), false, false);
+            case "CharacterPlayed" -> onCharacterPlayed((Integer) evt.getNewValue());
+            case "CharacterStudents" -> onCharacterStudentsUpdate((Integer) evt.getNewValue());
+            case "CharacterPrice" -> onCharacterPriceUpdate((Integer) evt.getNewValue());
+            case "NoEntryTileUpdate" -> onNoEntryTileUpdate((Integer) evt.getNewValue(), (Integer) evt.getOldValue());
+            case "EntranceSwap" -> {} //TODO
+            //case "EntranceUpdate" -> {} //TODO: verify if has to be handled (i think no)
+            case "CoinsUpdate" -> {} //TODO
+            case "SchoolSwap" -> {} //TODO
+
+            case "PickFromCloud" -> {} //TODO
+            case "CloudsRefill" -> {} //TODO
+
+            case "NewTurn" -> onNewTurn((String) evt.getNewValue());
+            case "Loser", "Winner", "Tie", "TieLoser" -> {} //TODO
+            case "Disconnection" -> {} //TODO
             //events that come from gui controllers
             default -> checkEventFromControllers(evt);
-            //default -> listeners.firePropertyChange(evt);
         }
+    }
+
+    private void onNewTurn(String newActivePlayer) {
+        Platform.runLater(() -> ((GameMainSceneController) currentSceneController).notifyNewTurn(newActivePlayer));
+    }
+
+    private void onIslandsUnification(List<Integer> islands) {
+        Platform.runLater(() -> ((GameMainSceneController) currentSceneController).getIslandMap().mergeIslands(islands));
+    }
+
+    private void onCharacterPriceUpdate(int characterId) {
+        Platform.runLater(() -> {
+            CharacterImage character = ((GameMainSceneController) currentSceneController).getCharacterImage(characterId);
+            character.putCoin();
+        });
+    }
+
+    private void onCharacterStudentsUpdate(int characterId) {
+        Platform.runLater(() -> {
+            CharacterImage character = ((GameMainSceneController) currentSceneController).getCharacterImage(characterId);
+            character.updateStudents();
+        });
+    }
+
+    private void onCharacterPlayed(int characterId) {
+        Platform.runLater(() -> ((GameMainSceneController) currentSceneController).setDropShadowOnCharacter(characterId));
     }
 
     private void onMotherNatureMovement(int oldIsland, int newIsland) {
@@ -215,18 +252,31 @@ public class GUI extends Application implements UserInterface {
             if (fromEntrance && !modelView.getCurrentActivePlayer().equals(nickname)) {
                 String currentPlayer = this.modelView.getCurrentActivePlayer();
                 ((GameMainSceneController) currentSceneController).moveStudentsToIsland(currentPlayer, islandId, students);
+            } else if (!fromEntrance){
+                //else is from character 1 (character 1 students will be updated by a CharacterStudents message)
+                ((GameMainSceneController) currentSceneController).moveAccordionDown();
+                IslandMap islandMap = ((GameMainSceneController) currentSceneController).getIslandMap();
+                islandMap.getIslandsById(islandId).stream()
+                        .filter(island -> island.getStyleClass().contains("root-island-in-group"))
+                        .findFirst()
+                        .ifPresent(island -> Arrays.stream(students).forEach(island::addStudent));
             }
-            //TODO: else is from character 1
         });
     }
 
-    private void onDiningRoomUpdate(String player, RealmType[] students, boolean fromEntrance) {
+    private void onDiningRoomUpdate(String player, RealmType[] students, boolean fromEntrance, boolean isInsertion) {
         Platform.runLater(() -> {
             this.stage.setFullScreen(true);
-            if (fromEntrance && !player.equals(nickname)) {
-                ((GameMainSceneController) currentSceneController).moveStudentsToDiningRoom(player, students);
+            if (isInsertion) {
+                if (fromEntrance && !player.equals(nickname)) {
+                    ((GameMainSceneController) currentSceneController).moveStudentsToDiningRoom(player, students);
+                } else if (!fromEntrance){
+                    //TODO: else is from character 11
+                }
+            } else {
+                SchoolBox playerBox =  ((GameMainSceneController) currentSceneController).getSchoolBox(player);
+                Arrays.stream(students).forEach(playerBox::removeFromDiningRoom);
             }
-            //TODO: else is from character 11
         });
     }
 
@@ -240,12 +290,34 @@ public class GUI extends Application implements UserInterface {
 
     private void onAssistantUpdate(int assistant, String player) {
         Platform.runLater(() -> {
-            GameMainSceneController controller = ((GameMainSceneController) currentSceneController);
+            GameMainSceneController controller = (GameMainSceneController) currentSceneController;
             if (player.equals(nickname)) {
                 AssistantsTab assistantsTab = controller.getAssistantsTab();
                 assistantsTab.removeAssistantFromDeck(assistant);
             }
             controller.setAssistantImage(player, assistant);
+        });
+    }
+
+    private void onTowerUpdate(TowerType lastTower, int islandId) {
+        TowerType newTower = modelView.getField().getIsland(islandId).getThird();
+        Platform.runLater(() -> ((GameMainSceneController) currentSceneController).moveTowers(lastTower, newTower, islandId));
+    }
+
+    private void onNoEntryTileUpdate(int islandId, int characterId) {
+        Platform.runLater(() -> {
+            IslandMap islandMap = ((GameMainSceneController) currentSceneController).getIslandMap();
+            islandMap.getIslandsById(islandId).stream()
+                    .filter(island -> island.getStyleClass().contains("root-island-in-group"))
+                    .findAny()
+                    .ifPresent(island -> {
+                        int noEntryTileOnIsland = modelView.getField().getExpertField().getNoEntryTilesOnIsland(islandId);
+                        while(island.getNumNoEntryTile() != noEntryTileOnIsland) {
+                            if (island.getNumNoEntryTile() < noEntryTileOnIsland) island.insertNoEntryTile();
+                            else island.removeNoEntryTile();
+                        }
+                    });
+            //TODO: update character
         });
     }
 

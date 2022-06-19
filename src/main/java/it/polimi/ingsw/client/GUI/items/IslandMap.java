@@ -5,13 +5,15 @@ import it.polimi.ingsw.utils.Pair;
 import javafx.animation.TranslateTransition;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.effect.BlurType;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class IslandMap {
     private final AnchorPane container;
@@ -20,12 +22,14 @@ public class IslandMap {
     private EventHandler<DragEvent> dragOverHandler;
     private EventHandler<DragEvent> dropHandler;
     private EventHandler<MouseEvent> dragMotherNatureStart;
+    private final double islandsWidth;
 
     public IslandMap(AnchorPane container, ModelView modelView) {
         this.container = container;
         this.modelView = modelView;
         initializeMap();
         islandsSubScenes.get(modelView.getField().getMotherNaturePosition()).setMotherNature(true);
+        islandsWidth = islandsSubScenes.get(0).getPrefWidth();
     }
 
     public void initializeMap() {
@@ -36,8 +40,21 @@ public class IslandMap {
             islandSubScene.init(modelView.getField().getIsland(i).getFirst(), i);
             islandSubScene.setLayoutX(layout.getFirst());
             islandSubScene.setLayoutY(layout.getSecond());
-            //container.getChildren().add(i, islandSubScene);
+            islandSubScene.getStyleClass().add("root-in-island-group");
             islandsSubScenes.add(islandSubScene);
+            islandSubScene.setOnDragEntered(dragEvent -> {
+                IslandSubScene target = (IslandSubScene) dragEvent.getTarget();
+                if (dragEvent.getDragboard() != null) {
+                    DropShadow dropShadow = new DropShadow(BlurType.GAUSSIAN, Color.RED, 15, 0.2, 0, 0);
+                    target.setEffect(dropShadow);
+                }
+                dragEvent.consume();
+            });
+            islandSubScene.setOnDragExited(dragEvent -> {
+                IslandSubScene target = (IslandSubScene) dragEvent.getTarget();
+                target.setEffect(null);
+                dragEvent.consume();
+            });
         }
         //Need to do this because otherwise there is ConcurrentModificationException
         for (int i = 0; i < islandsSubScenes.size(); i++) {
@@ -51,11 +68,6 @@ public class IslandMap {
         this.dragOverHandler = dragOverIsland;
         this.dropHandler = dropOnIsland;
         this.dragMotherNatureStart = dragMotherNatureStartHandler;
-        //this.motherNature.setOnDragDetected(dragMotherNatureStartHandler);
-        /*for (IslandImage island: islands) {
-            island.getIslandPane().setOnDragOver(dragOverIsland);
-            island.getIslandPane().setOnDragDropped(dropOnIsland);
-        }*/
         for (IslandSubScene island: islandsSubScenes) {
             island.setOnDragOver(dragOverIsland);
             island.setOnDragDropped(dropOnIsland);
@@ -83,30 +95,6 @@ public class IslandMap {
             islandsSubScenes.get(newPosition).setMotherNature(true);
             container.getChildren().remove(motherNature);
         });
-        /*AnchorPane oldIsland = islands.get(oldPosition).getIslandPane();
-        Rectangle fakeMotherNature = new Rectangle(oldIsland.getWidth() / 5, oldIsland.getHeight() / 5);
-        fakeMotherNature.setFill(new ImagePattern(new Image(Objects
-                .requireNonNull(getClass().getResourceAsStream("/images/mother_nature.png")))));
-        motherNature.setOpacity(0);
-        islands.get(oldPosition).setMotherNature(false, motherNature);
-        islands.get(oldPosition).setMotherNature(true, fakeMotherNature);
-        //islandsSubScenes.get()
-        fakeMotherNature.setLayoutX(oldIsland.getWidth() / 2);
-        fakeMotherNature.setLayoutY(oldIsland.getHeight() / 2);
-        islands.get(newPosition).setMotherNature(true, this.motherNature);
-        Pair<Double, Double> lastPos = new Pair<>(oldIsland.getLayoutX(), oldIsland.getLayoutY());
-        AnchorPane newIsland = islands.get(newPosition).getIslandPane();
-        Pair<Double, Double> newPos = new Pair<>(newIsland.getLayoutX(), newIsland.getLayoutY());
-        TranslateTransition transition = new TranslateTransition();
-        transition.setByX(newPos.getFirst() - lastPos.getFirst());
-        transition.setByY(newPos.getSecond() - lastPos.getSecond());
-        transition.setNode(fakeMotherNature);
-        transition.setDuration(Duration.millis(1500));
-        transition.play();
-        transition.setOnFinished(actionEvent -> {
-            islands.get(oldPosition).setMotherNature(false, fakeMotherNature);
-            motherNature.setOpacity(1);
-        });*/
     }
 
     public List<IslandSubScene> getIslands() {
@@ -117,5 +105,64 @@ public class IslandMap {
         IslandSubScene island = islandsSubScenes.get(islandId);
         return new Pair<>(island.getLayoutX() + island.getWidth() / 2,
                 island.getLayoutY() + island.getHeight() / 2);
+    }
+
+    public List<IslandSubScene> getIslandsById(int islandId) {
+        return  islandsSubScenes.stream().filter(i -> i.getIslandId() == islandId).toList();
+    }
+
+    public void mergeIslands(List<Integer> unifiedIds) {
+        Integer centerId = (unifiedIds.size() == 2) ? unifiedIds.get(0) : unifiedIds.get(1);
+        unifiedIds.remove(centerId);
+        List<IslandSubScene> centerIsland = getIslandsById(centerId);
+        for (Integer i: unifiedIds) {
+            List<IslandSubScene> islandToMove = getIslandsById(i);
+            Optional<IslandSubScene> closerIslandToFirst = getClosestIsland(islandToMove, centerIsland.get(0));
+            Optional<IslandSubScene> closerIslandToLast = getClosestIsland(islandToMove, centerIsland.get(centerIsland.size() - 1));
+            if (closerIslandToFirst.isPresent() && closerIslandToLast.isPresent()) {
+                double xTranslate;
+                double yTranslate;
+                double offset = islandsWidth / 1.6; //TODO: control this and eventually change it
+                if (distance(closerIslandToFirst.get(), centerIsland.get(0)) <=
+                        distance(closerIslandToLast.get(), centerIsland.get(centerIsland.size() - 1))) {
+                    xTranslate = (centerIsland.get(0).getLayoutX() - closerIslandToFirst.get().getLayoutX()) +
+                            ((centerIsland.get(0).getLayoutX() > closerIslandToFirst.get().getLayoutX()) ? -offset : offset);
+                    yTranslate = (centerIsland.get(0).getLayoutY() - closerIslandToFirst.get().getLayoutY()) +
+                            ((centerIsland.get(0).getLayoutY() > closerIslandToFirst.get().getLayoutY()) ? -offset : offset);
+                } else {
+                    xTranslate = (centerIsland.get(centerIsland.size() - 1).getLayoutX() - closerIslandToLast.get().getLayoutX()) +
+                            ((centerIsland.get(centerIsland.size() - 1).getLayoutX() > closerIslandToLast.get().getLayoutX()) ? -offset : offset);
+                    yTranslate = (centerIsland.get(centerIsland.size() - 1).getLayoutY() - closerIslandToLast.get().getLayoutY()) +
+                            ((centerIsland.get(centerIsland.size() - 1).getLayoutY() > closerIslandToLast.get().getLayoutY()) ? -offset : offset);
+                }
+                islandToMove.forEach(island -> {
+                    TranslateTransition transition = new TranslateTransition(Duration.millis(2000), island);
+                    transition.setByX(xTranslate);
+                    transition.setByY(yTranslate);
+                    transition.play();
+                    island.setIslandId(centerId);
+                    island.getStyleClass().remove("root-island-in-group");
+                });
+            }
+        }
+        if (centerIsland.size() == 1) centerIsland.get(0).getStyleClass().add("root-island-in-group");
+        //decrement ids to maintain compatibility with CLI (and also model)
+        islandsSubScenes.stream()
+                .filter(i -> i.getIslandId() > centerIsland.get(0).getIslandId()
+                        && i.getIslandId() > unifiedIds.stream().max(Comparator.comparingInt(id -> id)).orElse(0))
+                .forEach(i -> i.setIslandId(i.getIslandId() - 1));
+    }
+
+    private Optional<IslandSubScene> getClosestIsland(List<IslandSubScene> islands, IslandSubScene centerIsland) {
+        return islands.stream().min((i1, i2) -> {
+            double i1Distance = distance(i1, centerIsland);
+            double i2Distance = distance(i2, centerIsland);
+            return Double.compare(i1Distance, i2Distance);
+        });
+    }
+
+    private double distance(IslandSubScene i1, IslandSubScene i2) {
+        return Math.pow(i1.getLayoutX() - i2.getLayoutX(), 2) +
+                Math.pow(i1.getLayoutY() - i2.getLayoutY(), 2);
     }
 }

@@ -32,6 +32,7 @@ public class SchoolBox {
     private final AnchorPane diningRoom;
     private final AnchorPane container;
     private final AnchorPane professorTable;
+    private final AnchorPane towers;
     private EventHandler<MouseEvent> dragStartStudentHandler;
     private static final List<RealmType> diningRoomOrder = List.of(RealmType.GREEN_FROGS, RealmType.RED_DRAGONS,
             RealmType.YELLOW_GNOMES, RealmType.PINK_FAIRES, RealmType.BLUE_UNICORNS);
@@ -47,6 +48,7 @@ public class SchoolBox {
         entrance = (AnchorPane) school.getChildren().get(1);
         diningRoom = (AnchorPane) school.getChildren().get(2);
         professorTable = (AnchorPane) school.getChildren().get(3);
+        towers = (AnchorPane) school.getChildren().get(4);
         initializeSchool();
         VBox vBox = (VBox) container.getChildren().get(2);
         if (isExpertGame) {
@@ -54,6 +56,8 @@ public class SchoolBox {
             Image imageCoin = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/schools/coin.png")));
             ((Circle)vBox.getChildren().get(0)).setFill(new ImagePattern(imageCoin));
         } else container.getChildren().remove(vBox);
+        towers.getChildren().forEach(i -> ((ImageView) i).setImage(new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream(Constants.towerImages.get(playerView.getPlayerTower()))))));
     }
 
     public void setAssistantImage(Image image) {
@@ -68,6 +72,9 @@ public class SchoolBox {
         RealmType[] entranceStudents = RealmType.getRealmsFromIntegerRepresentation(playerView.getSchoolStudents().getFirst());
         for (int i = 0; i < entranceStudents.length; i++) {
             ((StudentImage) entrance.getChildren().get(i)).setStudent(entranceStudents[i]);
+        }
+        while (towers.getChildren().size() > playerView.getNumTowers()) {
+            towers.getChildren().remove(towers.getChildren().size() - 1);
         }
     }
 
@@ -153,6 +160,15 @@ public class SchoolBox {
         ((StudentImage) studentsLine.get(i)).setStudent(student);
     }
 
+    public void removeFromDiningRoom(RealmType student) {
+        int studentIdx = diningRoomOrder.indexOf(student);
+        List<Node> studentsLine = diningRoom.getChildren().subList(studentIdx * 10, (studentIdx + 1) * 10);
+        int i = 0;
+        //maybe can be done with streams, but I'm not sure that they preserve order
+        while (studentsLine.get(i).getOpacity() == 1) i++;
+        studentsLine.get(i - 1).setOpacity(0);
+    }
+
     public void moveStudentFromEntranceToDiningRoom(RealmType studentType) {
         Optional<Node> studentNode = entrance.getChildren().stream()
                 .filter(s -> ((StudentImage) s).getStudentType() == studentType)
@@ -206,5 +222,14 @@ public class SchoolBox {
 
     public double getDimStudentsRadius() {
         return dimStudentsRadius;
+    }
+
+    public void removeTower() {
+        List<Node> towersVisible = towers.getChildren().stream().filter(Node::isVisible).toList();
+        towersVisible.get(towersVisible.size() - 1).setVisible(false);
+    }
+
+    public void insertTower() {
+        towers.getChildren().stream().filter(n -> !n.isVisible()).findFirst().ifPresent(node -> node.setVisible(false));
     }
 }

@@ -1,5 +1,8 @@
 package it.polimi.ingsw.controller;
 
+/**
+ * Enum Class TurnPhase contains all possible states of a round.
+ */
 public enum TurnPhase {
 	FILL_CLOUDS("", ""),
 	PLAY_ASSISTANT("Play an assistant card from your deck", "PlayAssistant"),

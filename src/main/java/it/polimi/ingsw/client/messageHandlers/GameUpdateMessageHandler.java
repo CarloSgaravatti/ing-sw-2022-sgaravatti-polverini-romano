@@ -79,6 +79,7 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
             if (previousNoEntryTiles != null && previousNoEntryTiles > 0) {
                 expertField.updateIslandNoEntryTiles(previousNoEntryTiles - 1, newMotherNaturePosition);
                 expertField.updateNoEntryTilesOnCharacter(previousCharacterNoEntryTiles + 1);
+                userInterface.firePropertyChange("NoEntryTileUpdate", 5, newMotherNaturePosition);
             }
         }
         userInterface.firePropertyChange("MotherNatureUpdate", startingPosition, newMotherNaturePosition);
@@ -120,11 +121,12 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         Integer[] islandsId = (Integer[]) payload.getAttribute("IslandsId").getAsObject();
         SimpleIsland island = (SimpleIsland) payload.getAttribute("NewIsland").getAsObject();
         getModelView().getField().mergeIslands(Arrays.asList(islandsId), island.getIslandRepresentation());
-        userInterface.firePropertyChange("IslandUnification", null, null);
+        userInterface.firePropertyChange("IslandUnification", null, islandsId);
     }
 
     private void onIslandTowerUpdate(MessagePayload payload) {
         int island = payload.getAttribute("IslandId").getAsInt();
+        TowerType previousTower = getModelView().getField().getIsland(island).getThird();
         TowerType tower = (TowerType) payload.getAttribute("TowerType").getAsObject();
         int islandTowers = getModelView().getField().getIsland(island).getSecond();
         getModelView().getField().getIsland(island).setThird(tower);
@@ -136,7 +138,7 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
             getModelView().getPlayers().get(previousOwner)
                     .updateNumTowers(getModelView().getPlayers().get(newOwner).getNumTowers() + islandTowers);
         }
-        userInterface.firePropertyChange("IslandTowerUpdate", null, island);
+        userInterface.firePropertyChange("IslandTowerUpdate", previousTower, island);
     }
 
     private void onPickFromCloud(MessagePayload payload) {

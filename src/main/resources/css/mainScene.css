@@ -3,7 +3,7 @@
 }
 
 .assistant-image:hover, .selectable-character:hover {
-    -fx-effect: dropshadow(gaussian, yellow, 10, 1, 0, 0);
+    -fx-effect: dropshadow(gaussian, yellow, 10, 0.2, 0, 0);
 }
 
 .school-pane {
@@ -29,13 +29,13 @@
     -fx-background-image: url("../images/islands/island3.png");
 }
 
-.selectable-item:hover, .cloud:hover {
-    -fx-effect: dropshadow(gaussian, yellow, 10, 1, 0, 0);
+.selectable-item:hover {
+    -fx-effect: dropshadow(gaussian, yellow, 10, 0.2, 0, 0);
     -fx-cursor: hand
 }
 
 .selected-student {
-    -fx-effect: dropshadow(gaussian, yellow, 10, 1, 0, 0);
+    -fx-effect: dropshadow(gaussian, yellow, 10, 0.2, 0, 0);
 }
 
 .character-buttons {
@@ -50,4 +50,16 @@
 
 .character-buttons:hover {
     -fx-background-color: chocolate;
+}
+
+.root-island-in-group {
+    -fx-effect: dropshadow(gaussian, darkgreen, 15, 0.2, 0, 0);
+}
+
+.turn-management-box {
+    -fx-background-color: burlywood;
+    -fx-border-color: saddlebrown burlywood saddlebrown saddlebrown;
+    -fx-border-width: 8 0 8 8;
+    -fx-border-radius: 10 0 0 10;
+    -fx-background-radius: 15 0 0 15;
 }
