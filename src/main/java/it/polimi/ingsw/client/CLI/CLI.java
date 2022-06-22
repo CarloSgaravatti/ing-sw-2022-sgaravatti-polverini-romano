@@ -17,8 +17,8 @@ import java.net.Socket;
 import java.util.*;
 
 public class CLI implements Runnable, UserInterface {
-    private final String serverAddress;
-    private final int serverPort;
+    private String serverAddress;
+    private int serverPort;
     private Socket socket;
     private final Scanner sc = new Scanner(System.in);
     private String nickname;
@@ -34,18 +34,30 @@ public class CLI implements Runnable, UserInterface {
         //AnsiConsole.systemInstall();
         String serverAddress;
         int serverPort;
-        System.out.println("Insert server ip address: ");
-        System.out.print("> ");
-        serverAddress = sc.next();
-        System.out.println("Insert server port: ");
-        System.out.print("> ");
-        serverPort = sc.nextInt();
-        new CLI(serverAddress, serverPort).run();
+        Socket socket = null;
+        boolean serverSocketCreated = false;
+        while (!serverSocketCreated) {
+            System.out.println("Insert server ip address: ");
+            System.out.print("> ");
+            serverAddress = sc.next();
+            System.out.println("Insert server port: ");
+            System.out.print("> ");
+            serverPort = sc.nextInt();
+            try {
+                socket = new Socket(serverAddress, serverPort);
+                serverSocketCreated = true;
+            } catch (IOException e) {
+                System.out.println(Colors.RED + "Error in connection with server" + Colors.RESET);
+            } catch (IllegalArgumentException e) { //if port is not a valid port (out of range)
+                System.out.println(Colors.RED + e.getMessage() + Colors.RESET);
+            }
+        }
+        System.out.println("Connection Established");
+        new CLI(socket).run();
     }
 
-    public CLI(String serverAddress, int serverPort) {
-        this.serverAddress = serverAddress;
-        this.serverPort = serverPort;
+    public CLI(Socket socket) {
+        this.socket = socket;
     }
 
     public void clearScreen(){
@@ -75,12 +87,6 @@ public class CLI implements Runnable, UserInterface {
 
     @Override
     public void run() {
-        try {
-            socket = new Socket(serverAddress, serverPort);
-        } catch (IOException e) {
-            System.err.println("Error in connection with server");
-        }
-        System.out.println("Connection Established");
         clearScreen();
         PrintStaticMessage.printWelcome();
         ConnectionToServer connectionToServer = new ConnectionToServer(socket, this);
@@ -94,7 +100,6 @@ public class CLI implements Runnable, UserInterface {
             inputThread.join();
         } catch (InterruptedException e) {
             //TODO
-            t.interrupt(); //is this ok?
         }
     }
 
@@ -316,16 +321,16 @@ public class CLI implements Runnable, UserInterface {
                 printer.replaceIsland((Integer) evt.getNewValue());
             }
             case "IslandUnification" -> printer.recomputeIslandMap();
-            case "DiningRoomInsertion", "DiningRoomRemoval" -> printer.replaceSchool((String) evt.getSource());
-            case "CoinsUpdate", "SchoolSwap", "EntranceSwap", "EntranceUpdate", "AssistantUpdate"->
-                    printer.replaceSchool((String) evt.getNewValue());
+            case "DiningRoomInsertion", "DiningRoomRemoval", "EntranceSwap", "SchoolSwap" ->
+                    printer.replaceSchool((String) evt.getSource());
+            case "CoinsUpdate", "EntranceUpdate", "AssistantUpdate"-> printer.replaceSchool((String) evt.getNewValue());
             case "ProfessorUpdate" -> {
                 if (evt.getOldValue() != null) {
                     printer.replaceSchool((String) evt.getOldValue());
                 }
                 printer.replaceSchool((String) evt.getNewValue());
             }
-            case "PickFromCloud" -> {
+            case "CloudSelected" -> {
                 printer.replaceCloud((Integer) evt.getNewValue());
                 printer.replaceSchool((String) evt.getSource());
             }

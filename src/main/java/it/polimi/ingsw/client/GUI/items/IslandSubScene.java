@@ -28,6 +28,7 @@ public class IslandSubScene extends AnchorPane implements Initializable {
     @FXML private HBox noEntryTile;
     private final Map<RealmType, HBox> students = new HashMap<>();
     private int islandId;
+    private boolean rootIsland;
 
     public IslandSubScene() {
         try {
@@ -45,6 +46,7 @@ public class IslandSubScene extends AnchorPane implements Initializable {
             for (int i = 0; i < studentsInIsland[realm.ordinal()]; i++) addStudent(realm);
         }
         this.islandId = islandId;
+        this.rootIsland = true;
     }
 
     public void addStudent(RealmType student) {
@@ -104,6 +106,14 @@ public class IslandSubScene extends AnchorPane implements Initializable {
 
     public void setIslandId(int islandId) {
         this.islandId = islandId;
+    }
+
+    public boolean isRootIsland() {
+        return rootIsland;
+    }
+
+    public void setRootIsland(boolean rootIsland) {
+        this.rootIsland = rootIsland;
     }
 
     @Override

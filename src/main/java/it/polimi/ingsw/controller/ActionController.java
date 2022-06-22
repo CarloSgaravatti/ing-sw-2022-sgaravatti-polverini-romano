@@ -14,6 +14,12 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.*;
 
+/**
+ * ActionController is the controller class that modify the model after an action request has been received by a client
+ * who is the active player. The class controls if the requested action is the correct one (in base of the current phase
+ * and the actions that the player has already done): if so it performs the action, otherwise it sends and error back
+ * (also if the action was malformed)
+ */
 public class ActionController {
 	private TurnPhase turnPhase;
 	private final TurnController turnController;
@@ -26,6 +32,13 @@ public class ActionController {
 
 	//TODO: substitute all illegal argument exceptions with booleans
 
+	/**
+	 * Constructs a new ActionController instance that is bound to the specified GameController and the specified
+	 * TurnController.
+	 *
+	 * @param gameController the GameController of the game
+	 * @param turnController the TurnController of the game
+	 */
 	public ActionController(GameController gameController, TurnController turnController) {
 		this.gameController = gameController;
 		this.turnController = turnController;
@@ -36,10 +49,22 @@ public class ActionController {
 		studentsToMove = (gameController.getModel().getNumPlayers() == 3) ? 4 : 3;
 	}
 
+	/**
+	 * Adds a PropertyChangeListener to this class that will listen to events that are fired by this object
+	 *
+	 * @param propertyName the property name on which the listener will listen to events
+	 * @param listener the property change listener
+	 */
 	public void addListener(String propertyName, PropertyChangeListener listener) {
 		listeners.addPropertyChangeListener(propertyName, listener);
 	}
 
+	/**
+	 * Process an action that has arrived from the client of the active player. If the action is the correct action that
+	 * the client is expected to do, the method will process it, otherwise it sends ILLEGAL_TURN_ACTION error to the client
+	 * @param message the message from the client
+	 * @throws IllegalArgumentException if the action was malformed
+	 */
 	public void doAction(MessageFromClient message) throws IllegalArgumentException {
 		String messageName = message.getClientMessageHeader().getMessageName();
 		MessagePayload payload = message.getMessagePayload();
@@ -59,8 +84,17 @@ public class ActionController {
 		}
 	}
 
+	/**
+	 * Performs a PlayAssistant action from the client that has the specified MessagePayload. The method controls if the
+	 * assistant can be played by checking if the player has such specified assistant and by checking if someone else
+	 * has already played the assistant (in this case the player need to have only this assistant in order to play the
+	 * specified assistant).
+	 *
+	 * @param payload the payload of the request
+	 * @throws WrongTurnActionRequestedException if it is not expected by the client to play an assistant in this round
+	 * 		moment (for example if the RoundPhase is action phase)
+	 */
 	public void playAssistant(MessagePayload payload) throws WrongTurnActionRequestedException {
-		String playerName = turnController.getActivePlayer().getNickName();
 		if (turnPhase != TurnPhase.PLAY_ASSISTANT) throw new WrongTurnActionRequestedException();
 		int assistantIdx = payload.getAttribute("Assistant").getAsInt();
 		List<Player> players = gameController.getModel().getPlayers();
@@ -88,6 +122,15 @@ public class ActionController {
 		}
 	}
 
+	/**
+	 * Performs a MoveMotherNature action for the active player, which has sent a message that contains the specified
+	 * payload. The method controls if the requested movement is greater that 0 and smaller or equal than the maximum
+	 * movement that the player can perform.
+	 *
+	 * @param payload the payload of the request
+	 * @throws IllegalArgumentException
+	 * @throws WrongTurnActionRequestedException
+	 */
 	public void motherNatureMovement(MessagePayload payload) throws IllegalArgumentException,
 			WrongTurnActionRequestedException {
 		if (turnPhase != TurnPhase.MOVE_MOTHER_NATURE) throw new WrongTurnActionRequestedException();
@@ -103,7 +146,6 @@ public class ActionController {
 	}
 
 	//Use of ? to not have unchecked warning (maybe we should change the message format to not use generics)
-	//TODO: maybe this method can be done better
 	public void studentMovement(MessagePayload payload) throws IllegalArgumentException, WrongTurnActionRequestedException {
 		if (turnPhase != TurnPhase.MOVE_STUDENTS) throw new WrongTurnActionRequestedException();
 		List<?> toDiningRoom = (List<?>) payload.getAttribute("StudentsToDR").getAsObject();

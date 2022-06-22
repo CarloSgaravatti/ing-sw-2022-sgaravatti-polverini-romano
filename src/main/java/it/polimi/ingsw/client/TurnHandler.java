@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client;
 
-import it.polimi.ingsw.client.CLI.utils.Colors;
 import it.polimi.ingsw.controller.TurnPhase;
 import it.polimi.ingsw.messages.*;
 
@@ -12,6 +11,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 //Used when the client is the active player
+
+/**
+ * Class TurnHandler is used to help the client when he is the current turn active player. The class suggest to the player
+ * which actions can be done in the turn and which actions must be done at the moment. ALso, TurnHandler will automatically
+ * end the turn of the client (by sending an EndTurn message to the sever) if the client have done all possible actions
+ * that he can do. The class implements the PropertyChangeListener interface because the TurnHandler will listen to
+ * some message handlers in order to know when it is the client turn and if the action made by the client have been
+ * acknowledged or not.
+ *
+ * The class uses a SingleThreadExecutor to perform the turn handling: the handlePlayerTurn method will be submitted to
+ * this executor when a new turn of the client starts.
+ */
 public class TurnHandler implements PropertyChangeListener {
     private final ConnectionToServer connection;
     private final UserInterface userInterface;
@@ -27,6 +38,13 @@ public class TurnHandler implements PropertyChangeListener {
         this.userInterface = userInterface;
     }
 
+    /**
+     * Receives an event fired by a message handler.
+     *
+     * @param evt A PropertyChangeEvent object describing the event source
+     *          and the property that has changed.
+     * @see PropertyChangeListener#propertyChange(PropertyChangeEvent)
+     */
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
@@ -42,22 +60,49 @@ public class TurnHandler implements PropertyChangeListener {
         }
     }
 
+    /**
+     * Checks if the last action have already been acknowledged or not.
+     *
+     * @return true if the action have been acknowledged, otherwise false
+     */
     private synchronized boolean isAckReceived() {
         return ackReceived;
     }
 
+    /**
+     * TODO
+     * @param ackReceived true if the action have been acknowledged, otherwise false
+     */
     private synchronized void setAckReceived(boolean ackReceived) {
         this.ackReceived = ackReceived;
     }
 
+    /**
+     * Checks if the last action have been provoked an error message by the server or not.
+     *
+     * @return true if an error was received, otherwise false
+     */
     private synchronized boolean isErrorReceived() {
         return errorReceived;
     }
 
+    /**
+     * TODO
+     * @param errorReceived true if an error was received, otherwise false
+     */
     private synchronized void setErrorReceived(boolean errorReceived) {
         this.errorReceived = errorReceived;
     }
 
+    /**
+     * Handles the client turn that can do all the specified possible actions. This method is done in parallel to the
+     * actual turn that the client sees from the UserInterface. The method will run until an EndTurn acknowledgement
+     * message arrives from the server. This is done with a producer - consumer pattern, where this method is the consumer
+     * part and the other on* methods are the producers part. Possible actions are updated every time a producer receives
+     * an acknowledgement.
+     *
+     * @param possibleActions the possible actions of the turn
+     */
     public void handlePlayerTurn(final List<TurnPhase> possibleActions) {
         setTurnAlreadyEnded(false);
         setInputErrorReceived(false);
@@ -69,7 +114,7 @@ public class TurnHandler implements PropertyChangeListener {
             while (!currentTurnActions.isEmpty()) {
                 List<String> currentTurnPossibleActions = new ArrayList<>();
                 currentTurnPossibleActions.add(currentTurnActions.get(0).getActionCommand());
-                if (currentTurnActions.contains(TurnPhase.PLAY_CHARACTER_CARD)) {
+                if (currentTurnActions.contains(TurnPhase.PLAY_CHARACTER_CARD) && currentTurnActions.size() != 1) {
                     currentTurnPossibleActions.add(TurnPhase.PLAY_CHARACTER_CARD.getActionCommand());
                 }
                 if (!isErrorReceived() && !isInputErrorReceived()) {
@@ -104,6 +149,12 @@ public class TurnHandler implements PropertyChangeListener {
         }
     }
 
+    /**
+     * Handle the event of receiving an acknowledgement from the server.
+     *
+     * @param newPossibleActions the new actions that the clients can to do before ending the turn
+     * @param actionToAck the action that was acknowledged
+     */
     public void onAckReceived(List<TurnPhase> newPossibleActions, String actionToAck) {
         setAckReceived(true);
         if (actionToAck.equals("EndTurn")) {
@@ -116,6 +167,9 @@ public class TurnHandler implements PropertyChangeListener {
         }
     }
 
+    /**
+     * Handle the event of receiving an error from the server.
+     */
     public void onErrorReceived() {
         setErrorReceived(true);
         synchronized (currentTurnActions) {
@@ -123,6 +177,9 @@ public class TurnHandler implements PropertyChangeListener {
         }
     }
 
+    /**
+     * Handle the event of receiving an error from the ActionInputParser.
+     */
     public void onInputError() {
         setInputErrorReceived(true);
         synchronized (currentTurnActions) {
@@ -130,6 +187,11 @@ public class TurnHandler implements PropertyChangeListener {
         }
     }
 
+    /**
+     * Checks if the client have already sent an EndTurn message that was acknowledged by the server
+     *
+     * @return true if the client has ended his turn, otherwise false
+     */
     public synchronized boolean isTurnAlreadyEnded() {
         return turnAlreadyEnded;
     }
@@ -138,6 +200,11 @@ public class TurnHandler implements PropertyChangeListener {
         this.turnAlreadyEnded = turnAlreadyEnded;
     }
 
+    /**
+     * Checks if the last action of the client was blocked by the ActionInputParser because it was not correctly written.
+     *
+     * @return true if there was an error recognized by the ActionInputParser, otherwise false
+     */
     public synchronized boolean isInputErrorReceived() {
         return isInputErrorReceived;
     }

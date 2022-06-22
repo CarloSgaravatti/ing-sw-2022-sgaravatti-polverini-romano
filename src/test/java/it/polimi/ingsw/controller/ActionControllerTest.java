@@ -36,7 +36,7 @@ class ActionControllerTest extends TestCase {
 
     public static class GameControllerStub extends GameController {
         public GameControllerStub() {
-            super(1, 2, true);
+            super(2, true);
             InitController initController = super.getInitController();
             try {
                 initController.initializeGameComponents();
@@ -45,7 +45,7 @@ class ActionControllerTest extends TestCase {
             }
             initController.addPlayer("player1");
             initController.addPlayer("player2");
-            super.setGame();
+            super.setGame(initController.getGame());
             initializeControllers();
         }
 

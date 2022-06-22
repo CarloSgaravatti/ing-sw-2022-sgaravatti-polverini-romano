@@ -48,13 +48,13 @@ public class GameControllerTest {
 
     @BeforeEach
     void setup() {
-        controller = new GameController(1, 2, true);
+        controller = new GameController(2, true);
         try {
             controller.getInitController().initializeGameComponents();
         } catch (EmptyBagException e) {
             Assertions.fail();
         }
-        controller.setGame();
+        controller.setGame(controller.getInitController().getGame());
         controller.getInitController().addPlayer("player1");
         controller.getInitController().addPlayer("player2");
         Player player1 = controller.getModel().getPlayerByNickname("player1");

@@ -74,7 +74,7 @@ public class GlobalLobbyController extends FXMLController implements Initializab
     }
 
     @Override
-    public void onError(ErrorMessageType error) {
+    public void onError(ErrorMessageType error, String errorInfo) {
         if (error == ErrorMessageType.INVALID_REQUEST_GAME_ALREADY_STARTED) {
             displayAlert("The selected game was already started, retry");
         } else if (error == ErrorMessageType.INVALID_REQUEST_GAME_NOT_FOUND) {

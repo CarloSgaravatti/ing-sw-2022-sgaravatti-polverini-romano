@@ -60,6 +60,7 @@ public class GameMainSceneController extends FXMLController implements Initializ
     private HBox decisionBox;
     private Label actionDescriptionLabel;
     private final Pair<String, String> lastAction = new Pair<>(); //<actionName, actionArguments>
+    private final Object accordionButtonLock = new Object();
     private final EventHandler<MouseEvent> assistantEventHandler = mouseEvent -> {
         if (assistantsTab.isAssistantSelectable()) {
             ImageView assistantImage = (ImageView) mouseEvent.getTarget();
@@ -69,7 +70,6 @@ public class GameMainSceneController extends FXMLController implements Initializ
             decisionBox.setVisible(true);
             actionDescriptionLabel.setText("You have chosen assistant " + assistantId + ".");
             moveAccordionDown();
-            //firePropertyChange("PlayAssistant", null, assistantId);
             assistantsTab.setAssistantSelectable(false);
         } else {
             //TODO
@@ -79,7 +79,10 @@ public class GameMainSceneController extends FXMLController implements Initializ
         if (cloudSelectable) {
             CloudImage cloud = (CloudImage) ((ImageView) mouseEvent.getTarget()).getParent();
             int cloudId = cloud.getCloudId();
-            firePropertyChange("PickFromCloud", null, Integer.toString(cloudId));
+            lastAction.setFirst("PickFromCloud");
+            lastAction.setSecond(Integer.toString(cloudId));
+            decisionBox.setVisible(true);
+            actionDescriptionLabel.setText("You have chosen cloud " + cloudId + ".");
             cloudSelectable = false;
         } else {
             //TODO
@@ -89,23 +92,26 @@ public class GameMainSceneController extends FXMLController implements Initializ
     @FXML
     void onAccordionButtonPress(ActionEvent event) {
         Button button = (Button) event.getTarget();
-        String buttonText = button.getText();
-        double yTranslation = ((AnchorPane) playersBox.getChildren().get(1)).getHeight();
-        TranslateTransition transition = new TranslateTransition();
-        transition.setNode(playersBox);
-        transition.setDuration(Duration.millis(500));
-        if (buttonText.equals("^")) {
-            transition.setByY(-yTranslation);
-            button.setText("v");
-        } else {
-            transition.setByY(yTranslation);
-            button.setText("^");
+        //TODO: don't know if synchronization is needed
+        synchronized (accordionButtonLock) {
+            String buttonText = button.getText();
+            double yTranslation = ((AnchorPane) playersBox.getChildren().get(1)).getHeight();
+            TranslateTransition transition = new TranslateTransition();
+            transition.setNode(playersBox);
+            transition.setDuration(Duration.millis(500));
+            if (buttonText.equals("^")) {
+                transition.setByY(-yTranslation);
+                button.setText("v");
+            } else {
+                transition.setByY(yTranslation);
+                button.setText("^");
+            }
+            transition.play();
         }
-        transition.play();
     }
 
     @Override
-    public void onError(ErrorMessageType error) {
+    public void onError(ErrorMessageType error, String errorInfo) {
 
     }
 
@@ -134,6 +140,7 @@ public class GameMainSceneController extends FXMLController implements Initializ
         confirmActionButton.setOnAction(actionEvent -> {
             if (decisionBox.isVisible()) {
                 firePropertyChange(lastAction.getFirst(), null, lastAction.getSecond());
+                System.out.println(lastAction.getFirst() + " " + lastAction.getSecond());
             }
             actionDescriptionLabel.setText("");
             decisionBox.setVisible(false);
@@ -227,7 +234,7 @@ public class GameMainSceneController extends FXMLController implements Initializ
             if (actionCommands.contains(button.getText()) || button.getText().equals("EndTurn")) button.setOpacity(1);
             else button.setOpacity(0.5);
             if (possibleActions.contains(button.getText()) ||
-                    (possibleActions.size() == 1 && possibleActions.contains("PlayCharacter") && button.getText().equals("EndTurn"))) {
+                    (button.getText().equals("EndTurn") && possibleActions.size() == 1 && possibleActions.contains("PlayCharacter"))) {
                 DropShadow dropShadow = new DropShadow(BlurType.GAUSSIAN, Color.YELLOW, 15, 0.2, 0, 0);
                 button.setEffect(dropShadow);
             } else button.setEffect(null);
@@ -284,9 +291,7 @@ public class GameMainSceneController extends FXMLController implements Initializ
     }
 
     public void moveStudentsToDiningRoom(String player, RealmType ... students) {
-        moveAccordionUp();
-        TabPane tabs = (TabPane) ((AnchorPane) playersBox.getChildren().get(1)).getChildren().get(0);
-        tabs.getSelectionModel().select(tabs.getTabs().get(playersSchools.get(player).getFirst()));
+        viewSchoolOf(player);
         for (RealmType student: students) {
             playersSchools.get(player).getSecond().moveStudentFromEntranceToDiningRoom(student);
         }
@@ -357,6 +362,10 @@ public class GameMainSceneController extends FXMLController implements Initializ
         islands.getIslandsById(islandId).forEach(i -> i.addTower(newTower));
     }
 
+    public void mergeIslands(List<Integer> islands) {
+        this.islands.mergeIslands(islands);
+    }
+
     public void notifyNewTurn(String newActivePlayer) {
         Label turnInfo = (Label) turnManagementBox.getChildren().get(1);
         turnInfo.setText("Now is " + newActivePlayer + "'s turn");
@@ -393,9 +402,7 @@ public class GameMainSceneController extends FXMLController implements Initializ
     }
 
     public void insertProfessorAnimation(String player, RealmType professor) {
-        moveAccordionUp();
-        TabPane tabs = (TabPane) ((AnchorPane) playersBox.getChildren().get(1)).getChildren().get(0);
-        tabs.getSelectionModel().select(tabs.getTabs().get(playersSchools.get(player).getFirst()));
+        viewSchoolOf(player);
         playersSchools.get(player).getSecond().insertProfessor(professor);
         //TODO: animation (maybe fade transition, whit drop shadow until the end of the transition)
     }
@@ -410,6 +417,12 @@ public class GameMainSceneController extends FXMLController implements Initializ
         if (accordionButton.getText().equals("^")) {
             accordionButton.fire();
         }
+    }
+
+    public void viewSchoolOf(String playerName) {
+        moveAccordionUp();
+        TabPane tabs = (TabPane) ((AnchorPane) playersBox.getChildren().get(1)).getChildren().get(0);
+        tabs.getSelectionModel().select(tabs.getTabs().get(playersSchools.get(playerName).getFirst()));
     }
 
     public ModelView getModelView() {
@@ -438,8 +451,7 @@ public class GameMainSceneController extends FXMLController implements Initializ
         private RealmType lastStudentDragged;
         private StringBuilder action = null;
         private final int studentsToMove = (modelView.getPlayers().size() == 3) ? 4 : 3;
-        private int studentsMoved;
-        //This event handler is assigned to students of entrance
+        private final List<RealmType> studentsMoved = new ArrayList<>();
         private final EventHandler<MouseEvent> studentDragStart = mouseEvent -> {
             if (studentsDraggable) {
                 StudentImage student = (StudentImage) mouseEvent.getTarget();
@@ -447,7 +459,7 @@ public class GameMainSceneController extends FXMLController implements Initializ
                 System.out.println("Drag start");
                 if (action == null) {
                     action = new StringBuilder();
-                    studentsMoved = 0;
+                    studentsMoved.clear();
                 }
                 Dragboard db = student.startDragAndDrop(TransferMode.ANY);
                 ClipboardContent content = new ClipboardContent();
@@ -471,12 +483,9 @@ public class GameMainSceneController extends FXMLController implements Initializ
             playersSchools.get(clientNickname).getSecond().insertInDiningRoom(lastStudentDragged);
             playersSchools.get(clientNickname).getSecond().removeFromEntrance(lastStudentDragged, true);
             action.append(dragEvent.getDragboard().getString()).append(" ToDiningRoom ");
-            studentsMoved++;
-            if (studentsMoved == studentsToMove) {
-                studentsDraggable = false;
-                firePropertyChange("MoveStudents", null, action.substring(0, action.length() - 1));
-                action = null;
-                studentsMoved = 0;
+            studentsMoved.add(lastStudentDragged);
+            if (studentsMoved.size() == studentsToMove) {
+                onEndStudentsDragAndDropAction();
             }
             dragEvent.setDropCompleted(true);
             dragEvent.consume();
@@ -491,18 +500,18 @@ public class GameMainSceneController extends FXMLController implements Initializ
             if (studentsDraggable) {
                 playersSchools.get(clientNickname).getSecond().removeFromEntrance(lastStudentDragged, true);
                 action.append(dragEvent.getDragboard().getString()).append(" ToIsland ").append(islandId).append(" ");
-                studentsMoved++;
+                studentsMoved.add(lastStudentDragged);
                 island.addStudent(lastStudentDragged);
-                if (studentsMoved == studentsToMove) {
-                    studentsDraggable = false;
-                    firePropertyChange("MoveStudents", null, action.substring(0, action.length() - 1));
-                    action = null;
-                    studentsMoved = 0;
+                if (studentsMoved.size() == studentsToMove) {
+                    onEndStudentsDragAndDropAction();
                 }
             } else if (motherNatureDraggable) {
                 int movement = (islandId + modelView.getField().getIslandSize()
                         - modelView.getField().getMotherNaturePosition()) % modelView.getField().getIslandSize();
-                firePropertyChange("MoveMotherNature", null, Integer.toString(movement));
+                lastAction.setFirst("MoveMotherNature");
+                lastAction.setSecond(Integer.toString(movement));
+                decisionBox.setVisible(true);
+                actionDescriptionLabel.setText("You have moved mother nature by " + movement + " positions.");
                 motherNatureDraggable = false;
             }
             dragEvent.setDropCompleted(true);
@@ -526,7 +535,6 @@ public class GameMainSceneController extends FXMLController implements Initializ
         };
 
         public void registerEvents() {
-            //playersBox.setOnDragExited(dragLeaveFromPlayersBox);
             islandsMap.setOnDragOver(dragOverIslands);
             islands.setDragAndDropHandlers(dragOverIsland, dropOnIsland, dragStartMotherNature);
             SchoolBox clientSchool = playersSchools.get(clientNickname).getSecond();
@@ -534,6 +542,16 @@ public class GameMainSceneController extends FXMLController implements Initializ
             clientSchool.registerDiningRoomDragAndDrop(dragOverDiningRoom, dropOnDiningRoom);
             Button accordionButton = (Button) ((AnchorPane) playersBox.getChildren().get(0)).getChildren().get(0);
             accordionButton.setOnDragOver(dragOverAccordionButton);
+        }
+
+        private void onEndStudentsDragAndDropAction() {
+            studentsDraggable = false;
+            lastAction.setFirst("MoveStudents");
+            lastAction.setSecond(action.substring(0, action.length() - 1));
+            decisionBox.setVisible(true);
+            actionDescriptionLabel.setText("You have moved these students: " + studentsMoved + ".");
+            action = null;
+            studentsMoved.clear();
         }
     }
 }

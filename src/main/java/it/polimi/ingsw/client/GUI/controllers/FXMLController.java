@@ -40,5 +40,5 @@ public abstract class FXMLController {
         dialog.showAndWait();
     }
 
-    public abstract void onError(ErrorMessageType error);
+    public abstract void onError(ErrorMessageType error, String errorInfo);
 }

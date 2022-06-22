@@ -17,11 +17,23 @@ public class PlanningPhaseOrder implements PhaseOrder {
 	private final List<Player> playersClockOrder;
 	private final int numPlayers;
 
+	/**
+	 * Construct a new PlanningPhaseOrder instance that will calculate the order of play for the specified game during the
+	 * planning phase.
+	 *
+	 * @param game the game that will be associated to the new instance
+	 */
     public PlanningPhaseOrder(Game game) {
 		playersClockOrder = game.getPlayers();
 		numPlayers = game.getNumPlayers();
 	}
 
+	/**
+	 * Calculates the order of play that will be based on the specified players order of the previous action phase.
+	 *
+	 * @param players the players on which the order is calculated, expressed as the previous action phase order
+	 * @return the new planning phase order
+	 */
 	public Player[] calculateOrder(Player[] players) {
 		Random rnd;
 		int a;

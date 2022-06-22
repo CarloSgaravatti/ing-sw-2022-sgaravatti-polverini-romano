@@ -26,14 +26,14 @@ class InitControllerTest extends TestCase {
 
     @BeforeEach
     void setup() {
-        controller = new GameController(1, 2, true);
+        controller = new GameController(2, true);
         initController = controller.getInitController();
         try {
             initController.initializeGameComponents();
         } catch (EmptyBagException e) {
             Assertions.fail();
         }
-        controller.setGame();
+        controller.setGame(initController.getGame());
         initController.addPlayer("player1");
         initController.addPlayer("player2");
     }

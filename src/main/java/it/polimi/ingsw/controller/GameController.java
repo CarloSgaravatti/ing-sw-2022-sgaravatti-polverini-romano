@@ -14,59 +14,109 @@ import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * GameController is the main class of the controller package that handles all actions that a
+ * client request by calling other controllers (TurnController and ActionController) methods.
+ * The class implements the PropertyChangeListener interface to implement the Observer pattern with
+ * the view (the RemoteView will fire events that will be passed to this class).
+ */
 public class GameController implements PropertyChangeListener {
 	private TurnController turnController;
 	private ActionController actionController;
 	private final InitController initController;
 	private Game game;
-	private final int gameId;
 	private final boolean isExpertGame;
 	private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 
-	public GameController(int gameId, int numPlayers, boolean isExpertGame) {
+	/**
+	 * Constructs a new GameController instance that will control a game with the specified number of players and the
+	 * specified rules.
+	 *
+	 * @param numPlayers the number of players of the game
+	 * @param isExpertGame the rules of the game (true is for expert rules, false is for simple rules)
+	 */
+	public GameController(int numPlayers, boolean isExpertGame) {
 		initController = new InitController(numPlayers, isExpertGame);
-		this.gameId = gameId;
 		this.isExpertGame = isExpertGame;
 	}
 
+	/**
+	 * Returns true if the game is expert, otherwise false
+	 * @return true if the game is expert, otherwise false
+	 */
 	public boolean isExpertGame() {
 		return isExpertGame;
 	}
 
+	/**
+	 * Officially starts the game after all setup operations are done by the InitController
+	 */
 	public void startGame() {
 		game.start();
 		handleEndPhase();
 	}
 
+	/**
+	 * Returns the game that GameController is controlling
+	 *
+	 * @return the controlled model of the game
+	 */
 	public Game getModel() {
 		return game;
 	}
 
+	/**
+	 * Returns the TurnController of this object
+	 *
+	 * @return the TurnController of this object
+	 */
 	public TurnController getTurnController() {
 		return turnController;
 	}
 
+	/**
+	 * Returns the ActionController of this object
+	 *
+	 * @return the ActionController of this object
+	 */
 	public ActionController getActionController() {
 		return actionController;
 	}
 
+	/**
+	 * Returns the InitController of this object
+	 *
+	 * @return the InitController of this object
+	 */
 	public InitController getInitController() {
 		return initController;
 	}
 
-	public void setGame() {
-		this.game = initController.getGame();
-	}
-
+	/**
+	 * Set the game that this controller will control
+	 *
+	 * @param game the game associated to the controller
+	 */
 	public void setGame(Game game) {
 		this.game = game;
 	}
 
+	/**
+	 * Initialize ActionController and TurnController before the start of the game
+	 */
 	public void initializeControllers() {
 		turnController = new TurnController(game.getPlayers().toArray(new Player[0]), game);
 		actionController = new ActionController(this, turnController);
 	}
 
+	/**
+	 * This method receives an event from the View that contains the action requested by a player: if the action requester
+	 * is the correct active player the action is not an EndTurn action, the action is passed to the action controller.
+	 *
+	 * @param evt A PropertyChangeEvent object describing the event source
+	 *          and the property that has changed.
+	 * @see PropertyChangeListener#propertyChange(PropertyChangeEvent)
+	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		MessageFromClient message = (MessageFromClient) evt.getNewValue();
@@ -113,6 +163,11 @@ public class GameController implements PropertyChangeListener {
 		}
 	}
 
+	/**
+	 * Handles the end of the current phase (after the last player have ended his turn); if the new phase is a planning
+	 * phase, the controller checks if the game is ended (if not clouds are refilled and players are notified about the
+	 * refill). The method also notifies players (if the game is not ended) that a new phase is started.
+	 */
 	private void handleEndPhase() {
 		if (turnController.getCurrentPhase() == RoundPhase.PLANNING && game.isLastRound()) {
 			game.checkWinners();
@@ -139,6 +194,12 @@ public class GameController implements PropertyChangeListener {
 				turnController.getCurrentPhase(), newPossibleActions));
 	}
 
+	/**
+	 * Sets the first action that the action controller will handle when a request come from a player (the action
+	 * controller will use it to know if the player is requesting the correct action). This is done at the beginning of
+	 * any new turn.
+	 * @param currentRoundPhase the current round phase
+	 */
 	public void setStartingTurnPhase(RoundPhase currentRoundPhase) {
 		if (currentRoundPhase == RoundPhase.ACTION) {
 			actionController.setTurnPhase(TurnPhase.MOVE_STUDENTS);
@@ -147,6 +208,14 @@ public class GameController implements PropertyChangeListener {
 		}
 	}
 
+	/**
+	 * Creates all listeners that will notify events to the client. The method creates all listeners that will listen to
+	 * controllers classes (these listeners are the AcknowledgementDispatcher, the ErrorDispatcher, the TurnListener and
+	 * the PlayerSetupListener). The method calls also the corresponding method in the game that will create all
+	 * listeners that will listen to model objects
+	 * @param views all the RemoteView objects of the players
+	 * @param lobby the GameLobby that supports the game
+	 */
 	public void createListeners(List<RemoteView> views, GameLobby lobby) {
 		ErrorDispatcher errorDispatcher = new ErrorDispatcher(views);
 		AcknowledgementDispatcher ackDispatcher = new AcknowledgementDispatcher(views);

@@ -102,7 +102,7 @@ public class CharacterController extends FXMLController {
         if (inputManager.actionsNeeded.contains(CharacterInputManager.ActionType.SELECT_REALM)) {
             RealmType selectedRealm = realmSelection.getSelectionModel().getSelectedItem();
             if (selectedRealm == null) {
-                onError(null);
+                onError(null, null);
                 return;
             }
             action.append(" ").append(selectedRealm.getAbbreviation());
@@ -111,7 +111,7 @@ public class CharacterController extends FXMLController {
         if (inputManager.actionsNeeded.contains(CharacterInputManager.ActionType.SELECT_NUMBER)) {
             Integer selectedNumber = numStudentsSelection.getSelectionModel().getSelectedItem();
             if (selectedNumber == null) {
-                onError(null);
+                onError(null, null);
                 return;
             }
             action.append(" ").append(selectedNumber);
@@ -128,12 +128,12 @@ public class CharacterController extends FXMLController {
             root.setTranslateX(translation);
             inputManager.reset();
         } else {
-            onError(null);
+            onError(null, null);
         }
     }
 
     @Override
-    public void onError(ErrorMessageType error) {
+    public void onError(ErrorMessageType error, String errorInfo) {
         errorLabel.setText("You haven't selected all the options");
     }
 
@@ -433,12 +433,13 @@ public class CharacterController extends FXMLController {
             List<IslandSubScene> islands = gameMainSceneController.getIslands().getIslands();
             islands.forEach(i -> i.getStyleClass().add("selectable-item"));
             EventHandler<MouseEvent> islandSelection = mouseEvent -> {
-                AnchorPane anchorPane = (AnchorPane) mouseEvent.getTarget();
-                String islandId = anchorPane.getId().substring("Island".length());
+                IslandSubScene island = (IslandSubScene) mouseEvent.getTarget();
+                String islandId = String.valueOf(island.getIslandId());
                 root.setTranslateX(0);
                 islands.forEach(i -> i.getStyleClass().remove("selectable-item"));
                 actions.put(ActionType.SELECT_ISLAND, List.of(islandId));
                 actionsNeeded.remove(ActionType.SELECT_ISLAND);
+                if (actionsNeeded.isEmpty()) makePlayCharacterButtonClickable();
                 label.setText("You have selected island " + islandId + ".\nClick here if you want to change.");
             };
             islands.forEach(i -> i.addEventHandler(MouseEvent.MOUSE_CLICKED, islandSelection));

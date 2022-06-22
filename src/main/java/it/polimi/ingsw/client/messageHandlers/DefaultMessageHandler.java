@@ -11,7 +11,9 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Map;
 
-//Handles SERVER_MESSAGE messages
+/**
+ * DefaultMessageHandler handles all messages that have SERVER_MESSAGE as message type
+ */
 public class DefaultMessageHandler extends BaseMessageHandler {
     private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 

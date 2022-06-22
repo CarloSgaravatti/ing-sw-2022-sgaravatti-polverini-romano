@@ -137,7 +137,7 @@ public class GUI extends Application implements UserInterface {
 
     @Override
     public void displayLobbyInfo(int numPlayers, boolean rules, String[] waitingPlayers) {
-
+        //TODO
     }
 
     @Override
@@ -197,12 +197,12 @@ public class GUI extends Application implements UserInterface {
             case "CharacterStudents" -> onCharacterStudentsUpdate((Integer) evt.getNewValue());
             case "CharacterPrice" -> onCharacterPriceUpdate((Integer) evt.getNewValue());
             case "NoEntryTileUpdate" -> onNoEntryTileUpdate((Integer) evt.getNewValue(), (Integer) evt.getOldValue());
-            case "EntranceSwap" -> {} //TODO
+            case "EntranceSwap" -> onEntranceSwap((String) evt.getSource(), (RealmType[]) evt.getNewValue());
             //case "EntranceUpdate" -> {} //TODO: verify if has to be handled (i think no)
-            case "CoinsUpdate" -> {} //TODO
-            case "SchoolSwap" -> {} //TODO
+            case "CoinsUpdate" -> onCoinsUpdate((String) evt.getNewValue());
+            case "SchoolSwap" -> onSchoolSwap((String) evt.getSource(), (RealmType[]) evt.getOldValue(), (RealmType[]) evt.getNewValue());
 
-            case "PickFromCloud" -> {} //TODO
+            case "CloudSelected" -> {} //TODO
             case "CloudsRefill" -> {} //TODO
 
             case "NewTurn" -> onNewTurn((String) evt.getNewValue());
@@ -218,7 +218,7 @@ public class GUI extends Application implements UserInterface {
     }
 
     private void onIslandsUnification(List<Integer> islands) {
-        Platform.runLater(() -> ((GameMainSceneController) currentSceneController).getIslandMap().mergeIslands(islands));
+        Platform.runLater(() -> ((GameMainSceneController) currentSceneController).mergeIslands(islands));
     }
 
     private void onCharacterPriceUpdate(int characterId) {
@@ -257,7 +257,7 @@ public class GUI extends Application implements UserInterface {
                 ((GameMainSceneController) currentSceneController).moveAccordionDown();
                 IslandMap islandMap = ((GameMainSceneController) currentSceneController).getIslandMap();
                 islandMap.getIslandsById(islandId).stream()
-                        .filter(island -> island.getStyleClass().contains("root-island-in-group"))
+                        .filter(IslandSubScene::isRootIsland)
                         .findFirst()
                         .ifPresent(island -> Arrays.stream(students).forEach(island::addStudent));
             }
@@ -266,15 +266,20 @@ public class GUI extends Application implements UserInterface {
 
     private void onDiningRoomUpdate(String player, RealmType[] students, boolean fromEntrance, boolean isInsertion) {
         Platform.runLater(() -> {
+            GameMainSceneController gameMainSceneController = ((GameMainSceneController) currentSceneController);
             this.stage.setFullScreen(true);
             if (isInsertion) {
                 if (fromEntrance && !player.equals(nickname)) {
-                    ((GameMainSceneController) currentSceneController).moveStudentsToDiningRoom(player, students);
+                    gameMainSceneController.moveStudentsToDiningRoom(player, students);
                 } else if (!fromEntrance){
                     //TODO: else is from character 11
+                    SchoolBox schoolBox = gameMainSceneController.getSchoolBox(player);
+                    gameMainSceneController.viewSchoolOf(player);
+                    Arrays.stream(students).forEach(schoolBox::insertInDiningRoom);
                 }
             } else {
-                SchoolBox playerBox =  ((GameMainSceneController) currentSceneController).getSchoolBox(player);
+                SchoolBox playerBox = gameMainSceneController.getSchoolBox(player);
+                gameMainSceneController.viewSchoolOf(player);
                 Arrays.stream(students).forEach(playerBox::removeFromDiningRoom);
             }
         });
@@ -308,7 +313,7 @@ public class GUI extends Application implements UserInterface {
         Platform.runLater(() -> {
             IslandMap islandMap = ((GameMainSceneController) currentSceneController).getIslandMap();
             islandMap.getIslandsById(islandId).stream()
-                    .filter(island -> island.getStyleClass().contains("root-island-in-group"))
+                    .filter(IslandSubScene::isRootIsland)
                     .findAny()
                     .ifPresent(island -> {
                         int noEntryTileOnIsland = modelView.getField().getExpertField().getNoEntryTilesOnIsland(islandId);
@@ -318,6 +323,38 @@ public class GUI extends Application implements UserInterface {
                         }
                     });
             //TODO: update character
+        });
+    }
+
+    private void onEntranceSwap(String playerName, RealmType[] inserted) {
+        Platform.runLater(() -> {
+            SchoolBox schoolBox = ((GameMainSceneController) currentSceneController).getSchoolBox(playerName);
+            ((GameMainSceneController) currentSceneController).viewSchoolOf(playerName);
+            Arrays.stream(inserted).forEach(schoolBox::insertStudentEntrance);
+        });
+    }
+
+    private void onSchoolSwap(String playerName, RealmType[] toEntrance, RealmType[] toDiningRoom) {
+        Platform.runLater(() -> {
+            GameMainSceneController gameMainSceneController = ((GameMainSceneController) currentSceneController);
+            SchoolBox schoolBox = gameMainSceneController.getSchoolBox(playerName);
+            gameMainSceneController.viewSchoolOf(playerName);
+            Arrays.stream(toEntrance).forEach(student -> {
+                schoolBox.insertStudentEntrance(student);
+                schoolBox.removeFromDiningRoom(student);
+            });
+            Arrays.stream(toDiningRoom).forEach(student -> {
+                schoolBox.insertInDiningRoom(student);
+                schoolBox.removeFromEntrance(student, playerName.equals(nickname));
+            });
+        });
+    }
+
+    private void onCoinsUpdate(String playerName) {
+        Platform.runLater(() -> {
+            GameMainSceneController gameMainSceneController = ((GameMainSceneController) currentSceneController);
+            gameMainSceneController.viewSchoolOf(playerName);
+            gameMainSceneController.getSchoolBox(playerName).updateCoins();
         });
     }
 
@@ -333,7 +370,7 @@ public class GUI extends Application implements UserInterface {
             socket = new Socket(serverIp, serverPort);
         } catch (IOException e) {
             System.err.println("Error in connection with server");
-            currentSceneController.onError(null);
+            currentSceneController.onError(null, "Error in connection with server");
             return; //TODO
         }
         System.out.println("Connection Established");
@@ -345,6 +382,6 @@ public class GUI extends Application implements UserInterface {
     }
 
     public void onError(ErrorMessageType error, String info) {
-        Platform.runLater(() -> currentSceneController.onError(error));
+        Platform.runLater(() -> currentSceneController.onError(error, info));
     }
 }

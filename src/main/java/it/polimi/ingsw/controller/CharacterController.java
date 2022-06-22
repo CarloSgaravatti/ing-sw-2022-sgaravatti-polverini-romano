@@ -16,19 +16,49 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * CharacterController handles a character action request by controlling if the input is correct and, if so, it
+ * constructs the input that will be given to requested character in the model package and call the corresponding
+ * method. In this way, characters methods are called only if the input is correct.
+ */
 public class CharacterController {
     private final Game game;
     private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
     private final Map<String, Object> characterInput = new HashMap<>();
 
+    /**
+     * Construct a new instance of the CharacterController that will be associated to the specified game.
+     *
+     * @param game the game on which the character controller will control characters requests
+     */
     public CharacterController(Game game) {
         this.game = game;
     }
 
+    /**
+     * Adds a PropertyChangeListener to this object, which will listen the specified property name
+     *
+     * @param propertyName the name of the property
+     * @param listener the listener that will listen to this
+     */
     public void addListener(String propertyName, PropertyChangeListener listener) {
         listeners.addPropertyChangeListener(propertyName, listener);
     }
 
+    /**
+     * Handles a character action request. The request is given as a list of String parameters for the specified
+     * character card and is formulated by the specified player (which is the active player of the turn). The method first
+     * control the input, then (if the input is ok) it transforms the input in a map that contains all the entries that
+     * the specified character requires and at the end it calls the character action.
+     *
+     * @param args the arguments of the character request
+     * @param characterCard the character that the player wants to play
+     * @param activePlayer the player who wants to play the character
+     * @throws IllegalCharacterActionRequestedException if the input is not correct or if the action encountered other
+     *          type of errors that are character-specific
+     * @throws NotEnoughCoinsException if the player doesn't have enough coins to play the character
+     * @throws IllegalArgumentException if the player has already played a character in the turn
+     */
     public void handleCharacterAction(List<String> args, CharacterCard characterCard, Player activePlayer)
             throws IllegalCharacterActionRequestedException, NotEnoughCoinsException, IllegalArgumentException {
         characterInput.clear();
@@ -49,6 +79,14 @@ public class CharacterController {
         game.insertCoinsInGeneralSupply(coinToGeneralSupply);
     }
 
+    /**
+     * Controls if the input of the character request is correct
+     *
+     * @param args the parameters of the request
+     * @param characterCard the characters on which the control is based
+     * @return true if the input is correct, otherwise false
+     * @throws IllegalArgumentException if the character has a non-valid id
+     */
     public boolean checkCharacterInput(List<String> args, CharacterCard characterCard) throws IllegalArgumentException {
         if (characterCard.requiresInput() && args.isEmpty()) return false;
         return switch (characterCard.getId()) {
@@ -72,6 +110,12 @@ public class CharacterController {
         };
     }
 
+    /**
+     * Check if the island contained in the request has a string exist in the game
+     *
+     * @param islandId the island, expressed as his id in a String
+     * @return true if the id is valid, otherwise false
+     */
     private boolean checkIsland(String islandId) {
         int islandIndex;
         try {
@@ -85,6 +129,12 @@ public class CharacterController {
         return true;
     }
 
+    /**
+     * Checks if the specified realm type, expressed by its abbreviation is valid
+     *
+     * @param abbreviation the realm type abbreviation
+     * @return true if the abbreviation is valid, otherwise false
+     */
     private boolean checkRealmType(String abbreviation) {
         RealmType realmType;
         try {
@@ -96,6 +146,15 @@ public class CharacterController {
         return realmType != null;
     }
 
+    /**
+     * Checks if the specified realm types, expressed by their abbreviation are valid. The specified realms source will
+     * be used to distinguish inputs that require more than one RealmType[] (for example character 10 requires a RealmType[]
+     * for the entrance and one for the dining room)
+     *
+     * @param realmsAbbreviations the realm types abbreviation
+     * @param realmsSource the source of the realm types
+     * @return true if the abbreviations are valid, otherwise false
+     */
     private boolean checkRealms(List<String> realmsAbbreviations, String realmsSource) {
         RealmType[] realmTypes;
         try {

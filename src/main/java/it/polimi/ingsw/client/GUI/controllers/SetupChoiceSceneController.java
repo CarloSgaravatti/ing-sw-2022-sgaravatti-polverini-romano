@@ -11,12 +11,10 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class SetupChoiceSceneController extends FXMLController {
@@ -41,7 +39,7 @@ public class SetupChoiceSceneController extends FXMLController {
     };
 
     @Override
-    public void onError(ErrorMessageType error) {
+    public void onError(ErrorMessageType error, String errorInfo) {
 
     }
 

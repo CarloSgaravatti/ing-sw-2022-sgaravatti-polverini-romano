@@ -10,6 +10,7 @@ import it.polimi.ingsw.messages.simpleModel.SimplePlayer;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.utils.Pair;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
 import java.util.List;
@@ -80,7 +81,7 @@ public class ExpertGameMessageHandler extends BaseMessageHandler {
         playerView.updateDiningRoom(toDiningRoom, true);
         playerView.updateEntrance(toDiningRoom, false);
         playerView.updateDiningRoom(toEntrance, false);
-        userInterface.firePropertyChange("SchoolSwap", null, playerName);
+        userInterface.firePropertyChange(new PropertyChangeEvent(playerName, "SchoolSwap", toEntrance, toDiningRoom));
     }
 
     private void onEntranceSwap(MessagePayload payload) {
@@ -90,7 +91,7 @@ public class ExpertGameMessageHandler extends BaseMessageHandler {
         PlayerView playerView = getModelView().getPlayers().get(playerName);
         playerView.updateEntrance(inserted, true);
         playerView.updateEntrance(removed, false);
-        userInterface.firePropertyChange("EntranceSwap", null, playerName);
+        userInterface.firePropertyChange(new PropertyChangeEvent(playerName, "EntranceSwap", removed, inserted));
     }
 
     private void onCoinsUpdate(MessagePayload payload) {

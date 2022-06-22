@@ -1,5 +1,6 @@
 package it.polimi.ingsw.controller;
 
+import it.polimi.ingsw.exceptions.EmptyBagException;
 import it.polimi.ingsw.exceptions.NoSuchAssistantException;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
@@ -16,19 +17,33 @@ import java.util.ArrayList;
 class TurnControllerTest extends TestCase {
     TurnController turnController;
     GameController gameController;
-    GameConstants gameConstants;
+
+    public static class InitControllerStub extends InitController {
+        private final GameController gameController;
+        private final Game game;
+
+        public InitControllerStub(int numPlayers, boolean isExpertGame, GameController gameController) {
+            super(numPlayers, isExpertGame);
+            this.gameController = gameController;
+            this.game = new Game(null, null, JsonUtils.constantsByNumPlayer(3), true);
+        }
+
+        @Override
+        public void initializeGameComponents() {
+            game.setNumPlayers(3);
+            game.addPlayer("player1");
+            game.addPlayer("player2");
+            game.addPlayer("player3");
+            gameController.setGame(game);
+        }
+    }
 
     @BeforeEach
     void setup() {
-        gameConstants = JsonUtils.constantsByNumPlayer(3);
-        gameController = new GameController(1, 3, true);
-        Game game = new Game(null, null, gameConstants, true);
-        game.setNumPlayers(3);
-        game.addPlayer("player1");
-        game.addPlayer("player2");
-        game.addPlayer("player3");
-        gameController.setGame(game);
-        turnController = new TurnController(game.getPlayers().toArray(new Player[0]), game);
+        gameController = new GameController(3, true);
+        new InitControllerStub(3, true, gameController).initializeGameComponents();
+        turnController = new TurnController(gameController.getModel().getPlayers()
+                .toArray(new Player[0]), gameController.getModel());
     }
 
     @Test

@@ -35,7 +35,7 @@ public class GameLobby {
 
     public GameLobby(int gameId, int numPlayers, boolean isExpertGame, Server server) {
         this.gameId = gameId;
-        gameController = new GameController(gameId, numPlayers, isExpertGame);
+        gameController = new GameController(numPlayers, isExpertGame);
         this.numPlayers = numPlayers;
         this.isExpertGame = isExpertGame;
         this.server = server;
@@ -48,13 +48,11 @@ public class GameLobby {
         payload.setAttribute("PlayerName", nickname);
         multicast(new MessageFromServer(header, payload), nickname);
         payload = new MessagePayload();
-
         header = new ServerMessageHeader("GameLobby", ServerMessageType.SERVER_MESSAGE);
         payload.setAttribute("Rules", isExpertGame);
         payload.setAttribute("GameNumPlayers", numPlayers);
         payload.setAttribute("WaitingPlayers", participants.keySet().toArray(new String[0]));
         clientConnection.asyncSend(new MessageFromServer(header, payload));
-
         if (participants.size() == numPlayers) {
             setStarted(true);
             header = new ServerMessageHeader("GameStarted", ServerMessageType.GAME_SETUP);
@@ -69,20 +67,14 @@ public class GameLobby {
             for (String name : participants.keySet()) {
                 initController.addPlayer(name);
             }
-            gameController.setGame();
+            gameController.setGame(initController.getGame());
             gameController.initializeControllers();
             gameController.createListeners(assignRemoteViews(), this);
             //Need to create a new thread because this method is done by the thread that reads messages in
             //SocketClientConnection, we want that when the setupGame method is running all the SocketClientConnections
             //are reading messages to update setup choices.
             new Thread(this::setupGame).start();
-        } /*else {
-            header = new ServerMessageHeader("GameLobby", ServerMessageType.SERVER_MESSAGE);
-            payload.setAttribute("Rules", isExpertGame);
-            payload.setAttribute("GameNumPlayers", numPlayers);
-            payload.setAttribute("WaitingPlayers", participants.keySet().toArray(new String[0]));
-            clientConnection.asyncSend(new MessageFromServer(header, payload));
-        }*/
+        }
     }
 
     private List<RemoteView> assignRemoteViews() {
@@ -185,7 +177,6 @@ public class GameLobby {
     }
 
     private void sendInitializations() {
-        gameController.setGame();
         game = gameController.getModel();
         ServerMessageHeader header = new ServerMessageHeader("GameInitializations", ServerMessageType.GAME_SETUP);
         MessagePayload payload = new MessagePayload();

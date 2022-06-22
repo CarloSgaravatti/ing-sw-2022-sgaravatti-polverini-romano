@@ -140,8 +140,15 @@ public class IslandMap {
                     transition.setByX(xTranslate);
                     transition.setByY(yTranslate);
                     transition.play();
-                    island.setIslandId(centerId);
-                    island.getStyleClass().remove("root-island-in-group");
+                    transition.setOnFinished(actionEvent -> {
+                        island.setIslandId(centerId);
+                        island.getStyleClass().remove("root-island-in-group");
+                        island.setRootIsland(false);
+                        island.setTranslateX(0);
+                        island.setLayoutX(island.getLayoutX() + transition.getByX());
+                        island.setTranslateY(0);
+                        island.setLayoutY(island.getLayoutY() + transition.getByY());
+                    });
                 });
             }
         }

@@ -94,7 +94,6 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         if (isInsertion && isFromEntrance) {
             getModelView().getPlayers().get(playerName).updateEntrance(students, false);
         }
-        //userInterface.firePropertyChange("SchoolDiningRoomUpdate", null, playerName);
         if (isInsertion) {
             userInterface.firePropertyChange(
                     new PropertyChangeEvent(playerName, "DiningRoomInsertion", isFromEntrance, students));
@@ -147,7 +146,7 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         int cloudId = payload.getAttribute("CloudId").getAsInt();
         getModelView().getField().resetCloud(cloudId);
         getModelView().getPlayers().get(playerName).updateEntrance(students, true);
-        userInterface.firePropertyChange(new PropertyChangeEvent(playerName, "PickFromCloud", null, cloudId));
+        userInterface.firePropertyChange(new PropertyChangeEvent(playerName, "CloudSelected", null, cloudId));
     }
 
     private void onAssistantsUpdate(MessagePayload payload) {

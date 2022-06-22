@@ -49,10 +49,10 @@ public class WelcomeController extends FXMLController {
     }
 
     @Override
-    public void onError(ErrorMessageType error) {
+    public void onError(ErrorMessageType error, String errorInfo) {
         if (error == ErrorMessageType.DUPLICATE_NICKNAME) {
             serverParametersOk = true;
             displayAlert("Nickname wasn't correct, retry");
-        }
+        } else displayAlert(errorInfo);
     }
 }

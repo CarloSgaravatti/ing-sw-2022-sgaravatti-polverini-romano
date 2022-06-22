@@ -2,7 +2,6 @@ package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.exceptions.DuplicateNicknameException;
 import it.polimi.ingsw.messages.*;
-import it.polimi.ingsw.utils.Pair;
 import it.polimi.ingsw.utils.Triplet;
 
 import java.io.IOException;
@@ -44,12 +43,26 @@ public class Server implements Runnable{
     }
 
     public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int port = 12345;
+        boolean portCorrect = false;
+        System.out.println("Insert the port: ");
+        while (!portCorrect) {
+            try {
+                System.out.print("> ");
+                port = Integer.parseInt(sc.next()); //did this because of InputMismatchException
+                if (port < 1024 || port > 65535) System.out.println("Port must be between 1024 and 65535, retry");
+                else portCorrect = true;
+            } catch (NumberFormatException e) {
+                System.out.println("Port must be a number, retry");
+            }
+        }
         try {
-            Server server = new Server(12345);
-            System.out.println("Server started");
+            Server server = new Server(port);
+            System.out.println("Server started on port " + port);
             server.run();
         } catch (IOException e) {
-            System.err.println("Couldn't start the server");
+            System.err.println("Couldn't start the server, the application will now close");
         }
     }
 

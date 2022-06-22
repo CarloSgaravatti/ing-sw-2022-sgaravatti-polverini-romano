@@ -8,6 +8,7 @@ import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
@@ -231,5 +232,11 @@ public class SchoolBox {
 
     public void insertTower() {
         towers.getChildren().stream().filter(n -> !n.isVisible()).findFirst().ifPresent(node -> node.setVisible(false));
+    }
+
+    public void updateCoins() {
+        Label coinsLabel = (Label) ((VBox) container.getChildren().get(2)).getChildren().get(1);
+        int numCoins = playerView.getPlayerCoins();
+        coinsLabel.setText(Integer.toString(numCoins));
     }
 }
