@@ -2,6 +2,8 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.enumerations.WizardType;
 
+import java.io.Serializable;
+
 /**
  * Class Assistant represent an assistant card that is assigned to a player at
  * the beginning of the game.

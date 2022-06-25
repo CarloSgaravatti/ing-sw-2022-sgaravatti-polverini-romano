@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.Student;
 import it.polimi.ingsw.model.modelObservables.StudentContainerObservable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

@@ -11,14 +11,15 @@ import it.polimi.ingsw.utils.JsonUtils;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 import java.util.*;
 
 public class InitController implements PropertyChangeListener {
-	private Game game;
+	private transient Game game;
 	private final int numPlayers;
 	private final boolean isExpertGame;
 	private final GameConstants gameConstants;
-	private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
+	private transient final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 
 	private final Map<String, WizardType> playersWithWizard = new HashMap<>();
 	private final Map<String, TowerType> playersWithTower = new HashMap<>();

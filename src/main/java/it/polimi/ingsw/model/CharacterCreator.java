@@ -4,6 +4,7 @@ import it.polimi.ingsw.model.characters.*;
 import it.polimi.ingsw.model.effects.GainInfluenceStrategy;
 import it.polimi.ingsw.model.effects.NoTowerInfluenceStrategy;
 
+import java.io.Serializable;
 import java.util.function.Consumer;
 
 /**

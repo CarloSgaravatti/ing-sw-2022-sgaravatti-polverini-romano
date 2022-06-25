@@ -3,6 +3,8 @@ package it.polimi.ingsw.model.effects;
 import it.polimi.ingsw.model.Island;
 import it.polimi.ingsw.model.Player;
 
+import java.io.Serializable;
+
 /**
  * An InfluenceStrategy represent a way to calculate the influence on an island, and it is a player property during his
  * turn. This is implemented as a Strategy pattern.

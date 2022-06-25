@@ -12,6 +12,7 @@ import it.polimi.ingsw.model.enumerations.RealmType;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +23,8 @@ import java.util.Map;
  * method. In this way, characters methods are called only if the input is correct.
  */
 public class CharacterController {
-    private final Game game;
-    private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
+    private transient final Game game;
+    private transient final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
     private final Map<String, Object> characterInput = new HashMap<>();
 
     /**

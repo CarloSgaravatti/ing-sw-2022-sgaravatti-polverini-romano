@@ -12,6 +12,7 @@ import it.polimi.ingsw.utils.Pair;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -22,12 +23,12 @@ import java.util.*;
  */
 public class ActionController {
 	private TurnPhase turnPhase;
-	private final TurnController turnController;
-	private final GameController gameController;
+	private transient final TurnController turnController;
+	private transient final GameController gameController;
 	private final CharacterController characterController;
 	private final List<String> possibleActions;
 	private final List<TurnPhase> currentTurnRemainingActions = new ArrayList<>();
-	private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
+	private transient final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 	private final int studentsToMove;
 
 	//TODO: substitute all illegal argument exceptions with booleans

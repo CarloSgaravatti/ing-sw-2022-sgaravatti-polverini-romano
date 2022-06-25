@@ -11,6 +11,7 @@ import it.polimi.ingsw.server.RemoteView;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,13 +21,13 @@ import java.util.List;
  * The class implements the PropertyChangeListener interface to implement the Observer pattern with
  * the view (the RemoteView will fire events that will be passed to this class).
  */
-public class GameController implements PropertyChangeListener {
+public class GameController implements PropertyChangeListener{
 	private TurnController turnController;
 	private ActionController actionController;
 	private final InitController initController;
 	private Game game;
 	private final boolean isExpertGame;
-	private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
+	private transient final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 
 	/**
 	 * Constructs a new GameController instance that will control a game with the specified number of players and the
@@ -218,7 +219,7 @@ public class GameController implements PropertyChangeListener {
 	 */
 	public void createListeners(List<RemoteView> views, GameLobby lobby) {
 		ErrorDispatcher errorDispatcher = new ErrorDispatcher(views);
-		AcknowledgementDispatcher ackDispatcher = new AcknowledgementDispatcher(views);
+		AcknowledgementDispatcher ackDispatcher = new AcknowledgementDispatcher(views, lobby);
 		listeners.addPropertyChangeListener("Error", errorDispatcher);
 		initController.addListener("Error", errorDispatcher);
 		actionController.addListener("Error", errorDispatcher);

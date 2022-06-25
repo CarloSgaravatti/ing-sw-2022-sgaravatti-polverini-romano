@@ -29,7 +29,7 @@ public class Game implements ModelObserver, PropertyChangeListener {
 	private int coinGeneralSupply;
 	private final CharacterCard[] characterCards;
 	private int indexActivePlayer;
-	private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
+	private transient final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 	private final GameConstants gameConstants;
 	private boolean isLastRound = false;
 	private final boolean isExpertGame;

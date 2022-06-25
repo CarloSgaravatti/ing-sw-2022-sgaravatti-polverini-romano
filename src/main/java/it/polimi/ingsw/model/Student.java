@@ -2,6 +2,8 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.enumerations.RealmType;
 
+import java.io.Serializable;
+
 /**
  * Class Student represent a Student in the game, which is associated to a specific RealmType
  */

@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model.gameConstants;
 
+import java.io.Serializable;
+
 public class GameConstants {
     private int numTotalStudents;
     private int numIslands;

@@ -9,6 +9,7 @@ import it.polimi.ingsw.model.modelObservables.ProfessorPresenceObservable;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +31,7 @@ public class School extends ProfessorPresenceObservable {
 	private final List<Student> studentDiningRoom;
 	private final List<Student> studentEntrance;
 	private final transient GameConstants gameConstants; //why?
-	private final PropertyChangeSupport player = new PropertyChangeSupport(this);
+	private final transient PropertyChangeSupport player = new PropertyChangeSupport(this);
 
 	/**
 	 * Constructs a school with no students in entrance or in dining room and no

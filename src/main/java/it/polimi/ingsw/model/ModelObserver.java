@@ -3,6 +3,8 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.effects.StudentContainer;
 import it.polimi.ingsw.model.enumerations.RealmType;
 
+import java.io.Serializable;
+
 /**
  * Interface ModelObserver defines some methods to automatically update some game aspects
  * in response to some changes that are caused by player actions.

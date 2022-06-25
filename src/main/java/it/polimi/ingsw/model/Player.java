@@ -8,11 +8,12 @@ import it.polimi.ingsw.model.enumerations.WizardType;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Player implements PropertyChangeListener{
+public class Player implements PropertyChangeListener {
 	private int numCoins;
 	private final String nickName;
 	private School school;

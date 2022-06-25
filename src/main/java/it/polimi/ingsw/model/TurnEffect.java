@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.effects.NormalInfluenceStrategy;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 
 /**
  * Class Turn effect represent all information of a player during his turn; this information is valid only during the
@@ -24,7 +25,7 @@ public class TurnEffect {
     private int additionalInfluence;
     private boolean characterPlayed;
     private boolean characterEffectConsumed; //for those characters who have an active effect for all turn
-    private final PropertyChangeSupport player = new PropertyChangeSupport(this);
+    private final transient PropertyChangeSupport player = new PropertyChangeSupport(this);
 
     /**
      * Construct a TurnEffect which has all value reset. The created object is observed by the specified listener

@@ -2,6 +2,8 @@ package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.model.Player;
 
+import java.io.Serializable;
+
 /**
  * PhaseOrder uses a Strategy pattern to calculate the current RoundPhase order. The order is calculated in base of the
  * current phase, the previous order and the players turn effects

@@ -17,7 +17,10 @@ import it.polimi.ingsw.model.characters.Character11;
 import it.polimi.ingsw.model.characters.Character5;
 import it.polimi.ingsw.model.characters.Character7;
 import it.polimi.ingsw.model.enumerations.*;
+import it.polimi.ingsw.server.resumeGame.SaveGame;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,6 +33,7 @@ public class GameLobby {
     private final int gameId;
     private final boolean isExpertGame;
     private final Server server;
+    private SaveGame saveGame;
 
     private final Object setupLock = new Object();
 
@@ -39,6 +43,11 @@ public class GameLobby {
         this.numPlayers = numPlayers;
         this.isExpertGame = isExpertGame;
         this.server = server;
+        try {
+            this.saveGame = new SaveGame(gameId, this);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     public synchronized void insertInLobby(String nickname, ClientConnection clientConnection) {
@@ -256,6 +265,7 @@ public class GameLobby {
 
     public void doEndGameOperations() {
         //TODO: maybe there are other things to do
+        saveGame.deleteFile();
         server.deleteGame(gameId);
     }
 
@@ -278,5 +288,9 @@ public class GameLobby {
 
     public boolean isExpertGame() {
         return isExpertGame;
+    }
+
+    public void setSaveGame(){
+        new Thread(()->saveGame.createJson()).start();
     }
 }

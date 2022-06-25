@@ -5,6 +5,7 @@ import it.polimi.ingsw.exceptions.StudentsNumberInCloudException;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 
 /**
  * Class Cloud represent a game cloud, that can contain some students (in base on how many
@@ -13,7 +14,7 @@ import java.beans.PropertyChangeSupport;
 public class Cloud {
 	private boolean studentsPresents;
 	private Student[] students;
-	private final PropertyChangeSupport game = new PropertyChangeSupport(this);
+	private final transient PropertyChangeSupport game = new PropertyChangeSupport(this);
 
 	/**
 	 * Constructs a cloud with no students that can contain the specified number of students

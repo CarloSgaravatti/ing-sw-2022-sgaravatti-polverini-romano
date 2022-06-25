@@ -2,6 +2,7 @@ package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.model.*;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
