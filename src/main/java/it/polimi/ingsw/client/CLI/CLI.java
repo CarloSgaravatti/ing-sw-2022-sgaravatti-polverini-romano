@@ -17,8 +17,6 @@ import java.net.Socket;
 import java.util.*;
 
 public class CLI implements Runnable, UserInterface {
-    private String serverAddress;
-    private int serverPort;
     private Socket socket;
     private final Scanner sc = new Scanner(System.in);
     private String nickname;
@@ -404,27 +402,31 @@ public class CLI implements Runnable, UserInterface {
     }
 
     public void onResumeGame(int numPlayers, boolean rules, String[] participants){
+        //clearScreen();
         String ruleInString = (rules)? "expert" : "simple";
-        System.out.print("\nYou have an unfinished game saved on the server\n\nHere the specifications of the game:\n-Number Of Players:"+numPlayers+"\nRules:"+ruleInString+"\nList of Participants:");
+        System.out.print("\nYou have an unfinished game saved on the server\n\nHere the specifications of the game:" +
+                "\n- Number Of Players: " + numPlayers +
+                "\n- Rules: " + ruleInString +
+                "\n- List of Participants: ");
         for(int i = 0; i < numPlayers; i++){
-            if(i==numPlayers-1){
+            if(i == numPlayers - 1){
                 System.out.print(participants[i]);
             }
             else{
                 System.out.print(participants[i]+", ");
             }
         }
-        System.out.println("Do you want to resume game? [y/n]");
+        System.out.println("\nDo you want to resume game? [y/n]");
         inputManager.setInputPermitted(true);
         String reply;
         do{
             reply = inputManager.getLastInput();
         }while (!reply.equals("y") && !reply.equals("n") && !reply.equals("Y") && !reply.equals("N"));
         if(reply.equals("y") || reply.equals("Y")){
-            listeners.firePropertyChange("restoreGame", null, null);
+            listeners.firePropertyChange("RestoreGame", null, null);
         }
         else{
-            listeners.firePropertyChange("deleteSavedGame", null,null);
+            listeners.firePropertyChange("DeleteSavedGame", null,null);
         }
     }
 }

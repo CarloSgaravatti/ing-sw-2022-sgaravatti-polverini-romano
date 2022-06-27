@@ -17,7 +17,11 @@ public abstract class StudentContainerObservable {
     /**
      * The list of observers
      */
-    transient List<ModelObserver> observers = new ArrayList<>();
+    private final transient List<ModelObserver> observers;
+
+    public StudentContainerObservable() {
+        observers = new ArrayList<>();
+    }
 
     /**
      * Add an observer to the observer list

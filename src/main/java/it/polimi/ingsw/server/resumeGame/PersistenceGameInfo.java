@@ -18,7 +18,7 @@ public class PersistenceGameInfo {
     private List<TurnPhase> lastTurnRemainingActions;
     private boolean isFirstRound;
     private int numPlayers;
-    private boolean started; //useless
+    private boolean started;
     private Player[] players;
     private Bag bag;
     private Island[] islands;
@@ -30,7 +30,6 @@ public class PersistenceGameInfo {
     private boolean isExpertGame;
     private CharacterCard[] characterCards;
     private final Map<Integer, String> lastCharacterActivePlayer = new HashMap<>();
-
 
     public PersistenceGameInfo(int gameId) {
         this.gameId = gameId;
@@ -71,7 +70,6 @@ public class PersistenceGameInfo {
     }
 
     public GameController restoreGameState() {
-        //TODO: use save game to take values from file
         return restoreControllers(restoreModelComponents());
     }
 
@@ -94,7 +92,7 @@ public class PersistenceGameInfo {
             }
         }
         game.restoreCharacters(characterCards);
-        game.getPlayers().forEach(player -> player.restorePlayer(game));
+        game.getPlayers().forEach(player -> player.restorePlayer(game, gameConstants));
         game.getIslands().forEach(island -> island.restoreIsland(game));
         return game;
     }

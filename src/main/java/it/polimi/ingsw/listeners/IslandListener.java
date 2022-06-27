@@ -28,7 +28,6 @@ public class IslandListener implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case STUDENTS -> onStudentUpdate((Integer) evt.getSource(), (RealmType[]) evt.getNewValue(), (Boolean) evt.getOldValue());
-            //case TOWER -> onTowerUpdate((TowerType) evt.getNewValue(), (Integer) evt.getSource());
             case TOWER -> onTowerUpdate((Integer) evt.getSource(), (Player) evt.getOldValue(), (Player) evt.getNewValue());
             case UNIFICATION -> onIslandUnification((Integer[]) evt.getOldValue(), (Island) evt.getNewValue());
         }
@@ -42,16 +41,7 @@ public class IslandListener implements PropertyChangeListener {
         remoteView.sendMessage(messagePayload, "IslandStudentsUpdate", ServerMessageType.GAME_UPDATE);
     }
 
-    private void onTowerUpdate(TowerType type, int indexIsland) {
-        System.out.println(Colors.BLUE + "Sending island tower update");
-        MessagePayload messagePayload = new MessagePayload();
-        messagePayload.setAttribute("TowerType", type);
-        messagePayload.setAttribute("IslandId", indexIsland);
-        remoteView.sendMessage(messagePayload, "IslandTowerUpdate", ServerMessageType.GAME_UPDATE);
-    }
-
     private void onTowerUpdate(int indexIsland, Player previousOwner, Player newOwner) {
-        System.out.println(Colors.BLUE + "Sending island tower update");
         MessagePayload messagePayload = new MessagePayload();
         messagePayload.setAttribute("TowerType", newOwner.getSchool().getTowerType());
         messagePayload.setAttribute("IslandId", indexIsland);
@@ -63,7 +53,6 @@ public class IslandListener implements PropertyChangeListener {
     }
 
     private void onIslandUnification(Integer[] islandIndexes, Island island){
-        System.out.println(Colors.BLUE + "Sending island unification");
         MessagePayload messagePayload = new MessagePayload();
         messagePayload.setAttribute("IslandsId", islandIndexes);
         RealmType[] newStudents = island.getStudents().stream().map(Student::getStudentType).toList().toArray(new RealmType[0]);

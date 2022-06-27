@@ -17,11 +17,13 @@ public class StudentContainer extends StudentContainerObservable {
 
     //For testing
     public StudentContainer() {
+        super();
         students = new ArrayList<>();
         maxStudents = 4;
     }
 
     public StudentContainer(int maxStudents, ModelObserver observer) {
+        super();
         this.maxStudents = maxStudents;
         super.addObserver(observer);
         students = new ArrayList<>();
@@ -29,6 +31,7 @@ public class StudentContainer extends StudentContainerObservable {
     }
 
     public StudentContainer(int maxStudents, Student ... students) {
+        super();
         this.maxStudents = maxStudents;
         this.students = new ArrayList<>();
         for (Student student : students) {

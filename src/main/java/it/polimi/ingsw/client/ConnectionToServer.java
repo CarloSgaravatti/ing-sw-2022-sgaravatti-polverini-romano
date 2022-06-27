@@ -46,8 +46,8 @@ public class ConnectionToServer implements Runnable {
         view.addListener(playerSetupHandler, "TowerChoice");
         view.addListener(playerSetupHandler, "WizardChoice");
         view.addListener(playerSetupHandler, "RefreshLobby");
-        view.addListener(playerSetupHandler, "restoreGame");
-        view.addListener(playerSetupHandler, "deleteSavedGame");
+        view.addListener(playerSetupHandler, "RestoreGame");
+        view.addListener(playerSetupHandler, "DeleteSavedGame");
     }
 
     /**

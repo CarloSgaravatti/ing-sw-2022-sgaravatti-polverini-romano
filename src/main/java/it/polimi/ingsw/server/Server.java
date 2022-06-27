@@ -25,7 +25,7 @@ public class Server implements Runnable{
     private final Map<Integer, Map<String, ClientConnection>> waitingPlayersPerGameMap; //Decide if is useful
     private final Map<String, ClientConnection> clientsConnected;
     private int lastGameId = 0;
-    private List<Integer> gamesToBeRestored = new ArrayList<>();
+    private Map<Integer, String[]> gamesParticipantsToBeRestored = new HashMap<>();
     public Server(int port) throws IOException{
         serverSocket = new ServerSocket(port);
         gamesMap = new ConcurrentHashMap<>();
@@ -36,9 +36,12 @@ public class Server implements Runnable{
 
     @Override
     public void run() {
-        gamesToBeRestored = SaveGame.findSavedGamesIds();
-        gamesToBeRestored.forEach(System.out::println);
-        lastGameId = gamesToBeRestored.stream().max(Comparator.comparingInt(i -> i)).orElse(0);
+        try {
+            gamesParticipantsToBeRestored = SaveGame.getParticipants();
+        } catch (IOException e) {
+            //TODO
+            e.printStackTrace();
+        }
         while (true) {
             try {
                 Socket socket = serverSocket.accept();
@@ -81,8 +84,25 @@ public class Server implements Runnable{
             //globalLobby(participants.get(clientName), clientName);
             participants.get(clientName).setSetupDone(false);
         }
+        deleteFile(gameId);
+    }
+
+    protected synchronized void deleteSavedGame(String client) {
+        Optional<PersistenceGameInfo> persistenceGameInfo = getPreviousGame(client);
+        persistenceGameInfo.ifPresent(game -> {
+            if (gamesMap.containsKey(game.getGameId())) {
+                deleteGame(game.getGameId());
+            } else {
+                deleteFile(game.getGameId());
+                gamesParticipantsToBeRestored.remove(game.getGameId());
+            }
+        });
+    }
+
+    private void deleteFile(int gameId) {
         try {
             SaveGame.deletePersistenceData(gameId);
+            saveParticipants();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -139,19 +159,9 @@ public class Server implements Runnable{
     }
 
     private boolean checkPreviousGames(ClientConnection client, String clientName) {
-        Optional<PersistenceGameInfo> previousGame = gamesToBeRestored.stream().map(gameId -> {
-            try {
-                PersistenceGameInfo persistenceGameInfo = SaveGame.getPersistenceData(gameId);
-                persistenceGameInfo.getParticipants().forEach(System.out::println);
-                return persistenceGameInfo;
-            } catch (URISyntaxException | FileNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
-        }).filter(Objects::nonNull).filter(data -> data.getParticipants().contains(clientName)).findFirst();
+        Optional<PersistenceGameInfo> previousGame = getPreviousGame(clientName);
         if (previousGame.isPresent()) {
+            System.out.println("Found game " + previousGame.get().getGameId() + " for player " + clientName);
             ServerMessageHeader header = new ServerMessageHeader("PreviousGameChoice", ServerMessageType.SERVER_MESSAGE);
             MessagePayload payload = new MessagePayload();
             Triplet<Integer, Boolean, String[]> previousGameInfo = previousGame.get().getGameInfo();
@@ -164,7 +174,20 @@ public class Server implements Runnable{
         return false;
     }
 
-    public void gameLobby(int gameId, ClientConnection client, String clientName) {
+    private Optional<PersistenceGameInfo> getPreviousGame(String clientName) {
+        for (Integer gameId: gamesParticipantsToBeRestored.keySet()) {
+            if (Arrays.stream(gamesParticipantsToBeRestored.get(gameId)).toList().contains(clientName)) {
+                try {
+                    return Optional.ofNullable(SaveGame.getPersistenceData(gameId));
+                } catch (URISyntaxException | FileNotFoundException e) {
+                    return Optional.empty();
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    public synchronized void gameLobby(int gameId, ClientConnection client, String clientName) {
         if (!gamesMap.containsKey(gameId)) {
             handleLobbyError(ErrorMessageType.INVALID_REQUEST_GAME_NOT_FOUND, client, clientName);
         } else if(gamesMap.get(gameId).isStarted()) {
@@ -173,6 +196,7 @@ public class Server implements Runnable{
             gamesMap.get(gameId).insertInLobby(clientName, client);
             client.setSetupDone(true);
             waitingPlayersWithNoGame.remove(clientName);
+            if (gamesMap.get(gameId).isStarted()) gamesParticipantsToBeRestored.remove(gameId);
         }
     }
 
@@ -191,6 +215,38 @@ public class Server implements Runnable{
         gamesMap.put(lastGameId, new GameLobby(lastGameId, numPlayers, isExpertGame, this, false));
         waitingPlayersPerGameMap.put(lastGameId, new HashMap<>());
         return lastGameId;
+    }
+
+    public synchronized int restoreGameOfClient(String clientName) throws NoSuchElementException {
+        Optional<PersistenceGameInfo> previousGame = getPreviousGame(clientName);
+        if (previousGame.isEmpty()) throw new NoSuchElementException();
+        PersistenceGameInfo persistenceGameInfo = previousGame.get();
+        int gameId = persistenceGameInfo.getGameId();
+        Triplet<Integer, Boolean, String[]> gameInfo = persistenceGameInfo.getGameInfo();
+        if (!gamesMap.containsKey(gameId)) {
+            System.out.println("Restored game " + gameId);
+            gamesMap.put(gameId, new GameLobby(gameId, gameInfo.getFirst(), gameInfo.getSecond(), this, true));
+            waitingPlayersPerGameMap.put(gameId, new HashMap<>());
+        }
+        return gameId;
+    }
+
+    public void saveParticipants() {
+        new Thread(() -> {
+            Map<Integer, String[]> gamesParticipants = new HashMap<>();
+            for (Integer gameId : gamesParticipantsToBeRestored.keySet()) {
+                gamesParticipants.put(gameId, gamesParticipantsToBeRestored.get(gameId));
+            }
+            for (Integer gameId: gamesMap.keySet()) {
+                gamesParticipants.put(gameId, gamesMap.get(gameId).getGameParticipants());
+            }
+            gamesParticipants.keySet().forEach(System.out::println);
+            try {
+                SaveGame.saveGameParticipants(gamesParticipants);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
     }
 
     //This implements a sort of auto-incremental key for gameId (like in a db)

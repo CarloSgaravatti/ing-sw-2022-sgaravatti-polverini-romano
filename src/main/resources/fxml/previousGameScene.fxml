@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="1080.0" prefWidth="1920.0" styleClass="anchor-pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.PreviousGameController">
+   <children>
+      <TitledPane layoutX="592.0" layoutY="403.0" prefHeight="452.0" prefWidth="737.0">
+         <content>
+            <Pane layoutX="593.0" layoutY="470.0" prefHeight="540.0" prefWidth="735.0" styleClass="pane">
+               <children>
+                  <Text layoutX="-1.0" layoutY="70.0" strokeType="OUTSIDE" strokeWidth="0.0" text="You have an unfinished game on the server, do you want to resume it?" textAlignment="CENTER" wrappingWidth="737.0">
+                     <font>
+                        <Font size="36.0" />
+                     </font>
+                  </Text>
+                  <HBox alignment="CENTER" layoutX="-1.0" layoutY="278.0" prefHeight="100.0" prefWidth="737.0" spacing="30.0">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#onResumeClick" styleClass="resume-game-button" text="Resume game" />
+                        <Button mnemonicParsing="false" onAction="#onDeleteClick" styleClass="delete-game-button" text="Delete game" />
+                     </children>
+                  </HBox>
+                  <Text fx:id="gameInfo" layoutX="70.0" layoutY="184.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="info-text" text="Num players: 1                                                                  Rules: expert                                                                   Participants: carlo, mario" wrappingWidth="595.0">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Text>
+               </children>
+            </Pane>
+         </content>
+      </TitledPane>
+   </children>
+   <stylesheets>
+      <URL value="@../css/welcomeStyle.css" />
+      <URL value="@../css/previousGameDialog.css" />
+   </stylesheets>
+</AnchorPane>

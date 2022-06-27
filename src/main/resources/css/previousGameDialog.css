@@ -1,0 +1,23 @@
+.delete-game-button, .resume-game-button {
+    -fx-opacity: 0.8;
+    -fx-padding: 10px, 10px, 10px, 10px;
+    -fx-font-size: 22;
+}
+
+.resume-game-button {
+    -fx-background-color: lightgreen;
+}
+
+.delete-game-button {
+    -fx-background-color: tomato;
+}
+
+.delete-game-button:hover, .resume-game-button:hover {
+    -fx-opacity: 1;
+    -fx-cursor: hand;
+}
+
+.info-text {
+    -fx-font-size: 24;
+    -fx-padding: 20px, 10px, 10px, 10px;
+}

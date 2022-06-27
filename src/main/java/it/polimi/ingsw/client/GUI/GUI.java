@@ -45,6 +45,7 @@ public class GUI extends Application implements UserInterface {
     @Override
     public void start(Stage stage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(GUI.class.getResource("/fxml/welcomeToEriantys.fxml"));
+        //FXMLLoader fxmlLoader = new FXMLLoader(GUI.class.getResource("/fxml/genericBackground.fxml"));
         scene = new Scene(fxmlLoader.load()); //width and height (is still resizable)
         //with stage.setResizable(false) the stage is not resizable
         //stage.setFullScreen(true) set the stage to full screen
@@ -131,6 +132,23 @@ public class GUI extends Application implements UserInterface {
             SetupChoiceSceneController sceneController = fxmlLoader.getController();
             sceneController.addListener(this);
             sceneController.setSceneWithWizards(freeWizards);
+            this.stage.show();
+        });
+    }
+
+    @Override
+    public void onResumeGame(int numPlayers, boolean rules, String[] participants) {
+        Platform.runLater(() -> {
+            FXMLLoader fxmlLoader = new FXMLLoader(GUI.class.getResource("/fxml/previousGameScene.fxml"));
+            try {
+                scene = new Scene(fxmlLoader.load());
+            } catch (IOException e) {
+                //TODO
+            }
+            this.stage.setScene(scene);
+            PreviousGameController previousGameController = fxmlLoader.getController();
+            previousGameController.addListener(this);
+            previousGameController.init(numPlayers, rules, participants);
             this.stage.show();
         });
     }

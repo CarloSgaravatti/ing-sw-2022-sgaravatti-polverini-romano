@@ -45,7 +45,7 @@ public class DefaultMessageHandler extends BaseMessageHandler {
             case "GameLobby" -> onGameLobbyMessage(payload);
             case "Error" -> onErrorMessage(payload);
             case "PlayerDisconnected" -> onPlayerDisconnection(payload);
-            case "PreviousGameChoice" -> {}//TODO: new method
+            case "PreviousGameChoice" -> onResumeGame(payload);
         }
     }
 
@@ -80,9 +80,9 @@ public class DefaultMessageHandler extends BaseMessageHandler {
     }
 
     private void onResumeGame(MessagePayload payload) {
-      int numPlayers = payload.getAttribute("NumPlayers").getAsInt();
-      boolean rules = payload.getAttribute("Rules").getAsBoolean();
-      String[] participants = (String[]) payload.getAttribute("Participants").getAsObject();
-
+        int numPlayers = payload.getAttribute("NumPlayers").getAsInt();
+        boolean rules = payload.getAttribute("Rules").getAsBoolean();
+        String[] participants = (String[]) payload.getAttribute("Participants").getAsObject();
+        getUserInterface().onResumeGame(numPlayers, rules, participants);
     }
 }

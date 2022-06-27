@@ -10,7 +10,11 @@ public abstract class MotherNatureMovementObservable {
     /**
      * The list of observers
      */
-    transient List<ModelObserver> observers = new ArrayList<>();
+    private final transient List<ModelObserver> observers;
+
+    public MotherNatureMovementObservable() {
+        observers = new ArrayList<>();
+    }
 
     /**
      * Add an observer to the observer list

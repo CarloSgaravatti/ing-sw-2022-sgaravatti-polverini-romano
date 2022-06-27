@@ -34,7 +34,6 @@ public class GameLobby {
     private final int gameId;
     private final boolean isExpertGame;
     private final Server server;
-    //private SaveGame saveGame;
     private final boolean isGameRestored;
     private final Object setupLock = new Object();
 
@@ -47,11 +46,6 @@ public class GameLobby {
         this.isExpertGame = isExpertGame;
         this.server = server;
         this.isGameRestored = isGameRestored;
-        /*try {
-            this.saveGame = new SaveGame(gameId, this);
-        }catch (IOException | URISyntaxException e){
-            e.printStackTrace();
-        }*/
     }
 
     public synchronized void insertInLobby(String nickname, ClientConnection clientConnection) {
@@ -88,9 +82,11 @@ public class GameLobby {
                     gameController.setGame(initController.getGame());
                     game = gameController.getModel();
                     gameController.initializeControllers();
+                    server.saveParticipants();
                 } else {
-                    PersistenceGameInfo persistenceGameInfo = new PersistenceGameInfo(gameId);
+                    PersistenceGameInfo persistenceGameInfo = SaveGame.getPersistenceData(gameId);
                     gameController = persistenceGameInfo.restoreGameState();
+                    game = gameController.getModel();
                 }
                 gameController.createListeners(assignRemoteViews(), this);
                 if (!game.isStarted()) {
@@ -98,10 +94,10 @@ public class GameLobby {
                     //SocketClientConnection, we want that when the setupGame method is running all the SocketClientConnections
                     //are reading messages to update setup choices.
                     new Thread(this::setupGame).start();
-                    setStarted(true);
                 } else { //game is restored and started
                     restoreGame();
                 }
+                setStarted(true);
             } catch (Exception e) {e.printStackTrace();}
         }
     }
@@ -192,7 +188,9 @@ public class GameLobby {
             try {
                 synchronized (setupLock) {
                     while (gameController.getInitController().getPlayersWithTower().size() == numPlayersWithTower &&
-                            gameController.getInitController().getPlayersWithWizard().size() == numPlayersWithWizard) {
+                            gameController.getInitController().getPlayersWithWizard().size() == numPlayersWithWizard &&
+                            (gameController.getInitController().getPlayersWithTower().size() != numPlayers ||
+                            gameController.getInitController().getPlayersWithWizard().size() != numPlayers)) {
                         setupLock.wait();
                     }
                 }
@@ -204,6 +202,7 @@ public class GameLobby {
         }
         sendInitializations();
         gameController.startGame();
+        setSaveGame();
     }
 
     private void sendRestoredSetup() {
@@ -266,13 +265,19 @@ public class GameLobby {
         for (Island i: game.getIslands()) {
             Integer[] students = RealmType.getIntegerRepresentation(i.getStudents().stream()
                     .map(Student::getStudentType).toList().toArray(new RealmType[0]));
-            islandsView.add(new SimpleIsland(students));
+            islandsView.add(new SimpleIsland(students, i.getNumTowers(), i.getTowerType(), i.getNoEntryTilePresents()));
         }
         Map<Integer, Integer[]> clouds = new HashMap<>();
         Cloud[] gameClouds = game.getClouds();
         for (int i = 0; i < gameClouds.length; i++) {
-            Integer[] students = new Integer[RealmType.values().length];
-            Arrays.fill(students, 0);
+            Integer[] students;
+            if (gameClouds[i].getStudentsNumber() == 0) {
+                students = new Integer[RealmType.values().length];
+                Arrays.fill(students, 0);
+            } else {
+                students = RealmType.getIntegerRepresentation(Arrays.stream(gameClouds[i].getStudents())
+                        .map(Student::getStudentType).toList().toArray(new RealmType[0]));
+            }
             clouds.put(i, students);
         }
         List<Player> players = game.getPlayers();

@@ -12,10 +12,8 @@ import it.polimi.ingsw.model.characters.Character5;
 import it.polimi.ingsw.model.characters.Character7;
 import it.polimi.ingsw.model.effects.StudentContainer;
 import it.polimi.ingsw.model.enumerations.RealmType;
-import org.codehaus.plexus.util.StringUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,8 +36,12 @@ public class CharacterTypeAdapter extends TypeAdapter<CharacterCard> {
     }
 
     private String getStudentsString(List<Student> students) {
-        return StringUtils.join(students.stream()
-                .map(student -> student.getStudentType().getAbbreviation()).toList().toArray(new String[0]), ";");
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < students.size() - 1; i++) {
+            stringBuilder.append(students.get(i).getStudentType().getAbbreviation()).append(";");
+        }
+        if (students.size() != 0) stringBuilder.append(students.get(students.size() - 1).getStudentType().getAbbreviation());
+        return stringBuilder.toString();
     }
 
     @Override

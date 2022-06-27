@@ -10,7 +10,6 @@ import it.polimi.ingsw.model.SingleIsland;
 import it.polimi.ingsw.model.Student;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
-import org.codehaus.plexus.util.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,8 +31,13 @@ public class IslandTypeAdapter extends TypeAdapter<Island> {
 
     private String getStudentsString(Island island) {
         if (island.getNumTowers() == 1) {
-            return StringUtils.join(island.getStudents().stream()
-                    .map(student -> student.getStudentType().getAbbreviation()).toList().toArray(new String[0]), ";");
+            StringBuilder stringBuilder = new StringBuilder();
+            Student[] students = island.getStudents().toArray(new Student[0]);
+            for (int i = 0; i < students.length - 1; i++) {
+                stringBuilder.append(students[i].getStudentType().getAbbreviation()).append(";");
+            }
+            if (students.length != 0) stringBuilder.append(students[students.length - 1].getStudentType().getAbbreviation());
+            return stringBuilder.toString();
         } else {
             List<Island> islands = ((IslandGroup) island).getIslands();
             StringBuilder result = new StringBuilder();
@@ -70,7 +74,10 @@ public class IslandTypeAdapter extends TypeAdapter<Island> {
         }
         jsonReader.endObject();
         String[] studentsTokens = students.split("!");
-        if (studentsTokens.length != numTowers) throw new IllegalArgumentException();
+        if (studentsTokens.length != numTowers) {
+            System.out.println("error");
+            throw new IllegalArgumentException();
+        }
         SingleIsland[] islands = new SingleIsland[numTowers];
         for (int i = 0; i < numTowers; i++) {
             SingleIsland singleIsland = new SingleIsland();
@@ -78,6 +85,7 @@ public class IslandTypeAdapter extends TypeAdapter<Island> {
             for (int j = 0; j < numNoEntryTiles; j++) singleIsland.insertNoEntryTile(null);
             singleIsland.setMotherNaturePresent(motherNaturePresent);
             singleIsland.setStudents(getStudents(studentsTokens[i]));
+            islands[i] = singleIsland;
         }
         if (numTowers == 1) return islands[0];
         else return new IslandGroup(islands);

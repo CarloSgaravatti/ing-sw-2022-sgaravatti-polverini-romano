@@ -17,6 +17,7 @@ import it.polimi.ingsw.model.enumerations.WizardType;
 import it.polimi.ingsw.utils.Pair;
 
 import java.util.Arrays;
+import java.util.Map;
 
 //Handles GAME_SETUP and SetupAck messages
 public class GameSetupMessageHandler extends BaseMessageHandler{
@@ -34,6 +35,7 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
             return;
         }
         MessagePayload payload = message.getMessagePayload();
+        System.out.println("Received " + header.getMessageName());
         switch (header.getMessageName()) {
             case "PlayerJoined" -> onPlayerJoin(payload);
             case "GameStarted" -> onGameStarted(payload);
@@ -43,6 +45,7 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
             case "TowerTypeRequest" -> onTowerTypeRequest(payload);
             case "WizardTypeRequest" -> onWizardTypeRequest(payload);
             case "SetupAck" -> onSetupAck(payload);
+            case "RestoredSetup" -> onRestoredSetup(payload);
             case "GameRestoredData" -> onRestoredGameInitialization(payload);
         }
     }
@@ -88,24 +91,8 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
             getModelView().getPlayers().get(playerName).updateNumTowers(player.getNumTowers());
             getModelView().getPlayers().get(playerName).updateCoins(player.getNumCoins());
         }
-        TurnHandler turnHandler = new TurnHandler(getConnection(), getUserInterface()); //TODO: create method for creating all handlers
-        ((DefaultMessageHandler) getNextHandler()).setTurnHandler(turnHandler);
-        if (getModelView().isExpert()) {
-            getConnection().addFirstMessageHandler(new ExpertGameMessageHandler(getConnection(), getUserInterface(), getModelView()));
-        }
-        TurnMessageHandler turnMessageHandler = new TurnMessageHandler(getConnection(), getUserInterface(), getModelView());
-        getConnection().addFirstMessageHandler(turnMessageHandler);
-        turnMessageHandler.setTurnHandler(turnHandler);
-        getConnection().addFirstMessageHandler(new GameUpdateMessageHandler(getConnection(), getUserInterface(), getModelView()));
+        createAllHandlers();
         getUserInterface().onGameInitialization(getModelView());
-        ActionMessageConstructor messageConstructor = new ActionMessageConstructor(getConnection());
-        ActionInputParser inputParser = new ActionInputParser(messageConstructor, turnHandler, getUserInterface(), getModelView());
-        getUserInterface().addListener(inputParser, "MoveStudents");
-        getUserInterface().addListener(inputParser, "MoveMotherNature");
-        getUserInterface().addListener(inputParser, "PickFromCloud");
-        getUserInterface().addListener(inputParser, "PlayCharacter");
-        getUserInterface().addListener(inputParser, "PlayAssistant");
-        getUserInterface().addListener(messageConstructor, "EndTurn");
     }
 
     private void onTowerTypeRequest(MessagePayload payload) {
@@ -121,7 +108,7 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
     }
 
     private void onRestoredGameInitialization(MessagePayload payload){
-        SimpleModel simpleModel= (SimpleModel) payload.getAttribute("SimpleModel").getAsObject();
+        SimpleModel simpleModel = (SimpleModel) payload.getAttribute("SimpleModel").getAsObject();
         FieldView fieldView = new FieldView(simpleModel.getField());
         getModelView().setField(fieldView);
         for (SimplePlayer player : simpleModel.getSchools()) {
@@ -138,8 +125,12 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
         for(int i = 0; i < simpleModel.getProfessorOwners().length; i++){
             fieldView.updateProfessorOwner(RealmType.values()[i], professorOwners[i]);
         }
+        createAllHandlers();
+        getUserInterface().onGameInitialization(getModelView());
+    }
 
-        TurnHandler turnHandler = new TurnHandler(getConnection(), getUserInterface()); //TODO: create method for creating all handlers
+    private void createAllHandlers() {
+        TurnHandler turnHandler = new TurnHandler(getConnection(), getUserInterface());
         ((DefaultMessageHandler) getNextHandler()).setTurnHandler(turnHandler);
         if (getModelView().isExpert()) {
             getConnection().addFirstMessageHandler(new ExpertGameMessageHandler(getConnection(), getUserInterface(), getModelView()));
@@ -148,7 +139,6 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
         getConnection().addFirstMessageHandler(turnMessageHandler);
         turnMessageHandler.setTurnHandler(turnHandler);
         getConnection().addFirstMessageHandler(new GameUpdateMessageHandler(getConnection(), getUserInterface(), getModelView()));
-        getUserInterface().onGameInitialization(getModelView());
         ActionMessageConstructor messageConstructor = new ActionMessageConstructor(getConnection());
         ActionInputParser inputParser = new ActionInputParser(messageConstructor, turnHandler, getUserInterface(), getModelView());
         getUserInterface().addListener(inputParser, "MoveStudents");
@@ -157,6 +147,13 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
         getUserInterface().addListener(inputParser, "PlayCharacter");
         getUserInterface().addListener(inputParser, "PlayAssistant");
         getUserInterface().addListener(messageConstructor, "EndTurn");
+    }
 
+    private void onRestoredSetup(MessagePayload payload) {
+        SimpleModel simpleModel = (SimpleModel) payload.getAttribute("SetupInfo").getAsObject();
+        Map<String, TowerType> towers = simpleModel.getTowers();
+        Map<String, WizardType> wizards = simpleModel.getWizards();
+        towers.keySet().forEach(playerName -> getModelView().getPlayers().get(playerName).setTower(towers.get(playerName)));
+        wizards.keySet().forEach(playerName -> getModelView().getPlayers().get(playerName).setWizard(wizards.get(playerName)));
     }
 }

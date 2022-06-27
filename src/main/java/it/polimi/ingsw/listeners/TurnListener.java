@@ -31,7 +31,6 @@ public class TurnListener implements PropertyChangeListener {
         payload.setAttribute("NewPhase", newPhase);
         payload.setAttribute("Starter", starter);
         payload.setAttribute("PossibleActions", possibleActions);
-        System.out.println("Sending an end phase message to " + view.getPlayerNickname() + " starter is " + starter + " " + Arrays.toString(possibleActions));
         view.sendMessage(payload, "ChangePhase", ServerMessageType.GAME_UPDATE);
     }
 
@@ -40,7 +39,6 @@ public class TurnListener implements PropertyChangeListener {
             MessagePayload payload = new MessagePayload();
             payload.setAttribute("Values", values);
             payload.setAttribute("MotherNatureMovements", motherNatureMovements);
-            System.out.println("Sending an assistant update to " + nickname);
             view.sendMessage(payload, "AssistantsUpdate", ServerMessageType.GAME_UPDATE);
         }
     }

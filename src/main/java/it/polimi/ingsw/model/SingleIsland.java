@@ -43,6 +43,6 @@ public class SingleIsland extends Island {
     }
 
     public void setStudents(List<Student> students) {
-
+        this.students.addAll(students);
     }
 }

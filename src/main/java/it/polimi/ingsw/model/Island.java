@@ -30,6 +30,7 @@ public abstract class Island extends MotherNatureMovementObservable {
 	 * Constructs an empty Island with no students, no entry tiles and mother nature in it
 	 */
 	public Island() {
+		super();
 		motherNaturePresent = false;
 		noEntryTilePresents = 0;
 	}

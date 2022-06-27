@@ -1,43 +1,22 @@
 package it.polimi.ingsw.server.resumeGame;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.internal.bind.ArrayTypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import it.polimi.ingsw.model.CharacterCard;
 import it.polimi.ingsw.model.Island;
-import it.polimi.ingsw.model.characters.Character1;
 import it.polimi.ingsw.model.effects.InfluenceStrategy;
-import it.polimi.ingsw.server.GameLobby;
-import it.polimi.ingsw.utils.JsonUtils;
 import org.apache.maven.settings.Server;
 
 import java.io.*;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SaveGame {
-    private final GameLobby gameLobby;
-    private final String fileName;
-    private final Map<String, Object> variables = new HashMap<>();
-    private final File file;
-    private boolean created;
     private static final String jarPathString;
     private static final GsonBuilder gsonBuilder;
-
-    public SaveGame(int id, GameLobby gameLobby) throws IOException, URISyntaxException {
-        this.gameLobby = gameLobby;
-        File jarPath = new File(Server.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-        String string = jarPath.getParentFile().getAbsolutePath();
-        fileName = string + "/backupGames/Game_With_ID_"+id+".json";
-        new File(string + "/backupGames").mkdir();
-        this.file = new File(fileName);
-        created = file.createNewFile();
-        System.out.println("Saved file on path: " + fileName);
-    }
 
     static {
         File jarPath = null;
@@ -54,51 +33,13 @@ public class SaveGame {
         gsonBuilder.registerTypeAdapter(CharacterCard.class, new CharacterTypeAdapter());
     }
 
-    public void createJson(){
-        try {
-            variables.put("Game", gameLobby.getGameController().getModel());
-            variables.put("GameController", gameLobby.getGameController());
-
-            PrintWriter writer = new PrintWriter(fileName, StandardCharsets.UTF_8);
-            writer.print(new Gson().toJson(gameLobby.getGameController()));
-            writer.close();
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    public GameLobby getGameLobby() {
-        return gameLobby;
-    }
-
-    public void deleteFile(){
-        try {
-            File file = new File(fileName);
-            if (!file.delete())
-                throw new Exception();
-
-            System.out.println("Deleted file game:"+ fileName);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Map<String, Object> getVariables() {
-        return variables;
-    }
-
     public static void saveGame(PersistenceGameInfo gameInfo) throws URISyntaxException, IOException {
-        File jarPath = new File(Server.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-        String string = jarPath.getParentFile().getAbsolutePath();
         String fileName = jarPathString + "/backupGames/Game_With_ID_" + gameInfo.getGameId() + ".json";
         File file = new File(fileName);
         boolean created = file.createNewFile();
-        System.out.println("Saved file on path: " + fileName);
+        //System.out.println("Saved file on path: " + fileName);
         try {
             PrintWriter writer = new PrintWriter(fileName, StandardCharsets.UTF_8);
-            Gson gson = gsonBuilder.create();
-            ArrayTypeAdapter<Island> islandArrayTypeAdapter = new ArrayTypeAdapter<>(gson, gsonBuilder.create().getAdapter(Island.class), Island.class);
             writer.print(gsonBuilder.create().toJson(gameInfo));
             writer.close();
         } catch (Exception e) {
@@ -107,11 +48,6 @@ public class SaveGame {
     }
 
     public static PersistenceGameInfo getPersistenceData(int gameId) throws URISyntaxException, FileNotFoundException {
-        File jarPath = new File(Server.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-        String stringPath = jarPath.getParentFile().getAbsolutePath();
-        /*InputStream stream = JsonUtils.class.getResourceAsStream(jarPathString + "/backupGames/Game_With_ID_" + gameId + ".json");
-        if (stream == null) return null; //TODO: exception
-        InputStreamReader streamReader = new InputStreamReader(stream, StandardCharsets.UTF_8);*/
         FileInputStream fileInputStream = new FileInputStream(jarPathString + "/backupGames/Game_With_ID_" + gameId + ".json");
         InputStreamReader streamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
         return gsonBuilder.create().fromJson(streamReader, PersistenceGameInfo.class);
@@ -123,22 +59,56 @@ public class SaveGame {
         File fileToDelete = new File(jarPathString + "/backupGames/Game_With_ID_" + gameId + ".json");
         try {
             if (!fileToDelete.delete()) throw new Exception();
-            System.out.println("Deleted file of game "+ gameId);
+            System.out.println("Deleted file of game " + gameId);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static List<Integer> findSavedGamesIds() {
-        File gamesFolder = new File(jarPathString + "/backupGames");
-        File[] listOfFiles = gamesFolder.listFiles();
-        if (listOfFiles == null) return new ArrayList<>();
-        List<Integer> gamesId = new ArrayList<>(listOfFiles.length);
-        for (File listOfFile : listOfFiles) {
-            String fileName = listOfFile.getName();
-            String id = fileName.substring("Game_With_ID_".length(), fileName.length() - 1 - "json".length());
-            gamesId.add(Integer.parseInt(id));
+    public static void saveGameParticipants(Map<Integer, String[]> gamesParticipants) throws IOException {
+        String fileName = jarPathString + "/backupGames/participants.json";
+        File file = new File(fileName);
+        boolean created = file.createNewFile();
+        System.out.println("Saved participants on path: " + fileName);
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        JsonWriter writer = new JsonWriter(new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8));
+        writer.setIndent("    ");
+        writer.beginArray();
+        for (Integer gameId: gamesParticipants.keySet()) {
+            writer.beginObject();
+            writer.name("id").value(gameId);
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 0; i < gamesParticipants.get(gameId).length - 1; i++) {
+                stringBuilder.append(gamesParticipants.get(gameId)[i]).append(" ");
+            }
+            stringBuilder.append(gamesParticipants.get(gameId)[gamesParticipants.get(gameId).length - 1]);
+            writer.name("participants").value(stringBuilder.toString());
+            writer.endObject();
         }
-        return gamesId;
+        writer.endArray();
+        writer.close();
+    }
+
+    public static Map<Integer, String[]> getParticipants() throws IOException {
+        FileInputStream fileInputStream = new FileInputStream(jarPathString + "/backupGames/participants.json");
+        JsonReader jsonReader = new JsonReader(new InputStreamReader(fileInputStream, StandardCharsets.UTF_8));
+        Map<Integer, String[]> participants = new HashMap<>();
+        jsonReader.beginArray();
+        while (jsonReader.hasNext()) {
+            int gameId = 0;
+            String participantsString = "";
+            jsonReader.beginObject();
+            while (jsonReader.hasNext()) {
+                String nextName = jsonReader.nextName();
+                if (nextName.equals("id")) gameId = jsonReader.nextInt();
+                else if (nextName.equals("participants")) participantsString = jsonReader.nextString();
+                else jsonReader.skipValue();
+            }
+            participants.put(gameId, participantsString.split(" "));
+            jsonReader.endObject();
+        }
+        jsonReader.endArray();
+        jsonReader.close();
+        return participants;
     }
 }

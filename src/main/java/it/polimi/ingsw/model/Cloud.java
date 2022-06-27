@@ -14,15 +14,21 @@ import java.io.Serializable;
 public class Cloud {
 	private boolean studentsPresents;
 	private Student[] students;
-	private final transient PropertyChangeSupport game = new PropertyChangeSupport(this);
+	private final transient PropertyChangeSupport game;
 
 	/**
 	 * Constructs a cloud with no students that can contain the specified number of students
 	 * @param numStudents the number of students that cloud can contain
 	 */
 	public Cloud(int numStudents) {
+		this();
 		students = new Student[numStudents];
+
+	}
+
+	public Cloud() {
 		studentsPresents = false;
+		game = new PropertyChangeSupport(this);
 	}
 
 	/**

@@ -1,9 +1,11 @@
 package it.polimi.ingsw.client.GUI.controllers;
 
 import it.polimi.ingsw.messages.ErrorMessageType;
+import javafx.scene.Node;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
 import javafx.stage.Modality;
 
 import java.beans.PropertyChangeEvent;

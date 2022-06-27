@@ -23,14 +23,14 @@ import java.util.List;
  * the towers that are present in the school
  */
 public class School extends ProfessorPresenceObservable {
-	private final int[] entrance;
-	private final int[] diningRoom;
-	private final boolean[] professorTable;
-	private final TowerType towerType;
+	private final int[] entrance = new int[RealmType.values().length];
+	private final int[] diningRoom = new int[RealmType.values().length];
+	private final boolean[] professorTable = new boolean[RealmType.values().length];
+	private TowerType towerType;
 	private int numTowers;
-	private final List<Student> studentDiningRoom;
-	private final List<Student> studentEntrance;
-	private final transient GameConstants gameConstants; //why?
+	private final List<Student> studentDiningRoom = new ArrayList<>();
+	private final List<Student> studentEntrance = new ArrayList<>();
+	private transient GameConstants gameConstants; //why?
 	private final transient PropertyChangeSupport player = new PropertyChangeSupport(this);
 
 	/**
@@ -41,17 +41,16 @@ public class School extends ProfessorPresenceObservable {
 	 * @see TowerType
 	 */
 	public School (int numTower, TowerType towerType, GameConstants gameConstants, PropertyChangeListener player) {
+		super();
 		this.towerType = towerType;
 		this.numTowers = numTower;
-		this.entrance = new int[RealmType.values().length];
-		this.diningRoom = new int[RealmType.values().length];
-		this.professorTable = new boolean[RealmType.values().length];
-		for(int i = 0; i < RealmType.values().length; i++)
-			professorTable[i] = false;
-		studentEntrance = new ArrayList<>();
-		studentDiningRoom = new ArrayList<>();
+		for(int i = 0; i < RealmType.values().length; i++) professorTable[i] = false;
 		this.gameConstants = gameConstants;
 		this.player.addPropertyChangeListener(player);
+	}
+
+	public School() {
+		super();
 	}
 
 	/**
@@ -269,7 +268,7 @@ public class School extends ProfessorPresenceObservable {
 		return coinsGained;
 	}
 
-	protected void restoreSchool(Player playerOwner, Game game) {
+	protected void restoreSchool(Player playerOwner, Game game, GameConstants gameConstants) {
 		this.addObserver(game);
 		this.player.addPropertyChangeListener(playerOwner);
 	}

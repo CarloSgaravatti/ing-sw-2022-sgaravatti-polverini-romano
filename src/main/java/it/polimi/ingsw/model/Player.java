@@ -4,6 +4,7 @@ import it.polimi.ingsw.exceptions.EmptyCloudException;
 import it.polimi.ingsw.exceptions.NoSuchAssistantException;
 import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
 import it.polimi.ingsw.model.enumerations.WizardType;
+import it.polimi.ingsw.model.gameConstants.GameConstants;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -15,19 +16,24 @@ import java.util.Objects;
 
 public class Player implements PropertyChangeListener {
 	private int numCoins;
-	private final String nickName;
+	private String nickName;
 	private School school;
 	private List<Assistant> assistants;
 	private final TurnEffect turnEffect;
 	private WizardType wizardType;
-	private final transient PropertyChangeSupport listeners = new PropertyChangeSupport(this);
+	private final transient PropertyChangeSupport listeners;
 
 	//TODO: enable/disable coins
 	public Player(String nickName) {
-		numCoins = 1;
+		this();
 		this.nickName = nickName;
+	}
+
+	public Player() {
 		turnEffect = new TurnEffect(this);
 		assistants = new ArrayList<>();
+		numCoins = 1;
+		listeners = new PropertyChangeSupport(this);
 	}
 
 	public void addListener(PropertyChangeListener listener) {
@@ -131,7 +137,7 @@ public class Player implements PropertyChangeListener {
 		listeners.firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
 	}
 
-	public void restorePlayer(Game game) {
-		school.restoreSchool(this, game);
+	public void restorePlayer(Game game, GameConstants gameConstants) {
+		school.restoreSchool(this, game, gameConstants);
 	}
 }

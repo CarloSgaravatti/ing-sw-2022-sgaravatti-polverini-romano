@@ -23,15 +23,20 @@ public class TurnEffect {
     private InfluenceStrategy influenceStrategy;
     private int additionalInfluence;
     private boolean characterPlayed;
-    private transient final PropertyChangeSupport player = new PropertyChangeSupport(this);
+    private transient final PropertyChangeSupport player;
 
     /**
      * Construct a TurnEffect which has all value reset. The created object is observed by the specified listener
      * @param player the listener which will listen to the object
      */
     public TurnEffect(PropertyChangeListener player) {
+        this();
         reset();
         this.player.addPropertyChangeListener(player);
+    }
+
+    public TurnEffect() {
+        player = new PropertyChangeSupport(this);
     }
 
     public void reset() {

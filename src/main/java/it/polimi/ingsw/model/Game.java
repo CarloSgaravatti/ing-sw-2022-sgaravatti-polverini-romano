@@ -265,7 +265,6 @@ public class Game implements ModelObserver, PropertyChangeListener {
 			));
 			updateIslandUnification(island);
 			if (playerMaxInfluence.getSchool().getNumTowers() == 0) checkWinners();
-			System.out.println(Colors.YELLOW + "Update island tower " + island + " " + island.getTowerType() + Colors.RESET);
 		}
 	}
 
@@ -296,7 +295,6 @@ public class Game implements ModelObserver, PropertyChangeListener {
 			islands.add(indexToReplace, newIsland);
 			newIsland.addListener(this);
 			newIsland.addObserver(this);
-			System.out.println(Colors.YELLOW + "Unified islands " + islands.size() + Colors.RESET);
 			listeners.firePropertyChange( "IslandUnification", islandIndexes.toArray(new Integer[0]), newIsland);
 			if (islands.size() <= 3) checkWinners();
 		}

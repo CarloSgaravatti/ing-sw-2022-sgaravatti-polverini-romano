@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.NoSuchElementException;
 import java.util.concurrent.*;
 
 public class SocketClientConnection implements Runnable, ClientConnection {
@@ -58,7 +59,6 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         MessageFromClient message = (MessageFromClient) in.readObject();
         if (message.getClientMessageHeader().getMessageType() == ClientMessageType.PING_ACK) {
             setPingAckReceived(true);
-            System.out.println("PingAck received by " + nickname);
         } else if (message.getClientMessageHeader().getMessageType() != ClientMessageType.GAME_SETUP) {
             System.out.println("Received from " + nickname + " : " +
                     "message name = " + message.getClientMessageHeader().getMessageName() + " " +
@@ -67,6 +67,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
                 sendError(ErrorMessageType.CLIENT_WITHOUT_GAME, "Before doing this you have to select a game to play");
             } else {
                 //TODO: delete try catch when everything is ok
+                System.out.println("Received " + message.getClientMessageHeader().getMessageName());
                 messageExecutor.submit(() -> {
                     try {
                         listeners.firePropertyChange("RemoteView", null, message);
@@ -158,6 +159,21 @@ public class SocketClientConnection implements Runnable, ClientConnection {
                 gameId = server.createGame(numPlayers, isExpertGame);
             }
             case "GameToPlay" -> gameId = message.getMessagePayload().getAttribute("GameId").getAsInt();
+            case "RestoreGame" -> {
+                try {
+                    System.out.println("Trying to restore the game of the client");
+                    gameId = server.restoreGameOfClient(nickname);
+                } catch (NoSuchElementException e) {
+                    e.printStackTrace();
+                    server.globalLobby(this, nickname);
+                    return;
+                }
+            }
+            case "DeleteSavedGame" -> {
+                server.deleteSavedGame(nickname);
+                server.globalLobby(this, nickname);
+                return;
+            }
             default -> {
                 sendError(ErrorMessageType.UNRECOGNIZED_MESSAGE, "Your message was not recognized");
                 return;
@@ -200,7 +216,6 @@ public class SocketClientConnection implements Runnable, ClientConnection {
             }
             asyncSend(pingMessage);
             setPingAckReceived(false);
-            System.out.println("Ping sent to " + nickname);
         }, 1, 1, TimeUnit.MINUTES);
     }
 }
