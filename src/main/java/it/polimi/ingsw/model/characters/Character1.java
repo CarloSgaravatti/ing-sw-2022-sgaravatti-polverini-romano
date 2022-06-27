@@ -19,6 +19,11 @@ public class Character1 extends CharacterCard {
         studentContainer = new StudentContainer(MAX_NUM_STUDENTS, game);
     }
 
+    public Character1(StudentContainer studentContainer) {
+        super(1, 1);
+        this.studentContainer = studentContainer;
+    }
+
     @Override
     public void useEffect(Map<String, Object> arguments) throws IllegalCharacterActionRequestedException {
         RealmType studentType = (RealmType) arguments.get("Student");
@@ -32,6 +37,11 @@ public class Character1 extends CharacterCard {
         island.addStudents(false, student);
         firePropertyChange(new PropertyChangeEvent(
                 this, "Students", null, studentContainer.getStudents().toArray(new Student[0])));
+    }
+
+    @Override
+    public void restoreCharacter(Game game) {
+        studentContainer.addObserver(game);
     }
 
     public List<Student> getStudents() {

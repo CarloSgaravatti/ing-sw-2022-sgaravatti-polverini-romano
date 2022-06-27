@@ -74,6 +74,10 @@ public class SchoolBox {
         for (int i = 0; i < entranceStudents.length; i++) {
             ((StudentImage) entrance.getChildren().get(i)).setStudent(entranceStudents[i]);
         }
+        RealmType[] diningRoomStudents = RealmType.getRealmsFromIntegerRepresentation(playerView.getSchoolStudents().getSecond());
+        for (RealmType r: diningRoomStudents) {
+            insertInDiningRoom(r);
+        }
         while (towers.getChildren().size() > playerView.getNumTowers()) {
             towers.getChildren().remove(towers.getChildren().size() - 1);
         }
@@ -238,5 +242,13 @@ public class SchoolBox {
         Label coinsLabel = (Label) ((VBox) container.getChildren().get(2)).getChildren().get(1);
         int numCoins = playerView.getPlayerCoins();
         coinsLabel.setText(Integer.toString(numCoins));
+    }
+
+    public void updateEntrance() {
+        entrance.getChildren().forEach(s -> ((StudentImage) s).reset());
+        RealmType[] entranceStudents = RealmType.getRealmsFromIntegerRepresentation(playerView.getSchoolStudents().getFirst());
+        for (int i = 0; i < entranceStudents.length; i++) {
+            ((StudentImage) entrance.getChildren().get(i)).setStudent(entranceStudents[i]);
+        }
     }
 }

@@ -18,7 +18,6 @@ import java.beans.PropertyChangeSupport;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//TODO: this class is becoming way too big
 public class Game implements ModelObserver, PropertyChangeListener {
 	private boolean started; //useless
 	private final List<Player> players;
@@ -26,8 +25,8 @@ public class Game implements ModelObserver, PropertyChangeListener {
 	private final List<Island> islands;
 	private int numPlayers;
 	private final Cloud[] clouds;
-	private int coinGeneralSupply;
-	private final CharacterCard[] characterCards;
+	private int coinGeneralSupply = 0;
+	private transient CharacterCard[] characterCards;
 	private int indexActivePlayer;
 	private transient final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 	private final GameConstants gameConstants;
@@ -44,6 +43,16 @@ public class Game implements ModelObserver, PropertyChangeListener {
 		players = new ArrayList<>();
 		this.clouds = clouds;
 		coinGeneralSupply = gameConstants.getNumCoins();
+		this.isExpertGame = isExpertGame;
+	}
+
+	public Game(List<Island> islands, Cloud[] clouds, GameConstants constants, boolean isExpertGame, Bag bag, Player[] players) {
+		this.gameConstants = constants;
+		started = false;
+		this.bag = bag;
+		this.islands = islands;
+		this.players = new ArrayList<>(Arrays.stream(players).toList());
+		this.clouds = clouds;
 		this.isExpertGame = isExpertGame;
 	}
 
@@ -67,7 +76,7 @@ public class Game implements ModelObserver, PropertyChangeListener {
 	}
 
 	public void start() {
-		//TODO (or delete)
+		started = true;
 	}
 
 	public void setNumPlayers(int numPlayers) {
@@ -90,6 +99,14 @@ public class Game implements ModelObserver, PropertyChangeListener {
 		return started;
 	}
 
+	public int getIndexActivePlayer() {
+		return indexActivePlayer;
+	}
+
+	public void setIndexActivePlayer(int indexActivePlayer) {
+		this.indexActivePlayer = indexActivePlayer;
+	}
+
 	public void moveMotherNature(int movement){
 		int initialPosition = motherNaturePositionIndex();
 		islands.get(initialPosition).setMotherNaturePresent(false);
@@ -106,7 +123,7 @@ public class Game implements ModelObserver, PropertyChangeListener {
 		return bag;
 	}
 
-	public List<Player> getPlayers () {
+	public List<Player> getPlayers() {
 		return players;
 	}
 
@@ -395,6 +412,17 @@ public class Game implements ModelObserver, PropertyChangeListener {
 						null, new Pair<>(cloudIndex, (Student[]) evt.getNewValue())
 				));
 			}
+		}
+	}
+
+	public boolean isExpertGame() {
+		return isExpertGame;
+	}
+
+	public void restoreCharacters(CharacterCard[] characterCards) {
+		this.characterCards = characterCards;
+		for(CharacterCard characterCard: characterCards) {
+			characterCard.restoreCharacter(this);
 		}
 	}
 }

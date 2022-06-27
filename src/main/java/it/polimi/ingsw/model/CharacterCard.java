@@ -52,7 +52,7 @@ public abstract class CharacterCard {
 	/**
 	 * Puts a coin in the character card, this can happen only the first time the character is played
 	 */
-	private void putCoin() {
+	public void putCoin() {
 		coinPresent = true;
 		coinPrice++;
 	}
@@ -127,5 +127,11 @@ public abstract class CharacterCard {
 	//TODO: after characters re implementation, make this abstract
 	public boolean requiresInput() {
 		return true;
+	}
+
+	public abstract void restoreCharacter(Game game);
+
+	public void restoreActivePlayer(Player player) {
+		this.playerActive = player;
 	}
 }

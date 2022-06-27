@@ -34,6 +34,11 @@ public enum UnicodeConstants {
 
     private final String codeValue;
 
+    /**
+     * Constructs a new UnicodeConstant with the specified code value
+     *
+     * @param codeValue the unicode string of the UnicodeConstant that can also be decorated with colors
+     */
     UnicodeConstants(String codeValue) {
         this.codeValue = codeValue;
     }

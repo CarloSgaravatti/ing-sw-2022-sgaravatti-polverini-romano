@@ -99,7 +99,9 @@ public class CLI implements Runnable, UserInterface {
             t.join();
             inputThread.join();
         } catch (InterruptedException e) {
-            //TODO
+            System.out.println(Colors.RED + "A fatal error has occurred, application will now close" + Colors.RESET);
+            connectionToServer.setActive(false);
+            System.exit(1);
         }
     }
 

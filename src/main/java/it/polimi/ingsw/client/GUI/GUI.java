@@ -197,12 +197,12 @@ public class GUI extends Application implements UserInterface {
             case "CharacterStudents" -> onCharacterStudentsUpdate((Integer) evt.getNewValue());
             case "CharacterPrice" -> onCharacterPriceUpdate((Integer) evt.getNewValue());
             case "NoEntryTileUpdate" -> onNoEntryTileUpdate((Integer) evt.getNewValue(), (Integer) evt.getOldValue());
-            case "EntranceSwap" -> onEntranceSwap((String) evt.getSource(), (RealmType[]) evt.getNewValue());
+            case "EntranceSwap" -> onEntranceSwap((String) evt.getSource(), (RealmType[]) evt.getNewValue(), (RealmType[]) evt.getOldValue());
             //case "EntranceUpdate" -> {} //TODO: verify if has to be handled (i think no)
             case "CoinsUpdate" -> onCoinsUpdate((String) evt.getNewValue());
             case "SchoolSwap" -> onSchoolSwap((String) evt.getSource(), (RealmType[]) evt.getOldValue(), (RealmType[]) evt.getNewValue());
 
-            case "CloudSelected" -> {} //TODO
+            case "CloudSelected" -> onCloudsSelection((String) evt.getSource(), (Integer) evt.getNewValue(), (RealmType[]) evt.getOldValue());
             case "CloudsRefill" -> {} //TODO
 
             case "NewTurn" -> onNewTurn((String) evt.getNewValue());
@@ -326,11 +326,13 @@ public class GUI extends Application implements UserInterface {
         });
     }
 
-    private void onEntranceSwap(String playerName, RealmType[] inserted) {
+    private void onEntranceSwap(String playerName, RealmType[] inserted, RealmType[] removed) {
         Platform.runLater(() -> {
             SchoolBox schoolBox = ((GameMainSceneController) currentSceneController).getSchoolBox(playerName);
+            schoolBox.updateEntrance();
             ((GameMainSceneController) currentSceneController).viewSchoolOf(playerName);
-            Arrays.stream(inserted).forEach(schoolBox::insertStudentEntrance);
+            /*Arrays.stream(removed).forEach(student -> schoolBox.removeFromEntrance(student, playerName.equals(nickname)));
+            Arrays.stream(inserted).forEach(schoolBox::insertStudentEntrance);*/
         });
     }
 
@@ -356,6 +358,10 @@ public class GUI extends Application implements UserInterface {
             gameMainSceneController.viewSchoolOf(playerName);
             gameMainSceneController.getSchoolBox(playerName).updateCoins();
         });
+    }
+
+    private void onCloudsSelection(String playerName, int cloudId, RealmType[] students) {
+        Platform.runLater(() -> ((GameMainSceneController) currentSceneController).moveStudentsFromCloud(playerName, cloudId, students));
     }
 
     private void checkEventFromControllers(PropertyChangeEvent evt) {

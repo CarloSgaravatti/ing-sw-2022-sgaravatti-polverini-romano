@@ -28,13 +28,13 @@ public class RemoteView extends View implements PropertyChangeListener {
     }
 
     public void sendMessage(MessagePayload payload, String messageName, ServerMessageType messageType) {
-        ServerMessageHeader messageHeader = new ServerMessageHeader(messageName, messageType, gameId);
+        ServerMessageHeader messageHeader = new ServerMessageHeader(messageName, messageType);
         MessageFromServer messageFromServer = new MessageFromServer(messageHeader, payload);
         connection.asyncSend(messageFromServer);
     }
 
     public void sendBroadcast(MessagePayload payload, String messageName, ServerMessageType messageType) {
-        ServerMessageHeader messageHeader = new ServerMessageHeader(messageName, messageType, gameId);
+        ServerMessageHeader messageHeader = new ServerMessageHeader(messageName, messageType);
         MessageFromServer messageFromServer = new MessageFromServer(messageHeader, payload);
         gameLobby.broadcast(messageFromServer);
     }

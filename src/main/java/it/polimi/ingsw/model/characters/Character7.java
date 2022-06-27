@@ -21,6 +21,11 @@ public class Character7 extends CharacterCard {
         studentContainer = new StudentContainer(MAX_NUM_STUDENTS, observer);
     }
 
+    public Character7(StudentContainer studentContainer) {
+        super(1, 7);
+        this.studentContainer = studentContainer;
+    }
+
     @Override
     public void useEffect(Map<String, Object> arguments) throws IllegalCharacterActionRequestedException {
         //Character controller checks the students number
@@ -46,6 +51,11 @@ public class Character7 extends CharacterCard {
         firePropertyChange(new PropertyChangeEvent(this, "EntranceSwap", fromEntrance, toPick));
         firePropertyChange(new PropertyChangeEvent(
                 this, "Students", null, studentContainer.getStudents().toArray(new Student[0])));
+    }
+
+    @Override
+    public void restoreCharacter(Game game) {
+        this.studentContainer.addObserver(game);
     }
 
     //For testing

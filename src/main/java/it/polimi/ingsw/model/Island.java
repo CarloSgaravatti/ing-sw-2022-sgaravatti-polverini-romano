@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.characters.Character5;
 import it.polimi.ingsw.model.effects.NoEntryTileManager;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
@@ -21,7 +22,7 @@ public abstract class Island extends MotherNatureMovementObservable {
 	private TowerType towerType;
 	private boolean motherNaturePresent;
 	private int noEntryTilePresents;
-	private NoEntryTileManager noEntryTileManager = null;
+	private transient NoEntryTileManager noEntryTileManager = null;
 	public static final int NUM_ISLANDS = 12;
 	public transient PropertyChangeSupport game = new PropertyChangeSupport(this);
 
@@ -113,5 +114,11 @@ public abstract class Island extends MotherNatureMovementObservable {
 
 	public void addListener(PropertyChangeListener listener) {
 		game.addPropertyChangeListener(listener);
+	}
+
+	public void restoreIsland(Game game) {
+		addObserver(game);
+		CharacterCard characterCard = game.getCharacterById(5);
+		if (characterCard != null) noEntryTileManager = (Character5) characterCard;
 	}
 }

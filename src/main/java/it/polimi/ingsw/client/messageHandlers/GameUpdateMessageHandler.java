@@ -146,7 +146,7 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         int cloudId = payload.getAttribute("CloudId").getAsInt();
         getModelView().getField().resetCloud(cloudId);
         getModelView().getPlayers().get(playerName).updateEntrance(students, true);
-        userInterface.firePropertyChange(new PropertyChangeEvent(playerName, "CloudSelected", null, cloudId));
+        userInterface.firePropertyChange(new PropertyChangeEvent(playerName, "CloudSelected", students, cloudId));
     }
 
     private void onAssistantsUpdate(MessagePayload payload) {

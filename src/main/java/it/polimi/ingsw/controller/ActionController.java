@@ -298,6 +298,10 @@ public class ActionController {
 		return currentTurnRemainingActions;
 	}
 
+	public TurnPhase getTurnPhase() {
+		return turnPhase;
+	}
+
 	public CharacterController getCharacterController() {
 		return characterController;
 	}
@@ -305,5 +309,11 @@ public class ActionController {
 	private void fireError(ErrorMessageType errorType, String errorInfo) {
 		listeners.firePropertyChange(new PropertyChangeEvent(turnController.getActivePlayer().getNickName(),
 				"Error", errorType, errorInfo));
+	}
+
+	public void restoreController(TurnPhase turnPhase, List<TurnPhase> currentTurnRemainingActions) {
+		this.turnPhase = turnPhase;
+		this.currentTurnRemainingActions.clear();
+		this.currentTurnRemainingActions.addAll(currentTurnRemainingActions);
 	}
 }

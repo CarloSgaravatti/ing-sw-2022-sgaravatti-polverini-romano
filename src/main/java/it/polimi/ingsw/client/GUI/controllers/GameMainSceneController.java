@@ -407,6 +407,14 @@ public class GameMainSceneController extends FXMLController implements Initializ
         //TODO: animation (maybe fade transition, whit drop shadow until the end of the transition)
     }
 
+    public void moveStudentsFromCloud(String player, int cloudId, RealmType[] students) {
+        //TODO: clouds (and then empty the cloud after someone pick students)
+        //TODO: students animation from cloud to entrance?
+
+        SchoolBox schoolBox = playersSchools.get(player).getSecond();
+        Arrays.stream(students).forEach(schoolBox::insertStudentEntrance);
+    }
+
     public void moveAccordionDown() {
         if (accordionButton.getText().equals("v")) {
             accordionButton.fire();

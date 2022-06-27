@@ -113,6 +113,7 @@ public class IslandMap {
 
     public void mergeIslands(List<Integer> unifiedIds) {
         Integer centerId = (unifiedIds.size() == 2) ? unifiedIds.get(0) : unifiedIds.get(1);
+        int minId = unifiedIds.stream().min(Comparator.comparingInt(i -> i)).orElse(unifiedIds.get(0));
         unifiedIds.remove(centerId);
         List<IslandSubScene> centerIsland = getIslandsById(centerId);
         for (Integer i: unifiedIds) {
@@ -140,8 +141,8 @@ public class IslandMap {
                     transition.setByX(xTranslate);
                     transition.setByY(yTranslate);
                     transition.play();
+                    island.setIslandId(minId);
                     transition.setOnFinished(actionEvent -> {
-                        island.setIslandId(centerId);
                         island.getStyleClass().remove("root-island-in-group");
                         island.setRootIsland(false);
                         island.setTranslateX(0);
@@ -153,11 +154,13 @@ public class IslandMap {
             }
         }
         if (centerIsland.size() == 1) centerIsland.get(0).getStyleClass().add("root-island-in-group");
+        if (centerId != minId) centerIsland.forEach(islandSubScene -> islandSubScene.setIslandId(minId));
         //decrement ids to maintain compatibility with CLI (and also model)
         islandsSubScenes.stream()
                 .filter(i -> i.getIslandId() > centerIsland.get(0).getIslandId()
                         && i.getIslandId() > unifiedIds.stream().max(Comparator.comparingInt(id -> id)).orElse(0))
-                .forEach(i -> i.setIslandId(i.getIslandId() - 1));
+                .forEach(i -> i.setIslandId(i.getIslandId() - unifiedIds.size() + 1));
+        islandsSubScenes.forEach(island -> System.out.println(island.getIslandId()));
     }
 
     private Optional<IslandSubScene> getClosestIsland(List<IslandSubScene> islands, IslandSubScene centerIsland) {

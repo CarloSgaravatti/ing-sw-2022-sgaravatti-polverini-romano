@@ -2,11 +2,15 @@ package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.exceptions.DuplicateNicknameException;
 import it.polimi.ingsw.messages.*;
+import it.polimi.ingsw.server.resumeGame.PersistenceGameInfo;
+import it.polimi.ingsw.server.resumeGame.SaveGame;
 import it.polimi.ingsw.utils.Triplet;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -21,7 +25,7 @@ public class Server implements Runnable{
     private final Map<Integer, Map<String, ClientConnection>> waitingPlayersPerGameMap; //Decide if is useful
     private final Map<String, ClientConnection> clientsConnected;
     private int lastGameId = 0;
-
+    private List<Integer> gamesToBeRestored = new ArrayList<>();
     public Server(int port) throws IOException{
         serverSocket = new ServerSocket(port);
         gamesMap = new ConcurrentHashMap<>();
@@ -32,6 +36,9 @@ public class Server implements Runnable{
 
     @Override
     public void run() {
+        gamesToBeRestored = SaveGame.findSavedGamesIds();
+        gamesToBeRestored.forEach(System.out::println);
+        lastGameId = gamesToBeRestored.stream().max(Comparator.comparingInt(i -> i)).orElse(0);
         while (true) {
             try {
                 Socket socket = serverSocket.accept();
@@ -74,6 +81,11 @@ public class Server implements Runnable{
             //globalLobby(participants.get(clientName), clientName);
             participants.get(clientName).setSetupDone(false);
         }
+        try {
+            SaveGame.deletePersistenceData(gameId);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
     public GameLobby getGameById(int gameId) {
@@ -101,6 +113,7 @@ public class Server implements Runnable{
 
     public void globalLobby(ClientConnection client, String clientName) {
         waitingPlayersWithNoGame.putIfAbsent(clientName, client);
+        if (checkPreviousGames(client, clientName)) return;
         //If there aren't games that are not started, server requests to insert the number of players
         //for a game and creates a new game.
         //If there are games that aren't started, server requests to client what game he wants to play or
@@ -123,6 +136,32 @@ public class Server implements Runnable{
             payload.setAttribute("GamesInfo", gamesToSendMap);
         }
         client.asyncSend(new MessageFromServer(header, payload));
+    }
+
+    private boolean checkPreviousGames(ClientConnection client, String clientName) {
+        Optional<PersistenceGameInfo> previousGame = gamesToBeRestored.stream().map(gameId -> {
+            try {
+                PersistenceGameInfo persistenceGameInfo = SaveGame.getPersistenceData(gameId);
+                persistenceGameInfo.getParticipants().forEach(System.out::println);
+                return persistenceGameInfo;
+            } catch (URISyntaxException | FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }).filter(Objects::nonNull).filter(data -> data.getParticipants().contains(clientName)).findFirst();
+        if (previousGame.isPresent()) {
+            ServerMessageHeader header = new ServerMessageHeader("PreviousGameChoice", ServerMessageType.SERVER_MESSAGE);
+            MessagePayload payload = new MessagePayload();
+            Triplet<Integer, Boolean, String[]> previousGameInfo = previousGame.get().getGameInfo();
+            payload.setAttribute("NumPlayers", previousGameInfo.getFirst());
+            payload.setAttribute("Rules", previousGameInfo.getSecond());
+            payload.setAttribute("Participants", previousGameInfo.getThird());
+            client.asyncSend(new MessageFromServer(header, payload));
+            return true;
+        }
+        return false;
     }
 
     public void gameLobby(int gameId, ClientConnection client, String clientName) {
@@ -149,7 +188,7 @@ public class Server implements Runnable{
         //int id = assignNewGameId().orElse(1); //if optional is empty it means that there are no games in the server
         lastGameId++;
         System.out.println("created a new game with id = " + lastGameId);
-        gamesMap.put(lastGameId, new GameLobby(lastGameId, numPlayers, isExpertGame, this));
+        gamesMap.put(lastGameId, new GameLobby(lastGameId, numPlayers, isExpertGame, this, false));
         waitingPlayersPerGameMap.put(lastGameId, new HashMap<>());
         return lastGameId;
     }

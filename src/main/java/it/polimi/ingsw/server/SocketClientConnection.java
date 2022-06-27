@@ -91,7 +91,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
     public synchronized void closeConnection() {
         ServerMessageHeader header = new ServerMessageHeader("ConnectionClosed", ServerMessageType.SERVER_MESSAGE);
         MessageFromServer message = new MessageFromServer(header, null);
-        send(message);
+        asyncSend(message);
         try {
             socket.close();
         } catch (IOException e) {
@@ -105,7 +105,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
             out.reset();
             out.writeObject(message);
             out.flush();
-        } catch(IOException e){
+        } catch(IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
@@ -124,7 +124,6 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         this.active = active;
     }
 
-    //TODO: there is a problem with pings when a client sends nickname after ping a ping ack
     public void initializeClient() throws IOException, ClassNotFoundException, ClassCastException {
         ServerMessageHeader header = new ServerMessageHeader("NicknameRequest", ServerMessageType.SERVER_MESSAGE);
         MessageFromServer message = new MessageFromServer(header, new MessagePayload());

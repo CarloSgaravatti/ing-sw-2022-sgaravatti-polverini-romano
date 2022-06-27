@@ -28,6 +28,14 @@ public class PlanningPhaseOrder implements PhaseOrder {
 		numPlayers = game.getNumPlayers();
 	}
 
+	public boolean isFirstRound() {
+		return isFirstRound;
+	}
+
+	public void restore(boolean isFirstRound) {
+		this.isFirstRound = isFirstRound;
+	}
+
 	/**
 	 * Calculates the order of play that will be based on the specified players order of the previous action phase.
 	 *

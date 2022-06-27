@@ -74,7 +74,6 @@ public class CharacterController {
         int coinToGeneralSupply = characterCard.getPrice();
         if (!characterCard.isCoinPresent()) coinToGeneralSupply--;
         characterCard.playCard(activePlayer);
-        activePlayer.getTurnEffect().setCharacterEffectConsumed(false); //TODO: delete
         if (characterCard.requiresInput()) characterCard.useEffect(characterInput);
         activePlayer.getTurnEffect().setCharacterPlayed(true);
         game.insertCoinsInGeneralSupply(coinToGeneralSupply);

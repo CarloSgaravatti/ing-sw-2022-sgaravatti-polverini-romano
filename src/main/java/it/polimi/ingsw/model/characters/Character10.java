@@ -40,4 +40,7 @@ public class Character10 extends CharacterCard {
         studentsFromDiningRoom.forEach(school::insertEntrance);
         firePropertyChange(new PropertyChangeEvent(this, "SchoolSwap", diningRoom, entrance));
     }
+
+    @Override
+    public void restoreCharacter(Game game) {/*does nothing*/}
 }

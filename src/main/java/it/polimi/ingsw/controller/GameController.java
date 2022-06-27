@@ -41,6 +41,13 @@ public class GameController implements PropertyChangeListener{
 		this.isExpertGame = isExpertGame;
 	}
 
+	public GameController(Game gameRestored) {
+		initController = new InitController(gameRestored);
+		this.isExpertGame = gameRestored.isExpertGame();
+		this.game = gameRestored;
+		initializeControllers();
+	}
+
 	/**
 	 * Returns true if the game is expert, otherwise false
 	 * @return true if the game is expert, otherwise false
@@ -55,6 +62,16 @@ public class GameController implements PropertyChangeListener{
 	public void startGame() {
 		game.start();
 		handleEndPhase();
+	}
+
+	/**
+	 * Restarts the game that has been restored from persistence data
+	 */
+	public void restartGame() {
+		notifyAssistantsToPlayers();
+		String turnStarter = turnController.getActivePlayer().getNickName();
+		TurnPhase[] newPossibleActions = actionController.getCurrentTurnRemainingActions().toArray(new TurnPhase[0]);
+		listeners.firePropertyChange(new PropertyChangeEvent(turnStarter, "EndTurn", null, newPossibleActions));
 	}
 
 	/**
@@ -181,18 +198,22 @@ public class GameController implements PropertyChangeListener{
 				cloudsStudents[i] = Arrays.stream(clouds[i].getStudents()).map(Student::getStudentType).toList().toArray(new RealmType[0]);
 			}
 			listeners.firePropertyChange("CloudsRefill", null, cloudsStudents);
-			for (Player p: game.getPlayers()) {
-				Integer[] assistantValues = p.getAssistants().stream().map(Assistant::getCardValue).toList().toArray(new Integer[0]);
-				Integer[] motherNatureMovements =
-						p.getAssistants().stream().map(Assistant::getMotherNatureMovement).toList().toArray(new Integer[0]);
-				listeners.firePropertyChange(new PropertyChangeEvent(p.getNickName(),
-						"AssistantsUpdate", assistantValues, motherNatureMovements));
-			}
+			notifyAssistantsToPlayers();
 		}
 		//Notify change phase
 		TurnPhase[] newPossibleActions = actionController.getCurrentTurnRemainingActions().toArray(new TurnPhase[0]);
 		listeners.firePropertyChange(new PropertyChangeEvent(turnController.getActivePlayer().getNickName(), "EndPhase",
 				turnController.getCurrentPhase(), newPossibleActions));
+	}
+
+	private void notifyAssistantsToPlayers() {
+		for (Player p: game.getPlayers()) {
+			Integer[] assistantValues = p.getAssistants().stream().map(Assistant::getCardValue).toList().toArray(new Integer[0]);
+			Integer[] motherNatureMovements =
+					p.getAssistants().stream().map(Assistant::getMotherNatureMovement).toList().toArray(new Integer[0]);
+			listeners.firePropertyChange(new PropertyChangeEvent(p.getNickName(),
+					"AssistantsUpdate", assistantValues, motherNatureMovements));
+		}
 	}
 
 	/**

@@ -23,6 +23,10 @@ public class IslandGroup extends Island {
 		}
 	}
 
+	public List<Island> getIslands() {
+		return islands;
+	}
+
 	@Override
 	public void putTower(TowerType towerType) {
 		for (Island i: islands)

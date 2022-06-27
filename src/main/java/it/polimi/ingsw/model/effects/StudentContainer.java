@@ -28,6 +28,14 @@ public class StudentContainer extends StudentContainerObservable {
         initializeContainer();
     }
 
+    public StudentContainer(int maxStudents, Student ... students) {
+        this.maxStudents = maxStudents;
+        this.students = new ArrayList<>();
+        for (Student student : students) {
+            insertStudent(student);
+        }
+    }
+
     public List<Student> getStudents() {
         return students;
     }

@@ -106,6 +106,17 @@ public class TurnController {
 	public Player[] getPlayerOrder() {
 		return playerOrder;
 	}
+
+	public PlanningPhaseOrder getPlanningPhaseOrderStrategy() {
+		return (PlanningPhaseOrder) phaseOrderStrategy[0];
+	}
+
+	public void restoreController(boolean orderCalculated, Player[] lastOrder, RoundPhase lastPhase, boolean isFirstRound) {
+		this.orderCalculated = orderCalculated;
+		this.playerOrder = lastOrder;
+		this.currentPhase = lastPhase;
+		getPlanningPhaseOrderStrategy().restore(isFirstRound);
+	}
 }
 
 

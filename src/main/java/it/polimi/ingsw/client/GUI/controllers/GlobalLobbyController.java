@@ -40,9 +40,10 @@ public class GlobalLobbyController extends FXMLController implements Initializab
         gameIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         numPlayersCol.setCellValueFactory(new PropertyValueFactory<>("numPlayers"));
         rulesCol.setCellValueFactory(new PropertyValueFactory<>("rules"));
-        playersConnectedCol.setCellValueFactory(new PropertyValueFactory<>("connectedPlayers"));
+        //playersConnectedCol.setCellValueFactory(new PropertyValueFactory<>("connectedPlayers"));
         numPlayersChoice.getItems().addAll(2, 3);
         rulesChoice.getItems().addAll("simple", "expert");
+        //globalLobbyTable.setRowFactory();
     }
 
     public void setNickname(String nickname) {

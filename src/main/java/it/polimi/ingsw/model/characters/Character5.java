@@ -13,18 +13,23 @@ import java.util.Map;
 public class Character5 extends CharacterCard implements NoEntryTileManager {
     private int noEntryTiles;
     private final static int NUM_NO_ENTRY_TILES_MAX = 4;
-    private transient final List<Island> islands;
+    private transient List<Island> islands;
 
     public Character5(Game game) {
         super(2, 5);
         noEntryTiles = NUM_NO_ENTRY_TILES_MAX;
-        islands = game.getIslands();
+        if (game != null) islands = game.getIslands();
     }
 
     @Override
     public void useEffect(Map<String, Object> arguments) throws IllegalCharacterActionRequestedException {
         Island island = (Island) arguments.get("Island");
         putNoEntryTileInIsland(island);
+    }
+
+    @Override
+    public void restoreCharacter(Game game) {
+        this.islands = game.getIslands();
     }
 
     @Override
@@ -43,5 +48,9 @@ public class Character5 extends CharacterCard implements NoEntryTileManager {
 
     public int getNoEntryTiles() {
         return noEntryTiles;
+    }
+
+    public void setNoEntryTiles(int noEntryTiles) {
+        this.noEntryTiles = noEntryTiles;
     }
 }

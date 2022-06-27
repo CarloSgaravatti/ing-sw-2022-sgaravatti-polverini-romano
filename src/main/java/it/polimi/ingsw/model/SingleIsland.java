@@ -41,4 +41,8 @@ public class SingleIsland extends Island {
     public int getNumTowers(){
         return NUM_TOWERS_PER_ISLAND;
     }
+
+    public void setStudents(List<Student> students) {
+
+    }
 }

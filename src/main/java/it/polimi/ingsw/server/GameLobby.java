@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.client.modelView.FieldView;
 import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.controller.InitController;
 import it.polimi.ingsw.exceptions.EmptyBagException;
@@ -7,25 +8,25 @@ import it.polimi.ingsw.messages.MessageFromServer;
 import it.polimi.ingsw.messages.MessagePayload;
 import it.polimi.ingsw.messages.ServerMessageHeader;
 import it.polimi.ingsw.messages.ServerMessageType;
-import it.polimi.ingsw.messages.simpleModel.SimpleCharacter;
-import it.polimi.ingsw.messages.simpleModel.SimpleField;
-import it.polimi.ingsw.messages.simpleModel.SimpleIsland;
-import it.polimi.ingsw.messages.simpleModel.SimplePlayer;
+import it.polimi.ingsw.messages.simpleModel.*;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.characters.Character1;
 import it.polimi.ingsw.model.characters.Character11;
 import it.polimi.ingsw.model.characters.Character5;
 import it.polimi.ingsw.model.characters.Character7;
 import it.polimi.ingsw.model.enumerations.*;
+import it.polimi.ingsw.server.resumeGame.PersistenceGameInfo;
 import it.polimi.ingsw.server.resumeGame.SaveGame;
+import it.polimi.ingsw.utils.Pair;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class GameLobby {
-    private final GameController gameController;
+    private GameController gameController;
     private Game game;
     private final int numPlayers;
     private final Map<String, ClientConnection> participants = new ConcurrentHashMap<>();
@@ -33,21 +34,24 @@ public class GameLobby {
     private final int gameId;
     private final boolean isExpertGame;
     private final Server server;
-    private SaveGame saveGame;
-
+    //private SaveGame saveGame;
+    private final boolean isGameRestored;
     private final Object setupLock = new Object();
 
-    public GameLobby(int gameId, int numPlayers, boolean isExpertGame, Server server) {
+    public GameLobby(int gameId, int numPlayers, boolean isExpertGame, Server server, boolean isGameRestored) {
         this.gameId = gameId;
-        gameController = new GameController(numPlayers, isExpertGame);
+        if (!isGameRestored) {
+            gameController = new GameController(numPlayers, isExpertGame);
+        }
         this.numPlayers = numPlayers;
         this.isExpertGame = isExpertGame;
         this.server = server;
-        try {
+        this.isGameRestored = isGameRestored;
+        /*try {
             this.saveGame = new SaveGame(gameId, this);
-        }catch (IOException e){
+        }catch (IOException | URISyntaxException e){
             e.printStackTrace();
-        }
+        }*/
     }
 
     public synchronized void insertInLobby(String nickname, ClientConnection clientConnection) {
@@ -62,28 +66,78 @@ public class GameLobby {
         payload.setAttribute("GameNumPlayers", numPlayers);
         payload.setAttribute("WaitingPlayers", participants.keySet().toArray(new String[0]));
         clientConnection.asyncSend(new MessageFromServer(header, payload));
-        if (participants.size() == numPlayers) {
-            setStarted(true);
-            header = new ServerMessageHeader("GameStarted", ServerMessageType.GAME_SETUP);
-            payload.setAttribute("Opponents", participants.keySet().toArray(new String[0]));
-            broadcast(new MessageFromServer(header, payload));
-            InitController initController = gameController.getInitController();
-            try {
-                initController.initializeGameComponents();
-            } catch (EmptyBagException e) {
-                //At this point it shouldn't be thrown, maybe it should be handled before
-            }
-            for (String name : participants.keySet()) {
-                initController.addPlayer(name);
-            }
-            gameController.setGame(initController.getGame());
-            gameController.initializeControllers();
-            gameController.createListeners(assignRemoteViews(), this);
-            //Need to create a new thread because this method is done by the thread that reads messages in
-            //SocketClientConnection, we want that when the setupGame method is running all the SocketClientConnections
-            //are reading messages to update setup choices.
-            new Thread(this::setupGame).start();
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
+        if (participants.size() == numPlayers) {
+            try {
+                header = new ServerMessageHeader("GameStarted", ServerMessageType.GAME_SETUP);
+                payload.setAttribute("Opponents", participants.keySet().toArray(new String[0]));
+                broadcast(new MessageFromServer(header, payload));
+                if (!isGameRestored) {
+                    InitController initController = gameController.getInitController();
+                    try {
+                        initController.initializeGameComponents();
+                    } catch (
+                            EmptyBagException e) {/*At this point it shouldn't be thrown, maybe it should be handled before*/}
+                    for (String name : participants.keySet()) {
+                        initController.addPlayer(name);
+                    }
+                    gameController.setGame(initController.getGame());
+                    game = gameController.getModel();
+                    gameController.initializeControllers();
+                } else {
+                    PersistenceGameInfo persistenceGameInfo = new PersistenceGameInfo(gameId);
+                    gameController = persistenceGameInfo.restoreGameState();
+                }
+                gameController.createListeners(assignRemoteViews(), this);
+                if (!game.isStarted()) {
+                    //Need to create a new thread because this method is done by the thread that reads messages in
+                    //SocketClientConnection, we want that when the setupGame method is running all the SocketClientConnections
+                    //are reading messages to update setup choices.
+                    new Thread(this::setupGame).start();
+                    setStarted(true);
+                } else { //game is restored and started
+                    restoreGame();
+                }
+            } catch (Exception e) {e.printStackTrace();}
+        }
+    }
+
+    private void restoreGame() {
+        Pair<SimpleField, SimplePlayer[]> fieldInitializations = getFieldInitializations();
+        Map<String, TowerType> playersTowers = new HashMap<>();
+        Map<String, WizardType> playersWizards = new HashMap<>();
+        String[] professorOwners = new String[RealmType.values().length];
+        game.getPlayers().forEach(player -> {
+            playersTowers.put(player.getNickName(), player.getSchool().getTowerType());
+            playersWizards.put(player.getNickName(), player.getWizardType());
+        });
+        List<SimplePlayer> players = Arrays.stream(fieldInitializations.getSecond()).toList();
+        players.forEach(simplePlayer -> {
+            Player player = game.getPlayerByNickname(simplePlayer.getNickname());
+            List<RealmType> diningRoom = new ArrayList<>();
+            for (RealmType r: RealmType.values()) {
+                for (int j = 0; j < player.getSchool().getNumStudentsDiningRoom(r); j++) diningRoom.add(r);
+                if (player.getSchool().isProfessorPresent(r)) professorOwners[r.ordinal()] = player.getNickName();
+            }
+            simplePlayer.setDiningRoom(diningRoom.toArray(new RealmType[0]));
+            TurnEffect turnEffect = player.getTurnEffect();
+            simplePlayer.setLastAssistant(new Pair<>(turnEffect.getOrderPrecedence(), turnEffect.getMotherNatureMovement()));
+        });
+        SimpleModel simpleModel = new SimpleModel();
+        simpleModel.setField(fieldInitializations.getFirst());
+        simpleModel.setSchools(players);
+        simpleModel.setProfessorOwners(professorOwners);
+        simpleModel.setTowers(playersTowers);
+        simpleModel.setWizards(playersWizards);
+        ServerMessageHeader header = new ServerMessageHeader("GameRestoredData", ServerMessageType.GAME_SETUP);
+        MessagePayload payload = new MessagePayload();
+        payload.setAttribute("SimpleModel", simpleModel);
+        broadcast(new MessageFromServer(header, payload));
+        gameController.restartGame();
     }
 
     private List<RemoteView> assignRemoteViews() {
@@ -119,6 +173,9 @@ public class GameLobby {
     public void setupGame() {
         boolean setupTowersDone = false;
         boolean setupWizardsDone = false;
+        if (gameController.getInitController().getPlayersWithTower().size() != 0) {
+            sendRestoredSetup();
+        }
         while (!(setupTowersDone && setupWizardsDone)) {
             Map<String, TowerType> playersWithTower = gameController.getInitController().getPlayersWithTower();
             int numPlayersWithTower = playersWithTower.size();
@@ -145,9 +202,27 @@ public class GameLobby {
             setupTowersDone = gameController.getInitController().getPlayersWithTower().size() == numPlayers;
             setupWizardsDone = gameController.getInitController().getPlayersWithWizard().size() == numPlayers;
         }
-        //gameController.getActionController().refillClouds();
         sendInitializations();
         gameController.startGame();
+    }
+
+    private void sendRestoredSetup() {
+        Map<String, TowerType> playersWithTower = gameController.getInitController().getPlayersWithTower();
+        Map<String, WizardType> playersWithWizard = gameController.getInitController().getPlayersWithWizard();
+        ServerMessageHeader header = new ServerMessageHeader("RestoredSetup", ServerMessageType.GAME_SETUP);
+        MessagePayload payload = new MessagePayload();
+        SimpleModel setupModel = new SimpleModel(playersWithTower, playersWithWizard);
+        payload.setAttribute("SetupInfo", setupModel);
+        broadcast(new MessageFromServer(header, payload));
+    }
+
+    private void sendInitializations() {
+        ServerMessageHeader header = new ServerMessageHeader("GameInitializations", ServerMessageType.GAME_SETUP);
+        MessagePayload payload = new MessagePayload();
+        Pair<SimpleField, SimplePlayer[]> initializations = getFieldInitializations();
+        payload.setAttribute("Field", initializations.getFirst());
+        payload.setAttribute("PlayersInfo", initializations.getSecond());
+        broadcast(new MessageFromServer(header, payload));
     }
 
     //This method wake up the setupGame Thread because someone has chosen a tower or a wizard
@@ -185,10 +260,7 @@ public class GameLobby {
         //TODO: notify other clients that a client is choosing the wizard
     }
 
-    private void sendInitializations() {
-        game = gameController.getModel();
-        ServerMessageHeader header = new ServerMessageHeader("GameInitializations", ServerMessageType.GAME_SETUP);
-        MessagePayload payload = new MessagePayload();
+    private Pair<SimpleField, SimplePlayer[]> getFieldInitializations() {
         int motherNaturePosition = game.motherNaturePositionIndex();
         List<SimpleIsland> islandsView = new ArrayList<>();
         for (Island i: game.getIslands()) {
@@ -223,9 +295,7 @@ public class GameLobby {
         } else {
             simpleField = new SimpleField(islandsView, clouds, motherNaturePosition);
         }
-        payload.setAttribute("Field", simpleField);
-        payload.setAttribute("PlayersInfo", playersView);
-        broadcast(new MessageFromServer(header, payload));
+        return new Pair<>(simpleField, playersView);
     }
 
     //TODO: modify when characters are reimplemented
@@ -265,7 +335,7 @@ public class GameLobby {
 
     public void doEndGameOperations() {
         //TODO: maybe there are other things to do
-        saveGame.deleteFile();
+        //saveGame.deleteFile();
         server.deleteGame(gameId);
     }
 
@@ -291,6 +361,15 @@ public class GameLobby {
     }
 
     public void setSaveGame(){
-        new Thread(()->saveGame.createJson()).start();
+        //new Thread(()->saveGame.createJson()).start();
+        new Thread(() -> {
+            PersistenceGameInfo gameInfo = new PersistenceGameInfo(gameId);
+            gameInfo.setGameState(gameController);
+            try {
+                gameInfo.saveGame();
+            } catch (URISyntaxException | IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
     }
 }

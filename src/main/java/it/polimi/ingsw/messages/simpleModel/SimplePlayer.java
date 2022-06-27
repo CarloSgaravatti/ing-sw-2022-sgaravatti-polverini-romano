@@ -1,6 +1,7 @@
 package it.polimi.ingsw.messages.simpleModel;
 
 import it.polimi.ingsw.model.enumerations.RealmType;
+import it.polimi.ingsw.utils.Pair;
 
 import java.io.Serializable;
 import java.util.List;
@@ -13,13 +14,14 @@ public class SimplePlayer implements Serializable {
     private final String nickname;
     private Map<Integer, Integer> assistants;
     private int numCoins;
+    private Pair<Integer, Integer> lastAssistant;
 
     public SimplePlayer(String nickname) {
         this.nickname = nickname;
     }
 
-    public SimplePlayer(String nickname, RealmType[] entrance, RealmType[] diningRoom) {
-        this(nickname, entrance);
+    public SimplePlayer(String nickname, RealmType[] entrance, RealmType[] diningRoom, int numTowers, int numCoins) {
+        this(nickname, entrance, numTowers, numCoins);
         this.diningRoom = diningRoom;
     }
 
@@ -81,5 +83,13 @@ public class SimplePlayer implements Serializable {
 
     public void setNumCoins(int numCoins) {
         this.numCoins = numCoins;
+    }
+
+    public Pair<Integer, Integer> getLastAssistant() {
+        return lastAssistant;
+    }
+
+    public void setLastAssistant(Pair<Integer, Integer> lastAssistant) {
+        this.lastAssistant = lastAssistant;
     }
 }

@@ -1,6 +1,9 @@
 package it.polimi.ingsw.messages;
 
-//TODO: all errors must have a message associated (a String attribute with the message)
+/**
+ * Enum class ErrorMessageType represents all the type of errors that will be sent to clients if they make some mistakes
+ * in sending messages to the server.
+ */
 public enum ErrorMessageType {
     DUPLICATE_NICKNAME,
     UNRECOGNIZED_MESSAGE,
@@ -13,9 +16,6 @@ public enum ErrorMessageType {
     TURN_NOT_FINISHED, //if a client send EndTurn, but he has to do something more before
     WIZARD_ALREADY_TAKEN,
     TOWER_ALREADY_TAKEN,
-    ASSISTANT_ALREADY_PLAYED,
-    ILLEGAL_MOTHER_NATURE_MOVEMENT,
-    TO_MUCH_STUDENT_MOVED,
     ILLEGAL_ARGUMENT,
-    CHARACTER_ALREADY_PLAYED//...
+    CHARACTER_ALREADY_PLAYED
 }

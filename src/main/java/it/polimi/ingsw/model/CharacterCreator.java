@@ -55,30 +55,28 @@ public class CharacterCreator {
      * @throws IllegalArgumentException if the id is not valid (if it isn't 2, 4, 6 or 8)
      */
     private CharacterWithoutInput getCharacterWithoutInput(int characterId) throws IllegalArgumentException {
-        Consumer<Player> action;
+        Consumer<Player> action = getCharacterWithNoInputAction(characterId);
         return switch (characterId) {
-            case 2 -> {
-                action = player -> player.getTurnEffect().setProfessorPrecedence(true);
-                yield new CharacterWithoutInput(2, 2, action);
-            }
-            case 4 -> {
-                action = player -> player.getTurnEffect()
+            case 2 -> new CharacterWithoutInput(2, 2, action);
+            case 4 -> new CharacterWithoutInput(1, 4, action);
+            case 6 -> new CharacterWithoutInput(3, 6, action);
+            case 8 -> new CharacterWithoutInput(2, 8, action);
+            default -> throw new IllegalArgumentException();
+        };
+    }
+
+    public Consumer<Player> getCharacterWithNoInputAction(int characterId) {
+        return switch (characterId) {
+            case 2 -> player -> player.getTurnEffect().setProfessorPrecedence(true);
+            case 4 -> player -> player.getTurnEffect()
                         .incrementMotherNatureMovement(MOTHER_NATURE_INCREMENT, true);
-                yield new CharacterWithoutInput(1, 4, action);
-            }
-            case 6 -> {
-                action = player -> player.getTurnEffect()
+            case 6 -> player -> player.getTurnEffect()
                         .setInfluenceStrategy(new NoTowerInfluenceStrategy(player.getTurnEffect().getInfluenceStrategy()));
-                yield new CharacterWithoutInput(3, 6, action);
-            }
-            case 8 -> {
-                action = player -> {
+            case 8 -> player -> {
                     player.getTurnEffect()
                             .setInfluenceStrategy(new GainInfluenceStrategy(player.getTurnEffect().getInfluenceStrategy()));
                     player.getTurnEffect().setAdditionalInfluence(ADDITIONAL_INFLUENCE);
-                };
-                yield new CharacterWithoutInput(2, 8, action);
-            }
+            };
             default -> throw new IllegalArgumentException();
         };
     }

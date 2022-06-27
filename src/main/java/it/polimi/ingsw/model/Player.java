@@ -130,4 +130,8 @@ public class Player implements PropertyChangeListener {
 	public void propertyChange(PropertyChangeEvent evt) {
 		listeners.firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
 	}
+
+	public void restorePlayer(Game game) {
+		school.restoreSchool(this, game);
+	}
 }

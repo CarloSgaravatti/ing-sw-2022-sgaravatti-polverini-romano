@@ -90,7 +90,6 @@ public class TurnMessageHandler extends BaseMessageHandler {
     private void checkClientTurn(String turnStarter, TurnPhase[] possibleActions) {
         if (turnStarter.equals(getUserInterface().getNickname())) {
             getUserInterface().displayStringMessage("Now is your turn");
-            getUserInterface().displayStringMessage(Arrays.toString(possibleActions)); //temporary
             listeners.firePropertyChange("ClientTurn", null, possibleActions);
         } else {
             listeners.firePropertyChange("NewTurn", null, turnStarter);

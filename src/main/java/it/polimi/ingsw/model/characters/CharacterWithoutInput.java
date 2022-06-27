@@ -3,6 +3,8 @@ package it.polimi.ingsw.model.characters;
 import it.polimi.ingsw.exceptions.IllegalCharacterActionRequestedException;
 import it.polimi.ingsw.exceptions.NotEnoughCoinsException;
 import it.polimi.ingsw.model.CharacterCard;
+import it.polimi.ingsw.model.CharacterCreator;
+import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
 
 import java.util.List;
@@ -15,7 +17,7 @@ import java.util.function.Consumer;
  * the character is played: this action is injected in the character at the creation moment.
  */
 public class CharacterWithoutInput extends CharacterCard {
-    private final Consumer<Player> dynamicPlayCard;
+    private Consumer<Player> dynamicPlayCard;
 
     /**
      * Construct a CharacterCard which has the specified id, the specified price and that will perform the specified
@@ -45,6 +47,11 @@ public class CharacterWithoutInput extends CharacterCard {
     @Override
     public boolean requiresInput() {
         return false;
+    }
+
+    @Override
+    public void restoreCharacter(Game game) {
+        this.dynamicPlayCard = new CharacterCreator(game).getCharacterWithNoInputAction(this.getId());
     }
 
     /**

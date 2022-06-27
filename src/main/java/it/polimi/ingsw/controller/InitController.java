@@ -30,6 +30,15 @@ public class InitController implements PropertyChangeListener {
 		this.gameConstants = JsonUtils.constantsByNumPlayer(numPlayers);
 	}
 
+	public InitController(Game gameRestored) {
+		this(gameRestored.getNumPlayers(), gameRestored.isExpertGame());
+		this.game = gameRestored;
+		game.getPlayers().stream().filter(player -> player.getWizardType() != null)
+				.forEach(player -> playersWithWizard.put(player.getNickName(), player.getWizardType()));
+		game.getPlayers().stream().filter(player -> player.getSchool().getTowerType() != null)
+				.forEach(player -> playersWithTower.put(player.getNickName(), player.getSchool().getTowerType()));
+	}
+
 	public int getNumPlayers(){
 		return this.numPlayers;
 	}
@@ -56,7 +65,7 @@ public class InitController implements PropertyChangeListener {
 	}
 
 	public void setupPlayerTower(Player player, TowerType tower) throws TowerTypeAlreadyTakenException {
-		if (player.getSchool() != null) return; //TODO: player has already made the choice (exception?)
+		if (player.getSchool() != null) return;
 		int towerPerSchool = gameConstants.getNumTowers();
 		for(int j = 0; j < numPlayers; j++){
 			School school = game.getPlayers().get(j).getSchool();
@@ -80,7 +89,7 @@ public class InitController implements PropertyChangeListener {
 	}
 
 	public void setupPlayerWizard(Player player, WizardType wizard) throws WizardTypeAlreadyTakenException {
-		if (player.getWizardType() != null) return; //TODO: player has already made the choice (exception?)
+		if (player.getWizardType() != null) return;
 		for(int i = 0; i < numPlayers; i++){
 			if(game.getPlayers().get(i).getWizardType() == wizard) {
 				throw new WizardTypeAlreadyTakenException();
