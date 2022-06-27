@@ -110,4 +110,13 @@ public interface UserInterface extends PropertyChangeListener{
      * @param info the error description
      */
     void onError(ErrorMessageType error, String info);
+
+    /**
+     * Notifies the client to choose a new game or one previous game
+     *
+     * @param numPlayers the number of players in the saved game
+     * @param rules the rules of the saved games
+     * @param participants array of participants' name
+     */
+    void onResumeGame(int numPlayers, boolean rules, String[] participants);
 }

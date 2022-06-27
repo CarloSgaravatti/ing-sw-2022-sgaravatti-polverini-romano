@@ -41,6 +41,8 @@ public class PlayerSetupHandler implements PropertyChangeListener {
             case "TowerChoice" -> onTowerSelection((TowerType) evt.getNewValue());
             case "WizardChoice" -> onWizardSelection((WizardType) evt.getNewValue());
             case "RefreshLobby" -> connection.sendMessage(new MessagePayload(), "RefreshGlobalLobby", ClientMessageType.GAME_SETUP);
+            case "restoreGame" -> connection.sendMessage(new MessagePayload(),"restoreGame", ClientMessageType.GAME_SETUP);
+            case "deleteSavedGame" -> connection.sendMessage(new MessagePayload(),"deleteSavedGame", ClientMessageType.GAME_SETUP);
         }
     }
 
