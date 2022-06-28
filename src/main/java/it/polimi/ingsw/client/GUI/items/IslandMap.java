@@ -37,7 +37,7 @@ public class IslandMap {
         for (int i = 0; i < 12; i++) {
             Pair<Double, Double> layout = new Pair<>(islands.get(i).getLayoutX(), islands.get(i).getLayoutY());
             IslandSubScene islandSubScene = new IslandSubScene();
-            islandSubScene.init(modelView.getField().getIsland(i).getFirst(), i);
+            islandSubScene.init(modelView.getField(), i);
             islandSubScene.setLayoutX(layout.getFirst());
             islandSubScene.setLayoutY(layout.getSecond());
             islandSubScene.getStyleClass().add("root-in-island-group");

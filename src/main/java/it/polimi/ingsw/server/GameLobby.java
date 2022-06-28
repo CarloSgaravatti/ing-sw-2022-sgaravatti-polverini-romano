@@ -48,6 +48,10 @@ public class GameLobby {
         this.isGameRestored = isGameRestored;
     }
 
+    public boolean isGameRestored() {
+        return isGameRestored;
+    }
+
     public synchronized void insertInLobby(String nickname, ClientConnection clientConnection) {
         participants.putIfAbsent(nickname, clientConnection);
         ServerMessageHeader header = new ServerMessageHeader("PlayerJoined", ServerMessageType.GAME_SETUP);

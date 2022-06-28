@@ -1,9 +1,11 @@
 package it.polimi.ingsw.client.GUI.items;
 
 import it.polimi.ingsw.client.GUI.constants.Constants;
+import it.polimi.ingsw.client.modelView.FieldView;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.utils.Pair;
+import it.polimi.ingsw.utils.Triplet;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -41,10 +43,13 @@ public class IslandSubScene extends AnchorPane implements Initializable {
         }
     }
 
-    public void init(Integer[] studentsInIsland, int islandId) {
+    public void init(FieldView fieldView, int islandId) {
+        Triplet<Integer[], Integer, TowerType> island = fieldView.getIsland(islandId);
+        Integer[] studentsInIsland = island.getFirst();
         for (RealmType realm: RealmType.values()) {
             for (int i = 0; i < studentsInIsland[realm.ordinal()]; i++) addStudent(realm);
         }
+        if (island.getThird() != null) this.addTower(island.getThird());
         this.islandId = islandId;
         this.rootIsland = true;
     }

@@ -100,12 +100,8 @@ public class Server implements Runnable{
     }
 
     private void deleteFile(int gameId) {
-        try {
-            SaveGame.deletePersistenceData(gameId);
-            saveParticipants();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        SaveGame.deletePersistenceData(gameId);
+        saveParticipants();
     }
 
     public GameLobby getGameById(int gameId) {
@@ -146,7 +142,8 @@ public class Server implements Runnable{
         } else {
             payload.setAttribute("NotStartedGames", waitingPlayersPerGameMap.size());
             Map<Integer, Triplet<Integer, Boolean, String[]>> gamesToSendMap = new HashMap<>();
-            for (Integer gameId: waitingPlayersPerGameMap.keySet()) {
+            for (Integer gameId: waitingPlayersPerGameMap.keySet().stream()
+                    .filter(gameId -> !gamesMap.get(gameId).isGameRestored()).toList()) {
                 Triplet<Integer, Boolean, String[]> gameInfo = new Triplet<>();
                 gameInfo.setFirst(gamesMap.get(gameId).getNumPlayers());
                 gameInfo.setSecond(gamesMap.get(gameId).isExpertGame());
@@ -179,7 +176,7 @@ public class Server implements Runnable{
             if (Arrays.stream(gamesParticipantsToBeRestored.get(gameId)).toList().contains(clientName)) {
                 try {
                     return Optional.ofNullable(SaveGame.getPersistenceData(gameId));
-                } catch (URISyntaxException | FileNotFoundException e) {
+                } catch (FileNotFoundException e) {
                     return Optional.empty();
                 }
             }

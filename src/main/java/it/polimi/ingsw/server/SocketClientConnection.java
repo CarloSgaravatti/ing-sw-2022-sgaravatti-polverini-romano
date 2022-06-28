@@ -161,7 +161,6 @@ public class SocketClientConnection implements Runnable, ClientConnection {
             case "GameToPlay" -> gameId = message.getMessagePayload().getAttribute("GameId").getAsInt();
             case "RestoreGame" -> {
                 try {
-                    System.out.println("Trying to restore the game of the client");
                     gameId = server.restoreGameOfClient(nickname);
                 } catch (NoSuchElementException e) {
                     e.printStackTrace();

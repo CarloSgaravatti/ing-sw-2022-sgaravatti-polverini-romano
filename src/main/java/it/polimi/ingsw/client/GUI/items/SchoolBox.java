@@ -81,6 +81,7 @@ public class SchoolBox {
         while (towers.getChildren().size() > playerView.getNumTowers()) {
             towers.getChildren().remove(towers.getChildren().size() - 1);
         }
+        updateCoins();
     }
 
     private void initializeStudents(AnchorPane container) {

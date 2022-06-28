@@ -14,12 +14,20 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class SaveGame contains all static methods used to save games states from all active games into files, to get games
+ * data from files and to delete games data files when a game is finished or deleted. All files are created in a
+ * directory named /backupGames that will be created (if not already present) in the jar local context. A file that
+ * contains all participants names associated with a gameId (of a game that is currently active or that is saved, but
+ * it has not been already restored) will also be added to that directory. All files created are .json files.
+ * @see PersistenceGameInfo
+ */
 public class SaveGame {
     private static final String jarPathString;
     private static final GsonBuilder gsonBuilder;
 
     static {
-        File jarPath = null;
+        File jarPath;
         try {
             jarPath = new File(Server.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
         } catch (URISyntaxException e) {
@@ -33,7 +41,14 @@ public class SaveGame {
         gsonBuilder.registerTypeAdapter(CharacterCard.class, new CharacterTypeAdapter());
     }
 
-    public static void saveGame(PersistenceGameInfo gameInfo) throws URISyntaxException, IOException {
+    /**
+     * Saves the game that have the specified persistence info in a json file. The file will be named like
+     * Game_With_ID_X.json, where X is the gameId.
+     *
+     * @param gameInfo persistent game info
+     * @throws IOException if there was an error in the file creation
+     */
+    public static void saveGame(PersistenceGameInfo gameInfo) throws IOException {
         String fileName = jarPathString + "/backupGames/Game_With_ID_" + gameInfo.getGameId() + ".json";
         File file = new File(fileName);
         boolean created = file.createNewFile();
@@ -47,15 +62,26 @@ public class SaveGame {
         }
     }
 
-    public static PersistenceGameInfo getPersistenceData(int gameId) throws URISyntaxException, FileNotFoundException {
+    /**
+     * Returns the persistence data of the game that have the specified id. The data is obtained from a json file that is
+     * named as Game_With_ID_X.json, where X is the gameId.
+     *
+     * @param gameId the id of the game
+     * @return the persistence data of the game that have the specified id
+     * @throws FileNotFoundException if it doesn't exist the file associated to the specified id
+     */
+    public static PersistenceGameInfo getPersistenceData(int gameId) throws FileNotFoundException {
         FileInputStream fileInputStream = new FileInputStream(jarPathString + "/backupGames/Game_With_ID_" + gameId + ".json");
         InputStreamReader streamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
         return gsonBuilder.create().fromJson(streamReader, PersistenceGameInfo.class);
     }
 
-    public static void deletePersistenceData(int gameId) throws URISyntaxException {
-        File jarPath = new File(Server.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-        String stringPath = jarPath.getParentFile().getAbsolutePath();
+    /**
+     * Delete the file that is associated to the specified game id
+     *
+     * @param gameId the id of the game to delete
+     */
+    public static void deletePersistenceData(int gameId) {
         File fileToDelete = new File(jarPathString + "/backupGames/Game_With_ID_" + gameId + ".json");
         try {
             if (!fileToDelete.delete()) throw new Exception();
@@ -65,6 +91,12 @@ public class SaveGame {
         }
     }
 
+    /**
+     * Save on a file named participants.json the specified game participants
+     *
+     * @param gamesParticipants the participants of all games that are active or that are saved but not already restored
+     * @throws IOException if it wasn't possible to write the object in the file due to a json writer error
+     */
     public static void saveGameParticipants(Map<Integer, String[]> gamesParticipants) throws IOException {
         String fileName = jarPathString + "/backupGames/participants.json";
         File file = new File(fileName);
@@ -89,6 +121,12 @@ public class SaveGame {
         writer.close();
     }
 
+    /**
+     * Returns a map of all the games that are saved in files, associated with the names of the participants
+     *
+     * @return a map of all the games that are saved in files, associated with the names of the participants
+     * @throws IOException if it wasn't possible to write the object in the file due to a json reader error
+     */
     public static Map<Integer, String[]> getParticipants() throws IOException {
         FileInputStream fileInputStream = new FileInputStream(jarPathString + "/backupGames/participants.json");
         JsonReader jsonReader = new JsonReader(new InputStreamReader(fileInputStream, StandardCharsets.UTF_8));

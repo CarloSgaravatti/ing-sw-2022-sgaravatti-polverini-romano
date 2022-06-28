@@ -9,6 +9,10 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
 
+/**
+ * PersistenceGameInfo contains all information that is needed to be saved from a game, this information will be used
+ * to properly restore a game that was previously saved on file.
+ */
 public class PersistenceGameInfo {
     private final int gameId;
     private String[] lastPlayerOrder;
@@ -31,14 +35,29 @@ public class PersistenceGameInfo {
     private CharacterCard[] characterCards;
     private final Map<Integer, String> lastCharacterActivePlayer = new HashMap<>();
 
+    /**
+     * Constructs an empty PersistenceGameInfo of a game with the specified id
+     *
+     * @param gameId the id of the game
+     */
     public PersistenceGameInfo(int gameId) {
         this.gameId = gameId;
     }
 
+    /**
+     * Returns the id of the game
+     *
+     * @return the id of the game
+     */
     public int getGameId() {
         return gameId;
     }
 
+    /**
+     * Set all information about the game that are obtained from the specified game controller on this object.
+     *
+     * @param gameController the controller of the game
+     */
     public void setGameState(GameController gameController) {
         Game game = gameController.getModel();
         if (gameController.isExpertGame()) {
@@ -69,10 +88,21 @@ public class PersistenceGameInfo {
         this.isExpertGame = game.isExpertGame();
     }
 
+    /**
+     * Restore the game state from the persistent data, returns the game controller of the restored game
+     *
+     * @return the game controller of the restored game
+     */
     public GameController restoreGameState() {
         return restoreControllers(restoreModelComponents());
     }
 
+    /**
+     * Save the persistence data on a json file
+     *
+     * @throws URISyntaxException if there was an error the file creation
+     * @throws IOException if it was not possible to write information on the file
+     */
     public void saveGame() throws URISyntaxException, IOException {
         SaveGame.saveGame(this);
     }
@@ -106,11 +136,12 @@ public class PersistenceGameInfo {
         return gameController;
     }
 
-    public List<String> getParticipants() {
-        return Arrays.stream(players).map(Player::getNickName).toList();
-    }
-
+    /**
+     * Returns some basic information about the game in the format: (number of players, rules type, participants names).
+     *
+     * @return some basic information about the game
+     */
     public Triplet<Integer, Boolean, String[]> getGameInfo() {
-        return new Triplet<>(numPlayers, isExpertGame, getParticipants().toArray(new String[0]));
+        return new Triplet<>(numPlayers, isExpertGame, Arrays.stream(players).map(Player::getNickName).toList().toArray(new String[0]));
     }
 }
