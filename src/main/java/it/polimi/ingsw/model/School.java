@@ -271,5 +271,6 @@ public class School extends ProfessorPresenceObservable {
 	protected void restoreSchool(Player playerOwner, Game game, GameConstants gameConstants) {
 		this.addObserver(game);
 		this.player.addPropertyChangeListener(playerOwner);
+		this.gameConstants = gameConstants;
 	}
 }

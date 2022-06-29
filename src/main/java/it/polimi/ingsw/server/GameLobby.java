@@ -91,6 +91,7 @@ public class GameLobby {
                     PersistenceGameInfo persistenceGameInfo = SaveGame.getPersistenceData(gameId);
                     gameController = persistenceGameInfo.restoreGameState();
                     game = gameController.getModel();
+                    server.onGameRestored(gameId);
                 }
                 gameController.createListeners(assignRemoteViews(), this);
                 if (!game.isStarted()) {
@@ -143,7 +144,7 @@ public class GameLobby {
     private List<RemoteView> assignRemoteViews() {
         List<RemoteView> views = new ArrayList<>();
         for (String participant: participants.keySet()) {
-            views.add(new RemoteView(participants.get(participant), gameId, participant, this, gameController));
+            views.add(new RemoteView(participants.get(participant), participant, this, gameController));
         }
         return views;
     }
@@ -343,8 +344,6 @@ public class GameLobby {
     }
 
     public void doEndGameOperations() {
-        //TODO: maybe there are other things to do
-        //saveGame.deleteFile();
         server.deleteGame(gameId);
     }
 
@@ -370,7 +369,6 @@ public class GameLobby {
     }
 
     public void setSaveGame(){
-        //new Thread(()->saveGame.createJson()).start();
         new Thread(() -> {
             PersistenceGameInfo gameInfo = new PersistenceGameInfo(gameId);
             gameInfo.setGameState(gameController);
@@ -380,5 +378,13 @@ public class GameLobby {
                 throw new RuntimeException(e);
             }
         }).start();
+    }
+
+    public void onOtherPlayerDeleteChoice(String clientName) {
+        ServerMessageHeader header = new ServerMessageHeader("DeletedGame", ServerMessageType.SERVER_MESSAGE);
+        MessagePayload payload = new MessagePayload();
+        payload.setAttribute("ChoiceMaker", clientName);
+        broadcast(new MessageFromServer(header, payload));
+        server.deleteGame(gameId);
     }
 }

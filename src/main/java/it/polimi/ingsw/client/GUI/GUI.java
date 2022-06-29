@@ -45,17 +45,13 @@ public class GUI extends Application implements UserInterface {
     @Override
     public void start(Stage stage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(GUI.class.getResource("/fxml/welcomeToEriantys.fxml"));
-        //FXMLLoader fxmlLoader = new FXMLLoader(GUI.class.getResource("/fxml/genericBackground.fxml"));
-        scene = new Scene(fxmlLoader.load()); //width and height (is still resizable)
-        //with stage.setResizable(false) the stage is not resizable
-        //stage.setFullScreen(true) set the stage to full screen
+        scene = new Scene(fxmlLoader.load());
         this.stage = stage;
         this.stage.setTitle("Eriantys");
         this.stage.setScene(scene);
         this.stage.setFullScreen(true);
         this.stage.show(); //display the stage on the screen
         this.stage.centerOnScreen();
-
         WelcomeController welcomeController = fxmlLoader.getController();
         welcomeController.addGUI(this);
         welcomeController.addListener(this);
@@ -78,19 +74,23 @@ public class GUI extends Application implements UserInterface {
     @Override
     public void displayGlobalLobby(int numGames, Map<Integer, Triplet<Integer, Boolean, String[]>> gamesInfo) {
         Platform.runLater(() -> {
-            FXMLLoader fxmlLoader = new FXMLLoader(GUI.class.getResource("/fxml/globalLobby.fxml"));
-            try {
-                scene = new Scene(fxmlLoader.load());
-            } catch (IOException e) {
-                //TODO
+            if (currentSceneController instanceof WelcomeController welcomeController && welcomeController.isShowingMainMenu()) {
+                welcomeController.showMainMenu(nickname);
+            } else {
+                FXMLLoader fxmlLoader = new FXMLLoader(GUI.class.getResource("/fxml/globalLobby2.fxml"));
+                try {
+                    scene = new Scene(fxmlLoader.load());
+                } catch (IOException e) {
+                    //TODO
+                }
+                this.stage.setScene(scene);
+                GlobalLobbyController sceneController = fxmlLoader.getController();
+                sceneController.addListener(this);
+                sceneController.constructTable(gamesInfo);
+                sceneController.setNickname(nickname);
+                currentSceneController = sceneController;
+                this.stage.show();
             }
-            this.stage.setScene(scene);
-            GlobalLobbyController sceneController = fxmlLoader.getController();
-            sceneController.addListener(this);
-            sceneController.constructTable(gamesInfo);
-            sceneController.setNickname(nickname);
-            currentSceneController = sceneController;
-            this.stage.show();
         });
     }
 
@@ -100,7 +100,7 @@ public class GUI extends Application implements UserInterface {
     }
 
     @Override
-    public void askTowerChoice(TowerType[] freeTowers) {
+    public void displayLobbyInfo(int numPlayers, boolean rules, String[] waitingPlayers) {
         Platform.runLater(() -> {
             FXMLLoader fxmlLoader = new FXMLLoader(GUI.class.getResource("/fxml/setupScene.fxml"));
             try {
@@ -108,31 +108,44 @@ public class GUI extends Application implements UserInterface {
             } catch (IOException e) {
                 //TODO
             }
-            String css = Objects.requireNonNull(this.getClass().getResource("/css/setupScene.css")).toExternalForm();
-            scene.getStylesheets().addAll(css);
             this.stage.setScene(scene);
             SetupChoiceSceneController sceneController = fxmlLoader.getController();
             sceneController.addListener(this);
-            sceneController.setSceneWithTowers(freeTowers);
+            sceneController.showGameLobby(numPlayers, rules, waitingPlayers);
             currentSceneController = sceneController;
             this.stage.show();
         });
     }
 
     @Override
+    public void onPlayerJoined(String playerName) {
+        Platform.runLater(() -> {
+            SetupChoiceSceneController sceneController = (SetupChoiceSceneController) currentSceneController;
+            sceneController.onPlayerJoined(playerName);
+        });
+    }
+
+    @Override
+    public void onGameStarted() {
+        Platform.runLater(() -> {
+            SetupChoiceSceneController sceneController = (SetupChoiceSceneController) currentSceneController;
+            sceneController.onGameStarted();
+        });
+    }
+
+    @Override
+    public void askTowerChoice(TowerType[] freeTowers) {
+        Platform.runLater(() -> {
+            SetupChoiceSceneController sceneController = (SetupChoiceSceneController) currentSceneController;
+            sceneController.setSceneWithTowers(freeTowers);
+        });
+    }
+
+    @Override
     public void askWizardChoice(WizardType[] freeWizards) {
         Platform.runLater(() -> {
-            FXMLLoader fxmlLoader = new FXMLLoader(GUI.class.getResource("/fxml/setupScene.fxml"));
-            try {
-                scene = new Scene(fxmlLoader.load());
-            } catch (IOException e) {
-                //TODO
-            }
-            this.stage.setScene(scene);
-            SetupChoiceSceneController sceneController = fxmlLoader.getController();
-            sceneController.addListener(this);
+            SetupChoiceSceneController sceneController = (SetupChoiceSceneController) currentSceneController;
             sceneController.setSceneWithWizards(freeWizards);
-            this.stage.show();
         });
     }
 
@@ -151,11 +164,6 @@ public class GUI extends Application implements UserInterface {
             previousGameController.init(numPlayers, rules, participants);
             this.stage.show();
         });
-    }
-
-    @Override
-    public void displayLobbyInfo(int numPlayers, boolean rules, String[] waitingPlayers) {
-        //TODO
     }
 
     @Override
@@ -195,7 +203,7 @@ public class GUI extends Application implements UserInterface {
     @Override
     public void printTurnMenu(List<String> actions, List<String> actionCommands, List<String> currentPossibleActions) {
         Platform.runLater(() -> {
-            ((GameMainSceneController) currentSceneController).onTurnV2(actionCommands, currentPossibleActions);
+            ((GameMainSceneController) currentSceneController).onTurn(actionCommands, currentPossibleActions);
             stage.setFullScreen(true);
         });
     }
@@ -220,12 +228,14 @@ public class GUI extends Application implements UserInterface {
             case "CoinsUpdate" -> onCoinsUpdate((String) evt.getNewValue());
             case "SchoolSwap" -> onSchoolSwap((String) evt.getSource(), (RealmType[]) evt.getOldValue(), (RealmType[]) evt.getNewValue());
 
+
             case "CloudSelected" -> onCloudsSelection((String) evt.getSource(), (Integer) evt.getNewValue(), (RealmType[]) evt.getOldValue());
             case "CloudsRefill" -> {} //TODO
 
             case "NewTurn" -> onNewTurn((String) evt.getNewValue());
             case "Loser", "Winner", "Tie", "TieLoser" -> {} //TODO
             case "Disconnection" -> {} //TODO
+            case "GameDeleted" -> onGameDeleted((String) evt.getNewValue());
             //events that come from gui controllers
             default -> checkEventFromControllers(evt);
         }
@@ -271,13 +281,9 @@ public class GUI extends Application implements UserInterface {
                 String currentPlayer = this.modelView.getCurrentActivePlayer();
                 ((GameMainSceneController) currentSceneController).moveStudentsToIsland(currentPlayer, islandId, students);
             } else if (!fromEntrance){
-                //else is from character 1 (character 1 students will be updated by a CharacterStudents message)
                 ((GameMainSceneController) currentSceneController).moveAccordionDown();
                 IslandMap islandMap = ((GameMainSceneController) currentSceneController).getIslandMap();
-                islandMap.getIslandsById(islandId).stream()
-                        .filter(IslandSubScene::isRootIsland)
-                        .findFirst()
-                        .ifPresent(island -> Arrays.stream(students).forEach(island::addStudent));
+                islandMap.getIslandById(islandId).ifPresent(island -> Arrays.stream(students).forEach(island::addStudent));
             }
         });
     }
@@ -330,10 +336,7 @@ public class GUI extends Application implements UserInterface {
     private void onNoEntryTileUpdate(int islandId, int characterId) {
         Platform.runLater(() -> {
             IslandMap islandMap = ((GameMainSceneController) currentSceneController).getIslandMap();
-            islandMap.getIslandsById(islandId).stream()
-                    .filter(IslandSubScene::isRootIsland)
-                    .findAny()
-                    .ifPresent(island -> {
+            islandMap.getIslandById(islandId).ifPresent(island -> {
                         int noEntryTileOnIsland = modelView.getField().getExpertField().getNoEntryTilesOnIsland(islandId);
                         while(island.getNumNoEntryTile() != noEntryTileOnIsland) {
                             if (island.getNumNoEntryTile() < noEntryTileOnIsland) island.insertNoEntryTile();
@@ -383,8 +386,10 @@ public class GUI extends Application implements UserInterface {
     }
 
     private void checkEventFromControllers(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals("Nickname")) this.nickname = (String) evt.getNewValue();
+        if (evt.getPropertyName().equals("Quit")) System.exit(0); //TODO: do better
+        else if (evt.getPropertyName().equals("QuitGame")) this.returnToMainMenu();
         responseHandlerExecutor.submit(() -> listeners.firePropertyChange(evt));
+        if (evt.getPropertyName().equals("Nickname")) this.nickname = (String) evt.getNewValue();
     }
 
     public void doSetup(String serverIp, int serverPort, String nickname) {
@@ -405,7 +410,32 @@ public class GUI extends Application implements UserInterface {
         stage.setOnCloseRequest(event -> connectionToServer.setActive(false));
     }
 
+    @Override
     public void onError(ErrorMessageType error, String info) {
         Platform.runLater(() -> currentSceneController.onError(error, info));
+    }
+
+    public void onGameDeleted(String playerName) {
+        Platform.runLater(() -> {
+            SetupChoiceSceneController setupChoiceSceneController = (SetupChoiceSceneController) currentSceneController;
+            setupChoiceSceneController.onGameDeleted(playerName);
+        });
+    }
+
+    public void returnToMainMenu() {
+        FXMLLoader fxmlLoader = new FXMLLoader(GUI.class.getResource("/fxml/welcomeToEriantys.fxml"));
+        try {
+            scene = new Scene(fxmlLoader.load());
+        } catch (IOException e) {
+            //TODO
+        }
+        this.stage.setScene(scene);
+        this.stage.setFullScreen(true);
+        WelcomeController welcomeController = fxmlLoader.getController();
+        welcomeController.addGUI(this);
+        welcomeController.addListener(this);
+        welcomeController.showMainMenu(nickname);
+        currentSceneController = welcomeController;
+        this.stage.show();
     }
 }

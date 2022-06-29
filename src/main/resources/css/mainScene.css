@@ -62,4 +62,14 @@
     -fx-border-width: 8 0 8 8;
     -fx-border-radius: 10 0 0 10;
     -fx-background-radius: 15 0 0 15;
+    -fx-font-size: 18;
+}
+
+.turn-management-button {
+    -fx-text-alignment: center;
+    -fx-opacity: 0.8;
+}
+
+.turn-management-button:hover {
+    -fx-opacity: 1;
 }

@@ -119,4 +119,16 @@ public interface UserInterface extends PropertyChangeListener{
      * @param participants array of participants' name
      */
     void onResumeGame(int numPlayers, boolean rules, String[] participants);
+
+    /**
+     * Notifies the user that a player has joined the game lobby
+     *
+     * @param playerName the name of the player
+     */
+    void onPlayerJoined(String playerName);
+
+    /**
+     * Notifies the user that the game will start soon
+     */
+    void onGameStarted();
 }

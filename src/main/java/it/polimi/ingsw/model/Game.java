@@ -168,7 +168,7 @@ public class Game implements ModelObserver, PropertyChangeListener {
 		this.indexActivePlayer = players.indexOf(player);
 	}
 
-	public void createAllStudentsForBag(){
+	public void createAllStudentsForBag() {
 		int numPerType = gameConstants.getNumTotalStudents() / RealmType.values().length;
 		for(RealmType r: RealmType.values()){
 			for(int i = 0; i < numPerType;i++){
@@ -177,7 +177,7 @@ public class Game implements ModelObserver, PropertyChangeListener {
 		}
 	}
 
-	public void genStudentForBeginning(){
+	public void genStudentForBeginning() {
 		for(int i = 0; i < 2; i++) {
 			for (RealmType r : RealmType.values()) {
 				bag.insertStudent(new Student(r));
@@ -291,7 +291,7 @@ public class Game implements ModelObserver, PropertyChangeListener {
 			islandToUnify.add(island);
 			islandIndexes.add(islandIndex);
 			islands.removeAll(islandToUnify);
-			Island newIsland = new IslandGroup(islandToUnify.toArray(new Island[0]));
+			Island newIsland = new IslandGroup(true, islandToUnify.toArray(new Island[0]));
 			islands.add(indexToReplace, newIsland);
 			newIsland.addListener(this);
 			newIsland.addObserver(this);

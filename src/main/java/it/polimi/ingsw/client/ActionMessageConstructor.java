@@ -41,23 +41,18 @@ public class ActionMessageConstructor implements PropertyChangeListener {
      */
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        //TODO: delete try catch when everything is ok
-        try {
-            String userAction = (String) evt.getNewValue();
-            MessagePayload payload = switch (evt.getPropertyName()) {
-                case "MoveStudents" -> createMoveStudentMessage(userAction);
-                case "MoveMotherNature" -> createMoveMotherNatureMessage(userAction);
-                case "PickFromCloud" -> createPickFromCloudMessage(userAction);
-                case "PlayCharacter" -> createPlayCharacterMessage(userAction);
-                case "PlayAssistant" -> createPlayAssistantMessage(userAction);
-                case "EndTurn" -> new MessagePayload();
-                default -> null;
-            };
-            if (payload != null) {
-                connection.sendMessage(payload, evt.getPropertyName(), ClientMessageType.ACTION);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        String userAction = (String) evt.getNewValue();
+        MessagePayload payload = switch (evt.getPropertyName()) {
+            case "MoveStudents" -> createMoveStudentMessage(userAction);
+            case "MoveMotherNature" -> createMoveMotherNatureMessage(userAction);
+            case "PickFromCloud" -> createPickFromCloudMessage(userAction);
+            case "PlayCharacter" -> createPlayCharacterMessage(userAction);
+            case "PlayAssistant" -> createPlayAssistantMessage(userAction);
+            case "EndTurn" -> new MessagePayload();
+            default -> null;
+        };
+        if (payload != null) {
+            connection.sendMessage(payload, evt.getPropertyName(), ClientMessageType.ACTION);
         }
     }
 

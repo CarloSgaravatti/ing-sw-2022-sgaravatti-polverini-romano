@@ -115,7 +115,11 @@ public class ExpertFieldView {
      * @param island the id of the island
      */
     public void updateIslandNoEntryTiles(int newIslandNoEntryTiles, int island) {
-        islandsWithNoEntryTiles.replace(island, newIslandNoEntryTiles);
+        if (islandsWithNoEntryTiles.containsKey(island)) {
+            islandsWithNoEntryTiles.replace(island, newIslandNoEntryTiles);
+        } else {
+            islandsWithNoEntryTiles.put(island, newIslandNoEntryTiles);
+        }
     }
 
     /**

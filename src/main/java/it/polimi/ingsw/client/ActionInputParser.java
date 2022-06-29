@@ -60,26 +60,20 @@ public class ActionInputParser implements PropertyChangeListener {
      */
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        //check input, if ok notify the message constructor
         String move = (String) evt.getNewValue();
         System.out.println("You ordered: " + evt.getPropertyName() + " " + move);
-        //TODO: delete try catch when everything is ok
-        try {
-            Optional<String> error = switch (evt.getPropertyName()) {
-                case "MoveStudents" -> checkMoveStudents(move);
-                case "MoveMotherNature" -> checkMoveMotherNature(move);
-                case "PickFromCloud" -> checkPickFromCloud(move);
-                case "PlayCharacter" -> checkPlayCharacter(move);
-                case "PlayAssistant" -> checkPlayAssistant(move);
-                default -> Optional.of(UNRECOGNISED_COMMAND);
-            };
-            error.ifPresentOrElse(err -> {
-                userInterface.displayStringMessage(Colors.RED + err + Colors.RESET);
-                listeners.firePropertyChange("InputError", null, evt.getPropertyName());
-            }, () -> listeners.firePropertyChange(evt));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Optional<String> error = switch (evt.getPropertyName()) {
+            case "MoveStudents" -> checkMoveStudents(move);
+            case "MoveMotherNature" -> checkMoveMotherNature(move);
+            case "PickFromCloud" -> checkPickFromCloud(move);
+            case "PlayCharacter" -> checkPlayCharacter(move);
+            case "PlayAssistant" -> checkPlayAssistant(move);
+            default -> Optional.of(UNRECOGNISED_COMMAND);
+        };
+        error.ifPresentOrElse(err -> {
+            userInterface.displayStringMessage(Colors.RED + err + Colors.RESET);
+            listeners.firePropertyChange("InputError", null, evt.getPropertyName());
+        }, () -> listeners.firePropertyChange(evt));
     }
 
     /**

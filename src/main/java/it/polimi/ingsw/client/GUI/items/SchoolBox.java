@@ -1,6 +1,8 @@
 package it.polimi.ingsw.client.GUI.items;
 
 import it.polimi.ingsw.client.GUI.constants.Constants;
+import it.polimi.ingsw.client.modelView.FieldView;
+import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.client.modelView.PlayerView;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.utils.Pair;
@@ -38,19 +40,19 @@ public class SchoolBox {
     private static final List<RealmType> diningRoomOrder = List.of(RealmType.GREEN_FROGS, RealmType.RED_DRAGONS,
             RealmType.YELLOW_GNOMES, RealmType.PINK_FAIRES, RealmType.BLUE_UNICORNS);
 
-    public SchoolBox(String player, AnchorPane container, PlayerView playerView, boolean isExpertGame) {
+    public SchoolBox(String player, AnchorPane container, ModelView modelView, boolean isExpertGame) {
         this.container = container;
+        this.playerView = modelView.getPlayers().get(player);
         school = (AnchorPane) container.getChildren().get(0);
         lastAssistantPlayed = (ImageView) container.getChildren().get(1);
         Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(Constants.wizardImages.get(playerView.getPlayerWizard()))));
         lastAssistantPlayed.setImage(image);
-        this.playerView = playerView;
         dimStudentsRadius = school.getHeight() * 75 / 1454;
         entrance = (AnchorPane) school.getChildren().get(1);
         diningRoom = (AnchorPane) school.getChildren().get(2);
         professorTable = (AnchorPane) school.getChildren().get(3);
         towers = (AnchorPane) school.getChildren().get(4);
-        initializeSchool();
+        initializeSchool(modelView, player);
         VBox vBox = (VBox) container.getChildren().get(2);
         if (isExpertGame) {
             //TODO: do better
@@ -66,7 +68,7 @@ public class SchoolBox {
         lastAssistantPlayed.setPreserveRatio(true);
     }
 
-    public void initializeSchool() {
+    public void initializeSchool(ModelView modelView, String nickname) {
         initializeStudents(entrance);
         initializeStudents(diningRoom);
         initializeProfessors();
@@ -80,6 +82,9 @@ public class SchoolBox {
         }
         while (towers.getChildren().size() > playerView.getNumTowers()) {
             towers.getChildren().remove(towers.getChildren().size() - 1);
+        }
+        for (RealmType r: RealmType.values()) {
+            if (nickname.equals(modelView.getField().getProfessorOwner(r))) insertProfessor(r);
         }
         updateCoins();
     }

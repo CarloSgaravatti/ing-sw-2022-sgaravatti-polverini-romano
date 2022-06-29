@@ -44,7 +44,7 @@ public class IslandMapPrinter {
             }
         }
         firstLine = addAdditionalSpaces(previousLengthY, firstLine);
-        secondLine = addAdditionalSpaces(previousLengthY, secondLine);
+        secondLine = addAdditionalSpaces((previousLengthY == 0) ? firstLine[0].length : previousLengthY, secondLine);
         islandMap = firstLine;
         islandMap = appendMatrixInColumn(secondLine, islandMap);
     }

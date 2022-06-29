@@ -24,8 +24,6 @@ public class GlobalLobbyController extends FXMLController implements Initializab
     @FXML private TableColumn<LobbyInfo, Integer> numPlayersCol;
     @FXML private TableColumn<LobbyInfo, Integer> gameIdCol;
     @FXML public TableColumn<LobbyInfo, Integer> playersConnectedCol;
-    @FXML private ChoiceBox<String> rulesChoice;
-    @FXML private ChoiceBox<Integer> numPlayersChoice;
 
     public void constructTable(Map<Integer, Triplet<Integer, Boolean, String[]>> lobbyInfo) {
         List<LobbyInfo> lobby = new ArrayList<>();
@@ -40,10 +38,7 @@ public class GlobalLobbyController extends FXMLController implements Initializab
         gameIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         numPlayersCol.setCellValueFactory(new PropertyValueFactory<>("numPlayers"));
         rulesCol.setCellValueFactory(new PropertyValueFactory<>("rules"));
-        //playersConnectedCol.setCellValueFactory(new PropertyValueFactory<>("connectedPlayers"));
-        numPlayersChoice.getItems().addAll(2, 3);
-        rulesChoice.getItems().addAll("simple", "expert");
-        //globalLobbyTable.setRowFactory();
+        playersConnectedCol.setCellValueFactory(new PropertyValueFactory<>("connectedPlayers"));
     }
 
     public void setNickname(String nickname) {
@@ -56,18 +51,6 @@ public class GlobalLobbyController extends FXMLController implements Initializab
         System.out.println("Selected game " + game.getId());
         firePropertyChange(new PropertyChangeEvent(this, "GameToPlay", null, game.getId()));
     }
-
-    @FXML
-    void submitNewGame(ActionEvent event) {
-        Integer numPlayers = numPlayersChoice.getSelectionModel().getSelectedItem();
-        String rules = rulesChoice.getSelectionModel().getSelectedItem();
-        if (numPlayers == null || rules == null) {
-            displayAlert("Some parameters are missing, retry");
-        } else {
-            firePropertyChange(new PropertyChangeEvent(this, "NewGame", numPlayers, rules.equals("expert")));
-        }
-    }
-
 
     @FXML
     void onRefresh(ActionEvent event) {

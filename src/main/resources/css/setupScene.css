@@ -1,3 +1,33 @@
 .image-view {
     -fx-cursor: hand;
 }
+
+.center-text {
+    -fx-text-alignment: center;
+    -fx-font-size: 20;
+}
+
+.center-pane {
+    -fx-background-radius: 12px;
+    -fx-border-radius: 10px;
+    -fx-border-color: saddlebrown;
+    -fx-border-width: 3px;
+}
+
+.setup-button {
+    -fx-text-alignment: center;
+    -fx-font-size: 20;
+    -fx-opacity: 0.8;
+}
+
+.setup-button:hover {
+    -fx-opacity: 1;
+}
+
+.quit-button {
+    -fx-background-color: tomato;
+}
+
+.global-lobby-button {
+    -fx-background-color: lightgreen;
+}

@@ -12,11 +12,16 @@
 <fx:root prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" type="AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <AnchorPane fx:id="motherNature" layoutX="99.0" layoutY="50.0" prefHeight="40.0" prefWidth="40.0" styleClass="mother-nature" />
-      <ImageView fx:id="tower" fitHeight="53.0" fitWidth="40.0" layoutX="56.0" layoutY="30.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../images/black_tower.png" />
-         </image>
-      </ImageView>
+      <HBox alignment="CENTER" layoutX="51.0" layoutY="34.0">
+         <children>
+            <Label text="1" />
+            <ImageView fx:id="tower" fitHeight="46.0" fitWidth="36.0" layoutX="56.0" layoutY="30.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/black_tower.png" />
+               </image>
+            </ImageView>
+         </children>
+      </HBox>
       <HBox fx:id="redStudent" layoutX="30.0" layoutY="20.0" spacing="5.0">
          <children>
             <Label text="0" />

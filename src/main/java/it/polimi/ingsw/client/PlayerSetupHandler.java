@@ -43,6 +43,7 @@ public class PlayerSetupHandler implements PropertyChangeListener {
             case "RefreshLobby" -> connection.sendMessage(new MessagePayload(), "RefreshGlobalLobby", ClientMessageType.GAME_SETUP);
             case "RestoreGame" -> connection.sendMessage(new MessagePayload(),"RestoreGame", ClientMessageType.GAME_SETUP);
             case "DeleteSavedGame" -> connection.sendMessage(new MessagePayload(),"DeleteSavedGame", ClientMessageType.GAME_SETUP);
+            case "QuitGame" -> connection.sendMessage(new MessagePayload(), "QuitGame", ClientMessageType.GAME_SETUP);
         }
     }
 

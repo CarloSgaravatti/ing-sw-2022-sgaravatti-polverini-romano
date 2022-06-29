@@ -42,7 +42,6 @@ public class GameMainSceneController extends FXMLController implements Initializ
     @FXML private AnchorPane secondPlayerSchoolPane;
     @FXML private AnchorPane thirdPlayerSchoolPane;
     @FXML private FlowPane assistantsPane;
-    @FXML private Menu turnManagement;
     @FXML private ImageView bag;
     @FXML private Button accordionButton;
     @FXML private VBox characterBox;
@@ -71,8 +70,6 @@ public class GameMainSceneController extends FXMLController implements Initializ
             actionDescriptionLabel.setText("You have chosen assistant " + assistantId + ".");
             moveAccordionDown();
             assistantsTab.setAssistantSelectable(false);
-        } else {
-            //TODO
         }
     };
     private final EventHandler<MouseEvent> cloudSelectionHandler = mouseEvent -> {
@@ -84,8 +81,6 @@ public class GameMainSceneController extends FXMLController implements Initializ
             decisionBox.setVisible(true);
             actionDescriptionLabel.setText("You have chosen cloud " + cloudId + ".");
             cloudSelectable = false;
-        } else {
-            //TODO
         }
     };
 
@@ -108,6 +103,16 @@ public class GameMainSceneController extends FXMLController implements Initializ
             }
             transition.play();
         }
+    }
+
+    @FXML
+    void quitApplication(ActionEvent event) {
+        firePropertyChange("Quit", null, null);
+    }
+
+    @FXML
+    void returnToMainMenu(ActionEvent event) {
+        firePropertyChange("QuitGame", null, null);
     }
 
     @Override
@@ -187,16 +192,15 @@ public class GameMainSceneController extends FXMLController implements Initializ
         TabPane tabs = (TabPane) ((AnchorPane) playersBox.getChildren().get(1)).getChildren().get(0);
         assistantsTab = new AssistantsTab(assistantsPane, modelView);
         assistantsTab.setEventHandler(MouseEvent.MOUSE_CLICKED, assistantEventHandler);
-        Map<String, PlayerView> players = modelView.getPlayers();
         playersSchools.put(clientNickname,
-                new Pair<>(1, new SchoolBox(clientNickname, clientSchoolPane, players.get(clientNickname), modelView.isExpert())));
+                new Pair<>(1, new SchoolBox(clientNickname, clientSchoolPane, modelView, modelView.isExpert())));
         List<String> otherPlayers = modelView.getPlayers().keySet().stream().filter(p -> !p.equals(clientNickname)).toList();
         playersSchools.put(otherPlayers.get(0),
-                new Pair<>(2, new SchoolBox(otherPlayers.get(0), secondPlayerSchoolPane, players.get(otherPlayers.get(0)), modelView.isExpert())));
+                new Pair<>(2, new SchoolBox(otherPlayers.get(0), secondPlayerSchoolPane, modelView, modelView.isExpert())));
         tabs.getTabs().get(2).setText(otherPlayers.get(0) + "'s school");
         if (otherPlayers.size() == 2) {
             playersSchools.put(otherPlayers.get(1),
-                    new Pair<>(3, new SchoolBox(otherPlayers.get(1), thirdPlayerSchoolPane, players.get(otherPlayers.get(1)), modelView.isExpert())));
+                    new Pair<>(3, new SchoolBox(otherPlayers.get(1), thirdPlayerSchoolPane, modelView, modelView.isExpert())));
             tabs.getTabs().get(3).setText(otherPlayers.get(1) + "'s school");
         } else {
             tabs.getTabs().remove(3);
@@ -205,26 +209,7 @@ public class GameMainSceneController extends FXMLController implements Initializ
         new DragAndDropManager().registerEvents();
     }
 
-    @Deprecated
     public void onTurn(List<String> actionCommands, List<String> possibleActions) {
-        turnManagement.getItems().clear();
-        for (String actionCommand : actionCommands) {
-            MenuItem action = new MenuItem(actionCommand);
-            turnManagement.getItems().add(action);
-            switch (actionCommand) {
-                case "PlayAssistant" -> action.setOnAction(event -> onStartPlayAssistant());
-                case "MoveStudents" -> action.setOnAction(event -> onStartMoveStudents());
-                case "MoveMotherNature" -> action.setOnAction(event -> onStartMoveMotherNature());
-                case "PickFromCloud" -> action.setOnAction(event -> onStartPickFromCloud());
-                case "PlayCharacter" -> action.setOnAction(event -> onStartPlayCharacter());
-            }
-        }
-        MenuItem endTurnItem = new MenuItem("EndTurn");
-        turnManagement.getItems().add(endTurnItem);
-        endTurnItem.setOnAction(actionEvent -> firePropertyChange("EndTurn", null, null));
-    }
-
-    public void onTurnV2(List<String> actionCommands, List<String> possibleActions) {
         Label turnInfo = (Label) turnManagementBox.getChildren().get(1);
         turnInfo.setText("Is your turn! Select what to do");
         characterBox.getChildren().forEach(c -> c.setEffect(null));
@@ -359,11 +344,11 @@ public class GameMainSceneController extends FXMLController implements Initializ
                 for (int i = 0; i < numTowers; i++) playerSchool.removeTower();
             });
         });
-        islands.getIslandsById(islandId).forEach(i -> i.addTower(newTower));
+        islands.getIslandById(islandId).ifPresent(i -> i.addTower(newTower));
     }
 
     public void mergeIslands(List<Integer> islands) {
-        this.islands.mergeIslands(islands);
+        this.islands.mergeIslands2(islands);
     }
 
     public void notifyNewTurn(String newActivePlayer) {

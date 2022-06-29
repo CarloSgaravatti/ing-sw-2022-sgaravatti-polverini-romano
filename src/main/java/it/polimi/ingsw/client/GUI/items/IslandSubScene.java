@@ -30,7 +30,6 @@ public class IslandSubScene extends AnchorPane implements Initializable {
     @FXML private HBox noEntryTile;
     private final Map<RealmType, HBox> students = new HashMap<>();
     private int islandId;
-    private boolean rootIsland;
 
     public IslandSubScene() {
         try {
@@ -44,14 +43,14 @@ public class IslandSubScene extends AnchorPane implements Initializable {
     }
 
     public void init(FieldView fieldView, int islandId) {
-        Triplet<Integer[], Integer, TowerType> island = fieldView.getIsland(islandId);
+        /*Triplet<Integer[], Integer, TowerType> island = fieldView.getIsland(islandId);
         Integer[] studentsInIsland = island.getFirst();
         for (RealmType realm: RealmType.values()) {
             for (int i = 0; i < studentsInIsland[realm.ordinal()]; i++) addStudent(realm);
         }
-        if (island.getThird() != null) this.addTower(island.getThird());
+        if (island.getThird() != null) this.addTower(island.getThird());*/
         this.islandId = islandId;
-        this.rootIsland = true;
+        updateIsland(fieldView);
     }
 
     public void addStudent(RealmType student) {
@@ -66,7 +65,7 @@ public class IslandSubScene extends AnchorPane implements Initializable {
     public void addTower(TowerType tower) {
         Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(Constants.towerImages.get(tower))));
         this.tower.setImage(image);
-        this.tower.setVisible(true);
+        this.tower.getParent().setVisible(true);
     }
 
     public void setMotherNature(boolean present) {
@@ -113,14 +112,6 @@ public class IslandSubScene extends AnchorPane implements Initializable {
         this.islandId = islandId;
     }
 
-    public boolean isRootIsland() {
-        return rootIsland;
-    }
-
-    public void setRootIsland(boolean rootIsland) {
-        this.rootIsland = rootIsland;
-    }
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         students.put(RealmType.YELLOW_GNOMES, yellowStudent);
@@ -129,9 +120,32 @@ public class IslandSubScene extends AnchorPane implements Initializable {
         students.put(RealmType.RED_DRAGONS, redStudent);
         students.put(RealmType.PINK_FAIRES, pinkStudent);
         students.values().forEach(hBox -> hBox.setVisible(false));
-        this.tower.setVisible(false);
+        this.tower.getParent().setVisible(false);
         this.motherNature.setVisible(false);
         this.noEntryTile.setVisible(false);
         super.getStyleClass().add("island-pane" + (new Random().nextInt(3) + 1));
+    }
+
+    public void updateIsland(FieldView fieldView) {
+        Triplet<Integer[], Integer, TowerType> island = fieldView.getIsland(islandId);
+        Integer[] students = island.getFirst();
+        for (RealmType r: RealmType.values()) {
+            Label label = (Label) this.students.get(r).getChildren().get(0);
+            int studentOfType = students[r.ordinal()];
+            label.setText(String.valueOf(studentOfType));
+            if (studentOfType > 0) this.students.get(r).setVisible(true);
+        }
+        if (island.getThird() != null) {
+            addTower(island.getThird());
+            Label towerLabel = (Label) ((HBox) tower.getParent()).getChildren().get(0);
+            towerLabel.setText(String.valueOf(island.getSecond()));
+            tower.getParent().setVisible(true);
+        } else tower.getParent().setVisible(false);
+        if (fieldView.getExpertField() != null) {
+            int noEntryTiles = fieldView.getExpertField().getNoEntryTilesOnIsland(islandId);
+            Label noEntryTileLabel = (Label) noEntryTile.getChildren().get(0);
+            noEntryTileLabel.setText(String.valueOf(noEntryTiles));
+            noEntryTile.setVisible(noEntryTiles != 0);
+        }
     }
 }

@@ -11,7 +11,7 @@ public class IslandGroup extends Island {
 	private final List<Island> islands;
 	private int numTowers;
 
-	public IslandGroup(Island ... islands) /*throws IllegalIslandGroupException*/ {
+	public IslandGroup(boolean motherNaturePresent, Island ... islands) /*throws IllegalIslandGroupException*/ {
 		super(islands[0].getTowerType(), true);
 		this.islands = new ArrayList<>();
 		numTowers = 0;

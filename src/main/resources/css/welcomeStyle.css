@@ -6,3 +6,13 @@
 .pane {
     -fx-background-color: burlywood;
 }
+
+.welcome-text {
+    -fx-font-size: 48px;
+    -fx-text-alignment: center;
+}
+
+.main-menu-button, .create-game-label {
+    -fx-font-size: 22;
+    -fx-text-alignment: center;
+}

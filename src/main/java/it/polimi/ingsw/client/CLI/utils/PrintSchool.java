@@ -49,7 +49,6 @@ public class PrintSchool {
         return skeleton;
     }
 
-    //TODO: coins
     public String[][] getSchool(boolean[] isProfessorPresent, Integer[] entranceStudents,int numTowers ,TowerType type, Integer[] diningRoomStudents) {
         String[][] school = schoolSkeleton;
         int cont = 0;

@@ -19,28 +19,25 @@ public class IslandMap {
     private final AnchorPane container;
     private final ModelView modelView;
     private final List<IslandSubScene> islandsSubScenes = new ArrayList<>();
-    private EventHandler<DragEvent> dragOverHandler;
-    private EventHandler<DragEvent> dropHandler;
-    private EventHandler<MouseEvent> dragMotherNatureStart;
     private final double islandsWidth;
 
     public IslandMap(AnchorPane container, ModelView modelView) {
         this.container = container;
         this.modelView = modelView;
+        eliminateRedundantIslands(new ArrayList<>(container.getChildren().subList(0, 12)));
         initializeMap();
         islandsSubScenes.get(modelView.getField().getMotherNaturePosition()).setMotherNature(true);
         islandsWidth = islandsSubScenes.get(0).getPrefWidth();
     }
 
     public void initializeMap() {
-        List<Node> islands = container.getChildren().subList(0, 12);
-        for (int i = 0; i < 12; i++) {
+        List<Node> islands = container.getChildren().subList(0, modelView.getField().getIslandSize());
+        for (int i = 0; i < islands.size(); i++) {
             Pair<Double, Double> layout = new Pair<>(islands.get(i).getLayoutX(), islands.get(i).getLayoutY());
             IslandSubScene islandSubScene = new IslandSubScene();
             islandSubScene.init(modelView.getField(), i);
             islandSubScene.setLayoutX(layout.getFirst());
             islandSubScene.setLayoutY(layout.getSecond());
-            islandSubScene.getStyleClass().add("root-in-island-group");
             islandsSubScenes.add(islandSubScene);
             islandSubScene.setOnDragEntered(dragEvent -> {
                 IslandSubScene target = (IslandSubScene) dragEvent.getTarget();
@@ -63,11 +60,16 @@ public class IslandMap {
         }
     }
 
+    private void eliminateRedundantIslands(List<Node> islands) {
+        Random rnd = new Random();
+        while (islands.size() > modelView.getField().getIslandSize()) {
+            Node islandRemoved = islands.remove(rnd.nextInt(islands.size()));
+            container.getChildren().remove(islandRemoved);
+        }
+    }
+
     public void setDragAndDropHandlers(EventHandler<DragEvent> dragOverIsland, EventHandler<DragEvent> dropOnIsland,
                                        EventHandler<MouseEvent> dragMotherNatureStartHandler) {
-        this.dragOverHandler = dragOverIsland;
-        this.dropHandler = dropOnIsland;
-        this.dragMotherNatureStart = dragMotherNatureStartHandler;
         for (IslandSubScene island: islandsSubScenes) {
             island.setOnDragOver(dragOverIsland);
             island.setOnDragDropped(dropOnIsland);
@@ -107,10 +109,51 @@ public class IslandMap {
                 island.getLayoutY() + island.getHeight() / 2);
     }
 
+    @Deprecated
     public List<IslandSubScene> getIslandsById(int islandId) {
         return  islandsSubScenes.stream().filter(i -> i.getIslandId() == islandId).toList();
     }
 
+    public Optional<IslandSubScene> getIslandById(int islandId) {
+        return islandsSubScenes.stream().filter(i -> i.getIslandId() == islandId).findFirst();
+    }
+
+    public void mergeIslands2(List<Integer> unifiedIds) {
+        Integer centerId = (unifiedIds.size() == 2) ? unifiedIds.get(0) : unifiedIds.get(1);
+        int minId = unifiedIds.stream().min(Comparator.comparingInt(i -> i)).orElse(unifiedIds.get(0));
+        unifiedIds.remove(centerId);
+        Optional<IslandSubScene> centerIsland = getIslandById(centerId);
+        if (centerIsland.isEmpty()) return;
+        for (Integer id: unifiedIds) {
+            Optional<IslandSubScene> islandToMove = getIslandById(id);
+            if (islandToMove.isPresent()) {
+                IslandSubScene island = islandToMove.get();
+                double xTranslate = centerIsland.get().getLayoutX() - island.getLayoutX();
+                double yTranslate = centerIsland.get().getLayoutY() - island.getLayoutY();
+                TranslateTransition transition = new TranslateTransition(Duration.millis(2000), island);
+                transition.setByX(xTranslate);
+                transition.setByY(yTranslate);
+                transition.play();
+                transition.setOnFinished(actionEvent -> {
+                    islandsSubScenes.remove(island);
+                    container.getChildren().remove(island);
+                });
+            }
+        }
+        islandsSubScenes.stream()
+                .filter(islandSubScene -> islandSubScene.getIslandId() >
+                        unifiedIds.stream().max(Comparator.comparingInt(id -> id)).orElse(0))
+                .forEach(islandSubScene -> islandSubScene.setIslandId(islandSubScene.getIslandId() - 1));
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                centerIsland.get().setIslandId(minId);
+                centerIsland.get().updateIsland(modelView.getField());
+            }
+        }, 2000L);
+    }
+
+    @Deprecated
     public void mergeIslands(List<Integer> unifiedIds) {
         Integer centerId = (unifiedIds.size() == 2) ? unifiedIds.get(0) : unifiedIds.get(1);
         int minId = unifiedIds.stream().min(Comparator.comparingInt(i -> i)).orElse(unifiedIds.get(0));
@@ -144,7 +187,7 @@ public class IslandMap {
                     island.setIslandId(minId);
                     transition.setOnFinished(actionEvent -> {
                         island.getStyleClass().remove("root-island-in-group");
-                        island.setRootIsland(false);
+                        //island.setRootIsland(false);
                         island.setTranslateX(0);
                         island.setLayoutX(island.getLayoutX() + transition.getByX());
                         island.setTranslateY(0);

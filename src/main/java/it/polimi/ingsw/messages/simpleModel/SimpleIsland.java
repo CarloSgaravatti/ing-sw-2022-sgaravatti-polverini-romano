@@ -14,10 +14,6 @@ public class SimpleIsland implements Serializable {
         this.numEntryTiles = numEntryTiles;
     }
 
-    public SimpleIsland(Integer[] students, int numEntryTiles) {
-        this(students, 1, null, 0);
-    }
-
     public Triplet<Integer[], Integer, TowerType> getIslandRepresentation() {
         return islandRepresentation;
     }

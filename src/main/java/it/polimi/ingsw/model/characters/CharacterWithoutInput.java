@@ -57,7 +57,7 @@ public class CharacterWithoutInput extends CharacterCard {
     /**
      *
      * @param arguments the character parameters
-     * @throws IllegalCharacterActionRequestedException
+     * @throws IllegalCharacterActionRequestedException always, because these characters does not need an input
      */
     @Override
     public void useEffect(Map<String, Object> arguments) throws IllegalCharacterActionRequestedException {

@@ -10,7 +10,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -24,7 +23,6 @@ public class Server implements Runnable{
     private final Map<String, ClientConnection> waitingPlayersWithNoGame;
     private final Map<Integer, Map<String, ClientConnection>> waitingPlayersPerGameMap; //Decide if is useful
     private final Map<String, ClientConnection> clientsConnected;
-    private int lastGameId = 0;
     private Map<Integer, String[]> gamesParticipantsToBeRestored = new HashMap<>();
     public Server(int port) throws IOException{
         serverSocket = new ServerSocket(port);
@@ -80,8 +78,8 @@ public class Server implements Runnable{
         Map<String, ClientConnection> participants = gamesMap.get(gameId).getClients();
         gamesMap.remove(gameId);
         waitingPlayersPerGameMap.remove(gameId);
-        for(String clientName: participants.keySet()) {
-            //globalLobby(participants.get(clientName), clientName);
+        gamesParticipantsToBeRestored.remove(gameId);
+        for (String clientName : participants.keySet()) {
             participants.get(clientName).setSetupDone(false);
         }
         deleteFile(gameId);
@@ -91,10 +89,10 @@ public class Server implements Runnable{
         Optional<PersistenceGameInfo> persistenceGameInfo = getPreviousGame(client);
         persistenceGameInfo.ifPresent(game -> {
             if (gamesMap.containsKey(game.getGameId())) {
-                deleteGame(game.getGameId());
+                gamesMap.get(game.getGameId()).onOtherPlayerDeleteChoice(client);
             } else {
-                deleteFile(game.getGameId());
                 gamesParticipantsToBeRestored.remove(game.getGameId());
+                deleteFile(game.getGameId());
             }
         });
     }
@@ -102,10 +100,6 @@ public class Server implements Runnable{
     private void deleteFile(int gameId) {
         SaveGame.deletePersistenceData(gameId);
         saveParticipants();
-    }
-
-    public GameLobby getGameById(int gameId) {
-        return gamesMap.get(gameId);
     }
 
     public synchronized void registerConnection(String clientName, ClientConnection client) throws DuplicateNicknameException {
@@ -140,10 +134,11 @@ public class Server implements Runnable{
             payload.setAttribute("NotStartedGames", 0);
             payload.setAttribute("GamesInfo", new HashMap<>());
         } else {
-            payload.setAttribute("NotStartedGames", waitingPlayersPerGameMap.size());
+            List<Integer> notRestoredGames = waitingPlayersPerGameMap.keySet().stream()
+                    .filter(gameId -> !gamesMap.get(gameId).isGameRestored()).toList();
+            payload.setAttribute("NotStartedGames", notRestoredGames.size());
             Map<Integer, Triplet<Integer, Boolean, String[]>> gamesToSendMap = new HashMap<>();
-            for (Integer gameId: waitingPlayersPerGameMap.keySet().stream()
-                    .filter(gameId -> !gamesMap.get(gameId).isGameRestored()).toList()) {
+            for (Integer gameId: notRestoredGames) {
                 Triplet<Integer, Boolean, String[]> gameInfo = new Triplet<>();
                 gameInfo.setFirst(gamesMap.get(gameId).getNumPlayers());
                 gameInfo.setSecond(gamesMap.get(gameId).isExpertGame());
@@ -176,7 +171,7 @@ public class Server implements Runnable{
             if (Arrays.stream(gamesParticipantsToBeRestored.get(gameId)).toList().contains(clientName)) {
                 try {
                     return Optional.ofNullable(SaveGame.getPersistenceData(gameId));
-                } catch (FileNotFoundException e) {
+                } catch (IOException e) {
                     return Optional.empty();
                 }
             }
@@ -206,12 +201,11 @@ public class Server implements Runnable{
         //creates a new game of numPlayers number of players, assigns it a unique identifier, adds it to the games map
         //and to the waiting players per game map (it also creates the corresponding empty hash map) but not to the
         //games participants map
-        //int id = assignNewGameId().orElse(1); //if optional is empty it means that there are no games in the server
-        lastGameId++;
-        System.out.println("created a new game with id = " + lastGameId);
-        gamesMap.put(lastGameId, new GameLobby(lastGameId, numPlayers, isExpertGame, this, false));
-        waitingPlayersPerGameMap.put(lastGameId, new HashMap<>());
-        return lastGameId;
+        int newGameId = getFirstFreeId();
+        System.out.println("created a new game with id = " + newGameId);
+        gamesMap.put(newGameId, new GameLobby(newGameId, numPlayers, isExpertGame, this, false));
+        waitingPlayersPerGameMap.put(newGameId, new HashMap<>());
+        return newGameId;
     }
 
     public synchronized int restoreGameOfClient(String clientName) throws NoSuchElementException {
@@ -235,7 +229,9 @@ public class Server implements Runnable{
                 gamesParticipants.put(gameId, gamesParticipantsToBeRestored.get(gameId));
             }
             for (Integer gameId: gamesMap.keySet()) {
-                gamesParticipants.put(gameId, gamesMap.get(gameId).getGameParticipants());
+                if (gamesMap.get(gameId).isStarted()) {
+                    gamesParticipants.put(gameId, gamesMap.get(gameId).getGameParticipants());
+                }
             }
             gamesParticipants.keySet().forEach(System.out::println);
             try {
@@ -246,8 +242,25 @@ public class Server implements Runnable{
         }).start();
     }
 
-    //This implements a sort of auto-incremental key for gameId (like in a db)
-    private Optional<Integer> assignNewGameId() {
-        return gamesMap.keySet().stream().max(Comparator.comparingInt(id -> id));
+    private int getFirstFreeId() {
+        int currentMaxId = Math.max(gamesMap.keySet().stream().max(Comparator.comparingInt(id -> id)).orElse(0),
+                gamesParticipantsToBeRestored.keySet().stream().max(Comparator.comparingInt(id -> id)).orElse(0));
+        for (int i = 1; i < currentMaxId; i++) {
+            if (!gamesMap.containsKey(i) && !gamesParticipantsToBeRestored.containsKey(i)) return i;
+        }
+        return currentMaxId + 1;
+    }
+
+    protected void onGameRestored(int gameId) {
+        gamesParticipantsToBeRestored.remove(gameId);
+    }
+
+    protected void quitGameOfClient(ClientConnection connection, String clientName) {
+        for (Integer gameId: gamesMap.keySet()) {
+            if (Arrays.stream(gamesMap.get(gameId).getGameParticipants()).toList().contains(clientName)) {
+                gamesMap.get(gameId).onDisconnection(clientName);
+            }
+        }
+        globalLobby(connection, clientName);
     }
 }

@@ -114,12 +114,11 @@ public class IslandTypeAdapter extends TypeAdapter<Island> {
             SingleIsland singleIsland = new SingleIsland();
             singleIsland.setTowerType(tower);
             for (int j = 0; j < numNoEntryTiles; j++) singleIsland.insertNoEntryTile(null);
-            singleIsland.setMotherNaturePresent(motherNaturePresent);
             singleIsland.setStudents(getStudents(studentsTokens[i]));
             islands[i] = singleIsland;
         }
         if (numTowers == 1) return islands[0];
-        else return new IslandGroup(islands);
+        else return new IslandGroup(motherNaturePresent, islands);
     }
 
     /**

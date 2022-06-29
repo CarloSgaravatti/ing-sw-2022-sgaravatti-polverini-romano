@@ -96,7 +96,7 @@ public class ExpertGameMessageHandler extends BaseMessageHandler {
 
     private void onCoinsUpdate(MessagePayload payload) {
         String playerName = payload.getAttribute("PlayerName").getAsString();
-        int oldCoins = payload.getAttribute("OldCoins").getAsInt(); //TODO decide if useful
+        int oldCoins = payload.getAttribute("OldCoins").getAsInt();
         int newCoins = payload.getAttribute("NewCoins").getAsInt();
         getModelView().getPlayers().get(playerName).updateCoins(newCoins);
         userInterface.firePropertyChange("CoinsUpdate", null, playerName);

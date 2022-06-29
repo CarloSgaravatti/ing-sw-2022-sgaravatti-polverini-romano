@@ -111,11 +111,17 @@ public class TurnController {
 		return (PlanningPhaseOrder) phaseOrderStrategy[0];
 	}
 
-	public void restoreController(boolean orderCalculated, Player[] lastOrder, RoundPhase lastPhase, boolean isFirstRound) {
+	public void restoreController(boolean orderCalculated, Player[] lastOrder, Player activePlayer, RoundPhase lastPhase, boolean isFirstRound) {
 		this.orderCalculated = orderCalculated;
 		this.playerOrder = lastOrder;
 		this.currentPhase = lastPhase;
 		getPlanningPhaseOrderStrategy().restore(isFirstRound);
+		for (int i = 0; i < playerOrder.length; i++) {
+			if (playerOrder[i].getNickName().equals(activePlayer.getNickName())) {
+				activePlayerIndex = i;
+				return;
+			}
+		}
 	}
 }
 

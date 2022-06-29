@@ -102,7 +102,7 @@ class SchoolTest extends TestCase {
         Island island1 = new SingleIsland();
         Island island2 = new SingleIsland();
         Island island3 = new SingleIsland();
-        Island islandGroup = new IslandGroup(island2, island3);
+        Island islandGroup = new IslandGroup(false, island2, island3);
         schoolTest.sendTowerToIsland(island1);
         schoolTest.sendTowerToIsland(islandGroup);
         Assertions.assertEquals(schoolTest.getNumTowers(), 5);

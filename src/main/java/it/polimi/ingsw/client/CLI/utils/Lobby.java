@@ -10,9 +10,7 @@ public class Lobby {
         this.lobby = createSkeleton();
     }
 
-    //TODO: delete setup 5 or 7 (they are the same thing?)
     public List<String[][]> createSkeleton(){
-        int count = 0;
         List<String[][]> skeleton = new ArrayList<>();
         String newGame = "NewGame";
         String[] newGameString = new String[7];
@@ -23,17 +21,14 @@ public class Lobby {
         String[][] setup1 = new String[4][49]; //starting if more than one game
         String[][] setup2 = new String[4][49]; //middle box in middles pages
         String[][] setup3 = new String[5][49]; //fine di una pagina mediana
-        //TODO: new boxes
         String[][] setup4 = new String[5][49]; //box finale se ho 5 game(e poi basta) oppure meno di 5 game da stampare nella prima pagina
         String[][] setup5 = new String[5][49]; //fine prima pagina
         String[][] setup6 = new String[5][49]; //first box in last page if we have just one game
-        String[][] setup7 = new String[5][49]; //fine della prima pagina
-        String[][] setup8 = new String[5][49]; //fine dell'ultima pagina
+        String[][] setup7 = new String[5][49]; //fine dell'ultima pagina
 
         String[][] upperCommandBox = new String[2][49]; //se ci sono giochi
         String[][] upperCommandBox1 = new String[3][49]; //se non ci sono giochi
         String[][] lowerCommandBox = new String[3][49]; //se ci sono giochi
-        //TODO: new boxew
         String[][] lowerCommandBoxLeft = new String[3][49]; // solo <5
         String[][] lowerCommandBoxRight = new String[3][49]; // solo >5
 
@@ -367,18 +362,18 @@ public class Lobby {
         }
         skeleton.add(setup6);
 
-        //last box in first page
+        //last box in last page
         setup7[0][0] = UnicodeConstants.T_RIGHT.toString();
         setup7[0][8] = UnicodeConstants.CROSS.toString();
         setup7[0][23] = UnicodeConstants.CROSS.toString();
         setup7[0][33] = UnicodeConstants.CROSS.toString();
         setup7[0][48] = UnicodeConstants.T_LEFT.toString();
-        setup7[4][0] = UnicodeConstants.BOTTOM_LEFT.toString();
+        setup7[4][0] = UnicodeConstants.T_RIGHT.toString();
+        setup7[4][5] = UnicodeConstants.T_DOWN.toString();
         setup7[4][8] = UnicodeConstants.T_UP.toString();
         setup7[4][23] = UnicodeConstants.T_UP.toString();
         setup7[4][33] = UnicodeConstants.T_UP.toString();
-        setup7[4][43] = UnicodeConstants.T_DOWN.toString();
-        setup7[4][48] = UnicodeConstants.T_LEFT.toString();
+        setup7[4][48] = UnicodeConstants.BOTTOM_RIGHT.toString();
         for(int i = 0; i< 48; i++){
             if(setup7[0][i]==null){
                 setup7[0][i]= UnicodeConstants.HORIZONTAL.toString();
@@ -400,40 +395,6 @@ public class Lobby {
             }
         }
         skeleton.add(setup7);
-
-        //last box in last page
-        setup8[0][0] = UnicodeConstants.T_RIGHT.toString();
-        setup8[0][8] = UnicodeConstants.CROSS.toString();
-        setup8[0][23] = UnicodeConstants.CROSS.toString();
-        setup8[0][33] = UnicodeConstants.CROSS.toString();
-        setup8[0][48] = UnicodeConstants.T_LEFT.toString();
-        setup8[4][0] = UnicodeConstants.T_RIGHT.toString();
-        setup8[4][5] = UnicodeConstants.T_DOWN.toString();
-        setup8[4][8] = UnicodeConstants.T_UP.toString();
-        setup8[4][23] = UnicodeConstants.T_UP.toString();
-        setup8[4][33] = UnicodeConstants.T_UP.toString();
-        setup8[4][48] = UnicodeConstants.BOTTOM_RIGHT.toString();
-        for(int i = 0; i< 48; i++){
-            if(setup8[0][i]==null){
-                setup8[0][i]= UnicodeConstants.HORIZONTAL.toString();
-            }
-            if(setup8[4][i]==null){
-                setup8[4][i]= UnicodeConstants.HORIZONTAL.toString();
-            }
-        }
-        for(int i = 0 ; i < 5; i++){
-            for(int j = 0; j< 49; j++){
-                if(setup8[i][j]==null){
-                    if(j==0 || j==48 || j==8 || j==23 || j==33){
-                        setup8[i][j]=UnicodeConstants.VERTICAL.toString();
-                    }
-                    else{
-                        setup8[i][j]= " ";
-                    }
-                }
-            }
-        }
-        skeleton.add(setup8);
 
         //lowerCommandBox appear when we are in the last page
         lowerCommandBoxLeft[1][0] = UnicodeConstants.BOTTOM_LEFT.toString();
@@ -494,10 +455,6 @@ public class Lobby {
         return skeleton;
     }
 
-    public List<String[][]> getSkeleton(){
-        return lobby;
-    }
-
     public String[][] getUpperCommandBox() {
         return cloneMatrix(lobby.get(1));
     }
@@ -542,16 +499,12 @@ public class Lobby {
         return cloneMatrix(lobby.get(10));
     }
 
-    public String[][] getSetup8() {
+    public String[][] getLowerCommandBoxLeft() {
         return cloneMatrix(lobby.get(11));
     }
 
-    public String[][] getLowerCommandBoxLeft() {
-        return cloneMatrix(lobby.get(12));
-    }
-
     public String[][] getLowerCommandBoxRight() {
-        return cloneMatrix(lobby.get(13));
+        return cloneMatrix(lobby.get(12));
     }
 
     public String[][] cloneMatrix(String[][] matrix) {

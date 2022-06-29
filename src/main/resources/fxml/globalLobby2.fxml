@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="1080.0" prefWidth="1920.0" styleClass="anchor-pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.GlobalLobbyController">
+    <children>
+      <TitledPane layoutX="459.0" layoutY="405.0" prefHeight="534.0" prefWidth="1003.0">
+         <content>
+            <Pane layoutX="593.0" layoutY="470.0" prefHeight="540.0" prefWidth="735.0" styleClass="pane">
+               <children>
+                  <Text fx:id="messageLobby" layoutX="-1.0" layoutY="66.0" strokeType="OUTSIDE" strokeWidth="0.0" text="You are viewing the global lobby" textAlignment="CENTER" wrappingWidth="1003.0">
+                     <font>
+                        <Font size="36.0" />
+                     </font>
+                  </Text>
+                  <VBox layoutX="102.0" layoutY="99.0" prefHeight="356.0" prefWidth="798.0" spacing="10.0">
+                     <children>
+                        <AnchorPane prefHeight="65.0" prefWidth="798.0">
+                           <children>
+                              <Button layoutX="652.0" layoutY="9.0" mnemonicParsing="false" onAction="#participateGame" styleClass="main-menu-button" text="Participate" />
+                              <Button layoutX="14.0" layoutY="9.0" mnemonicParsing="false" onAction="#onRefresh" styleClass="main-menu-button" text="Refresh" />
+                           </children>
+                        </AnchorPane>
+                        <TableView fx:id="globalLobbyTable" prefHeight="267.0" prefWidth="798.0">
+                          <columns>
+                            <TableColumn fx:id="gameIdCol" prefWidth="132.0" text="Game Id" />
+                            <TableColumn fx:id="numPlayersCol" prefWidth="222.0" text="Number of players" />
+                              <TableColumn fx:id="rulesCol" prefWidth="182.0" text="Rules" />
+                              <TableColumn fx:id="playersConnectedCol" prefWidth="260.0" text="Players Connected" />
+                              <TableColumn fx:id="playersConnectedCol1" prefWidth="260.0" text="Players Connected" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </VBox>
+               </children>
+            </Pane>
+         </content>
+      </TitledPane>
+    </children>
+   <stylesheets>
+      <URL value="@../css/globalStyle.css" />
+      <URL value="@../css/welcomeStyle.css" />
+   </stylesheets>
+</AnchorPane>

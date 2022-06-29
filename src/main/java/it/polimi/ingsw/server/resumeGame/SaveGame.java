@@ -69,11 +69,14 @@ public class SaveGame {
      * @param gameId the id of the game
      * @return the persistence data of the game that have the specified id
      * @throws FileNotFoundException if it doesn't exist the file associated to the specified id
+     * @throws IOException if it was not possible to close the file input stream
      */
-    public static PersistenceGameInfo getPersistenceData(int gameId) throws FileNotFoundException {
+    public static PersistenceGameInfo getPersistenceData(int gameId) throws FileNotFoundException, IOException {
         FileInputStream fileInputStream = new FileInputStream(jarPathString + "/backupGames/Game_With_ID_" + gameId + ".json");
         InputStreamReader streamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
-        return gsonBuilder.create().fromJson(streamReader, PersistenceGameInfo.class);
+        PersistenceGameInfo gameInfo = gsonBuilder.create().fromJson(streamReader, PersistenceGameInfo.class);
+        streamReader.close();
+        return gameInfo;
     }
 
     /**
@@ -88,6 +91,7 @@ public class SaveGame {
             System.out.println("Deleted file of game " + gameId);
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("Could not delete file of name " + fileToDelete.getName());
         }
     }
 
@@ -119,6 +123,7 @@ public class SaveGame {
         }
         writer.endArray();
         writer.close();
+        fileOutputStream.close();
     }
 
     /**
@@ -147,6 +152,7 @@ public class SaveGame {
         }
         jsonReader.endArray();
         jsonReader.close();
+        fileInputStream.close();
         return participants;
     }
 }

@@ -16,8 +16,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-
+/**
+ * JsonUtils provides all static method to get information from configuration files that is useful during the game.
+ */
 public class JsonUtils {
+    /**
+     * Returns all the actions that a game with the specified rules permit. The actions are read from a json file
+     *
+     * @param difficulty the rules of the game, true if the game is expert, otherwise false
+     * @return a list of actions that game with the specified rules permit
+     * @throws NoSuchElementException if the file does not contain the requested information
+     * @throws NullPointerException if the file does exist
+     */
     public static List<String> getRulesByDifficulty(boolean difficulty) throws NoSuchElementException, NullPointerException {
         InputStream stream = JsonUtils.class.getResourceAsStream("/jsonConfigFiles/RulesConfig.json");
         if (stream == null) throw new NullPointerException();

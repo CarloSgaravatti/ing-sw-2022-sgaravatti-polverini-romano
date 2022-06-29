@@ -51,6 +51,12 @@ public class FieldView {
         this(simpleField.getIslands(), simpleField.getClouds(), simpleField.getMotherNaturePosition());
         if (!simpleField.getCharacters().isEmpty()) {
             expertField = new ExpertFieldView(simpleField.getCharacters());
+            for (int i = 0; i < simpleField.getIslands().size(); i++) {
+                int noEntryTiles = simpleField.getIslands().get(i).getNumEntryTiles();
+                if (noEntryTiles > 0) {
+                    expertField.updateIslandNoEntryTiles(noEntryTiles, i);
+                }
+            }
         }
     }
 
@@ -151,7 +157,7 @@ public class FieldView {
     }
 
     /**
-     * Returns the owner of the specified professor realm
+     * Returns the owner of the specified professor realm, if present; otherwise null
      *
      * @param realm the realm of the professor
      * @return the owner of the professor

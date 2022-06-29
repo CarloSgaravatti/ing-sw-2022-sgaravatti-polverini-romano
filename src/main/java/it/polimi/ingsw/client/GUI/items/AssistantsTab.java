@@ -10,9 +10,7 @@ import javafx.scene.layout.FlowPane;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class AssistantsTab {
     private final FlowPane assistantContainer;
@@ -65,5 +63,15 @@ public class AssistantsTab {
 
     public FlowPane getAssistantContainer() {
         return assistantContainer;
+    }
+
+    public void updateAssistants() {
+        List<Integer> assistantsIds = new ArrayList<>(assistantImageViews.keySet());
+        List<Integer> assistantsPresent = new ArrayList<>(modelView.getClientPlayerAssistants().keySet());
+        for (Integer assistantId: assistantsIds) {
+            if (!assistantsPresent.contains(assistantId)) {
+                removeAssistantFromDeck(assistantId);
+            }
+        }
     }
 }

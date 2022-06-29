@@ -35,7 +35,6 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
             return;
         }
         MessagePayload payload = message.getMessagePayload();
-        System.out.println("Received " + header.getMessageName());
         switch (header.getMessageName()) {
             case "PlayerJoined" -> onPlayerJoin(payload);
             case "GameStarted" -> onGameStarted(payload);
@@ -53,7 +52,7 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
     private void onPlayerJoin(MessagePayload payload) {
         String playerName = payload.getAttribute("PlayerName").getAsString();
         getModelView().getPlayers().put(playerName, new PlayerView());
-        getUserInterface().displayStringMessage(playerName + " has joined the game");
+        getUserInterface().onPlayerJoined(playerName);
     }
 
     private void onGameStarted(MessagePayload payload) {
@@ -61,8 +60,7 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
         for (String player: gamePlayers) {
             getModelView().getPlayers().put(player, new PlayerView());
         }
-        //Temporary
-        getUserInterface().displayStringMessage("Game has started, these are the players: " + Arrays.toString(gamePlayers));
+        getUserInterface().onGameStarted();
     }
 
     private void onTowerTaken(MessagePayload payload) {

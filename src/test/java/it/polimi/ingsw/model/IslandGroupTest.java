@@ -17,7 +17,7 @@ class IslandGroupTest extends TestCase {
             }
             islands[i].putTower(TowerType.BLACK);
         }
-        Island islandGroup = new IslandGroup(islands);
+        Island islandGroup = new IslandGroup(false, islands);
         Assertions.assertEquals(3, islandGroup.getNumTowers());
         Assertions.assertEquals(TowerType.BLACK, islandGroup.getTowerType());
         for (int i = 0; i < 3; i++) {
@@ -29,7 +29,7 @@ class IslandGroupTest extends TestCase {
         Assertions.assertEquals(TowerType.WHITE, islandGroup.getTowerType());
         Island island = new SingleIsland();
         island.putTower(TowerType.WHITE);
-        Island islandGroup2 = new IslandGroup(islandGroup, island);
+        Island islandGroup2 = new IslandGroup(false, islandGroup, island);
         Assertions.assertEquals(4, islandGroup2.getNumTowers());
         Assertions.assertEquals(TowerType.WHITE, islandGroup2.getTowerType());
         Student student = new Student(RealmType.YELLOW_GNOMES);

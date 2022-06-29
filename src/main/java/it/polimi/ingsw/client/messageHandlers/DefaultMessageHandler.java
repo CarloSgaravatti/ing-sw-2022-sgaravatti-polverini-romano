@@ -20,6 +20,7 @@ public class DefaultMessageHandler extends BaseMessageHandler {
     public DefaultMessageHandler(ConnectionToServer connection, UserInterface userInterface, ModelView modelView) {
         super(connection, userInterface, modelView);
         listeners.addPropertyChangeListener("Disconnection", userInterface);
+        listeners.addPropertyChangeListener("GameDeleted", userInterface);
     }
 
     public void setTurnHandler(PropertyChangeListener turnHandler) {
@@ -46,6 +47,7 @@ public class DefaultMessageHandler extends BaseMessageHandler {
             case "Error" -> onErrorMessage(payload);
             case "PlayerDisconnected" -> onPlayerDisconnection(payload);
             case "PreviousGameChoice" -> onResumeGame(payload);
+            case "DeletedGame" -> onDeleteGame(payload);
         }
     }
 
@@ -84,5 +86,10 @@ public class DefaultMessageHandler extends BaseMessageHandler {
         boolean rules = payload.getAttribute("Rules").getAsBoolean();
         String[] participants = (String[]) payload.getAttribute("Participants").getAsObject();
         getUserInterface().onResumeGame(numPlayers, rules, participants);
+    }
+
+    private void onDeleteGame(MessagePayload payload) {
+        listeners.firePropertyChange("GameDeleted", null, payload.getAttribute("ChoiceMaker").getAsString());
+
     }
 }

@@ -58,28 +58,19 @@
                     <menus>
                       <Menu mnemonicParsing="false" text="Quit">
                         <items>
-                          <MenuItem mnemonicParsing="false" text="Close" />
+                          <MenuItem mnemonicParsing="false" onAction="#returnToMainMenu" text="Return to Main menu" />
+                              <MenuItem mnemonicParsing="false" onAction="#quitApplication" text="Quit application" />
                         </items>
                       </Menu>
-                      <Menu mnemonicParsing="false" text="Help">
-                        <items>
-                          <MenuItem mnemonicParsing="false" text="About" />
-                        </items>
-                      </Menu>
-                        <Menu fx:id="turnManagement" mnemonicParsing="false" text="Turn Management">
-                          <items>
-                            <MenuItem mnemonicParsing="false" text="Action 1" />
-                          </items>
-                        </Menu>
                     </menus>
                   </MenuBar>
                </children></AnchorPane>
          </top>
          <right>
-            <VBox fx:id="turnManagementBox" alignment="CENTER" prefHeight="922.0" prefWidth="200.0" spacing="30.0" styleClass="turn-management-box">
+            <VBox fx:id="turnManagementBox" alignment="CENTER" prefHeight="822.0" prefWidth="226.0" spacing="30.0" styleClass="turn-management-box">
                <children>
                   <Label alignment="CENTER" prefHeight="21.0" prefWidth="193.0" text="Turn management" />
-                  <Label alignment="CENTER" prefHeight="21.0" prefWidth="194.0" />
+                  <Label alignment="CENTER" prefHeight="63.0" prefWidth="218.0" wrapText="true" />
                   <Button mnemonicParsing="false" text="PlayAssistant" />
                   <Button mnemonicParsing="false" text="MoveStudents" />
                   <Button mnemonicParsing="false" text="MoveMotherNature" />

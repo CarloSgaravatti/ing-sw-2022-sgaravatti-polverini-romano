@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -40,14 +41,9 @@ public class ConnectionToServer implements Runnable {
             e.printStackTrace();
         }
         PlayerSetupHandler playerSetupHandler = new PlayerSetupHandler(this);
-        view.addListener(playerSetupHandler, "Nickname");
-        view.addListener(playerSetupHandler, "NewGame");
-        view.addListener(playerSetupHandler, "GameToPlay");
-        view.addListener(playerSetupHandler, "TowerChoice");
-        view.addListener(playerSetupHandler, "WizardChoice");
-        view.addListener(playerSetupHandler, "RefreshLobby");
-        view.addListener(playerSetupHandler, "RestoreGame");
-        view.addListener(playerSetupHandler, "DeleteSavedGame");
+        List<String> propertyNames = List.of("Nickname", "NewGame", "GameToPlay", "TowerChoice", "WizardChoice",
+                "RefreshLobby", "RestoreGame", "DeleteSavedGame", "QuitGame");
+        propertyNames.forEach(name -> view.addListener(playerSetupHandler, name));
     }
 
     /**
@@ -71,21 +67,12 @@ public class ConnectionToServer implements Runnable {
                 MessageFromServer message = (MessageFromServer) inputStream.readObject();
                 //System.out.println("Received " + message.getServerMessageHeader().getMessageName());
                 if (message.getServerMessageHeader().getMessageType() != ServerMessageType.PING_MESSAGE) {
-                    //TODO: delete try catch after everything is ok
-                    messageHandlerExecutor.submit(() -> {
-                        try {
-                            firstMessageHandler.handleMessage(message);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    });
+                    messageHandlerExecutor.submit(() -> firstMessageHandler.handleMessage(message));
                 } else {
                     onPingMessage();
                 }
             }
-        }  catch (IOException | ClassNotFoundException e) {
-            System.err.println(e.getMessage());
-        } catch (ClassCastException e) {
+        } catch (IOException | ClassNotFoundException | ClassCastException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
         } finally {
@@ -93,10 +80,10 @@ public class ConnectionToServer implements Runnable {
             try {
                 inputStream.close();
                 outputStream.close();
-            } catch (IOException e) {
-                //TODO
-            }
+            } catch (IOException ignored) {}
+            System.err.println("Application will now close");
         }
+        System.exit(0);
     }
 
     /**
@@ -108,12 +95,10 @@ public class ConnectionToServer implements Runnable {
     public synchronized Thread asyncWriteToServer(Object message) {
         Thread t = new Thread(() -> {
             try {
-                outputStream.reset();
                 outputStream.writeObject(message);
                 outputStream.flush();
             } catch (IOException e) {
-                //TODO: is this ok
-                asyncWriteToServer(message);
+                setActive(false);
             }
         });
         t.start();

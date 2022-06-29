@@ -17,7 +17,7 @@ import java.net.Socket;
 import java.util.*;
 
 public class CLI implements Runnable, UserInterface {
-    private Socket socket;
+    private final Socket socket;
     private final Scanner sc = new Scanner(System.in);
     private String nickname;
     private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
@@ -29,7 +29,6 @@ public class CLI implements Runnable, UserInterface {
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        //AnsiConsole.systemInstall();
         String serverAddress;
         int serverPort;
         Socket socket = null;
@@ -110,7 +109,6 @@ public class CLI implements Runnable, UserInterface {
         do {
             inputManager.setInputPermitted(true);
             System.out.print("> ");
-            //nickname = sc.next();
             nickname = inputManager.getLastInput();
         } while (nickname == null || nickname.isBlank());
         this.nickname = nickname;
@@ -139,7 +137,6 @@ public class CLI implements Runnable, UserInterface {
             System.out.println(message);
             inputManager.setInputPermitted(true);
             System.out.print("> ");
-            //String input = sc.next();
             String input = inputManager.getLastInput();
             isGameFinished = false;
             inputManager.setInputPermitted(false);
@@ -185,7 +182,6 @@ public class CLI implements Runnable, UserInterface {
             System.out.println("Insert number of players: [2/3]");
             System.out.print("> ");
             try {
-                //numPlayers = Integer.parseInt(sc.next());
                 numPlayers = Integer.parseInt(inputManager.getLastInput());
             }
             catch (NumberFormatException e) {
@@ -256,6 +252,16 @@ public class CLI implements Runnable, UserInterface {
     }
 
     @Override
+    public void onPlayerJoined(String playerName) {
+        System.out.println(playerName + "has joined the game");
+    }
+
+    @Override
+    public void onGameStarted() {
+        System.out.println("The game will start soon!");
+    }
+
+    @Override
     public void printTurnMenu(List<String> actions, List<String> actionCommands, List<String> currentPossibleActions) {
         clearScreen();
         printer.printMap();
@@ -274,7 +280,6 @@ public class CLI implements Runnable, UserInterface {
         inputManager.setInputPermitted(true);
         String command = inputManager.getLastInput();
         inputManager.setInputPermitted(false);
-        //String actionName = sc.next();
         String actionName = command.split(" ")[0];
         if (isGameFinished) {
             //if someone disconnects, this is a sort of rollback (last input does not concern this method)
@@ -369,6 +374,10 @@ public class CLI implements Runnable, UserInterface {
                 clearScreen();
                 endGameMessage = evt.getNewValue() + " have disconnected";
             }
+            case "GameDeleted" -> {
+                clearScreen();
+                endGameMessage = evt.getNewValue() + " has decided to not resume the game. The game has been deleted";
+            }
         }
         if (endGameMessage != null) {
             onEndGame(endGameMessage);
@@ -376,19 +385,18 @@ public class CLI implements Runnable, UserInterface {
     }
 
     private void onEndGame(String message) {
-        System.out.println(message);
+        System.out.println("\n" + message);
         System.out.println();
         System.out.println("Insert 'ok' to return to the global lobby or 'q' to quit the application");
         inputManager.setInputPermitted(true);
         String command;
         do {
-            //command = sc.next();
+            System.out.print("> ");
             command = inputManager.getLastInput();
         } while(!command.equals("q") && !command.equals("ok"));
         inputManager.setInputPermitted(false);
         if (command.equals("q")) {
             inputManager.setActive(false);
-            clearScreen();
             System.exit(0);
         } else {
             isGameFinished = true;
@@ -402,7 +410,7 @@ public class CLI implements Runnable, UserInterface {
     }
 
     public void onResumeGame(int numPlayers, boolean rules, String[] participants){
-        //clearScreen();
+        clearScreen();
         String ruleInString = (rules)? "expert" : "simple";
         System.out.print("\nYou have an unfinished game saved on the server\n\nHere the specifications of the game:" +
                 "\n- Number Of Players: " + numPlayers +
@@ -420,6 +428,7 @@ public class CLI implements Runnable, UserInterface {
         inputManager.setInputPermitted(true);
         String reply;
         do{
+            System.out.print("> ");
             reply = inputManager.getLastInput();
         }while (!reply.equals("y") && !reply.equals("n") && !reply.equals("Y") && !reply.equals("N"));
         if(reply.equals("y") || reply.equals("Y")){

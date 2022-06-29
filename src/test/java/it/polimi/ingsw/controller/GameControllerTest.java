@@ -73,8 +73,8 @@ public class GameControllerTest {
         controller.initializeControllers();
         GameLobbyStub gameLobby = new GameLobbyStub();
         List<RemoteView> views = new ArrayList<>();
-        RemoteView view1 = new RemoteViewStub(1, "player1", controller, gameLobby);
-        RemoteView view2 = new RemoteViewStub(1, "player2", controller, gameLobby);
+        RemoteView view1 = new RemoteViewStub("player1", controller, gameLobby);
+        RemoteView view2 = new RemoteViewStub("player2", controller, gameLobby);
         views.add(view1);
         views.add(view2);
         this.view1 = (RemoteViewStub) view1;

@@ -62,7 +62,7 @@ public class LobbyPrintManager {
                     lobbyPrint = MapPrinter.appendMatrixInColumn(setup2, lobbyPrint);
                 }
                 Triplet<Integer, Boolean, String[]> lastGame = lobbyInfo.get(lobbyIds.get(lobbyInfo.size() - 1));
-                String[][] finalSetup = insertSetupInfo((currentStartingIdx != 0) ? lobby.getSetup8() : lobby.getSetup4(),
+                String[][] finalSetup = insertSetupInfo((currentStartingIdx != 0) ? lobby.getSetup7() : lobby.getSetup4(),
                         lobbyIds.get(lobbyInfo.size() - 1), lastGame.getFirst(), lastGame.getSecond(), lastGame.getThird());
                 lobbyPrint = MapPrinter.appendMatrixInColumn(finalSetup, lobbyPrint);
                 if (currentStartingIdx != 0) {

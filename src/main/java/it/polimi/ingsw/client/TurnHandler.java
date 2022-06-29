@@ -51,12 +51,7 @@ public class TurnHandler implements PropertyChangeListener {
             case "ActionAck" -> onAckReceived(List.of((TurnPhase[]) evt.getNewValue()), (String) evt.getOldValue());
             case "Error" -> onErrorReceived();
             case "InputError" -> onInputError();
-            //TODO: delete try catch when everything is ok
-            case "ClientTurn" -> clientTurnHandler.submit(() -> {
-                try {
-                    handlePlayerTurn(List.of((TurnPhase[]) evt.getNewValue()));
-                } catch (Exception e) {e.printStackTrace();}
-            });
+            case "ClientTurn" -> clientTurnHandler.submit(() -> handlePlayerTurn(List.of((TurnPhase[]) evt.getNewValue())));
         }
     }
 
@@ -70,7 +65,8 @@ public class TurnHandler implements PropertyChangeListener {
     }
 
     /**
-     * TODO
+     * Set the value of the ack received property, that notifies the turn handler if an acknowledgement has arrived or not.
+     *
      * @param ackReceived true if the action have been acknowledged, otherwise false
      */
     private synchronized void setAckReceived(boolean ackReceived) {
@@ -87,7 +83,8 @@ public class TurnHandler implements PropertyChangeListener {
     }
 
     /**
-     * TODO
+     * Set the value of the error received property, that notifies the turn handler if an error has arrived or not.
+     *
      * @param errorReceived true if an error was received, otherwise false
      */
     private synchronized void setErrorReceived(boolean errorReceived) {
@@ -128,9 +125,7 @@ public class TurnHandler implements PropertyChangeListener {
                         currentTurnActions.stream().map(TurnPhase::getActionCommand).toList(), currentTurnPossibleActions);
                 try {
                     while (!isAckReceived() && !isErrorReceived() && !isInputErrorReceived()) currentTurnActions.wait();
-                } catch (InterruptedException e) {
-                    //TODO
-                }
+                } catch (InterruptedException ignored) {}
             }
             if (isTurnAlreadyEnded()) {
                 userInterface.displayStringMessage("You have ended your turn");

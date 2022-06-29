@@ -79,8 +79,6 @@ public abstract class CharacterCard {
 		firePropertyChange(new PropertyChangeEvent(this.id, "PlayCharacter", areCoinsUpdated, playerActive.getNickName()));
 	}
 
-	//TODO: all the IllegalActionRequestedException must have a message
-
 	/**
 	 * Method useEffect provides a way on which a player can use the character effect during the turn
 	 * after the time he has played the character (only for characters that have some inputs). The specified arguments

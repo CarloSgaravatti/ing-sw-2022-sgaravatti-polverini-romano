@@ -12,7 +12,7 @@
    <children>
       <TitledPane layoutX="592.0" layoutY="403.0">
          <content>
-            <Pane layoutX="593.0" layoutY="470.0" prefHeight="540.0" prefWidth="735.0" styleClass="pane">
+            <Pane fx:id="dialogRoot" layoutX="593.0" layoutY="470.0" prefHeight="540.0" prefWidth="735.0" styleClass="pane">
                <children>
                   <Button layoutX="300.0" layoutY="405.0" mnemonicParsing="false" onAction="#onSubmit" prefHeight="42.0" prefWidth="136.0" text="Submit">
                      <font>
@@ -29,7 +29,7 @@
                         <Font size="24.0" />
                      </font>
                   </TextField>
-                  <TextField fx:id="username" layoutX="233.0" layoutY="140.0" prefHeight="39.0" prefWidth="277.0">
+                  <TextField fx:id="username" layoutX="229.0" layoutY="140.0" prefHeight="39.0" prefWidth="277.0">
                      <font>
                         <Font size="24.0" />
                      </font>
@@ -49,7 +49,7 @@
                         <Font size="24.0" />
                      </font>
                   </Label>
-                  <Text layoutX="155.0" layoutY="66.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome to eriantys">
+                  <Text layoutX="-1.0" layoutY="78.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="welcome-text" text="Welcome to eriantys" textAlignment="CENTER" wrappingWidth="737.0">
                      <font>
                         <Font size="48.0" />
                      </font>

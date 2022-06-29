@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.NoSuchElementException;
 import java.util.concurrent.*;
 
@@ -46,7 +47,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
             while(isActive()){
                 readMessage();
             }
-        } catch (IOException | ClassNotFoundException | ClassCastException e) {
+        } catch (IOException | ClassNotFoundException | ClassCastException | IllegalStateException e) {
             System.err.println("Error!" + e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
@@ -108,7 +109,7 @@ public class SocketClientConnection implements Runnable, ClientConnection {
             out.flush();
         } catch(IOException e) {
             System.err.println(e.getMessage());
-            e.printStackTrace();
+            setActive(false);
         }
     }
 
@@ -142,7 +143,10 @@ public class SocketClientConnection implements Runnable, ClientConnection {
     }
 
     public void handleGameSetup(MessageFromClient message) {
-        if (isSetupDone()) {
+        if (message.getClientMessageHeader().getMessageName().equals("QuitGame")) {
+            server.quitGameOfClient(this, nickname);
+            return;
+        } else if (isSetupDone()) {
             sendError(ErrorMessageType.SETUP_ALREADY_DONE, "You have already done your choices");
             return;
         }

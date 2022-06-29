@@ -131,7 +131,8 @@ public class PersistenceGameInfo {
         GameController gameController = new GameController(game);
         Player[] lastOrder = Arrays.stream(lastPlayerOrder)
                 .map(game::getPlayerByNickname).toList().toArray(new Player[0]);
-        gameController.getTurnController().restoreController(lastOrderCalculated, lastOrder, lastRoundPhase, isFirstRound);
+        Player activePlayer = game.getPlayers().get(game.getIndexActivePlayer());
+        gameController.getTurnController().restoreController(lastOrderCalculated, lastOrder, activePlayer, lastRoundPhase, isFirstRound);
         gameController.getActionController().restoreController(lastTurnPhase, lastTurnRemainingActions);
         return gameController;
     }
