@@ -29,6 +29,31 @@
     -fx-background-image: url("../images/islands/island3.png");
 }
 
+.cloud-pane1, .cloud-pane2, .cloud-pane3, .cloud-pane4, .cloud-pane {
+    -fx-background-repeat: no repeat;
+    -fx-background-size: stretch;
+}
+
+.cloud-pane1 {
+    -fx-background-image: url("../images/clouds/cloud_card_1.png");
+}
+
+.cloud-pane2 {
+    -fx-background-image: url("../images/clouds/cloud_card_2.png");
+}
+
+.cloud-pane3 {
+    -fx-background-image: url("../images/clouds/cloud_card_3.png");
+}
+
+.cloud-pane4 {
+    -fx-background-image: url("../images/clouds/cloud_card_4.png");
+}
+
+.cloud-pane {
+    -fx-background-image: url("../images/clouds/cloud4.png");
+}
+
 .selectable-item:hover {
     -fx-effect: dropshadow(gaussian, yellow, 10, 0.2, 0, 0);
     -fx-cursor: hand
