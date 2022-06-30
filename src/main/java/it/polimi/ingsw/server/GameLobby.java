@@ -78,8 +78,7 @@ public class GameLobby {
                     InitController initController = gameController.getInitController();
                     try {
                         initController.initializeGameComponents();
-                    } catch (
-                            EmptyBagException e) {/*At this point it shouldn't be thrown, maybe it should be handled before*/}
+                    } catch (EmptyBagException ignored) {}
                     for (String name : participants.keySet()) {
                         initController.addPlayer(name);
                     }
