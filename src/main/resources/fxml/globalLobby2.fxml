@@ -7,9 +7,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="1080.0" prefWidth="1920.0" styleClass="anchor-pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.GlobalLobbyController">
-    <children>
-      <TitledPane layoutX="459.0" layoutY="405.0" prefHeight="534.0" prefWidth="1003.0">
+<HBox alignment="CENTER" prefHeight="1080.0" prefWidth="1920.0" styleClass="anchor-pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.GlobalLobbyController">
+   <children>
+      <TitledPane prefHeight="534.0" prefWidth="1003.0">
          <content>
             <Pane layoutX="593.0" layoutY="470.0" prefHeight="540.0" prefWidth="735.0" styleClass="pane">
                <children>
@@ -41,9 +41,9 @@
             </Pane>
          </content>
       </TitledPane>
-    </children>
+   </children>
    <stylesheets>
-      <URL value="@../css/globalStyle.css" />
       <URL value="@../css/welcomeStyle.css" />
+      <URL value="@../css/globalStyle.css" />
    </stylesheets>
-</AnchorPane>
+</HBox>

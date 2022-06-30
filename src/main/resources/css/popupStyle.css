@@ -1,0 +1,11 @@
+.popup-button {
+    -fx-opacity: 0.8;
+}
+
+.popup-button:hover {
+    -fx-opacity: 1;
+}
+
+.popup-container {
+    -fx-font-size: 22;
+}

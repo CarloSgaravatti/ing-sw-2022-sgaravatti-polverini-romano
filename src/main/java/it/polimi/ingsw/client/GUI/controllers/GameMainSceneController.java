@@ -26,6 +26,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.util.*;
@@ -117,7 +118,9 @@ public class GameMainSceneController extends FXMLController implements Initializ
 
     @Override
     public void onError(ErrorMessageType error, String errorInfo) {
-
+        if (error == ErrorMessageType.ILLEGAL_ARGUMENT && lastAction.getFirst().equals("MoveStudents")) {
+            rollbackMoveStudents();
+        }
     }
 
     @Override
@@ -154,7 +157,9 @@ public class GameMainSceneController extends FXMLController implements Initializ
         cancelActionButton.setOnAction(actionEvent -> {
             actionDescriptionLabel.setText("");
             decisionBox.setVisible(false);
-            //TODO: if action is MoveStudents, rollback
+            if (lastAction.getFirst().equals("MoveStudents")) {
+                rollbackMoveStudents();
+            }
         });
     }
 
@@ -224,6 +229,7 @@ public class GameMainSceneController extends FXMLController implements Initializ
                 button.setEffect(dropShadow);
             } else button.setEffect(null);
         });
+        assistantsTab.updateAssistants();
     }
 
     public void onStartPlayAssistant() {
@@ -360,6 +366,7 @@ public class GameMainSceneController extends FXMLController implements Initializ
                     node.setOpacity(0.5);
                     node.setEffect(null);
                 });
+        assistantsTab.updateAssistants();
     }
 
     public void setDropShadowOnCharacter(int characterId) {
@@ -400,6 +407,32 @@ public class GameMainSceneController extends FXMLController implements Initializ
         Arrays.stream(students).forEach(schoolBox::insertStudentEntrance);
     }
 
+    public void moveStudentsToRefillClouds() {
+        moveAccordionDown();
+        Map<Integer, Integer[]> cloudStudents = modelView.getField().getCloudStudents();
+        Pair<Double, Double> bagLayout = new Pair<>(bag.getLayoutX(), bag.getLayoutY());
+        double studentsRadius = getSchoolOfClient().getDimStudentsRadius();
+        for (Integer cloudId: cloudStudents.keySet()) {
+            RealmType[] students = RealmType.getRealmsFromIntegerRepresentation(cloudStudents.get(cloudId));
+            CloudImage cloud = (CloudImage) cloudBox.getChildren().get(cloudId + 1); //TODO: change after clouds impl
+            for (RealmType student : students) {
+                StudentImage studentImage = new StudentImage(studentsRadius, student);
+                studentImage.setLayoutX(bagLayout.getFirst() + bag.getFitWidth() / 2);
+                studentImage.setLayoutY(bagLayout.getSecond() + bag.getFitHeight() / 2);
+                islandsMap.getChildren().add(studentImage);
+                TranslateTransition transition = new TranslateTransition(Duration.millis(1500), studentImage);
+                transition.setByX(cloud.getLayoutX() - studentImage.getLayoutX());
+                transition.setByY(cloud.getLayoutY() - studentImage.getLayoutY());
+                transition.setDelay(Duration.millis(500));
+                transition.play();
+                transition.setOnFinished(actionEvent -> {
+                    islandsMap.getChildren().remove(studentImage);
+                    //TODO: add to cloud
+                });
+            }
+        }
+    }
+
     public void moveAccordionDown() {
         if (accordionButton.getText().equals("v")) {
             accordionButton.fire();
@@ -438,6 +471,41 @@ public class GameMainSceneController extends FXMLController implements Initializ
 
     public String getClientNickname() {
         return clientNickname;
+    }
+
+    private void rollbackMoveStudents() {
+        String[] actionArguments = lastAction.getSecond().split(" ");
+        int i = 0;
+        while (i < actionArguments.length) {
+            RealmType realmType = RealmType.getRealmByAbbreviation(actionArguments[i]);
+            SchoolBox clientSchool = getSchoolOfClient();
+            if (actionArguments[i + 1].equals("ToDiningRoom")) {
+                clientSchool.removeFromDiningRoom(realmType);
+                clientSchool.insertStudentEntrance(realmType);
+                i += 2;
+            } else {
+                clientSchool.insertStudentEntrance(realmType);
+                int islandId = Integer.parseInt(actionArguments[i + 2]);
+                islands.getIslandById(islandId).ifPresent(islandSubScene -> islandSubScene.updateIsland(modelView.getField()));
+                i += 3;
+            }
+        }
+    }
+
+    public void onEndGameEvent(PropertyChangeEvent evt) {
+        String popupText = switch (evt.getPropertyName()) {
+            case "Winner" -> "You have won!";
+            case "Loser" -> "You have lost! " + evt.getNewValue() + " has won";
+            case "Tie" -> "It's a tie! These are the tiers: " + Arrays.toString((String[]) evt.getNewValue());
+            case "TieLoser" -> "You have lose, but nobody has won, these are the tiers" +
+                        Arrays.toString((String[]) evt.getNewValue());
+            case "Disconnection" -> "Oh no, " + evt.getNewValue() + " have disconnected!";
+            default -> "";
+        };
+        popupText += "\n\n Decide what to do: you can return to the main menu or exit the application.";
+        PopupDialogController popupDialog = new PopupDialogController();
+        popupDialog.show(popupText, this);
+        root.getChildren().add(popupDialog);
     }
 
     class DragAndDropManager {

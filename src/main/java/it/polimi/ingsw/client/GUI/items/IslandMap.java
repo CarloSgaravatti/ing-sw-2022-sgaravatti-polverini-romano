@@ -124,6 +124,7 @@ public class IslandMap {
         unifiedIds.remove(centerId);
         Optional<IslandSubScene> centerIsland = getIslandById(centerId);
         if (centerIsland.isEmpty()) return;
+        centerIsland.get().setIslandId(minId);
         for (Integer id: unifiedIds) {
             Optional<IslandSubScene> islandToMove = getIslandById(id);
             if (islandToMove.isPresent()) {
@@ -131,12 +132,15 @@ public class IslandMap {
                 double xTranslate = centerIsland.get().getLayoutX() - island.getLayoutX();
                 double yTranslate = centerIsland.get().getLayoutY() - island.getLayoutY();
                 TranslateTransition transition = new TranslateTransition(Duration.millis(2000), island);
+                transition.setDelay(Duration.millis(1500));
                 transition.setByX(xTranslate);
                 transition.setByY(yTranslate);
                 transition.play();
                 transition.setOnFinished(actionEvent -> {
                     islandsSubScenes.remove(island);
                     container.getChildren().remove(island);
+                    centerIsland.get().updateIsland(modelView.getField());
+                    centerIsland.get().setMotherNature(true);
                 });
             }
         }
@@ -144,13 +148,6 @@ public class IslandMap {
                 .filter(islandSubScene -> islandSubScene.getIslandId() >
                         unifiedIds.stream().max(Comparator.comparingInt(id -> id)).orElse(0))
                 .forEach(islandSubScene -> islandSubScene.setIslandId(islandSubScene.getIslandId() - 1));
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                centerIsland.get().setIslandId(minId);
-                centerIsland.get().updateIsland(modelView.getField());
-            }
-        }, 2000L);
     }
 
     @Deprecated

@@ -17,6 +17,9 @@ import javafx.scene.text.TextAlignment;
 
 import java.beans.PropertyChangeEvent;
 
+/**
+ * WelcomeController handles the starting scene of the gui, the main menu and the game creation form
+ */
 public class WelcomeController extends FXMLController {
     private GUI gui;
     private boolean serverParametersOk = false;
@@ -26,10 +29,24 @@ public class WelcomeController extends FXMLController {
     @FXML private Pane dialogRoot;
     private boolean isShowingMainMenu = true;
 
+    /**
+     * Returns true if the controller is showing the main menu, otherwise false
+     *
+     * @return true if the controller is showing the main menu, otherwise false
+     */
     public boolean isShowingMainMenu() {
         return isShowingMainMenu;
     }
 
+    /**
+     * Responds to the submit button present in the starting scene. The method will control that every text field (for the
+     * username, the server ip and the server port) is correctly compiled, if so notifies the gui class otherwise it
+     * displays an alert. If the server port and ip are already processed but the nickname no (for example if the
+     * nickname was duplicated on the server and so the user have to choose another one), the method will control only
+     * the nickname text field
+     *
+     * @param event the action event fired after the submit button press
+     */
     @FXML
     void onSubmit(ActionEvent event) {
         if (serverParametersOk) {
@@ -55,16 +72,30 @@ public class WelcomeController extends FXMLController {
         gui.doSetup(serverIP, serverPort, nickname);
     }
 
+    /**
+     * Controls the nickname present on the nickname text field, if a nickname is present it fires an event to the gui
+     */
     private void getOnlyNickname() {
         String nickname = username.getCharacters().toString();
         if (nickname.isBlank()) displayAlert("You must enter a nickname");
         else firePropertyChange("Nickname", null, nickname);
     }
 
+    /**
+     * Associate the specified gui instance to this controller
+     *
+     * @param gui the instance of the gui
+     */
     public void addGUI(GUI gui) {
         this.gui = gui;
     }
 
+    /**
+     * Display an alert that contains a different message in base of the specified error and error info
+     *
+     * @param error the type of error
+     * @param errorInfo the description of the error
+     */
     @Override
     public void onError(ErrorMessageType error, String errorInfo) {
         if (error == ErrorMessageType.DUPLICATE_NICKNAME) {
@@ -73,6 +104,12 @@ public class WelcomeController extends FXMLController {
         } else displayAlert(errorInfo);
     }
 
+    /**
+     * Shows the main menu of the game, where the user can choose if he wants to create a new game, or to search a game
+     * in the global lobby or to quit the application
+     *
+     * @param nickname the nickname of the user, used to print a personal message
+     */
     public void showMainMenu(String nickname) {
         isShowingMainMenu = true;
         VBox vBox = getContainerVbox();
@@ -97,6 +134,13 @@ public class WelcomeController extends FXMLController {
         dialogRoot.getChildren().add(vBox);
     }
 
+    /**
+     * Shows the form for creating a new game. The form contains the number of players choice box, where the user can
+     * select the number of players of the game, and the rules choice box, where the user can select the type of rules.
+     * A button to return to the main menu is also present.
+     *
+     * @param nickname the nickname of the user, used to print a personal message
+     */
     private void showNewGameForm(String nickname) {
         VBox vBox = getContainerVbox();
         Text text = getTitleText(nickname + ", create a new game", vBox.getWidth());
@@ -142,6 +186,11 @@ public class WelcomeController extends FXMLController {
         dialogRoot.getChildren().add(vBox);
     }
 
+    /**
+     * Returns a newly created VBox used as the container for the main menu or for the create game form
+     *
+     * @return a newly created VBox used as the container for the main menu or for the create game form
+     */
     private VBox getContainerVbox() {
         VBox vBox = new VBox();
         vBox.setAlignment(Pos.CENTER);
@@ -153,6 +202,14 @@ public class WelcomeController extends FXMLController {
         return vBox;
     }
 
+    /**
+     * Returns a Text that have the specified string and the specified wrapping width. The text will have a center text
+     * alignment.
+     *
+     * @param textString the content of the text
+     * @param width the wrapping width of the text
+     * @return a Text that have the specified string and the specified wrapping width
+     */
     private Text getTitleText(String textString, double width) {
         Text text = new Text();
         text.setTextAlignment(TextAlignment.CENTER);
@@ -162,6 +219,13 @@ public class WelcomeController extends FXMLController {
         return text;
     }
 
+    /**
+     * Returns the container HBox for all items of the create game form. The hBox will wrap the number of players choice box and
+     * label or the rules choice box and label or the bottom bar with the buttons
+     *
+     * @param width the width of the hBox
+     * @return the container HBox for all items of the create game form
+     */
     private HBox getContainerHBoxForCreateGame(double width) {
         HBox hbox = new HBox();
         hbox.setAlignment(Pos.CENTER);

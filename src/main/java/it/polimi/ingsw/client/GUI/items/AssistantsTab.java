@@ -12,6 +12,10 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.*;
 
+/**
+ * AssistantTab represent the assistant container in the tab pane of the gui main scene. The AssistantTab container the
+ * FlowPane that container the assistants of the player represented by the client and all the images of the assistants.
+ */
 public class AssistantsTab {
     private final FlowPane assistantContainer;
     private final ModelView modelView;
@@ -20,6 +24,12 @@ public class AssistantsTab {
     private final Map<Integer, Image> assistantImages = new HashMap<>();
     private boolean isAssistantSelectable = false;
 
+    /**
+     * Constructs an AssistantTab that will use the specified flow pane to contain the images of the assistants
+     *
+     * @param assistantContainer the flow pane that will contain the assistants
+     * @param modelView the model view of the client
+     */
     public AssistantsTab(FlowPane assistantContainer, ModelView modelView) {
         this.assistantContainer = assistantContainer;
         this.modelView = modelView;
@@ -37,34 +47,54 @@ public class AssistantsTab {
         }
     }
 
+    /**
+     * Sets the event handler that will handle events of the specified mouse event type when selecting an assistant image
+     *
+     * @param eventType the type of mouse event
+     * @param handler the event handler that will handle assistants selection
+     */
     public void setEventHandler(EventType<MouseEvent> eventType, EventHandler<MouseEvent> handler) {
         for (ImageView assistant: assistantImageViews.values()) {
             assistant.addEventHandler(eventType, handler);
         }
     }
 
+    //TODO: check if it can be deleted
     public void addListener(PropertyChangeListener listener) {
         gui.addPropertyChangeListener(listener);
     }
 
+    /**
+     * Removes the assistant image that have the specified assistant id from the deck
+     *
+     * @param id the id of the assistant
+     */
     public void removeAssistantFromDeck(int id) {
         ImageView imageView = assistantImageViews.remove(id);
         assistantContainer.getChildren().remove(imageView);
         assistantImages.remove(id);
     }
 
+    /**
+     * Returns true if the assistants are selectable, otherwise false
+     *
+     * @return true if the assistants are selectable, otherwise false
+     */
     public boolean isAssistantSelectable() {
         return isAssistantSelectable;
     }
 
+    /**
+     * @param assistantSelectable true if the assistants can be selected, otherwise false
+     */
     public void setAssistantSelectable(boolean assistantSelectable) {
         isAssistantSelectable = assistantSelectable;
     }
 
-    public FlowPane getAssistantContainer() {
-        return assistantContainer;
-    }
-
+    /**
+     * Updates the assistants of the assistant deck by removing the ones that aren't present in the model view that
+     * is associated to this object
+     */
     public void updateAssistants() {
         List<Integer> assistantsIds = new ArrayList<>(assistantImageViews.keySet());
         List<Integer> assistantsPresent = new ArrayList<>(modelView.getClientPlayerAssistants().keySet());

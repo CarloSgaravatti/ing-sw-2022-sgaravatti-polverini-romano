@@ -138,6 +138,8 @@ public class Player implements PropertyChangeListener {
 	}
 
 	public void restorePlayer(Game game, GameConstants gameConstants) {
-		school.restoreSchool(this, game, gameConstants);
+		if (school != null) { //if school is null, there is nothing to restore
+			school.restoreSchool(this, game, gameConstants);
+		}
 	}
 }

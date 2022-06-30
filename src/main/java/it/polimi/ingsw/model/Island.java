@@ -67,7 +67,7 @@ public abstract class Island extends MotherNatureMovementObservable {
 		this.motherNaturePresent = motherNaturePresent;
 		if (noEntryTilePresents == 0 && motherNaturePresent) {
 			notifyObservers(this);
-		} else if (noEntryTilePresents > 0){
+		} else if (noEntryTilePresents > 0 && noEntryTileManager != null){
 			removeNoEntryTile();
 		}
 	}

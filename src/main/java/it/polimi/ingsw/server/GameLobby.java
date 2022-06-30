@@ -87,6 +87,7 @@ public class GameLobby {
                     game = gameController.getModel();
                     gameController.initializeControllers();
                     server.saveParticipants();
+                    setSaveGame();
                 } else {
                     PersistenceGameInfo persistenceGameInfo = SaveGame.getPersistenceData(gameId);
                     gameController = persistenceGameInfo.restoreGameState();

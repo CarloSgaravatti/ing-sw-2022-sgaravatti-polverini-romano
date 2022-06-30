@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.GUI.controllers;
 
+import it.polimi.ingsw.client.GUI.GUI;
 import it.polimi.ingsw.client.GUI.constants.Constants;
 import it.polimi.ingsw.messages.ErrorMessageType;
 import it.polimi.ingsw.model.enumerations.TowerType;
@@ -27,6 +28,7 @@ public class SetupChoiceSceneController extends FXMLController {
     @FXML private Label upperText;
     @FXML private Button confirmChoice;
     @FXML private Label bottomText;
+    private GUI gui;
     private List<ImageView> images;
     private String lastSelection;
     private final EventHandler<MouseEvent> sendTowerChoiceHandler = mouseEvent -> {
@@ -41,6 +43,10 @@ public class SetupChoiceSceneController extends FXMLController {
     @Override
     public void onError(ErrorMessageType error, String errorInfo) {
 
+    }
+
+    public void setGui(GUI gui) {
+        this.gui = gui;
     }
 
     public void showGameLobby(int numPlayers, boolean rules, String[] participants) {
@@ -145,7 +151,7 @@ public class SetupChoiceSceneController extends FXMLController {
         hBox.getChildren().add(text);
     }
 
-    public void onGameDeleted(String playerName) {
+    public void onGameDeleted(String info) {
         upperText.setText("");
         bottomText.setText("");
         confirmChoice.setVisible(false);
@@ -155,8 +161,7 @@ public class SetupChoiceSceneController extends FXMLController {
         vBox.setAlignment(Pos.CENTER);
         vBox.setSpacing(20);
         Text text = new Text();
-        text.setText("Oh no! " + playerName + " has decided to delete the game. The game will be destroyed.\n" +
-                "What do you want to do?");
+        text.setText(info);
         text.getStyleClass().add("center-text");
         text.setWrappingWidth(vBox.getWidth());
         HBox buttonsBox = new HBox();
@@ -166,10 +171,10 @@ public class SetupChoiceSceneController extends FXMLController {
         quitButton.getStyleClass().add("setup-button");
         quitButton.getStyleClass().add("quit-button");
         quitButton.setOnAction(actionEvent -> System.exit(0));
-        Button globalLobbyButton = new Button("Enter Global Lobby");
+        Button globalLobbyButton = new Button("Main menu");
         globalLobbyButton.getStyleClass().add("setup-button");
         globalLobbyButton.getStyleClass().add("global-lobby-button");
-        globalLobbyButton.setOnAction(actionEvent -> firePropertyChange("RefreshLobby", null, null));
+        globalLobbyButton.setOnAction(actionEvent -> gui.returnToMainMenu());
         buttonsBox.getChildren().addAll(globalLobbyButton, quitButton);
         vBox.getChildren().addAll(text, buttonsBox);
         hBox.getChildren().clear();

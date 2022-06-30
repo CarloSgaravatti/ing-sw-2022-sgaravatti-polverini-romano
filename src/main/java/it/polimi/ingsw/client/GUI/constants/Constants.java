@@ -6,6 +6,10 @@ import it.polimi.ingsw.model.enumerations.WizardType;
 
 import java.util.Map;
 
+/**
+ * Constants class provides all paths for images that need to be accessed by more than one classes, these are
+ * tower images, wizard images and student images
+ */
 public class Constants {
     public static final Map<TowerType, String> towerImages = Map.of(TowerType.BLACK, "/images/black_tower.png",
             TowerType.WHITE, "/images/white_tower.png", TowerType.GREY, "/images/grey_tower.png");

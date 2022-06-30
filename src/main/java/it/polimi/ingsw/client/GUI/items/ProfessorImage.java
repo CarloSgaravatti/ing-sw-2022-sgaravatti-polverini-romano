@@ -14,6 +14,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * ProfessorImage is a gui representation of a professor that has the shape of a hexagon filled with an image of a
+ * professor.
+ * @see javafx.scene.shape.Polygon
+ */
 public class ProfessorImage extends Polygon {
     private RealmType realmType;
     private final Map<RealmType, String> imagesPath =
@@ -23,6 +28,15 @@ public class ProfessorImage extends Polygon {
                     RealmType.RED_DRAGONS, "/images/professors/teacher_red.png",
                     RealmType.PINK_FAIRES, "/images/professors/teacher_pink.png");
 
+    /**
+     * Constructs a new ProfessorImage. The new image will have the shape of a hexagon that have a circle inscribed with
+     * specified radius and that will have the specified layoutX and layoutY. The image will be initially empty and not
+     * visible in the scene.
+     *
+     * @param containedCircleRadius the radius of the inscribed circle
+     * @param layoutX the layoutX of the professor
+     * @param layoutY the layoutY of the professor
+     */
     public ProfessorImage(double containedCircleRadius, double layoutX, double layoutY) {
         super();
         //is known only the distance of the two parallel lines
@@ -50,6 +64,12 @@ public class ProfessorImage extends Polygon {
         super.setLayoutY(layoutY);
     }
 
+    /**
+     * Sets the value of the realm of the professor; this will fill the hexagon with the image of the professor, rotated
+     * by 90 degrees.
+     *
+     * @param realmType the realm of the professor
+     */
     public void setRealmType(RealmType realmType) {
         this.realmType = realmType;
         Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagesPath.get(realmType))));

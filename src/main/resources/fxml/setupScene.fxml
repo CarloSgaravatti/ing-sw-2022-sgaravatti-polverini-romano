@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
 <?import java.net.*?>
 <?import java.lang.*?>
@@ -8,9 +9,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" styleClass="anchor-pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.SetupChoiceSceneController">
+<HBox alignment="CENTER" prefHeight="1080.0" prefWidth="1920.0" styleClass="anchor-pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.SetupChoiceSceneController">
    <children>
-      <BorderPane layoutX="534.0" layoutY="416.0" prefHeight="463.0" prefWidth="847.0">
+      <BorderPane maxHeight="463.0" maxWidth="853.0" prefHeight="463.0" prefWidth="853.0" HBox.hgrow="ALWAYS">
          <center>
             <HBox fx:id="hBox" alignment="CENTER" prefHeight="231.0" prefWidth="479.0" spacing="10.0" BorderPane.alignment="CENTER" />
          </center>
@@ -20,11 +21,13 @@
                   <Label fx:id="bottomText" layoutY="12.0" prefHeight="30.0" prefWidth="650.0" style="-fx-alignment: top-right;" text="You have chosen...">
                      <font>
                         <Font size="20.0" />
-                     </font></Label>
+                     </font>
+                  </Label>
                   <Button fx:id="confirmChoice" layoutX="668.0" layoutY="5.0" mnemonicParsing="false" styleClass="setup-button" text="Confirm Choice">
                      <font>
                         <Font size="20.0" />
-                     </font></Button>
+                     </font>
+                  </Button>
                </children>
             </AnchorPane>
          </bottom>
@@ -34,7 +37,8 @@
                   <Label fx:id="upperText" layoutY="7.0" prefHeight="21.0" prefWidth="847.0" style="-fx-alignment: center;" text="You have to choose a ">
                      <font>
                         <Font size="20.0" />
-                     </font></Label>
+                     </font>
+                  </Label>
                </children>
             </AnchorPane>
          </top>
@@ -51,8 +55,8 @@
       </BorderPane>
    </children>
    <stylesheets>
+      <URL value="@../css/welcomeStyle.css" />
       <URL value="@../css/globalStyle.css" />
       <URL value="@../css/setupScene.css" />
-      <URL value="@../css/welcomeStyle.css" />
    </stylesheets>
-</AnchorPane>
+</HBox>

@@ -35,7 +35,7 @@ public class InitController implements PropertyChangeListener {
 		this.game = gameRestored;
 		game.getPlayers().stream().filter(player -> player.getWizardType() != null)
 				.forEach(player -> playersWithWizard.put(player.getNickName(), player.getWizardType()));
-		game.getPlayers().stream().filter(player -> player.getSchool().getTowerType() != null)
+		game.getPlayers().stream().filter(player -> player.getSchool() != null)
 				.forEach(player -> playersWithTower.put(player.getNickName(), player.getSchool().getTowerType()));
 	}
 

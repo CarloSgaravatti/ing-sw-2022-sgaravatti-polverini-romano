@@ -10,574 +10,584 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="root" prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: azure;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.GameMainSceneController">
-   <children>
-      <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0">
-         <center>
-            <AnchorPane fx:id="islandsMap">
-               <BorderPane.margin>
-                  <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
-               </BorderPane.margin>
-               <children>
-                  <AnchorPane layoutX="5.0" layoutY="290.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
-                  <AnchorPane layoutX="144.0" layoutY="118.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
-                  <AnchorPane layoutX="353.0" layoutY="43.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
-                  <AnchorPane layoutX="597.0" layoutY="20.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
-                  <AnchorPane layoutX="857.0" layoutY="43.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
-                  <AnchorPane layoutX="1090.0" layoutY="118.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
-                  <AnchorPane layoutX="1230.0" layoutY="290.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
-                  <AnchorPane layoutX="1090.0" layoutY="500.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
-                  <AnchorPane layoutX="857.0" layoutY="575.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
-                  <AnchorPane layoutX="597.0" layoutY="610.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
-                  <AnchorPane layoutX="353.0" layoutY="570.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
-                  <AnchorPane layoutX="144.0" layoutY="500.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
-                  <HBox fx:id="cloudBox" alignment="CENTER" layoutX="306.0" layoutY="297.0" prefHeight="137.0" prefWidth="771.0" spacing="40.0">
-                     <children>
-                        <ImageView fx:id="bag" fitHeight="111.0" fitWidth="105.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../images/bag.png" />
-                           </image>
-                        </ImageView>
-                     </children></HBox>
-               </children>
-            </AnchorPane>
-         </center>
-         <left>
-            <VBox fx:id="characterBox" alignment="CENTER" prefHeight="874.0" prefWidth="228.0" spacing="20.0" BorderPane.alignment="CENTER">
-               <BorderPane.margin>
-                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-               </BorderPane.margin>
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding></VBox>
-         </left>
-         <top>
-            <AnchorPane prefHeight="79.0" prefWidth="1920.0" BorderPane.alignment="CENTER">
-               <children>
-                  <MenuBar prefHeight="34.0" prefWidth="1920.0">
-                    <menus>
-                      <Menu mnemonicParsing="false" text="Quit">
-                        <items>
-                          <MenuItem mnemonicParsing="false" onAction="#returnToMainMenu" text="Return to Main menu" />
-                              <MenuItem mnemonicParsing="false" onAction="#quitApplication" text="Quit application" />
-                        </items>
-                      </Menu>
-                    </menus>
-                  </MenuBar>
-               </children></AnchorPane>
-         </top>
-         <right>
-            <VBox fx:id="turnManagementBox" alignment="CENTER" prefHeight="822.0" prefWidth="226.0" spacing="30.0" styleClass="turn-management-box">
-               <children>
-                  <Label alignment="CENTER" prefHeight="21.0" prefWidth="193.0" text="Turn management" />
-                  <Label alignment="CENTER" prefHeight="63.0" prefWidth="218.0" wrapText="true" />
-                  <Button mnemonicParsing="false" text="PlayAssistant" />
-                  <Button mnemonicParsing="false" text="MoveStudents" />
-                  <Button mnemonicParsing="false" text="MoveMotherNature" />
-                  <Button mnemonicParsing="false" text="PickFromCloud" />
-                  <Button mnemonicParsing="false" text="PlayCharacter" />
-                  <Button mnemonicParsing="false" text="EndTurn" />
-                  <Label prefHeight="84.0" prefWidth="158.0" wrapText="true" />
-                  <HBox alignment="CENTER" prefHeight="48.0" prefWidth="192.0" spacing="10.0">
-                     <children>
-                        <Button mnemonicParsing="false" text="Confirm" />
-                        <Button mnemonicParsing="false" text="Cancel" />
-                     </children></HBox>
-               </children>
-               <BorderPane.margin>
-                  <Insets bottom="50.0" top="50.0" />
-               </BorderPane.margin></VBox>
-         </right>
-         <bottom>
-            <AnchorPane prefHeight="79.0" prefWidth="1920.0" BorderPane.alignment="CENTER" />
-         </bottom>
-      </BorderPane>
-      <VBox fx:id="playersBox" layoutY="463.0" prefHeight="563.0" prefWidth="1920.0">
+<ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.GameMainSceneController">
+   <content>
+      <AnchorPane fx:id="root" prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: azure;">
          <children>
-            <AnchorPane prefHeight="45.0" prefWidth="1922.0">
+            <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <center>
+                  <AnchorPane fx:id="islandsMap">
+                     <BorderPane.margin>
+                        <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
+                     </BorderPane.margin>
+                     <children>
+                        <AnchorPane layoutX="5.0" layoutY="290.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
+                        <AnchorPane layoutX="144.0" layoutY="118.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
+                        <AnchorPane layoutX="353.0" layoutY="43.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
+                        <AnchorPane layoutX="597.0" layoutY="20.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
+                        <AnchorPane layoutX="857.0" layoutY="43.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
+                        <AnchorPane layoutX="1090.0" layoutY="118.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
+                        <AnchorPane layoutX="1230.0" layoutY="290.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
+                        <AnchorPane layoutX="1090.0" layoutY="500.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
+                        <AnchorPane layoutX="857.0" layoutY="575.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
+                        <AnchorPane layoutX="597.0" layoutY="610.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
+                        <AnchorPane layoutX="353.0" layoutY="570.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
+                        <AnchorPane layoutX="144.0" layoutY="500.0" prefHeight="150.0" prefWidth="150.0" styleClass="island-pane1" />
+                        <HBox fx:id="cloudBox" alignment="CENTER" layoutX="306.0" layoutY="297.0" prefHeight="137.0" prefWidth="771.0" spacing="40.0">
+                           <children>
+                              <ImageView fx:id="bag" fitHeight="111.0" fitWidth="105.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/bag.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </HBox>
+                     </children>
+                  </AnchorPane>
+               </center>
+               <left>
+                  <VBox fx:id="characterBox" alignment="CENTER" prefHeight="874.0" prefWidth="228.0" spacing="20.0" BorderPane.alignment="CENTER">
+                     <BorderPane.margin>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                     </BorderPane.margin>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </VBox>
+               </left>
+               <top>
+                  <AnchorPane prefHeight="79.0" prefWidth="1920.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <MenuBar prefHeight="34.0" prefWidth="1920.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <menus>
+                            <Menu mnemonicParsing="false" text="Quit">
+                              <items>
+                                <MenuItem mnemonicParsing="false" onAction="#returnToMainMenu" text="Return to Main menu" />
+                                    <MenuItem mnemonicParsing="false" onAction="#quitApplication" text="Quit application" />
+                              </items>
+                            </Menu>
+                          </menus>
+                        </MenuBar>
+                     </children>
+                  </AnchorPane>
+               </top>
+               <right>
+                  <VBox fx:id="turnManagementBox" alignment="CENTER" prefHeight="822.0" prefWidth="226.0" spacing="30.0" styleClass="turn-management-box">
+                     <children>
+                        <Label alignment="CENTER" prefHeight="21.0" prefWidth="193.0" text="Turn management" />
+                        <Label alignment="CENTER" prefHeight="63.0" prefWidth="196.0" wrapText="true" />
+                        <Button mnemonicParsing="false" text="PlayAssistant" />
+                        <Button mnemonicParsing="false" text="MoveStudents" />
+                        <Button mnemonicParsing="false" text="MoveMotherNature" />
+                        <Button mnemonicParsing="false" text="PickFromCloud" />
+                        <Button mnemonicParsing="false" text="PlayCharacter" />
+                        <Button mnemonicParsing="false" text="EndTurn" />
+                        <Label prefHeight="117.0" prefWidth="199.0" textAlignment="CENTER" wrapText="true" />
+                        <HBox alignment="CENTER" prefHeight="48.0" prefWidth="192.0" spacing="10.0">
+                           <children>
+                              <Button mnemonicParsing="false" text="Confirm" />
+                              <Button mnemonicParsing="false" text="Cancel" />
+                           </children>
+                        </HBox>
+                     </children>
+                     <BorderPane.margin>
+                        <Insets bottom="50.0" top="50.0" />
+                     </BorderPane.margin>
+                  </VBox>
+               </right>
+               <bottom>
+                  <AnchorPane prefHeight="79.0" prefWidth="1920.0" BorderPane.alignment="CENTER" />
+               </bottom>
+            </BorderPane>
+            <VBox fx:id="playersBox" layoutY="461.0" prefHeight="619.0" prefWidth="1920.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
                <children>
-                  <Button fx:id="accordionButton" layoutX="673.0" layoutY="-4.0" mnemonicParsing="false" onAction="#onAccordionButtonPress" prefHeight="51.0" prefWidth="565.0" text="^" />
+                  <AnchorPane prefHeight="47.0" prefWidth="1922.0">
+                     <children>
+                        <Button fx:id="accordionButton" layoutX="673.0" layoutY="-4.0" mnemonicParsing="false" onAction="#onAccordionButtonPress" prefHeight="51.0" prefWidth="565.0" text="^" />
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane prefHeight="483.0" prefWidth="1922.0">
+                     <children>
+                        <TabPane prefHeight="572.0" prefWidth="1920.0" style="-fx-background-color: burlywood;" tabClosingPolicy="UNAVAILABLE">
+                          <tabs>
+                            <Tab text="Your Assistants">
+                                 <content>
+                                    <AnchorPane>
+                                       <children>
+                                          <FlowPane fx:id="assistantsPane" hgap="50.0" layoutX="104.0" layoutY="28.0" prefHeight="460.0" prefWidth="1700.0" vgap="15.0" />
+                                       </children>
+                                    </AnchorPane>
+                                 </content>
+                            </Tab>
+                            <Tab text="Your School">
+                              <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="533.0" prefWidth="1920.0">
+                                       <children>
+                                          <AnchorPane fx:id="clientSchoolPane" layoutX="283.0" layoutY="66.0" prefHeight="400.0" prefWidth="1354.0">
+                                             <children>
+                                                <AnchorPane layoutX="50.0" layoutY="10.0">
+                                                   <children>
+                                                      <ImageView fitHeight="400.0" fitWidth="900.0" pickOnBounds="true" preserveRatio="true">
+                                                         <image>
+                                                            <Image url="@../images/schools/Plancia_DEF2.png" />
+                                                         </image>
+                                                      </ImageView>
+                                                      <AnchorPane prefHeight="390.0" prefWidth="153.0">
+                                                         <children>
+                                                            <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="68.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="132.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="132.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="196.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="196.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                         </children>
+                                                      </AnchorPane>
+                                                      <AnchorPane layoutX="153.0" prefHeight="391.0" prefWidth="465.0">
+                                                         <children>
+                                                            <Circle fill="DODGERBLUE" layoutX="33.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="77.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="119.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="205.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="248.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="290.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="334.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="376.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="419.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="34.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="78.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="120.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="164.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="206.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="249.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="291.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="335.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="377.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="420.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="33.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="77.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="119.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="205.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="248.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="290.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="334.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="376.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="419.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="34.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="78.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="120.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="206.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="249.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="291.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="335.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="377.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="420.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="33.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="77.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="119.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="205.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="248.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="290.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="334.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="376.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="420.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                         </children>
+                                                      </AnchorPane>
+                                                      <AnchorPane layoutX="618.0" prefHeight="390.0" prefWidth="87.0">
+                                                         <children>
+                                                            <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="67.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="132.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="196.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                         </children>
+                                                      </AnchorPane>
+                                                      <AnchorPane layoutX="705.0" prefHeight="391.0" prefWidth="189.0">
+                                                         <children>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="41.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="41.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="108.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="108.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="172.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="172.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="235.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="235.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </children>
+                                                      </AnchorPane>
+                                                   </children>
+                                                </AnchorPane>
+                                                <ImageView fitHeight="322.0" fitWidth="200.0" layoutX="1080.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../images/assistants/CarteTOT_back_11@3x.png" />
+                                                   </image>
+                                                </ImageView>
+                                                <VBox layoutX="5.0" layoutY="44.0">
+                                                   <children>
+                                                      <Circle fill="DODGERBLUE" layoutX="25.0" layoutY="64.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                      <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="21.0" prefWidth="39.0" text="1" />
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </AnchorPane>
+                                       </children>
+                                    </AnchorPane>
+                              </content>
+                            </Tab>
+                              <Tab text="Second Player School">
+                                <content>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="323.0" prefWidth="1920.0">
+                                       <children>
+                                          <AnchorPane fx:id="secondPlayerSchoolPane" layoutX="283.0" layoutY="66.0" prefHeight="400.0" prefWidth="1354.0">
+                                             <children>
+                                                <AnchorPane layoutX="50.0" layoutY="10.0">
+                                                   <children>
+                                                      <ImageView fitHeight="400.0" fitWidth="900.0" pickOnBounds="true" preserveRatio="true">
+                                                         <image>
+                                                            <Image url="@../images/schools/Plancia_DEF2.png" />
+                                                         </image>
+                                                      </ImageView>
+                                                      <AnchorPane prefHeight="390.0" prefWidth="153.0">
+                                                         <children>
+                                                            <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="68.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="132.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="132.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="196.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="196.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                         </children>
+                                                      </AnchorPane>
+                                                      <AnchorPane layoutX="153.0" prefHeight="391.0" prefWidth="465.0">
+                                                         <children>
+                                                            <Circle fill="DODGERBLUE" layoutX="33.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="77.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="119.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="205.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="248.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="290.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="334.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="376.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="419.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="34.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="78.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="120.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="164.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="206.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="249.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="291.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="335.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="377.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="420.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="33.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="77.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="119.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="205.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="248.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="290.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="334.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="376.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="419.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="34.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="78.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="120.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="206.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="249.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="291.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="335.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="377.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="420.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="33.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="77.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="119.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="205.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="248.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="290.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="334.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="376.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="420.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                         </children>
+                                                      </AnchorPane>
+                                                      <AnchorPane layoutX="618.0" prefHeight="390.0" prefWidth="87.0">
+                                                         <children>
+                                                            <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="67.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="132.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="196.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                         </children>
+                                                      </AnchorPane>
+                                                      <AnchorPane layoutX="705.0" prefHeight="391.0" prefWidth="189.0">
+                                                         <children>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="41.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="41.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="108.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="108.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="172.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="172.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="235.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="235.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </children>
+                                                      </AnchorPane>
+                                                   </children>
+                                                </AnchorPane>
+                                                <ImageView fitHeight="322.0" fitWidth="200.0" layoutX="1080.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../images/assistants/CarteTOT_back_21@3x.png" />
+                                                   </image>
+                                                </ImageView>
+                                                <VBox layoutX="5.0" layoutY="44.0">
+                                                   <children>
+                                                      <Circle fill="DODGERBLUE" layoutX="25.0" layoutY="64.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                      <Label alignment="CENTER" prefHeight="21.0" prefWidth="41.0" text="1" />
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </AnchorPane>
+                                       </children>
+                                    </AnchorPane>
+                                </content>
+                              </Tab>
+                              <Tab text="Third Player School">
+                                <content>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                       <children>
+                                          <AnchorPane fx:id="thirdPlayerSchoolPane" layoutX="283.0" layoutY="66.0" prefHeight="400.0" prefWidth="1354.0">
+                                             <children>
+                                                <AnchorPane layoutX="50.0" layoutY="10.0">
+                                                   <children>
+                                                      <ImageView fitHeight="400.0" fitWidth="900.0" pickOnBounds="true" preserveRatio="true">
+                                                         <image>
+                                                            <Image url="@../images/schools/Plancia_DEF2.png" />
+                                                         </image>
+                                                      </ImageView>
+                                                      <AnchorPane prefHeight="390.0" prefWidth="153.0">
+                                                         <children>
+                                                            <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="68.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="132.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="132.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="196.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="196.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                         </children>
+                                                      </AnchorPane>
+                                                      <AnchorPane layoutX="153.0" prefHeight="391.0" prefWidth="465.0">
+                                                         <children>
+                                                            <Circle fill="DODGERBLUE" layoutX="33.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="77.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="119.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="205.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="248.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="290.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="334.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="376.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="419.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="34.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="78.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="120.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="164.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="206.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="249.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="291.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="335.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="377.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="420.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="33.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="77.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="119.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="205.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="248.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="290.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="334.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="376.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="419.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="34.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="78.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="120.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="206.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="249.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="291.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="335.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="377.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="420.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="33.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="77.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="119.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="205.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="248.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="290.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="334.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="376.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="420.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                         </children>
+                                                      </AnchorPane>
+                                                      <AnchorPane layoutX="618.0" prefHeight="390.0" prefWidth="87.0">
+                                                         <children>
+                                                            <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="67.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="132.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="196.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                         </children>
+                                                      </AnchorPane>
+                                                      <AnchorPane layoutX="705.0" prefHeight="391.0" prefWidth="189.0">
+                                                         <children>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="41.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="41.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="108.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="108.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="172.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="172.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="235.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                            <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="235.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../images/black_tower.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </children>
+                                                      </AnchorPane>
+                                                   </children>
+                                                </AnchorPane>
+                                                <ImageView fitHeight="322.0" fitWidth="200.0" layoutX="1080.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../images/assistants/CarteTOT_back_31@3x.png" />
+                                                   </image>
+                                                </ImageView>
+                                                <VBox layoutX="5.0" layoutY="44.0">
+                                                   <children>
+                                                      <Circle fill="DODGERBLUE" layoutX="25.0" layoutY="64.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                                                      <Label alignment="CENTER" prefHeight="21.0" prefWidth="43.0" text="1" />
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </AnchorPane>
+                                       </children>
+                                    </AnchorPane>
+                                </content>
+                              </Tab>
+                          </tabs>
+                        </TabPane>
+                     </children>
+                  </AnchorPane>
                </children>
-            </AnchorPane>
-            <AnchorPane prefHeight="483.0" prefWidth="1922.0">
-               <children>
-                  <TabPane prefHeight="572.0" prefWidth="1920.0" style="-fx-background-color: burlywood;" tabClosingPolicy="UNAVAILABLE">
-                    <tabs>
-                      <Tab text="Your Assistants">
-                           <content>
-                              <AnchorPane>
-                                 <children>
-                                    <FlowPane fx:id="assistantsPane" hgap="50.0" layoutX="104.0" layoutY="28.0" prefHeight="460.0" prefWidth="1700.0" vgap="15.0" />
-                                 </children>
-                              </AnchorPane>
-                           </content>
-                      </Tab>
-                      <Tab text="Your School">
-                        <content>
-                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="533.0" prefWidth="1920.0">
-                                 <children>
-                                    <AnchorPane fx:id="clientSchoolPane" layoutX="283.0" layoutY="66.0" prefHeight="400.0" prefWidth="1354.0">
-                                       <children>
-                                          <AnchorPane layoutX="50.0" layoutY="10.0">
-                                             <children>
-                                                <ImageView fitHeight="400.0" fitWidth="900.0" pickOnBounds="true" preserveRatio="true">
-                                                   <image>
-                                                      <Image url="@../images/schools/Plancia_DEF2.png" />
-                                                   </image>
-                                                </ImageView>
-                                                <AnchorPane prefHeight="390.0" prefWidth="153.0">
-                                                   <children>
-                                                      <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="68.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="132.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="132.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="196.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="196.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                   </children>
-                                                </AnchorPane>
-                                                <AnchorPane layoutX="153.0" prefHeight="391.0" prefWidth="465.0">
-                                                   <children>
-                                                      <Circle fill="DODGERBLUE" layoutX="33.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="77.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="119.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="205.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="248.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="290.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="334.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="376.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="419.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="34.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="78.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="120.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="164.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="206.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="249.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="291.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="335.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="377.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="420.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="33.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="77.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="119.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="205.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="248.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="290.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="334.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="376.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="419.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="34.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="78.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="120.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="206.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="249.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="291.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="335.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="377.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="420.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="33.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="77.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="119.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="205.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="248.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="290.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="334.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="376.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="420.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                   </children>
-                                                </AnchorPane>
-                                                <AnchorPane layoutX="618.0" prefHeight="390.0" prefWidth="87.0">
-                                                   <children>
-                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="67.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="132.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="196.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                   </children>
-                                                </AnchorPane>
-                                                <AnchorPane layoutX="705.0" prefHeight="391.0" prefWidth="189.0">
-                                                   <children>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="41.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="41.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="108.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="108.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="172.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="172.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="235.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="235.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                   </children></AnchorPane>
-                                             </children>
-                                          </AnchorPane>
-                                          <ImageView fitHeight="322.0" fitWidth="200.0" layoutX="1080.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true">
-                                             <image>
-                                                <Image url="@../images/assistants/CarteTOT_back_11@3x.png" />
-                                             </image>
-                                          </ImageView>
-                                          <VBox layoutX="5.0" layoutY="44.0">
-                                             <children>
-                                                <Circle fill="DODGERBLUE" layoutX="25.0" layoutY="64.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="21.0" prefWidth="39.0" text="1" />
-                                             </children>
-                                          </VBox>
-                                       </children>
-                                    </AnchorPane>
-                                 </children>
-                              </AnchorPane>
-                        </content>
-                      </Tab>
-                        <Tab text="Second Player School">
-                          <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="323.0" prefWidth="1920.0">
-                                 <children>
-                                    <AnchorPane fx:id="secondPlayerSchoolPane" layoutX="283.0" layoutY="66.0" prefHeight="400.0" prefWidth="1354.0">
-                                       <children>
-                                          <AnchorPane layoutX="50.0" layoutY="10.0">
-                                             <children>
-                                                <ImageView fitHeight="400.0" fitWidth="900.0" pickOnBounds="true" preserveRatio="true">
-                                                   <image>
-                                                      <Image url="@../images/schools/Plancia_DEF2.png" />
-                                                   </image>
-                                                </ImageView>
-                                                <AnchorPane prefHeight="390.0" prefWidth="153.0">
-                                                   <children>
-                                                      <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="68.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="132.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="132.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="196.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="196.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                   </children>
-                                                </AnchorPane>
-                                                <AnchorPane layoutX="153.0" prefHeight="391.0" prefWidth="465.0">
-                                                   <children>
-                                                      <Circle fill="DODGERBLUE" layoutX="33.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="77.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="119.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="205.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="248.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="290.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="334.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="376.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="419.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="34.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="78.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="120.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="164.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="206.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="249.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="291.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="335.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="377.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="420.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="33.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="77.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="119.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="205.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="248.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="290.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="334.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="376.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="419.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="34.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="78.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="120.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="206.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="249.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="291.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="335.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="377.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="420.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="33.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="77.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="119.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="205.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="248.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="290.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="334.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="376.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="420.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                   </children>
-                                                </AnchorPane>
-                                                <AnchorPane layoutX="618.0" prefHeight="390.0" prefWidth="87.0">
-                                                   <children>
-                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="67.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="132.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="196.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                   </children>
-                                                </AnchorPane>
-                                                <AnchorPane layoutX="705.0" prefHeight="391.0" prefWidth="189.0">
-                                                   <children>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="41.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="41.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="108.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="108.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="172.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="172.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="235.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="235.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                   </children>
-                                                </AnchorPane>
-                                             </children>
-                                          </AnchorPane>
-                                          <ImageView fitHeight="322.0" fitWidth="200.0" layoutX="1080.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true">
-                                             <image>
-                                                <Image url="@../images/assistants/CarteTOT_back_21@3x.png" />
-                                             </image>
-                                          </ImageView>
-                                          <VBox layoutX="5.0" layoutY="44.0">
-                                             <children>
-                                                <Circle fill="DODGERBLUE" layoutX="25.0" layoutY="64.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                <Label alignment="CENTER" prefHeight="21.0" prefWidth="41.0" text="1" />
-                                             </children>
-                                          </VBox>
-                                       </children>
-                                    </AnchorPane>
-                                 </children>
-                              </AnchorPane>
-                          </content>
-                        </Tab>
-                        <Tab text="Third Player School">
-                          <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                 <children>
-                                    <AnchorPane fx:id="thirdPlayerSchoolPane" layoutX="283.0" layoutY="66.0" prefHeight="400.0" prefWidth="1354.0">
-                                       <children>
-                                          <AnchorPane layoutX="50.0" layoutY="10.0">
-                                             <children>
-                                                <ImageView fitHeight="400.0" fitWidth="900.0" pickOnBounds="true" preserveRatio="true">
-                                                   <image>
-                                                      <Image url="@../images/schools/Plancia_DEF2.png" />
-                                                   </image>
-                                                </ImageView>
-                                                <AnchorPane prefHeight="390.0" prefWidth="153.0">
-                                                   <children>
-                                                      <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="68.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="132.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="132.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="196.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="196.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="49.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="102.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                   </children>
-                                                </AnchorPane>
-                                                <AnchorPane layoutX="153.0" prefHeight="391.0" prefWidth="465.0">
-                                                   <children>
-                                                      <Circle fill="DODGERBLUE" layoutX="33.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="77.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="119.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="205.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="248.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="290.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="334.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="376.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="419.0" layoutY="69.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="34.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="78.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="120.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="164.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="206.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="249.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="291.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="335.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="377.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="420.0" layoutY="133.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="33.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="77.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="119.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="205.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="248.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="290.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="334.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="376.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="419.0" layoutY="197.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="34.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="78.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="120.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="206.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="249.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="291.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="335.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="377.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="420.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="33.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="77.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="119.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="163.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="205.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="248.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="290.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="334.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="376.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="420.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                   </children>
-                                                </AnchorPane>
-                                                <AnchorPane layoutX="618.0" prefHeight="390.0" prefWidth="87.0">
-                                                   <children>
-                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="67.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="132.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="196.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="260.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                      <Circle fill="DODGERBLUE" layoutX="39.0" layoutY="323.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                   </children>
-                                                </AnchorPane>
-                                                <AnchorPane layoutX="705.0" prefHeight="391.0" prefWidth="189.0">
-                                                   <children>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="41.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="41.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="108.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="108.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="172.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="172.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="17.0" layoutY="235.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <ImageView fitHeight="88.0" fitWidth="73.0" layoutX="87.0" layoutY="235.0" pickOnBounds="true" preserveRatio="true">
-                                                         <image>
-                                                            <Image url="@../images/black_tower.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                   </children>
-                                                </AnchorPane>
-                                             </children>
-                                          </AnchorPane>
-                                          <ImageView fitHeight="322.0" fitWidth="200.0" layoutX="1080.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true">
-                                             <image>
-                                                <Image url="@../images/assistants/CarteTOT_back_31@3x.png" />
-                                             </image>
-                                          </ImageView>
-                                          <VBox layoutX="5.0" layoutY="44.0">
-                                             <children>
-                                                <Circle fill="DODGERBLUE" layoutX="25.0" layoutY="64.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                                                <Label alignment="CENTER" prefHeight="21.0" prefWidth="43.0" text="1" />
-                                             </children>
-                                          </VBox>
-                                       </children>
-                                    </AnchorPane>
-                                 </children>
-                              </AnchorPane>
-                          </content>
-                        </Tab>
-                    </tabs>
-                  </TabPane>
-               </children>
-            </AnchorPane>
+            </VBox>
+            <fx:include fx:id="character" source="character.fxml" />
          </children>
-      </VBox>
-      <fx:include fx:id="character" source="character.fxml" />
-   </children>
-   <stylesheets>
-      <URL value="@../css/globalStyle.css" />
-      <URL value="@../css/mainScene.css" />
-      <URL value="@../css/island.css" />
-   </stylesheets>
-</AnchorPane>
+         <stylesheets>
+            <URL value="@../css/globalStyle.css" />
+            <URL value="@../css/mainScene.css" />
+            <URL value="@../css/island.css" />
+         </stylesheets>
+      </AnchorPane>
+   </content>
+</ScrollPane>

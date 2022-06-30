@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import java.net.*?>
 <?import javafx.scene.text.*?>
 <?import java.lang.*?>
@@ -8,9 +9,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="1080.0" prefWidth="1920.0" styleClass="anchor-pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.PreviousGameController">
+<HBox alignment="CENTER" prefHeight="1080.0" prefWidth="1920.0" styleClass="anchor-pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.PreviousGameController">
    <children>
-      <TitledPane layoutX="592.0" layoutY="403.0" prefHeight="452.0" prefWidth="737.0">
+      <TitledPane prefHeight="452.0" prefWidth="737.0">
          <content>
             <Pane layoutX="593.0" layoutY="470.0" prefHeight="540.0" prefWidth="735.0" styleClass="pane">
                <children>
@@ -36,7 +37,7 @@
       </TitledPane>
    </children>
    <stylesheets>
-      <URL value="@../css/welcomeStyle.css" />
       <URL value="@../css/previousGameDialog.css" />
+      <URL value="@../css/welcomeStyle.css" />
    </stylesheets>
-</AnchorPane>
+</HBox>

@@ -133,7 +133,7 @@ public class IslandSubScene extends AnchorPane implements Initializable {
             Label label = (Label) this.students.get(r).getChildren().get(0);
             int studentOfType = students[r.ordinal()];
             label.setText(String.valueOf(studentOfType));
-            if (studentOfType > 0) this.students.get(r).setVisible(true);
+            this.students.get(r).setVisible(studentOfType > 0);
         }
         if (island.getThird() != null) {
             addTower(island.getThird());

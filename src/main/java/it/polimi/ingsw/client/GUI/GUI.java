@@ -37,6 +37,7 @@ public class GUI extends Application implements UserInterface {
     //This executor is used to not use the javafx thread to compute actions (so javafx thread is only
     //used for javafx stuffs)
     private final ExecutorService responseHandlerExecutor = Executors.newSingleThreadExecutor();
+    private ResizeListener resizeListener;
 
     public GUI() {
 
@@ -52,10 +53,18 @@ public class GUI extends Application implements UserInterface {
         this.stage.setFullScreen(true);
         this.stage.show(); //display the stage on the screen
         this.stage.centerOnScreen();
+        this.stage.setMinWidth(1152);
+        this.stage.setMinHeight(648);
+        this.stage.fullScreenProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) stage.setMaximized(true);
+        });
         WelcomeController welcomeController = fxmlLoader.getController();
         welcomeController.addGUI(this);
         welcomeController.addListener(this);
         currentSceneController = welcomeController;
+
+        resizeListener = new ResizeListener(this.stage, this.scene);
+        //resizeListener.registerHandlers();
     }
 
     @Override
@@ -90,6 +99,7 @@ public class GUI extends Application implements UserInterface {
                 sceneController.setNickname(nickname);
                 currentSceneController = sceneController;
                 this.stage.show();
+                resizeListener.setScene(scene);
             }
         });
     }
@@ -112,8 +122,10 @@ public class GUI extends Application implements UserInterface {
             SetupChoiceSceneController sceneController = fxmlLoader.getController();
             sceneController.addListener(this);
             sceneController.showGameLobby(numPlayers, rules, waitingPlayers);
+            sceneController.setGui(this);
             currentSceneController = sceneController;
             this.stage.show();
+            resizeListener.setScene(scene);
         });
     }
 
@@ -163,6 +175,7 @@ public class GUI extends Application implements UserInterface {
             previousGameController.addListener(this);
             previousGameController.init(numPlayers, rules, participants);
             this.stage.show();
+            resizeListener.setScene(scene);
         });
     }
 
@@ -197,6 +210,7 @@ public class GUI extends Application implements UserInterface {
             }
             currentSceneController.addListener(this);
             stage.show();
+            resizeListener.setScene(scene);
         });
     }
 
@@ -227,14 +241,11 @@ public class GUI extends Application implements UserInterface {
             //case "EntranceUpdate" -> {} //TODO: verify if has to be handled (i think no)
             case "CoinsUpdate" -> onCoinsUpdate((String) evt.getNewValue());
             case "SchoolSwap" -> onSchoolSwap((String) evt.getSource(), (RealmType[]) evt.getOldValue(), (RealmType[]) evt.getNewValue());
-
-
             case "CloudSelected" -> onCloudsSelection((String) evt.getSource(), (Integer) evt.getNewValue(), (RealmType[]) evt.getOldValue());
-            case "CloudsRefill" -> {} //TODO
-
+            case "CloudsRefill" -> onCloudRefill();
             case "NewTurn" -> onNewTurn((String) evt.getNewValue());
-            case "Loser", "Winner", "Tie", "TieLoser" -> {} //TODO
-            case "Disconnection" -> {} //TODO
+            case "Loser", "Winner", "Tie", "TieLoser" -> onEndGameEvent(evt);
+            case "Disconnection" -> onDisconnection(evt);
             case "GameDeleted" -> onGameDeleted((String) evt.getNewValue());
             //events that come from gui controllers
             default -> checkEventFromControllers(evt);
@@ -382,12 +393,42 @@ public class GUI extends Application implements UserInterface {
     }
 
     private void onCloudsSelection(String playerName, int cloudId, RealmType[] students) {
-        Platform.runLater(() -> ((GameMainSceneController) currentSceneController).moveStudentsFromCloud(playerName, cloudId, students));
+        Platform.runLater(() -> {
+            GameMainSceneController gameMainSceneController = ((GameMainSceneController) currentSceneController);
+            gameMainSceneController.moveStudentsFromCloud(playerName, cloudId, students);
+        });
+    }
+
+    private void onCloudRefill() {
+        Platform.runLater(() -> {
+            GameMainSceneController gameMainSceneController = ((GameMainSceneController) currentSceneController);
+            gameMainSceneController.moveStudentsToRefillClouds();
+        });
+    }
+
+    private void onEndGameEvent(PropertyChangeEvent evt) {
+        Platform.runLater(() -> {
+            GameMainSceneController gameMainSceneController = ((GameMainSceneController) currentSceneController);
+            gameMainSceneController.onEndGameEvent(evt);
+        });
+    }
+
+    private void onDisconnection(PropertyChangeEvent evt) {
+        Platform.runLater(() -> {
+            if (currentSceneController instanceof GameMainSceneController gameMainSceneController) {
+                gameMainSceneController.onEndGameEvent(evt);
+            } else if (currentSceneController instanceof SetupChoiceSceneController setupChoiceSceneController){
+                setupChoiceSceneController.onGameDeleted("Oh no, " + evt.getNewValue() + " have disconnected!" +
+                        "\n Decide what to do: you can return to the main menu or exit the application.");
+            }
+        });
     }
 
     private void checkEventFromControllers(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("Quit")) System.exit(0); //TODO: do better
-        else if (evt.getPropertyName().equals("QuitGame")) this.returnToMainMenu();
+        else if (evt.getPropertyName().equals("QuitGame") || evt.getPropertyName().equals("DeleteSavedGame")) {
+            this.returnToMainMenu();
+        }
         responseHandlerExecutor.submit(() -> listeners.firePropertyChange(evt));
         if (evt.getPropertyName().equals("Nickname")) this.nickname = (String) evt.getNewValue();
     }
@@ -407,7 +448,7 @@ public class GUI extends Application implements UserInterface {
         Thread connectionHandlerThread = new Thread(connectionToServer);
         connectionHandlerThread.start();
         //TODO: find a way to shutdown connection to server
-        stage.setOnCloseRequest(event -> connectionToServer.setActive(false));
+        stage.setOnCloseRequest(event -> System.exit(0));
     }
 
     @Override
@@ -418,7 +459,9 @@ public class GUI extends Application implements UserInterface {
     public void onGameDeleted(String playerName) {
         Platform.runLater(() -> {
             SetupChoiceSceneController setupChoiceSceneController = (SetupChoiceSceneController) currentSceneController;
-            setupChoiceSceneController.onGameDeleted(playerName);
+            setupChoiceSceneController.onGameDeleted("Oh no! " + playerName +
+                    " has decided to delete the game. The game will be destroyed.\n" +
+                    "What do you want to do?");
         });
     }
 
@@ -437,5 +480,6 @@ public class GUI extends Application implements UserInterface {
         welcomeController.showMainMenu(nickname);
         currentSceneController = welcomeController;
         this.stage.show();
+        resizeListener.setScene(scene);
     }
 }
