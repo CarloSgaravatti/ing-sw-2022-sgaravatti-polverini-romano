@@ -10,7 +10,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: lightblue;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.GUI.controllers.GenericBackgroundController">
+<fx:root prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: lightblue;" type="AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <AnchorPane fx:id="containerCloud" layoutX="187.0" layoutY="46.0" prefHeight="86.0" prefWidth="260.0" rotate="90.0">
          <children>
@@ -70,7 +70,7 @@
             </ImageView>
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="containerCloud2" layoutX="348.0" layoutY="165.0" prefHeight="86.0" prefWidth="260.0" rotate="90.0">
+      <AnchorPane fx:id="containerCloud2" layoutX="348.0" layoutY="350.0" prefHeight="86.0" prefWidth="260.0" rotate="90.0">
          <children>
             <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="151.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -157,7 +157,7 @@
             </ImageView>
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="containerCloud5" layoutX="368.0" layoutY="185.0" prefHeight="86.0" prefWidth="260.0" rotate="90.0">
+      <AnchorPane fx:id="containerCloud5" layoutX="368.0" layoutY="500.0" prefHeight="86.0" prefWidth="260.0" rotate="90.0">
          <children>
             <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="151.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -187,4 +187,4 @@
          </children>
       </AnchorPane>
    </children>
-</AnchorPane>
+</fx:root>

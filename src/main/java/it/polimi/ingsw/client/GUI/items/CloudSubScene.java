@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.GUI.items;
 
 import it.polimi.ingsw.client.modelView.FieldView;
+import it.polimi.ingsw.model.Student;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.model.enumerations.TowerType;
 import it.polimi.ingsw.utils.Triplet;
@@ -19,15 +20,17 @@ import java.net.URL;
 import java.util.*;
 
 public class CloudSubScene extends AnchorPane implements Initializable {
-    private boolean ifFourStudents;
+    private final boolean ifFourStudents;
+    private final int cloudId;
 
 
-    public CloudSubScene(boolean isFourStudents) {
+    public CloudSubScene(boolean isFourStudents, int cloudId) {
         this.ifFourStudents = isFourStudents;
+        this.cloudId = cloudId;
         try {
             FXMLLoader loader;
             if(isFourStudents){
-                loader = new FXMLLoader(getClass().getResource("/fxml/cloud.fxml"));
+                loader = new FXMLLoader(getClass().getResource("/fxml/cloud4.fxml"));
             }
             else loader = new FXMLLoader(getClass().getResource("/fxml/cloud.fxml"));
             loader.setRoot(this);
@@ -41,8 +44,11 @@ public class CloudSubScene extends AnchorPane implements Initializable {
         List<Node> studentsNode = this.getChildren();
         for (int i = 0; i < studentsNode.size(); i++) {
             Circle circle = (Circle) studentsNode.get(i);
-            this.getChildren().set(i, new StudentImage(circle));
-            }
+            StudentImage studentImage = new StudentImage(circle);
+            studentImage.setStudent(students[i]);
+            this.getChildren().set(i, studentImage);
+
+        }
     }
 
     public void ResetStudentImage() {
@@ -60,6 +66,8 @@ public class CloudSubScene extends AnchorPane implements Initializable {
         else super.getStyleClass().add("cloud-pane" + (new Random().nextInt(4) + 1));
     }
 
-
+    public int getCloudId() {
+        return cloudId;
+    }
 }
 

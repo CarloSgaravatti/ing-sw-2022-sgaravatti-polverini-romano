@@ -13,16 +13,32 @@ import java.util.Map;
 
 /**
  * DefaultMessageHandler handles all messages that have SERVER_MESSAGE as message type
+ *
+ * @see it.polimi.ingsw.client.messageHandlers.MessageHandler
+ * @see it.polimi.ingsw.client.messageHandlers.BaseMessageHandler
  */
 public class DefaultMessageHandler extends BaseMessageHandler {
     private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 
+    /**
+     * Constructs a new DefaultMessageHandler that will be associated to the specified connection to the server, user
+     * interface and model view
+     *
+     * @param connection the connection to the server that will pass the messages
+     * @param userInterface the user interface of the client
+     * @param modelView the model view of the client.
+     */
     public DefaultMessageHandler(ConnectionToServer connection, UserInterface userInterface, ModelView modelView) {
         super(connection, userInterface, modelView);
         listeners.addPropertyChangeListener("Disconnection", userInterface);
         listeners.addPropertyChangeListener("GameDeleted", userInterface);
     }
 
+    /**
+     * Sets the value of the turn handler that will be informed when an error will arrive from the server
+     *
+     * @param turnHandler the turn handler that will be associated to the message handler
+     */
     public void setTurnHandler(PropertyChangeListener turnHandler) {
         if (listeners.getPropertyChangeListeners("Error").length != 0) {
             PropertyChangeListener oldTurnHandler = listeners.getPropertyChangeListeners("Error")[0];
@@ -31,10 +47,16 @@ public class DefaultMessageHandler extends BaseMessageHandler {
         this.listeners.addPropertyChangeListener("Error", turnHandler);
     }
 
+    /**
+     * Handles a message that have been arrived from the server
+     *
+     * @param message the message from the server
+     * @see MessageHandler#handleMessage(MessageFromServer)
+     */
     @Override
     public void handleMessage(MessageFromServer message) {
         ServerMessageHeader header = message.getServerMessageHeader();
-        if (header.getMessageType() != ServerMessageType.SERVER_MESSAGE) {
+        if (header.getMessageType() != ServerMessageType.SERVER_MESSAGE && getNextHandler() != null) {
             System.out.println(header.getMessageName());
             getNextHandler().handleMessage(message);
             return;
@@ -51,6 +73,11 @@ public class DefaultMessageHandler extends BaseMessageHandler {
         }
     }
 
+    /**
+     * Handles a GlobalLobby message arrived from the server
+     *
+     * @param payload the payload of the message
+     */
     private void onGeneralLobbyMessage(MessagePayload payload) {
         int numGames = payload.getAttribute("NotStartedGames").getAsInt();
         Map<?, ?> gamesInfo = (Map<?, ?>) payload.getAttribute("GamesInfo").getAsObject();
@@ -58,6 +85,11 @@ public class DefaultMessageHandler extends BaseMessageHandler {
         getConnection().reset(this);
     }
 
+    /**
+     * Handles a GameLobby message arrived from the server
+     *
+     * @param payload the payload of the message
+     */
     private void onGameLobbyMessage(MessagePayload payload) {
         int numPlayers = payload.getAttribute("GameNumPlayers").getAsInt();
         boolean rules = payload.getAttribute("Rules").getAsBoolean();
@@ -70,6 +102,11 @@ public class DefaultMessageHandler extends BaseMessageHandler {
         getUserInterface().displayLobbyInfo(numPlayers, rules, playersWaiting);
     }
 
+    /**
+     * Handles an Error message arrived from the server by informing both the turn handler and the user interface
+     *
+     * @param payload the payload of the message
+     */
     private void onErrorMessage(MessagePayload payload) {
         ErrorMessageType errorMessageType = (ErrorMessageType) payload.getAttribute("ErrorType").getAsObject();
         String errorInfo = payload.getAttribute("ErrorInfo").getAsString();
@@ -77,10 +114,22 @@ public class DefaultMessageHandler extends BaseMessageHandler {
         listeners.firePropertyChange("Error", null, errorMessageType);
     }
 
+    /**
+     * Informs the user interface that a player have been disconnected from the game after a PlayerDisconnected message
+     * arrived from the server
+     *
+     * @param payload the payload of the message
+     */
     private void onPlayerDisconnection(MessagePayload payload) {
         listeners.firePropertyChange("Disconnection", null, payload.getAttribute("PlayerName").getAsString());
     }
 
+    /**
+     * Informs the user interface that he can resume a previous saved game after a PreviousGameChoice message arrived from
+     * the server
+     *
+     * @param payload the payload of the message
+     */
     private void onResumeGame(MessagePayload payload) {
         int numPlayers = payload.getAttribute("NumPlayers").getAsInt();
         boolean rules = payload.getAttribute("Rules").getAsBoolean();
@@ -88,8 +137,12 @@ public class DefaultMessageHandler extends BaseMessageHandler {
         getUserInterface().onResumeGame(numPlayers, rules, participants);
     }
 
+    /**
+     * Informs the user interface that a player has decided to not resume and game and therefore the game has been deleted
+     *
+     * @param payload the payload of the message
+     */
     private void onDeleteGame(MessagePayload payload) {
         listeners.firePropertyChange("GameDeleted", null, payload.getAttribute("ChoiceMaker").getAsString());
-
     }
 }

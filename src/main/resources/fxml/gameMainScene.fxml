@@ -129,7 +129,7 @@
                                                    <children>
                                                       <ImageView fitHeight="400.0" fitWidth="900.0" pickOnBounds="true" preserveRatio="true">
                                                          <image>
-                                                            <Image url="@../images/schools/Plancia_DEF2.png" />
+                                                            <Image url="@../images/schools/Plancia_DEF.png" />
                                                          </image>
                                                       </ImageView>
                                                       <AnchorPane prefHeight="390.0" prefWidth="153.0">
@@ -281,7 +281,7 @@
                                                    <children>
                                                       <ImageView fitHeight="400.0" fitWidth="900.0" pickOnBounds="true" preserveRatio="true">
                                                          <image>
-                                                            <Image url="@../images/schools/Plancia_DEF2.png" />
+                                                            <Image url="@../images/schools/Plancia_DEF.png" />
                                                          </image>
                                                       </ImageView>
                                                       <AnchorPane prefHeight="390.0" prefWidth="153.0">
@@ -433,7 +433,7 @@
                                                    <children>
                                                       <ImageView fitHeight="400.0" fitWidth="900.0" pickOnBounds="true" preserveRatio="true">
                                                          <image>
-                                                            <Image url="@../images/schools/Plancia_DEF2.png" />
+                                                            <Image url="@../images/schools/Plancia_DEF.png" />
                                                          </image>
                                                       </ImageView>
                                                       <AnchorPane prefHeight="390.0" prefWidth="153.0">

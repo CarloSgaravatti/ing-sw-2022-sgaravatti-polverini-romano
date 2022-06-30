@@ -16,17 +16,37 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * ExpertGameMessageHandler handles all messages that have GAME_UPDATE as message type and that regard an expert game
+ *
+ * @see it.polimi.ingsw.client.messageHandlers.MessageHandler
+ * @see it.polimi.ingsw.client.messageHandlers.BaseMessageHandler
+ */
 public class ExpertGameMessageHandler extends BaseMessageHandler {
     private static final List<String> messageHandled =
             List.of("CharacterPlayed", "CharacterStudents", "NoEntryTileUpdate", "SchoolSwap",
                     "EntranceSwap", "CoinsUpdate", "MotherNatureMovementIncrement");
     private final PropertyChangeSupport userInterface = new PropertyChangeSupport(this);
 
+    /**
+     * Constructs a new ExpertGameMessageHandler that will be associated to the specified connection to the server, user
+     * interface and model view
+     *
+     * @param connection the connection to the server that will pass the messages
+     * @param userInterface the user interface of the client
+     * @param modelView the model view of the client.
+     */
     public ExpertGameMessageHandler(ConnectionToServer connection, UserInterface userInterface, ModelView modelView) {
         super(connection, userInterface, modelView);
         this.userInterface.addPropertyChangeListener(userInterface);
     }
 
+    /**
+     * Handles a message that have been arrived from the server
+     *
+     * @param message the message from the server
+     * @see MessageHandler#handleMessage(MessageFromServer)
+     */
     @Override
     public void handleMessage(MessageFromServer message) {
         ServerMessageHeader header = message.getServerMessageHeader();
@@ -46,6 +66,11 @@ public class ExpertGameMessageHandler extends BaseMessageHandler {
         }
     }
 
+    /**
+     * Notifies the user interface after a CharacterPlayed message have arrived and modifies the model view
+     *
+     * @param payload the payload of the message
+     */
     private void onCharacterPlayed(MessagePayload payload) {
         int characterId = payload.getAttribute("CharacterId").getAsInt();
         String playerName = payload.getAttribute("PlayerName").getAsString();
@@ -58,6 +83,11 @@ public class ExpertGameMessageHandler extends BaseMessageHandler {
         userInterface.firePropertyChange("CharacterPlayed", null, characterId);
     }
 
+    /**
+     * Notifies the user interface after a CharacterStudents message have arrived and modifies the model view
+     *
+     * @param payload the payload of the message
+     */
     private void onCharacterStudents(MessagePayload payload) {
         int characterId = payload.getAttribute("CharacterId").getAsInt();
         RealmType[] newStudents = (RealmType[]) payload.getAttribute("Students").getAsObject();
@@ -65,6 +95,11 @@ public class ExpertGameMessageHandler extends BaseMessageHandler {
         userInterface.firePropertyChange("CharacterStudents", null, characterId);
     }
 
+    /**
+     * Notifies the user interface after a NoEntryTileUpdate message have arrived and modifies the model view
+     *
+     * @param payload the payload of the message
+     */
     private void onNoEntryTileUpdate(MessagePayload payload) {
         int islandId = payload.getAttribute("IslandId").getAsInt();
         ExpertFieldView expertField = getModelView().getField().getExpertField();
@@ -72,6 +107,11 @@ public class ExpertGameMessageHandler extends BaseMessageHandler {
         userInterface.firePropertyChange("NoEntryTileUpdate", 5, islandId);
     }
 
+    /**
+     * Notifies the user interface after a SchoolSwap message have arrived and modifies the model view
+     *
+     * @param payload the payload of the message
+     */
     private void onSchoolSwap(MessagePayload payload) {
         String playerName = payload.getAttribute("PlayerName").getAsString();
         RealmType[] toEntrance = (RealmType[]) payload.getAttribute("ToEntrance").getAsObject();
@@ -84,6 +124,11 @@ public class ExpertGameMessageHandler extends BaseMessageHandler {
         userInterface.firePropertyChange(new PropertyChangeEvent(playerName, "SchoolSwap", toEntrance, toDiningRoom));
     }
 
+    /**
+     * Notifies the user interface after a EntranceSwap message have arrived and modifies the model view
+     *
+     * @param payload the payload of the message
+     */
     private void onEntranceSwap(MessagePayload payload) {
         String playerName = payload.getAttribute("PlayerName").getAsString();
         RealmType[] inserted = (RealmType[]) payload.getAttribute("Inserted").getAsObject();
@@ -94,6 +139,11 @@ public class ExpertGameMessageHandler extends BaseMessageHandler {
         userInterface.firePropertyChange(new PropertyChangeEvent(playerName, "EntranceSwap", removed, inserted));
     }
 
+    /**
+     * Notifies the user interface after a CoinsUpdate message have arrived and modifies the model view
+     *
+     * @param payload the payload of the message
+     */
     private void onCoinsUpdate(MessagePayload payload) {
         String playerName = payload.getAttribute("PlayerName").getAsString();
         int oldCoins = payload.getAttribute("OldCoins").getAsInt();
@@ -102,6 +152,11 @@ public class ExpertGameMessageHandler extends BaseMessageHandler {
         userInterface.firePropertyChange("CoinsUpdate", null, playerName);
     }
 
+    /**
+     * Notifies the user interface after a MovementIncrement message have arrived and modifies the model view
+     *
+     * @param payload the payload of the message
+     */
     private void onMotherNatureMovementIncrement(MessagePayload payload) {
         String playerName = payload.getAttribute("PlayerName").getAsString();
         int increment = payload.getAttribute("MovementIncrement").getAsInt();

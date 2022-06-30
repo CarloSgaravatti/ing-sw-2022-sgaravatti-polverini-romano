@@ -17,17 +17,37 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeSupport;
 import java.util.*;
 
+/**
+ * ExpertGameMessageHandler handles all messages that have GAME_UPDATE as message type and that regard a simple game
+ *
+ * @see it.polimi.ingsw.client.messageHandlers.MessageHandler
+ * @see it.polimi.ingsw.client.messageHandlers.BaseMessageHandler
+ */
 public class GameUpdateMessageHandler extends BaseMessageHandler {
     private static final List<String> messageHandled =
             List.of("AssistantPlayed", "ProfessorUpdate", "MotherNatureMovement", "SchoolDiningRoomUpdate", "IslandStudentsUpdate",
                     "IslandUnification", "IslandTowerUpdate", "PickFromCloud", "AssistantsUpdate", "CloudsRefill");
     private final PropertyChangeSupport userInterface = new PropertyChangeSupport(this);
 
+    /**
+     * Constructs a new GameUpdateMessageHandler that will be associated to the specified connection to the server, user
+     * interface and model view
+     *
+     * @param connection the connection to the server that will pass the messages
+     * @param userInterface the user interface of the client
+     * @param modelView the model view of the client.
+     */
     public GameUpdateMessageHandler(ConnectionToServer connection, UserInterface userInterface, ModelView modelView) {
         super(connection, userInterface, modelView);
         this.userInterface.addPropertyChangeListener(userInterface);
     }
 
+    /**
+     * Handles a message that have been arrived from the server
+     *
+     * @param message the message from the server
+     * @see MessageHandler#handleMessage(MessageFromServer)
+     */
     @Override
     public void handleMessage(MessageFromServer message) {
         ServerMessageHeader header = message.getServerMessageHeader();
@@ -50,16 +70,27 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         }
     }
 
+    /**
+     * Notifies the user interface after an AssistantUpdate message have arrived and modifies the model view by
+     * changing the last played assistant of the player contained in the message
+     *
+     * @param payload the payload of the message
+     */
     private void onAssistantPlayed(MessagePayload payload) {
         int assistant = payload.getAttribute("AssistantId").getAsInt();
         int motherNatureMovement = payload.getAttribute("MotherNatureMovement").getAsInt();
         String playerName = payload.getAttribute("PlayerName").getAsString();
-        System.out.println(playerName + " has played assistant " + assistant);
         getModelView().getPlayers().get(playerName).updateLastPlayedAssistant(assistant, motherNatureMovement);
         if (getUserInterface().getNickname().equals(playerName)) getModelView().removeAssistant(assistant);
         userInterface.firePropertyChange("AssistantUpdate", assistant, playerName);
     }
 
+    /**
+     * Notifies the user interface after a ProfessorUpdate message have arrived and modifies the model view by updating
+     * the professor owner of the realm contained in the payload
+     *
+     * @param payload the payload of the message
+     */
     private void onProfessorUpdate(MessagePayload payload) {
         String newOwner = payload.getAttribute("PlayerName").getAsString();
         RealmType professor = (RealmType) payload.getAttribute("ProfessorType").getAsObject();
@@ -68,6 +99,12 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
                 lastOwner.orElse(null), newOwner));
     }
 
+    /**
+     * Notifies the user interface after a MotherNatureMovement message have arrived and modifies the model view by updating
+     * the mother nature position
+     *
+     * @param payload the payload of the message
+     */
     private void onMotherNatureMovement(MessagePayload payload) {
         int startingPosition = payload.getAttribute("InitialPosition").getAsInt();
         int newMotherNaturePosition = payload.getAttribute("FinalPosition").getAsInt();
@@ -85,6 +122,12 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         userInterface.firePropertyChange("MotherNatureUpdate", startingPosition, newMotherNaturePosition);
     }
 
+    /**
+     * Notifies the user interface after a SchoolDiningRoomUpdate message have arrived and modifies the model view by updating
+     * the school of the player contained in the message
+     *
+     * @param payload the payload of the message
+     */
     private void onSchoolDiningRoomUpdate(MessagePayload payload) {
         String playerName = payload.getAttribute("PlayerName").getAsString();
         RealmType[] students = (RealmType[]) payload.getAttribute("Students").getAsObject();
@@ -103,6 +146,12 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         }
     }
 
+    /**
+     * Notifies the user interface after a IslandStudentsUpdate message have arrived and modifies the model view by updating
+     * the students of the island contained in the message
+     *
+     * @param payload the payload of the message
+     */
     private void onIslandStudentsUpdate(MessagePayload payload) {
         int islandId = payload.getAttribute("IslandId").getAsInt();
         RealmType[] students = (RealmType[]) payload.getAttribute("Students").getAsObject();
@@ -116,6 +165,12 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
                 new PropertyChangeEvent(islandId, "IslandStudentsUpdate", isFromEntrance, students));
     }
 
+    /**
+     * Notifies the user interface after a IslandUnification message have arrived and modifies the model view by updating
+     * the islands contained in the message
+     *
+     * @param payload the payload of the message
+     */
     private void onIslandUnificationUpdate(MessagePayload payload) {
         Integer[] islandsId = (Integer[]) payload.getAttribute("IslandsId").getAsObject();
         SimpleIsland island = (SimpleIsland) payload.getAttribute("NewIsland").getAsObject();
@@ -123,6 +178,13 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         userInterface.firePropertyChange("IslandUnification", null, islandsId);
     }
 
+    /**
+     * Notifies the user interface after a IslandTowerUpdate message have arrived and modifies the model view by updating
+     * the tower of the island contained in the message and the towers of the schools of the players that have
+     * conquered or lost the island
+     *
+     * @param payload the payload of the message
+     */
     private void onIslandTowerUpdate(MessagePayload payload) {
         int island = payload.getAttribute("IslandId").getAsInt();
         TowerType previousTower = getModelView().getField().getIsland(island).getThird();
@@ -140,6 +202,12 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         userInterface.firePropertyChange("IslandTowerUpdate", previousTower, island);
     }
 
+    /**
+     * Notifies the user interface after a PickFromCloud message have arrived and modifies the model view by updating
+     * the cloud and the entrance of the player contained in the message
+     *
+     * @param payload the payload of the message
+     */
     private void onPickFromCloud(MessagePayload payload) {
         String playerName = payload.getAttribute("PlayerName").getAsString();
         RealmType[] students = (RealmType[]) payload.getAttribute("Students").getAsObject();
@@ -149,6 +217,11 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         userInterface.firePropertyChange(new PropertyChangeEvent(playerName, "CloudSelected", students, cloudId));
     }
 
+    /**
+     * Updates the assistants deck of the client after an AssistantsUpdate message
+     *
+     * @param payload the payload of the message
+     */
     private void onAssistantsUpdate(MessagePayload payload) {
         Integer[] values = (Integer[]) payload.getAttribute("Values").getAsObject();
         Integer[] motherNature = (Integer[]) payload.getAttribute("MotherNatureMovements").getAsObject();
@@ -159,6 +232,11 @@ public class GameUpdateMessageHandler extends BaseMessageHandler {
         getModelView().setClientPlayerAssistants(newClientAssistants);
     }
 
+    /**
+     * Updates the students of all clouds and notifies the user interface after a CloudsRefill message have arrived
+     *
+     * @param payload the payload of the message
+     */
     private void onCloudsRefill(MessagePayload payload) {
         RealmType[][] cloudsStudents = (RealmType[][]) payload.getAttribute("CloudsStudents").getAsObject();
         FieldView fieldView = getModelView().getField();

@@ -18,12 +18,6 @@ public class MapPrinter {
     private final SchoolMapPrinter schoolMapPrinter = new SchoolMapPrinter();
     private final CloudMapPrinter cloudMapPrinter = new CloudMapPrinter();
     private final CharacterMapPrinter characterMapPrinter = new CharacterMapPrinter();
-    private Pair<Integer, Integer> islandsSectionTopLeftPosition;
-    private Pair<Integer, Integer> islandsSectionBottomRightPosition;
-    private Pair<Integer, Integer> cloudsSectionTopLeftPosition;
-    private Pair<Integer, Integer> cloudsSectionBottomRightPosition;
-    private Pair<Integer, Integer> schoolsSectionTopLeftPosition;
-    private Pair<Integer, Integer> schoolsSectionBottomRightPosition;
 
 
     //TODO: add all to last map (for the moment i do separate maps)
@@ -42,7 +36,6 @@ public class MapPrinter {
         for (String[] strings : islandsMap) {
             Arrays.fill(strings, " ");
         }
-        //TODO: set dimensions of map parts
     }
 
     /**

@@ -30,7 +30,7 @@
 }
 
 .cloud-pane1, .cloud-pane2, .cloud-pane3, .cloud-pane4, .cloud-pane {
-    -fx-background-repeat: no repeat;
+    -fx-background-repeat: no-repeat;
     -fx-background-size: stretch;
 }
 

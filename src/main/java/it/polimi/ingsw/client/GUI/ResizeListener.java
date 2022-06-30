@@ -106,9 +106,6 @@ public class ResizeListener {
             }
             if (node instanceof ImageView imageView) {
                 imageView.setFitHeight(imageView.getFitHeight() * newHeight / initialHeight);
-                if (!imageView.preserveRatioProperty().get()) {
-                    imageView.setFitWidth(imageView.getFitWidth() * newHeight / initialHeight);
-                }
             } else if (node instanceof Parent parentNode){
                 resizeNewYValues(parentNode, parentNode.getChildrenUnmodifiable(), newHeight);
             }
@@ -126,9 +123,6 @@ public class ResizeListener {
             }
             if (node instanceof ImageView imageView) {
                 imageView.setFitWidth(imageView.getFitWidth() * newWidth / initialWidth);
-                if (!imageView.preserveRatioProperty().get()) {
-                    imageView.setFitHeight(imageView.getFitHeight() * newWidth / initialWidth);
-                }
             } else if (node instanceof Parent parentNode){
                 resizeNewXValues(parentNode, parentNode.getChildrenUnmodifiable(), newWidth);
             }

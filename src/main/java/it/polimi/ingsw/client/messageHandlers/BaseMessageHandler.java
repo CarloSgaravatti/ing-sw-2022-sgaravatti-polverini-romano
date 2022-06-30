@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.messageHandlers;
 import it.polimi.ingsw.client.ConnectionToServer;
 import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.client.UserInterface;
+import it.polimi.ingsw.messages.MessageFromServer;
 
 /**
  * BaseMessageHandler is an abstract class that implements all functions that are needed for each MessageHandler (to reuse
@@ -29,27 +30,56 @@ public abstract class BaseMessageHandler implements MessageHandler{
         this.modelView = modelView;
     }
 
+    /**
+     * Sets the next handler in the chain of responsibility
+     *
+     * @param handler the next handler of the chain
+     * @see MessageHandler#setNextHandler(MessageHandler)
+     */
     @Override
     public final void setNextHandler(MessageHandler handler) {
         this.nextHandler = handler;
     }
 
+    /**
+     * Returns the next handler in the chain
+     *
+     * @return the next handler in the chain
+     */
     public MessageHandler getNextHandler() {
         return nextHandler;
     }
 
+    /**
+     * Returns the connection to the server associated to the message handler
+     *
+     * @return the connection to the server associated to the message handler
+     */
     public ConnectionToServer getConnection() {
         return connection;
     }
 
+    /**
+     * Returns the user interface associated to the message handler
+     *
+     * @return the user interface associated to the message handler
+     */
     public UserInterface getUserInterface() {
         return userInterface;
     }
 
+    /**
+     * Returns the model view associated to the message handler
+     *
+     * @return the model view associated to the message handler
+     */
     public ModelView getModelView() {
         return modelView;
     }
 
+    /**
+     * Sets the value of the model view associated to the message handler
+     */
     public void setModelView(ModelView modelView) {
         this.modelView = modelView;
     }

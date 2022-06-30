@@ -7,11 +7,10 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
-<AnchorPane prefHeight="150.0" prefWidth="150.0" styleClass="cloud-pane1" stylesheets="@../css/mainScene.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" >
+<fx:root prefHeight="150.0" prefWidth="150.0" styleClass="cloud-pane1" stylesheets="@../css/mainScene.css" type="AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Circle fill="DODGERBLUE" layoutX="31.0" layoutY="67.0" radius="32.0" stroke="BLACK" strokeType="INSIDE" />
       <Circle fill="DODGERBLUE" layoutX="108.0" layoutY="44.0" radius="32.0" stroke="BLACK" strokeType="INSIDE" />
       <Circle fill="DODGERBLUE" layoutX="89.0" layoutY="118.0" radius="32.0" stroke="BLACK" strokeType="INSIDE" />
    </children>
-</AnchorPane>
+</fx:root>

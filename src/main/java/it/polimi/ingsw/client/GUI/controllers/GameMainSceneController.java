@@ -75,8 +75,10 @@ public class GameMainSceneController extends FXMLController implements Initializ
     };
     private final EventHandler<MouseEvent> cloudSelectionHandler = mouseEvent -> {
         if (cloudSelectable) {
-            CloudImage cloud = (CloudImage) ((ImageView) mouseEvent.getTarget()).getParent();
-            int cloudId = cloud.getCloudId();
+            /*CloudImage cloud = (CloudImage) ((ImageView) mouseEvent.getTarget()).getParent();
+            int cloudId = cloud.getCloudId();*/
+            CloudSubScene cloudSubScene = (CloudSubScene) mouseEvent.getTarget();
+            int cloudId = cloudSubScene.getCloudId();
             lastAction.setFirst("PickFromCloud");
             lastAction.setSecond(Integer.toString(cloudId));
             decisionBox.setVisible(true);
@@ -161,6 +163,8 @@ public class GameMainSceneController extends FXMLController implements Initializ
                 rollbackMoveStudents();
             }
         });
+        GenericBackgroundController genericBackgroundController = new GenericBackgroundController();
+        this.root.getChildren().add(0, genericBackgroundController);
     }
 
     @Override
@@ -190,9 +194,15 @@ public class GameMainSceneController extends FXMLController implements Initializ
         double cloudImageHeight = cloudBox.getHeight();
         int numClouds =  modelView.getField().getCloudStudents().size();
         for (int i = 0; i < numClouds; i++) {
-            CloudImage cloud = new CloudImage(i, modelView.getField(), cloudImageHeight);
+            CloudSubScene cloudSubScene = new CloudSubScene(numClouds == 3, i);
+            cloudBox.getChildren().add(cloudSubScene);
+            cloudSubScene.initializeStudents(RealmType.getRealmsFromIntegerRepresentation(modelView
+                    .getField().getCloudStudents().get(i)));
+            cloudSubScene.addEventHandler(MouseEvent.MOUSE_CLICKED, cloudSelectionHandler);
+
+            /*CloudImage cloud = new CloudImage(i, modelView.getField(), cloudImageHeight);
             cloudBox.getChildren().add(cloud);
-            cloud.addEventHandler(MouseEvent.MOUSE_CLICKED, cloudSelectionHandler);
+            cloud.addEventHandler(MouseEvent.MOUSE_CLICKED, cloudSelectionHandler);*/
         }
         TabPane tabs = (TabPane) ((AnchorPane) playersBox.getChildren().get(1)).getChildren().get(0);
         assistantsTab = new AssistantsTab(assistantsPane, modelView);
@@ -402,7 +412,8 @@ public class GameMainSceneController extends FXMLController implements Initializ
     public void moveStudentsFromCloud(String player, int cloudId, RealmType[] students) {
         //TODO: clouds (and then empty the cloud after someone pick students)
         //TODO: students animation from cloud to entrance?
-
+        CloudSubScene cloudSubScene = (CloudSubScene) cloudBox.getChildren().get(cloudId + 1);
+        cloudSubScene.ResetStudentImage();
         SchoolBox schoolBox = playersSchools.get(player).getSecond();
         Arrays.stream(students).forEach(schoolBox::insertStudentEntrance);
     }
@@ -411,11 +422,12 @@ public class GameMainSceneController extends FXMLController implements Initializ
         moveAccordionDown();
         Map<Integer, Integer[]> cloudStudents = modelView.getField().getCloudStudents();
         Pair<Double, Double> bagLayout = new Pair<>(bag.getLayoutX(), bag.getLayoutY());
-        double studentsRadius = getSchoolOfClient().getDimStudentsRadius();
+        //double studentsRadius = getSchoolOfClient().getDimStudentsRadius();
         for (Integer cloudId: cloudStudents.keySet()) {
             RealmType[] students = RealmType.getRealmsFromIntegerRepresentation(cloudStudents.get(cloudId));
-            CloudImage cloud = (CloudImage) cloudBox.getChildren().get(cloudId + 1); //TODO: change after clouds impl
-            for (RealmType student : students) {
+            CloudSubScene cloud = (CloudSubScene) cloudBox.getChildren().get(cloudId + 1);
+            cloud.initializeStudents(students);
+            /*for (RealmType student : students) {
                 StudentImage studentImage = new StudentImage(studentsRadius, student);
                 studentImage.setLayoutX(bagLayout.getFirst() + bag.getFitWidth() / 2);
                 studentImage.setLayoutY(bagLayout.getSecond() + bag.getFitHeight() / 2);
@@ -429,7 +441,7 @@ public class GameMainSceneController extends FXMLController implements Initializ
                     islandsMap.getChildren().remove(studentImage);
                     //TODO: add to cloud
                 });
-            }
+            }*/
         }
     }
 

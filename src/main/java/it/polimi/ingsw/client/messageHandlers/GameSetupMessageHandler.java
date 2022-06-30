@@ -19,13 +19,31 @@ import it.polimi.ingsw.utils.Pair;
 import java.util.Arrays;
 import java.util.Map;
 
-//Handles GAME_SETUP and SetupAck messages
+/**
+ * GameSetupMessageHandler handles all messages that have GAME_SETUP as message type
+ *
+ * @see it.polimi.ingsw.client.messageHandlers.MessageHandler
+ * @see it.polimi.ingsw.client.messageHandlers.BaseMessageHandler
+ */
 public class GameSetupMessageHandler extends BaseMessageHandler{
-
+    /**
+     * Constructs a new GameSetupMessageHandler that will be associated to the specified connection to the server, user
+     * interface and model view
+     *
+     * @param connection the connection to the server that will pass the messages
+     * @param userInterface the user interface of the client
+     * @param modelView the model view of the client.
+     */
     public GameSetupMessageHandler(ConnectionToServer connection, UserInterface userInterface, ModelView modelView) {
         super(connection, userInterface, modelView);
     }
 
+    /**
+     * Handles a message that have been arrived from the server
+     *
+     * @param message the message from the server
+     * @see MessageHandler#handleMessage(MessageFromServer)
+     */
     @Override
     public void handleMessage(MessageFromServer message) {
         ServerMessageHeader header = message.getServerMessageHeader();
@@ -49,12 +67,22 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
         }
     }
 
+    /**
+     * Notifies the user interface that a player have joined the game lobby
+     *
+     * @param payload the payload of the message
+     */
     private void onPlayerJoin(MessagePayload payload) {
         String playerName = payload.getAttribute("PlayerName").getAsString();
         getModelView().getPlayers().put(playerName, new PlayerView());
         getUserInterface().onPlayerJoined(playerName);
     }
 
+    /**
+     * Notifies the user interface that the game has started
+     *
+     * @param payload the payload of the message
+     */
     private void onGameStarted(MessagePayload payload) {
         String[] gamePlayers = (String[]) payload.getAttribute("Opponents").getAsObject();
         for (String player: gamePlayers) {
@@ -63,6 +91,11 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
         getUserInterface().onGameStarted();
     }
 
+    /**
+     * Modifies the model view after someone has taken a tower
+     *
+     * @param payload the payload of the message
+     */
     private void onTowerTaken(MessagePayload payload) {
         String playerName = payload.getAttribute("PlayerName").getAsString();
         TowerType tower = (TowerType) payload.getAttribute("TowerType").getAsObject();
@@ -71,6 +104,11 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
         //TODO
     }
 
+    /**
+     * Modifies the model view after someone has taken a wizard
+     *
+     * @param payload the payload of the message
+     */
     private void onWizardTaken(MessagePayload payload) {
         String playerName = payload.getAttribute("PlayerName").getAsString();
         WizardType wizard = (WizardType) payload.getAttribute("WizardType").getAsObject();
@@ -79,6 +117,13 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
         //TODO
     }
 
+    /**
+     * Modifies the model view after the initializations of the game have arrived, and create all remaining handlers
+     * that will handle message that regard the game. Also, the method informs the user interface that the setup phase
+     * has finished and the real game will start
+     *
+     * @param payload the payload of the message
+     */
     private void onGameInitializationMessage(MessagePayload payload) {
         FieldView fieldView = new FieldView((SimpleField) payload.getAttribute("Field").getAsObject());
         getModelView().setField(fieldView);
@@ -93,10 +138,22 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
         getUserInterface().onGameInitialization(getModelView());
     }
 
+    /**
+     * Informs the user interface that he has to choose a tower from a set of towers contained in the specified
+     * message payload
+     *
+     * @param payload the payload of the message
+     */
     private void onTowerTypeRequest(MessagePayload payload) {
         getUserInterface().askTowerChoice((TowerType[]) payload.getAttribute("FreeTowers").getAsObject());
     }
 
+    /**
+     * Informs the user interface that he has to choose a wizard from a set of wizards contained in the specified
+     * message payload
+     *
+     * @param payload the payload of the message
+     */
     private void onWizardTypeRequest(MessagePayload payload) {
         getUserInterface().askWizardChoice((WizardType[]) payload.getAttribute("FreeWizards").getAsObject());
     }
@@ -105,6 +162,13 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
         //TODO: decide if this message is useful
     }
 
+    /**
+     * Modifies the model view after the initializations of a restored game have arrived, and create all remaining handlers
+     * that will handle message that regard the game. Also, the method informs the user interface that the real game will
+     * start soon
+     *
+     * @param payload the payload of the message
+     */
     private void onRestoredGameInitialization(MessagePayload payload){
         SimpleModel simpleModel = (SimpleModel) payload.getAttribute("SimpleModel").getAsObject();
         FieldView fieldView = new FieldView(simpleModel.getField());
@@ -127,6 +191,10 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
         getUserInterface().onGameInitialization(getModelView());
     }
 
+    /**
+     * Create all handlers that will handle GAME_UPDATE messages from the server and all the handlers that will listen the
+     * user interface during the game in order to send back messages to the server
+     */
     private void createAllHandlers() {
         TurnHandler turnHandler = new TurnHandler(getConnection(), getUserInterface());
         ((DefaultMessageHandler) getNextHandler()).setTurnHandler(turnHandler);
@@ -147,6 +215,12 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
         getUserInterface().addListener(messageConstructor, "EndTurn");
     }
 
+    /**
+     * Informs the user interface that the saved game that was previously in the setup phase has been restored. The method
+     * will also modify the model view with the choices that were already been made by some players
+     *
+     * @param payload the payload of the message
+     */
     private void onRestoredSetup(MessagePayload payload) {
         SimpleModel simpleModel = (SimpleModel) payload.getAttribute("SetupInfo").getAsObject();
         Map<String, TowerType> towers = simpleModel.getTowers();
