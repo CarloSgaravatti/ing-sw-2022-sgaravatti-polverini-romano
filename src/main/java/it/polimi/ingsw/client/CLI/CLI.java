@@ -16,6 +16,9 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.*;
 
+/**
+ * Class CLI is used to display the command line interface  of the game
+ */
 public class CLI implements Runnable, UserInterface {
     private final Socket socket;
     private final Scanner sc = new Scanner(System.in);
@@ -27,6 +30,11 @@ public class CLI implements Runnable, UserInterface {
     private InputManager inputManager;
     private boolean isGameFinished = false;
 
+    /**
+     * main of the CLI that initialize components (for example the connection)
+     *
+     * @param args arguments of the program
+     */
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         String serverAddress;
@@ -53,10 +61,18 @@ public class CLI implements Runnable, UserInterface {
         new CLI(socket).run();
     }
 
+    /**
+     * Construct a new CLI associated with the defined socket
+     *
+     * @param socket socketo of the CLI
+     */
     public CLI(Socket socket) {
         this.socket = socket;
     }
 
+    /**
+     * clearScreen role is to clear the screen after all action that do some changes in the game
+     */
     public void clearScreen(){
         try{
             String operatingSystem = System.getProperty("os.name");
@@ -77,11 +93,20 @@ public class CLI implements Runnable, UserInterface {
         System.out.flush();
     }
 
+    /**
+     * Add a property change listener in this class, that will listen this class on specify propertyName
+     *
+     * @param listener the PropertyChangeListener to be added
+     * @param propertyName the property name that the listener will listen to
+     */
     @Override
     public void addListener(PropertyChangeListener listener, String propertyName) {
         listeners.addPropertyChangeListener(propertyName, listener);
     }
 
+    /**
+     * run method print the beginning of the game before the connection and start a new connection
+     */
     @Override
     public void run() {
         clearScreen();
@@ -102,6 +127,9 @@ public class CLI implements Runnable, UserInterface {
         }
     }
 
+    /**
+     * askNickname prints the request for the nickname
+     */
     @Override
     public void askNickname() {
         System.out.println("Insert a username:");
@@ -116,11 +144,22 @@ public class CLI implements Runnable, UserInterface {
         listeners.firePropertyChange("Nickname", null, nickname);
     }
 
+    /**
+     * Returns the nickname of the player associated at the CLI
+     *
+     * @return he nickname of the player associated at the CLI
+     */
     @Override
     public String getNickname() {
         return nickname;
     }
 
+    /**
+     * displayGlobalLobby prints the global lobby on command line interface
+     *
+     * @param numGames the number of games on the server that are not already started
+     * @param gamesInfo all the games not started information (number of players, rules, players nicknames)
+     */
     @Override
     public void displayGlobalLobby(int numGames, Map<Integer, Triplet<Integer, Boolean, String[]>> gamesInfo) {
         clearScreen();
@@ -175,6 +214,9 @@ public class CLI implements Runnable, UserInterface {
         }
     }
 
+    /**
+     * helpGameCreation prints the steps for creating a new game
+     */
     private void helpGameCreation() {
         int numPlayers = 0;
         inputManager.setInputPermitted(true);
@@ -197,11 +239,22 @@ public class CLI implements Runnable, UserInterface {
         listeners.firePropertyChange("NewGame", numPlayers, rules);
     }
 
+    /**
+     * Prints a string in the CLI
+     *
+     * @param message the message to be notified
+     */
     @Override
     public void displayStringMessage(String message) {
         System.out.println(message);
     }
 
+    /**
+     * askTowerChoice prints the request for choosing the tower,
+     * show also the remaining towers
+     *
+     * @param freeTowers the towers that the client can choose
+     */
     @Override
     public void askTowerChoice(TowerType[] freeTowers){
         System.out.println("You have to choose a tower, these are the options: " + Arrays.toString(freeTowers));
@@ -222,6 +275,12 @@ public class CLI implements Runnable, UserInterface {
         listeners.firePropertyChange("TowerChoice", null, choice);
     }
 
+    /**
+     * askWizardChoice prints the request for choosing the wizard,
+     * show also the remaining wizards
+     *
+     * @param freeWizards the wizards that the client can choose
+     */
     @Override
     public void askWizardChoice(WizardType[] freeWizards){
         System.out.println("You have to choose a wizard, these are the options: " + Arrays.toString(freeWizards));
@@ -242,6 +301,13 @@ public class CLI implements Runnable, UserInterface {
         listeners.firePropertyChange("WizardChoice", null, choice);
     }
 
+    /**
+     * displayLobbyInfo prints teh info of the lobby (as number of players, rules etc...)
+     *
+     * @param numPlayers the number of players of the game
+     * @param rules the type of rules
+     * @param waitingPlayers the players that are already connected to the game
+     */
     @Override
     public void displayLobbyInfo(int numPlayers, boolean rules, String[] waitingPlayers) {
         System.out.print("You entered the lobby, there are currently " + waitingPlayers.length + " players waiting.\n"
@@ -251,16 +317,32 @@ public class CLI implements Runnable, UserInterface {
                 + ((rules) ? "expert" : "simple"));
     }
 
+    /**
+     * onPlayerJoined prints the nickname of the player who joined the game
+     *
+     * @param playerName the name of the player
+     */
     @Override
     public void onPlayerJoined(String playerName) {
         System.out.println(playerName + "has joined the game");
     }
 
+    /**
+     * onGameStarted print that the game is starting just after all players joined the game
+     */
     @Override
     public void onGameStarted() {
         System.out.println("The game will start soon!");
     }
 
+    /**
+     * printTurnMenu prints the actions that you can do during your turn and put in evidence which action
+     * you can do in that specific moment
+     *
+     * @param actions all the actions descriptions that the player can do
+     * @param actionCommands all the actions command to call the actions that the player can do
+     * @param currentPossibleActions all the actions commands of the actions that the client can do without doing
+     */
     @Override
     public void printTurnMenu(List<String> actions, List<String> actionCommands, List<String> currentPossibleActions) {
         clearScreen();
@@ -274,6 +356,13 @@ public class CLI implements Runnable, UserInterface {
         System.out.println("To end your turn simply type 'EndTurn'. If you need help type 'Help'");
     }
 
+    /**
+     * askAction prints the request for the action
+     *
+     * @param actions all the actions descriptions that the player can do
+     * @param actionCommands all the actions command to call the actions that the player can do
+     * @param currentPossibleActions all the actions commands of the actions that the client can do without doing
+     */
     @Override
     public void askAction(List<String> actions, List<String> actionCommands, List<String> currentPossibleActions) {
         System.out.print("> ");
@@ -303,6 +392,11 @@ public class CLI implements Runnable, UserInterface {
         }
     }
 
+    /**
+     * Initialize the game map printed on CLI
+     *
+     * @param modelView the ModelView of the game
+     */
     @Override
     public void onGameInitialization(ModelView modelView) {
         printer = new MapPrinter(0, 0);
@@ -311,6 +405,13 @@ public class CLI implements Runnable, UserInterface {
         helper = new UserHelper(modelView, inputManager);
     }
 
+    /**
+     * Received an event from a message handler and process it based of the type of the event
+     *
+     * @param evt A PropertyChangeEvent object describing the event source
+     *          and the property that has changed.
+     * @see PropertyChangeListener#propertyChange(PropertyChangeEvent)
+     */
     @Override
     public synchronized void propertyChange(PropertyChangeEvent evt) {
         String endGameMessage = null;
@@ -384,6 +485,12 @@ public class CLI implements Runnable, UserInterface {
         }
     }
 
+    /**
+     * onEndGame ask the user if he want to go back to lobby or quit the game, just after having printed the
+     * static message of win, loose, tie.
+     *
+     * @param message what the method has to print
+     */
     private void onEndGame(String message) {
         System.out.println("\n" + message);
         System.out.println();
@@ -404,11 +511,24 @@ public class CLI implements Runnable, UserInterface {
         }
     }
 
+    /**
+     * onError prints errors colored in red
+     *
+     * @param error the error type
+     * @param info the error description
+     */
     @Override
     public void onError(ErrorMessageType error, String info) {
         System.out.println(Colors.RED + "Received error " + error + ": " + info + Colors.RESET);
     }
 
+    /**
+     * onResumeGame ask teh users if they want to resume a saved games or not
+     *
+     * @param numPlayers the number of players in the saved game
+     * @param rules the rules of the saved games
+     * @param participants array of participants' name
+     */
     public void onResumeGame(int numPlayers, boolean rules, String[] participants){
         clearScreen();
         String ruleInString = (rules)? "expert" : "simple";

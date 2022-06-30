@@ -14,6 +14,9 @@ import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * Class InitController is used for initialize the game and all its components
+ */
 public class InitController implements PropertyChangeListener {
 	private transient Game game;
 	private final int numPlayers;
@@ -24,12 +27,24 @@ public class InitController implements PropertyChangeListener {
 	private final Map<String, WizardType> playersWithWizard = new HashMap<>();
 	private final Map<String, TowerType> playersWithTower = new HashMap<>();
 
+	/**
+	 * Construct a InitController that will initialize the game by number of player and rules for the game
+	 *
+	 * @param numPlayers number of players of the game
+	 * @param isExpertGame boolean value for rules of the game
+	 */
 	public InitController(int numPlayers, boolean isExpertGame) {
 		this.numPlayers = numPlayers;
 		this.isExpertGame = isExpertGame;
 		this.gameConstants = JsonUtils.constantsByNumPlayer(numPlayers);
 	}
 
+	/**
+	 * Construct a InitController that will initialize a restored game with value stored in a json file
+	 * created every time a player make a move
+	 *
+	 * @param gameRestored game restored with value contained in json file
+	 */
 	public InitController(Game gameRestored) {
 		this(gameRestored.getNumPlayers(), gameRestored.isExpertGame());
 		this.game = gameRestored;
@@ -39,14 +54,30 @@ public class InitController implements PropertyChangeListener {
 				.forEach(player -> playersWithTower.put(player.getNickName(), player.getSchool().getTowerType()));
 	}
 
+	/**
+	 * Returns number of player of the game
+	 *
+	 * @return number of player of the game
+	 */
 	public int getNumPlayers(){
 		return this.numPlayers;
 	}
 
+	/**
+	 * Add a property change listener in this class, that will listen this class on specify propertyName
+	 *
+	 * @param propertyName name of the property to listen
+	 * @param listener the listener that listen the class
+	 */
 	public void addListener(String propertyName, PropertyChangeListener listener) {
 		listeners.addPropertyChangeListener(propertyName, listener);
 	}
 
+	/**
+	 * Method that initialize all components of a new game
+	 *
+	 * @throws EmptyBagException if the game tried to get a student from the bag but the bag is empty
+	 */
 	public void initializeGameComponents() throws EmptyBagException {
 		List <Island> islands = new ArrayList<>();
 		for(int i=0; i < gameConstants.getNumIslands();i++){
@@ -60,10 +91,22 @@ public class InitController implements PropertyChangeListener {
 		if (isExpertGame) game.createCharacterCards();
 	}
 
+	/**
+	 * Add a player to the game by the player's name
+	 *
+	 * @param nick player nick name
+	 */
 	public void addPlayer(String nick) {
 		game.addPlayer(nick);
 	}
 
+	/**
+	 * Sets a tower type to a player if the type isn't already taken
+	 *
+	 * @param player player to set the tower type
+	 * @param tower type of the tower to set
+	 * @throws TowerTypeAlreadyTakenException if the type of tower chosen is already taken by another player
+	 */
 	public void setupPlayerTower(Player player, TowerType tower) throws TowerTypeAlreadyTakenException {
 		if (player.getSchool() != null) return;
 		int towerPerSchool = gameConstants.getNumTowers();
@@ -88,6 +131,13 @@ public class InitController implements PropertyChangeListener {
 		playersWithTower.put(player.getNickName(), tower);
 	}
 
+	/**
+	 * Sets a wizard type to a player if the type isn't already taken
+	 *
+	 * @param player player to set the wizard
+	 * @param wizard type of wizard to set
+	 * @throws WizardTypeAlreadyTakenException if the type of wizard chosen is already taken by another player
+	 */
 	public void setupPlayerWizard(Player player, WizardType wizard) throws WizardTypeAlreadyTakenException {
 		if (player.getWizardType() != null) return;
 		for(int i = 0; i < numPlayers; i++){
@@ -100,6 +150,11 @@ public class InitController implements PropertyChangeListener {
 		playersWithWizard.put(player.getNickName(), wizard);
 	}
 
+	/**
+	 * Create clouds by number of players
+	 *
+	 * @return created clouds
+	 */
 	private Cloud[] createClouds(){
 		Cloud[] clouds = new Cloud[numPlayers];
 		for (int i = 0; i < numPlayers; i++) {
@@ -108,18 +163,40 @@ public class InitController implements PropertyChangeListener {
 		return clouds;
 	}
 
+	/**
+	 * Return the initialized game
+	 *
+	 * @return the initialized game
+	 */
 	public Game getGame() {
 		return this.game;
 	}
 
+	/**
+	 * Return players that have already chosen a wizard type
+	 *
+	 * @return players that have already chosen a wizard type
+	 */
 	public Map<String, WizardType> getPlayersWithWizard() {
 		return playersWithWizard;
 	}
 
+	/**
+	 * Return players that have already chosen a tower type
+	 *
+	 * @return players that have already chosen a tower type
+	 */
 	public Map<String, TowerType> getPlayersWithTower() {
 		return playersWithTower;
 	}
 
+	/**
+	 * This method receives an event from the View that contains a message with in it a chose of setup
+	 *
+	 * @param evt A PropertyChangeEvent object describing the event source
+	 *               and the property that has changed.
+	 * @see PropertyChangeListener#propertyChange(PropertyChangeEvent)
+	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		MessageFromClient message = (MessageFromClient) evt.getNewValue();

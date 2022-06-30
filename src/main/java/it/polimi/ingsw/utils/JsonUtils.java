@@ -50,6 +50,12 @@ public class JsonUtils {
         throw new NoSuchElementException();
     }
 
+    /**
+     * Returns all constants of the game by the number of the player in game, the constants are read from a json file
+     *
+     * @param numPlayer number of players in the game
+     * @return all constants of the game
+     */
     public static GameConstants constantsByNumPlayer(int numPlayer) {
         InputStream stream = JsonUtils.class.getResourceAsStream("/jsonConfigFiles/ConstantsByPlayers.json");
         if (stream == null) throw new NullPointerException();
@@ -76,6 +82,15 @@ public class JsonUtils {
         return gameConstants;
     }
 
+    /**
+     * Returns a Triplet of strings containing the des description of the character, instruction for calling the
+     * character and an example of call of the character
+     *
+     * @param characterId index of the character
+     * @return a Triplet of strings containing the des description of the character, instruction for calling the
+     *      * character and an example of call of the character
+     * @throws NoSuchElementException if the character chose doesn't exist in file
+     */
     public static Triplet<String, String, String> getCharacterDescription(int characterId) throws NoSuchElementException {
         InputStream stream = JsonUtils.class.getResourceAsStream("/jsonConfigFiles/CharactersDescription.json");
         if (stream == null) throw new NullPointerException();
