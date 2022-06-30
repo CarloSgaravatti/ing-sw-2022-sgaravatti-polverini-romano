@@ -191,7 +191,6 @@ public class Game implements ModelObserver, PropertyChangeListener {
 
 	public void takeCoinFromGeneralSupply() {
 		coinGeneralSupply --;
-		//TODO: exception if coins are finished
 	}
 
 	public void assignDeck(Player player, WizardType type){

@@ -100,8 +100,6 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
         String playerName = payload.getAttribute("PlayerName").getAsString();
         TowerType tower = (TowerType) payload.getAttribute("TowerType").getAsObject();
         getModelView().getPlayers().get(playerName).setTower(tower);
-
-        //TODO
     }
 
     /**
@@ -113,8 +111,6 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
         String playerName = payload.getAttribute("PlayerName").getAsString();
         WizardType wizard = (WizardType) payload.getAttribute("WizardType").getAsObject();
         getModelView().getPlayers().get(playerName).setWizard(wizard);
-
-        //TODO
     }
 
     /**
@@ -180,8 +176,8 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
             getModelView().getPlayers().get(playerName).updateCoins(player.getNumCoins());
             getModelView().getPlayers().get(playerName).setTower(simpleModel.getTowers().get(playerName));
             getModelView().getPlayers().get(playerName).setWizard(simpleModel.getWizards().get(playerName));
-            Pair<Integer, Integer> assistants = player.getLastAssistant();
-            getModelView().getPlayers().get(playerName).updateLastPlayedAssistant(assistants.getFirst(), assistants.getSecond());
+            Pair<Integer, Integer> assistant = player.getLastAssistant();
+            getModelView().getPlayers().get(playerName).updateLastPlayedAssistant(assistant.getFirst(), assistant.getSecond());
         }
         String[] professorOwners = simpleModel.getProfessorOwners();
         for(int i = 0; i < simpleModel.getProfessorOwners().length; i++){

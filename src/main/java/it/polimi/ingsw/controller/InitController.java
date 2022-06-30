@@ -191,7 +191,7 @@ public class InitController implements PropertyChangeListener {
 	}
 
 	/**
-	 * This method receives an event from the View that contains a message with in it a chose of setup
+	 * This method receives an event from the View that contains a message with in it a setup choice
 	 *
 	 * @param evt A PropertyChangeEvent object describing the event source
 	 *               and the property that has changed.

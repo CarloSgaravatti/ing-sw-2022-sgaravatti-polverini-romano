@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * LobbyPrinterManager role is to print the exact lobby part for each specific case
+ * LobbyPrinterManager role is to print the exact lobby part for each specific case.
  */
 public class LobbyPrintManager {
     private final Lobby lobby = new Lobby();
@@ -16,7 +16,9 @@ public class LobbyPrintManager {
     private final List<Integer> lobbyIds;
 
     /**
-     * Construct a new LobbyPrintManager by the info of the global lobby
+     * Construct a new LobbyPrintManager by the info of the global lobby. The LobbyPrintManager saves the current index
+     * in the key set of the first game that the user is seeing in the table, in order to properly change view of the
+     * games seen in the table if a user request to see the next five games or the previous five games.
      *
      * @param lobbyInfo global lobby information
      */
@@ -141,7 +143,10 @@ public class LobbyPrintManager {
      * @return the box with all information in it
      */
     private String[][] insertSetupInfo(String[][] setup, int id, int numPlayers, boolean rules, String[] names) {
-        setup[2][3] = String.valueOf(id);
+        String idString = String.valueOf(id);
+        for (int i = 0; i < idString.length(); i++) {
+            setup[2][i + 3] = String.valueOf(idString.charAt(i));
+        }
         String rulesString = (rules) ? "expert" : "simple";
         for (int i = 13; i < rulesString.length() + 13; i++) {
             setup[2][i] = String.valueOf(rulesString.charAt(i - 13));

@@ -18,12 +18,12 @@
          <bottom>
             <AnchorPane prefHeight="54.0" prefWidth="868.0" BorderPane.alignment="CENTER">
                <children>
-                  <Label fx:id="bottomText" layoutY="12.0" prefHeight="30.0" prefWidth="650.0" style="-fx-alignment: top-right;" text="You have chosen...">
+                  <Label fx:id="bottomText" layoutY="12.0" prefHeight="30.0" prefWidth="650.0" style="-fx-alignment: top-right;" text="You have chosen..." AnchorPane.leftAnchor="0.0">
                      <font>
                         <Font size="20.0" />
                      </font>
                   </Label>
-                  <Button fx:id="confirmChoice" layoutX="668.0" layoutY="5.0" mnemonicParsing="false" styleClass="setup-button" text="Confirm Choice">
+                  <Button fx:id="confirmChoice" layoutX="668.0" layoutY="5.0" mnemonicParsing="false" styleClass="setup-button" text="Confirm Choice" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="14.0">
                      <font>
                         <Font size="20.0" />
                      </font>
@@ -34,7 +34,7 @@
          <top>
             <AnchorPane prefHeight="44.0" prefWidth="617.0" BorderPane.alignment="CENTER">
                <children>
-                  <Label fx:id="upperText" layoutY="7.0" prefHeight="21.0" prefWidth="847.0" style="-fx-alignment: center;" text="You have to choose a ">
+                  <Label fx:id="upperText" layoutY="7.0" prefHeight="21.0" prefWidth="847.0" style="-fx-alignment: center;" text="You have to choose a " AnchorPane.leftAnchor="0.0">
                      <font>
                         <Font size="20.0" />
                      </font>

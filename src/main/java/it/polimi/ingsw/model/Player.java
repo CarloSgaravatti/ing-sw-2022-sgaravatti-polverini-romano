@@ -141,5 +141,6 @@ public class Player implements PropertyChangeListener {
 		if (school != null) { //if school is null, there is nothing to restore
 			school.restoreSchool(this, game, gameConstants);
 		}
+		turnEffect.restoreTurnEffect(this);
 	}
 }

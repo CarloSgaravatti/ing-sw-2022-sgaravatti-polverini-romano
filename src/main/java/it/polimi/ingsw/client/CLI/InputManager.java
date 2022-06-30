@@ -37,7 +37,7 @@ public class InputManager implements Runnable{
                     try {
                         getInputLock.wait();
                     } catch (InterruptedException e) {
-                        //TODO
+                        System.err.println(e.getMessage());
                     }
                 }
                 String input = sc.nextLine();

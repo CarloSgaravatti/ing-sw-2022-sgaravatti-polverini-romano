@@ -71,7 +71,7 @@ public class ActionInputParser implements PropertyChangeListener {
             default -> Optional.of(UNRECOGNISED_COMMAND);
         };
         error.ifPresentOrElse(err -> {
-            userInterface.displayStringMessage(Colors.RED + err + Colors.RESET);
+            userInterface.onError(null, err);
             listeners.firePropertyChange("InputError", null, evt.getPropertyName());
         }, () -> listeners.firePropertyChange(evt));
     }
@@ -162,7 +162,7 @@ public class ActionInputParser implements PropertyChangeListener {
         }
         int maxMovement = modelView.getPlayers().get(userInterface.getNickname()).getLastPlayedAssistant().getSecond();
         if (motherNatureMovement < 1 || motherNatureMovement > maxMovement) {
-            return Optional.of(WRONG_MOTHER_NATURE_MOVEMENT + maxMovement);
+            return Optional.of(WRONG_MOTHER_NATURE_MOVEMENT + maxMovement + "positions");
         }
         return Optional.empty();
     }

@@ -23,6 +23,12 @@ import javafx.scene.paint.Color;
 
 import java.util.*;
 
+/**
+ * CharacterController controls the character sub scene that appears in the main scene when a player selects a character
+ * image.
+ *
+ * @see it.polimi.ingsw.client.GUI.controllers.FXMLController
+ */
 public class CharacterController extends FXMLController {
     @FXML private Label characterTitle;
     @FXML private HBox studentsBox;
@@ -40,7 +46,12 @@ public class CharacterController extends FXMLController {
     private ChoiceBox<Integer> numStudentsSelection;
     private boolean characterPlayable;
 
-    public void show(int characterId, AnchorPane mainSceneRoot) {
+    /**
+     * Shows the character dialog in the center of the main game scene
+     *
+     * @param characterId the id of the character that will be shown
+     */
+    public void show(int characterId) {
         characterImage.setImage(new Image(Objects.requireNonNull(getClass()
                 .getResourceAsStream("/images/characters/character" + characterId + ".jpg"))));
         this.characterId = characterId;
@@ -59,9 +70,6 @@ public class CharacterController extends FXMLController {
         characterDescription.setWrapText(true);
         characterDescription.setText(description);
         characterTitle.setText("Character " + characterId);
-        /*TranslateTransition transition = new TranslateTransition(Duration.millis(1000), root);
-        transition.setByX(-translation);
-        transition.play();*/
         root.setTranslateX(0);
         setOptions();
         root.setOpacity(1);
@@ -69,6 +77,13 @@ public class CharacterController extends FXMLController {
         playButton.setOpacity(0.5);
     }
 
+    /**
+     * Initialize the character dialog by adding it to the specified root of the main scene in a position that cannot be
+     * seen by the user and by binding this controller with the controller of the main scene
+     *
+     * @param mainSceneRoot the root anchor pane of the main scene
+     * @param gameMainSceneController the controller of the main scene
+     */
     public void init(AnchorPane mainSceneRoot, GameMainSceneController gameMainSceneController) {
         this.gameMainSceneController = gameMainSceneController;
         root.setOpacity(0);
@@ -78,14 +93,11 @@ public class CharacterController extends FXMLController {
         root.setTranslateX(translation);
     }
 
-    public int getCharacterId() {
-        return characterId;
-    }
-
-    public void setCharacterId(int characterId) {
-        this.characterId = characterId;
-    }
-
+    /**
+     * Makes the character not visible in the main scene after the close button is pressed
+     *
+     * @param event the event fired when pressing the close button
+     */
     @FXML
     void closeCharacterView(ActionEvent event) {
         root.setOpacity(0);
@@ -93,6 +105,12 @@ public class CharacterController extends FXMLController {
         inputManager.reset();
     }
 
+    /**
+     * If all inputs that the character needs to have are inserted, the character is played and the action string that
+     * will be passed to the core part of the client is constructed.
+     *
+     * @param event the event fired when pressing the play character button
+     */
     @FXML
     void playCharacter(ActionEvent event) {
         if (!characterPlayable) return;
@@ -132,11 +150,21 @@ public class CharacterController extends FXMLController {
         }
     }
 
+    /**
+     * Display an error i n the dialog that informs that the user have to do something before playing the character
+     *
+     * @param error the type of error
+     * @param errorInfo the description of the error
+     */
     @Override
     public void onError(ErrorMessageType error, String errorInfo) {
         errorLabel.setText("You haven't selected all the options");
     }
 
+    /**
+     * Sets the options that need to be selected by the user in order to play the character. The user will see them
+     * on the right side of the character image
+     */
     private void setOptions() {
         characterOptions.getChildren().clear();
         ModelView modelView = gameMainSceneController.getModelView();
@@ -204,22 +232,37 @@ public class CharacterController extends FXMLController {
         inputManager.start();
     }
 
+    /**
+     * Make the play character button clickable after the user have selected all the options for playing the character
+     */
     private void makePlayCharacterButtonClickable() {
         characterPlayable = true;
         playButton.setOpacity(1);
     }
 
+    /**
+     * Returns a VBox that contains a form for selecting an island that will be added to the character options
+     *
+     * @param labelText the text of the label for the form
+     * @return  a VBox that contains a form for selecting an island that will be added to the character options
+     */
     private VBox getIslandSelectionButton(String labelText) {
         Label label = new Label(labelText);
         label.setWrapText(true);
-        /*TextField textField = new TextField();
-        textField.setMinWidth(characterOptions.getWidth() / 2);*/
         Button startSelectIsland = new Button("Select Island");
         startSelectIsland.getStyleClass().add("character-buttons");
         startSelectIsland.setOnAction(actionEvent -> inputManager.islandSelection(label));
         return new VBox(label, startSelectIsland);
     }
 
+    /**
+     * Returns a form used to choose the number of students that will be swapped in character 7 or 10. The first element
+     * of the returned pair is the form (choice box + label), the second is the specific choice box that the user will
+     * have to fill
+     *
+     * @param numStudents the maximum number of students that the choice box will permit to select
+     * @return the form used to choose the number of students that will be swapped in character 7 or 10
+     */
     private Pair<VBox, ChoiceBox<Integer>> getStudentsNumberSelectionButton(int numStudents) {
         Label label = new Label("Select the number of students you want to move");
         label.setWrapText(true);
@@ -231,6 +274,14 @@ public class CharacterController extends FXMLController {
         return new Pair<>(new VBox(label, choiceBox), choiceBox);
     }
 
+    /**
+     * Returns a VBox that will contain a label and a button that will permit to chose students from the character
+     *
+     * @param maxStudents the maximum number of students that can be selected from the character
+     * @param choiceBox the choice box from which the number of students that can be selected is taken, the choice box is
+     *                  filled by the user before doing the character students selection
+     * @return a VBox that will contain a label and a button that will permit to chose students from the character
+     */
     private VBox getSelectCharacterStudentsButton(int maxStudents, ChoiceBox<Integer> choiceBox) {
         String labelText = "Click here to select " + ((maxStudents == 1) ? "a student from this character" : "students from" +
                 "this character");
@@ -254,6 +305,16 @@ public class CharacterController extends FXMLController {
         return vBox;
     }
 
+    /**
+     * Returns a VBox that will contain a label and a button that will permit to chose students from the entrance of the
+     * user's school.
+     *
+     * @param maxStudents the maximum number of students that can be selected from the entrance
+     * @param choiceBox the choice box from which the number of students that can be selected is taken, the choice box is
+     *                  filled by the user before doing the character students selection
+     * @return a VBox that will contain a label and a button that will permit to chose students from the entrance of the
+     *      user's school.
+     */
     private VBox getSelectEntranceStudentsButton(int maxStudents, ChoiceBox<Integer> choiceBox) {
         String labelText = "Click here to select students from your entrance";
         Label label = new Label(labelText);
@@ -273,6 +334,16 @@ public class CharacterController extends FXMLController {
         return vBox;
     }
 
+    /**
+     * Returns a VBox that will contain a label and a button that will permit to chose students from the dining room of the
+     * user's school.
+     *
+     * @param maxStudents the maximum number of students that can be selected from the dining room
+     * @param choiceBox the choice box from which the number of students that can be selected is taken, the choice box is
+     *                  filled by the user before doing the character students selection
+     * @return a VBox that will contain a label and a button that will permit to chose students from the dining room of the
+     *      user's school.
+     */
     private VBox getSelectDiningRoomStudentsButton(int maxStudents, ChoiceBox<Integer> choiceBox) {
         String labelText = "Click here to select students from your dining room";
         Label label = new Label(labelText);
@@ -292,6 +363,13 @@ public class CharacterController extends FXMLController {
         return vBox;
     }
 
+    /**
+     * Returns a form used to choose a realm for characters that needs this type of choice. These characters are characters
+     * 9 and 12.
+     *
+     * @param labelText the label that describe for what type of action the selection will be used
+     * @return the form used to choose the number of students that will be swapped in character 7 or 10
+     */
     private Pair<VBox, ChoiceBox<RealmType>> getSelectRealmChoiceBox(String labelText) {
         Label label = new Label(labelText);
         label.setWrapText(true);
@@ -299,10 +377,12 @@ public class CharacterController extends FXMLController {
         for (RealmType realm: RealmType.values()) {
             choiceBox.getItems().add(realm);
         }
-        //Button startSelectStudents = new Button("Select Realm");
         return new Pair<>(new VBox(label, choiceBox), choiceBox);
     }
 
+    /**
+     * CharacterInputManager is an inner class of the CharacterController that controls the input of the character
+     */
     private class CharacterInputManager {
         enum ActionType {
             SELECT_STUDENTS_FROM_CHARACTER,
@@ -313,6 +393,9 @@ public class CharacterController extends FXMLController {
             SELECT_NUMBER
         }
 
+        /**
+         * SelectionEvent is an event that is fired when a character option is completely inserted
+         */
         class SelectionEvent extends Event {
             public static final EventType<SelectionEvent> ANY = new EventType<>("finishEvent");
 
@@ -324,6 +407,14 @@ public class CharacterController extends FXMLController {
         private final List<ActionType> actionsNeeded = new ArrayList<>();
         private final List<ActionType> actionsOrder = new ArrayList<>();
 
+        /**
+         * Callback that will be called when the user selects the button for selecting students from the entrance and that
+         * will handle the selection of the students. At the end of the selection the character dialog is restored at
+         * the center of the scene
+         *
+         * @param numStudentsToSelect the number of students to select
+         * @param details the label on which details about the selection will be inserted
+         */
         private void selectionFromEntrance(int numStudentsToSelect, Label details) {
             root.setTranslateX(translation);
             gameMainSceneController.moveAccordionUp();
@@ -353,6 +444,14 @@ public class CharacterController extends FXMLController {
             registerHandlers(students, studentSelection);
         }
 
+        /**
+         * Callback that will be called when the user selects the button for selecting students from the dining room and that
+         * will handle the selection of the students. At the end of the selection the character dialog is restored at
+         * the center of the scene
+         *
+         * @param numStudentsToSelect the number of students to select
+         * @param details the label on which details about the selection will be inserted
+         */
         private void selectionFromDiningRoom(int numStudentsToSelect, Label details) {
             root.setTranslateX(translation);
             gameMainSceneController.moveAccordionUp();
@@ -382,6 +481,13 @@ public class CharacterController extends FXMLController {
             registerHandlers(students, studentSelection);
         }
 
+        /**
+         * Callback that will be called when the user selects the button for selecting students from the character and that
+         * will handle the selection of the students.
+         *
+         * @param numStudentsToSelect the number of students to select
+         * @param details the label on which details about the selection will be inserted
+         */
         private void selectionFromCharacter(int numStudentsToSelect, Label details) {
             List<Node> students = studentsBox.getChildren();
             List<Node> selectedStudents = new ArrayList<>();
@@ -407,6 +513,12 @@ public class CharacterController extends FXMLController {
             registerHandlers(students, studentSelection);
         }
 
+        /**
+         * Fires SelectionEvent at the end of the selection of students. All handlers that handle the selection will
+         * be removed by the specified students.
+         *
+         * @param students the nodes that represent the students that were previously selected.
+         */
         private void fireEndSelectionEvent(List<Node> students) {
             students.forEach(s -> {
                 s.getStyleClass().clear();
@@ -418,6 +530,13 @@ public class CharacterController extends FXMLController {
             }
         }
 
+        /**
+         * Register the specified handler for a students of the specified students is selected. Also, a handler for when
+         * all the needed students are selected is added to the students.
+         *
+         * @param students the students that can be selected for playing the character
+         * @param studentSelection the handler of the selection
+         */
         private void registerHandlers(List<Node> students, EventHandler<MouseEvent> studentSelection) {
             students.forEach(s -> s.addEventHandler(MouseEvent.MOUSE_CLICKED, studentSelection));
             EventHandler<SelectionEvent> onFinishHandler = selectionEvent -> {
@@ -427,6 +546,13 @@ public class CharacterController extends FXMLController {
             students.forEach(s -> s.addEventHandler(SelectionEvent.ANY, onFinishHandler));
         }
 
+        /**
+         * Callback that will be called when the user selects the button for selecting an island from the map and that
+         * will handle the selection of the island. At the end of the selection the character dialog is restored at
+         * the center of the scene.
+         *
+         * @param label the label on which details about the selection will be inserted
+         */
         private void islandSelection(Label label) {
             root.setTranslateX(translation);
             gameMainSceneController.moveAccordionDown();
@@ -445,12 +571,19 @@ public class CharacterController extends FXMLController {
             islands.forEach(i -> i.addEventHandler(MouseEvent.MOUSE_CLICKED, islandSelection));
         }
 
+        /**
+         * Reset the input manager when the character dialog is closed by removing the options that the user need to do
+         */
         private void reset() {
             actions.clear();
             actionsNeeded.clear();
             actionsOrder.clear();
         }
 
+        /**
+         * Starts the input manager when the dialog is opened. All needed action s that require a selections are added
+         * to the list of actions that the input manager will control
+         */
         private void start() {
             actionsOrder.addAll(actionsNeeded);
             actionsOrder.remove(ActionType.SELECT_REALM);

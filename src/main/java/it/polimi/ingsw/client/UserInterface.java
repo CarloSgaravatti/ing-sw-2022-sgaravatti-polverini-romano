@@ -112,7 +112,7 @@ public interface UserInterface extends PropertyChangeListener{
     void onError(ErrorMessageType error, String info);
 
     /**
-     * Notifies the client to choose a new game or one previous game
+     * Notifies the client to choose between starting a new game or resuming the previous saved game
      *
      * @param numPlayers the number of players in the saved game
      * @param rules the rules of the saved games
@@ -131,4 +131,9 @@ public interface UserInterface extends PropertyChangeListener{
      * Notifies the user that the game will start soon
      */
     void onGameStarted();
+
+    /**
+     * Shutdown the application after a connection error
+     */
+    void shutdown();
 }

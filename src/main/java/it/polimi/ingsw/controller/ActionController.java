@@ -31,8 +31,6 @@ public class ActionController {
 	private transient final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 	private final int studentsToMove;
 
-	//TODO: substitute all illegal argument exceptions with booleans
-
 	/**
 	 * Constructs a new ActionController instance that is bound to the specified GameController and the specified
 	 * TurnController.
@@ -158,7 +156,6 @@ public class ActionController {
 		School school = turnController.getActivePlayer().getSchool();
 		Student[] studentsToDiningRoom = getStudentsToDiningRoom(toDiningRoom);
 		Map<Integer, List<Student>> studentsToIslands = getStudentsToIslands(toIslands);
-		//TODO: make all methods in action controller return a boolean and not IllegalArgumentException
 		try {
 			int coinsGained = school.insertDiningRoom(studentsToDiningRoom, true, true);
 			if (gameController.isExpertGame()) {

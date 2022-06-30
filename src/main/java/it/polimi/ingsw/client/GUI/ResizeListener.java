@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 
 import java.util.List;
 
+//TODO: delete
 public class ResizeListener {
     private final Stage stage;
     private Scene scene;
@@ -49,7 +50,7 @@ public class ResizeListener {
             //stage.widthProperty().addListener(stageWidthListener);
             Parent parent = scene.getRoot();
             //resizeScene(parent, parent.getChildrenUnmodifiable());
-            resizeNewYValues(parent, parent.getChildrenUnmodifiable(), newValue.doubleValue());
+            resizeNewYValues(parent, parent.getChildrenUnmodifiable(), newValue.doubleValue(), true);
         };
         stageWidthListener = (observable, oldValue, newValue) -> {
             /*stage.heightProperty().removeListener(stageHeightListener);
@@ -62,7 +63,7 @@ public class ResizeListener {
             stage.heightProperty().addListener(stageHeightListener);*/
             Parent parent = scene.getRoot();
             //resizeScene(parent, parent.getChildrenUnmodifiable());
-            resizeNewXValues(parent, parent.getChildrenUnmodifiable(), newValue.doubleValue());
+            resizeNewXValues(parent, parent.getChildrenUnmodifiable(), newValue.doubleValue(), true);
         };
         stage.widthProperty().addListener(stageWidthListener);
         stage.heightProperty().addListener(stageHeightListener);
@@ -95,9 +96,9 @@ public class ResizeListener {
         parent.setScaleY(actualScaleY);*/
     }
 
-    private void resizeNewYValues(Parent parent, List<Node> children, double newHeight) {
+    private void resizeNewYValues(Parent parent, List<Node> children, double newHeight, boolean isRoot) {
         boolean isLayoutModifiable = ! (parent instanceof HBox || parent instanceof VBox || parent instanceof BorderPane);
-        parent.setScaleX(newHeight / initialHeight);
+        if (!isRoot) parent.setScaleX(newHeight / initialHeight);
         children.forEach(node -> {
             if (isLayoutModifiable) {
                 double initialLayoutPercent = node.getLayoutY() / initialHeight;
@@ -107,14 +108,14 @@ public class ResizeListener {
             if (node instanceof ImageView imageView) {
                 imageView.setFitHeight(imageView.getFitHeight() * newHeight / initialHeight);
             } else if (node instanceof Parent parentNode){
-                resizeNewYValues(parentNode, parentNode.getChildrenUnmodifiable(), newHeight);
+                resizeNewYValues(parentNode, parentNode.getChildrenUnmodifiable(), newHeight, false);
             }
         });
     }
 
-    private void resizeNewXValues(Parent parent, List<Node> children, double newWidth) {
+    private void resizeNewXValues(Parent parent, List<Node> children, double newWidth, boolean isRoot) {
         boolean isLayoutModifiable = ! (parent instanceof HBox || parent instanceof VBox || parent instanceof BorderPane);
-        parent.setScaleY(newWidth / initialWidth);
+        if (!isRoot) parent.setScaleY(newWidth / initialWidth);
         children.forEach(node -> {
             if (isLayoutModifiable) {
                 double initialLayoutPercent = node.getLayoutX() / initialWidth;
@@ -124,7 +125,7 @@ public class ResizeListener {
             if (node instanceof ImageView imageView) {
                 imageView.setFitWidth(imageView.getFitWidth() * newWidth / initialWidth);
             } else if (node instanceof Parent parentNode){
-                resizeNewXValues(parentNode, parentNode.getChildrenUnmodifiable(), newWidth);
+                resizeNewXValues(parentNode, parentNode.getChildrenUnmodifiable(), newWidth, false);
             }
         });
     }

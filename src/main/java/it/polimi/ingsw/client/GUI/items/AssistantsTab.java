@@ -19,9 +19,7 @@ import java.util.*;
 public class AssistantsTab {
     private final FlowPane assistantContainer;
     private final ModelView modelView;
-    private final PropertyChangeSupport gui = new PropertyChangeSupport(this);
     private final Map<Integer, ImageView> assistantImageViews = new HashMap<>();
-    private final Map<Integer, Image> assistantImages = new HashMap<>();
     private boolean isAssistantSelectable = false;
 
     /**
@@ -41,7 +39,6 @@ public class AssistantsTab {
             imageView.setFitHeight((assistantContainer.getHeight() - assistantContainer.getVgap()) / 2);
             assistantContainer.getChildren().add(imageView);
             assistantImageViews.put(i, imageView);
-            assistantImages.put(i, image);
             imageView.setId("Assistant" + i);
             imageView.getStyleClass().add("assistant-image");
         }
@@ -59,11 +56,6 @@ public class AssistantsTab {
         }
     }
 
-    //TODO: check if it can be deleted
-    public void addListener(PropertyChangeListener listener) {
-        gui.addPropertyChangeListener(listener);
-    }
-
     /**
      * Removes the assistant image that have the specified assistant id from the deck
      *
@@ -72,7 +64,6 @@ public class AssistantsTab {
     public void removeAssistantFromDeck(int id) {
         ImageView imageView = assistantImageViews.remove(id);
         assistantContainer.getChildren().remove(imageView);
-        assistantImages.remove(id);
     }
 
     /**

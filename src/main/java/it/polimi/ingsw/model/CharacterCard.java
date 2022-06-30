@@ -122,7 +122,6 @@ public abstract class CharacterCard {
 		listeners.firePropertyChange(evt);
 	}
 
-	//TODO: after characters re implementation, make this abstract
 	public boolean requiresInput() {
 		return true;
 	}

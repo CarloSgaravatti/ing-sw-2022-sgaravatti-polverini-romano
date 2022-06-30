@@ -84,7 +84,6 @@ public class TurnMessageHandler extends BaseMessageHandler {
      */
     private void onEndTurn(MessagePayload payload) {
         String newActivePlayer = payload.getAttribute("TurnStarter").getAsString();
-        String oldActivePlayer = payload.getAttribute("TurnEnder").getAsString(); //TODO: decide if this information is useful
         getModelView().setCurrentActivePlayer(newActivePlayer);
         checkClientTurn(newActivePlayer, (TurnPhase[]) payload.getAttribute("PossibleActions").getAsObject());
     }
@@ -149,7 +148,6 @@ public class TurnMessageHandler extends BaseMessageHandler {
      */
     private void checkClientTurn(String turnStarter, TurnPhase[] possibleActions) {
         if (turnStarter.equals(getUserInterface().getNickname())) {
-            getUserInterface().displayStringMessage("Now is your turn");
             listeners.firePropertyChange("ClientTurn", null, possibleActions);
         } else {
             listeners.firePropertyChange("NewTurn", null, turnStarter);

@@ -38,8 +38,8 @@ public class SocketClientConnection implements Runnable, ClientConnection {
     @Override
     public void run() {
         try {
-            in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
+            in = new ObjectInputStream(socket.getInputStream());
             do {
                 initializeClient();
             } while (!isActive());

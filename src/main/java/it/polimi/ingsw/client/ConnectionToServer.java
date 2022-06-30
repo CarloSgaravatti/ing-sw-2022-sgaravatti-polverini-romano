@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client;
 
+import it.polimi.ingsw.client.GUI.GUI;
 import it.polimi.ingsw.client.messageHandlers.DefaultMessageHandler;
 import it.polimi.ingsw.client.messageHandlers.MessageHandler;
 import it.polimi.ingsw.messages.*;
@@ -23,6 +24,7 @@ public class ConnectionToServer implements Runnable {
     private ExecutorService messageHandlerExecutor = Executors.newSingleThreadExecutor();
     private String nickname;
     private boolean active = true;
+    private final UserInterface userInterface;
 
     /**
      * Constructs a new instance of ConnectionToServer from the specified Socket and that is bounded to the specified
@@ -37,9 +39,9 @@ public class ConnectionToServer implements Runnable {
             inputStream = new ObjectInputStream(socket.getInputStream());
             firstMessageHandler = new DefaultMessageHandler(this, view, null);
         } catch (IOException e) {
-            //TODO
             e.printStackTrace();
         }
+        this.userInterface = view;
         PlayerSetupHandler playerSetupHandler = new PlayerSetupHandler(this);
         List<String> propertyNames = List.of("Nickname", "NewGame", "GameToPlay", "TowerChoice", "WizardChoice",
                 "RefreshLobby", "RestoreGame", "DeleteSavedGame", "QuitGame");
@@ -63,12 +65,16 @@ public class ConnectionToServer implements Runnable {
     @Override
     public void run() {
         try {
-            while (isActive()) { //while(isActive()) ?
+            while (isActive()) {
                 MessageFromServer message = (MessageFromServer) inputStream.readObject();
-                //System.out.println("Received " + message.getServerMessageHeader().getMessageName());
-                if (message.getServerMessageHeader().getMessageType() != ServerMessageType.PING_MESSAGE) {
-                    messageHandlerExecutor.submit(() -> firstMessageHandler.handleMessage(message));
-                } else {
+                if (message != null && message.getServerMessageHeader().getMessageType() != ServerMessageType.PING_MESSAGE) {
+                    messageHandlerExecutor.submit(() -> {
+                        //TODO: delete try catch
+                        try {
+                            firstMessageHandler.handleMessage(message);
+                        } catch (Exception e) {e.printStackTrace();}
+                    });
+                } else if (message != null){
                     onPingMessage();
                 }
             }
@@ -81,9 +87,8 @@ public class ConnectionToServer implements Runnable {
                 inputStream.close();
                 outputStream.close();
             } catch (IOException ignored) {}
-            System.err.println("Application will now close");
+            userInterface.shutdown();
         }
-        System.exit(0);
     }
 
     /**
@@ -95,6 +100,7 @@ public class ConnectionToServer implements Runnable {
     public synchronized Thread asyncWriteToServer(Object message) {
         Thread t = new Thread(() -> {
             try {
+                outputStream.reset();
                 outputStream.writeObject(message);
                 outputStream.flush();
             } catch (IOException e) {
@@ -116,7 +122,6 @@ public class ConnectionToServer implements Runnable {
     public void sendMessage(MessagePayload payload, String messageName, ClientMessageType messageType) {
         ClientMessageHeader header = new ClientMessageHeader(messageName, nickname, messageType);
         MessageFromClient message = new MessageFromClient(header, payload);
-        //System.out.println("Sending " + messageName);
         asyncWriteToServer(message);
     }
 

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<fx:root alignment="CENTER" prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: rgba(0,0,0,0.1);" type="HBox" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <AnchorPane maxHeight="350.0" maxWidth="500.0" prefHeight="350.0" prefWidth="500.0">
+            <children>
+                <HBox alignment="CENTER" layoutY="236.0" prefHeight="100.0" prefWidth="500.0" spacing="20.0">
+                    <children>
+                        <Button fx:id="quitButton" mnemonicParsing="false" prefWidth="170.0" style="-fx-background-color: tomato;" styleClass="popup-button" text="OK" />
+                    </children>
+                </HBox>
+                <Text fx:id="text" layoutX="38.0" layoutY="113.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Popup text" textAlignment="CENTER" wrappingWidth="424.0" />
+                <AnchorPane prefHeight="48.0" prefWidth="500.0" style="-fx-background-color: darkgray;">
+                    <children>
+                        <Button fx:id="closeButton" layoutX="451.0" layoutY="5.0" mnemonicParsing="false" style="-fx-background-color: tomato;" styleClass="popup-button" text="X">
+                            <font>
+                                <Font size="18.0" />
+                            </font>
+                        </Button>
+                    </children>
+                </AnchorPane>
+            </children>
+            <stylesheets>
+                <URL value="@../css/popupStyle.css" />
+                <URL value="@../css/welcomeStyle.css" />
+                <URL value="@../css/globalStyle.css" />
+            </stylesheets>
+            <styleClass>
+                <String fx:value="popup-container" />
+                <String fx:value="pane" />
+            </styleClass>
+        </AnchorPane>
+    </children>
+</fx:root>

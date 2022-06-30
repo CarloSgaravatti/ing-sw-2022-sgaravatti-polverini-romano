@@ -126,8 +126,7 @@ public class GameLobby {
                 if (player.getSchool().isProfessorPresent(r)) professorOwners[r.ordinal()] = player.getNickName();
             }
             simplePlayer.setDiningRoom(diningRoom.toArray(new RealmType[0]));
-            TurnEffect turnEffect = player.getTurnEffect();
-            simplePlayer.setLastAssistant(new Pair<>(turnEffect.getOrderPrecedence(), turnEffect.getMotherNatureMovement()));
+            simplePlayer.setLastAssistant(player.getTurnEffect().getLastPlayedAssistant());
         });
         SimpleModel simpleModel = new SimpleModel();
         simpleModel.setField(fieldInitializations.getFirst());
@@ -248,7 +247,6 @@ public class GameLobby {
         payload.setAttribute("FreeTowers", towerTypesNotTaken.toArray(new TowerType[0]));
         MessageFromServer message = new MessageFromServer(header, payload);
         connection.asyncSend(message);
-        //TODO: notify other clients that a client is choosing the tower
     }
 
     private void setupWizards(Map<String, WizardType> playersWithWizard) {
@@ -262,7 +260,6 @@ public class GameLobby {
         payload.setAttribute("FreeWizards", wizardTypesNotTaken.toArray(new WizardType[0]));
         MessageFromServer message = new MessageFromServer(header, payload);
         connection.asyncSend(message);
-        //TODO: notify other clients that a client is choosing the wizard
     }
 
     private Pair<SimpleField, SimplePlayer[]> getFieldInitializations() {
@@ -309,7 +306,6 @@ public class GameLobby {
         return new Pair<>(simpleField, playersView);
     }
 
-    //TODO: modify when characters are reimplemented
     private SimpleCharacter getSimpleCharacter(CharacterCard c) {
         return switch (c.getId()) {
             case 5 -> new SimpleCharacter(((Character5) c).getNoEntryTiles(), c.getId(), c.getPrice());

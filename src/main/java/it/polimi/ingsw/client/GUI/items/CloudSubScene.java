@@ -45,7 +45,7 @@ public class CloudSubScene extends AnchorPane implements Initializable {
         for (int i = 0; i < studentsNode.size(); i++) {
             Circle circle = (Circle) studentsNode.get(i);
             StudentImage studentImage = new StudentImage(circle);
-            studentImage.setStudent(students[i]);
+            if (students.length > i) studentImage.setStudent(students[i]);
             this.getChildren().set(i, studentImage);
 
         }

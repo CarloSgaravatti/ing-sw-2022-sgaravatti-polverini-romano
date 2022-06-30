@@ -11,11 +11,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * StudentContainer contains students that are present on a character. The class is observed by the game in order to
+ * automatically insert students on it when a student is picked from it.
+ *
+ * @see it.polimi.ingsw.model.modelObservables.StudentContainerObservable
+ */
 public class StudentContainer extends StudentContainerObservable {
     private final List<Student> students;
     private final int maxStudents;
 
-    //For testing
+    /**
+     * Constructs a new empty StudentContainer that contains no students
+     */
     public StudentContainer() {
         super();
         students = new ArrayList<>();

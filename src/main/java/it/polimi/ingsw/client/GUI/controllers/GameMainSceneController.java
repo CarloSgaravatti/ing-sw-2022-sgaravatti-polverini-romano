@@ -16,6 +16,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
@@ -123,6 +124,9 @@ public class GameMainSceneController extends FXMLController implements Initializ
         if (error == ErrorMessageType.ILLEGAL_ARGUMENT && lastAction.getFirst().equals("MoveStudents")) {
             rollbackMoveStudents();
         }
+        ErrorPopupController errorPopup = new ErrorPopupController();
+        errorPopup.show(this, errorInfo);
+        root.getChildren().add(errorPopup);
     }
 
     @Override
@@ -170,7 +174,6 @@ public class GameMainSceneController extends FXMLController implements Initializ
     @Override
     public void addListener(PropertyChangeListener gui) {
         super.addListener(gui);
-        assistantsTab.addListener(gui);
     }
 
     public void initializeBoard(ModelView modelView, String clientNickname) {
@@ -191,7 +194,6 @@ public class GameMainSceneController extends FXMLController implements Initializ
         }
         double yTranslation = ((AnchorPane) playersBox.getChildren().get(1)).getHeight();
         playersBox.setTranslateY(yTranslation);
-        double cloudImageHeight = cloudBox.getHeight();
         int numClouds =  modelView.getField().getCloudStudents().size();
         for (int i = 0; i < numClouds; i++) {
             CloudSubScene cloudSubScene = new CloudSubScene(numClouds == 3, i);
@@ -199,10 +201,6 @@ public class GameMainSceneController extends FXMLController implements Initializ
             cloudSubScene.initializeStudents(RealmType.getRealmsFromIntegerRepresentation(modelView
                     .getField().getCloudStudents().get(i)));
             cloudSubScene.addEventHandler(MouseEvent.MOUSE_CLICKED, cloudSelectionHandler);
-
-            /*CloudImage cloud = new CloudImage(i, modelView.getField(), cloudImageHeight);
-            cloudBox.getChildren().add(cloud);
-            cloud.addEventHandler(MouseEvent.MOUSE_CLICKED, cloudSelectionHandler);*/
         }
         TabPane tabs = (TabPane) ((AnchorPane) playersBox.getChildren().get(1)).getChildren().get(0);
         assistantsTab = new AssistantsTab(assistantsPane, modelView);
@@ -222,6 +220,16 @@ public class GameMainSceneController extends FXMLController implements Initializ
         }
         islands = new IslandMap(islandsMap, modelView);
         new DragAndDropManager().registerEvents();
+        checkAssistants();
+    }
+
+    private void checkAssistants() {
+        for (String player: modelView.getPlayers().keySet()) {
+            Pair<Integer, Integer> lastAssistant = modelView.getPlayers().get(player).getLastPlayedAssistant();
+            if (lastAssistant != null && lastAssistant.getFirst() != 0) {
+                setAssistantImage(player, lastAssistant.getFirst());
+            }
+        }
     }
 
     public void onTurn(List<String> actionCommands, List<String> possibleActions) {
@@ -280,7 +288,7 @@ public class GameMainSceneController extends FXMLController implements Initializ
                 CharacterImage character = (CharacterImage) ((ImageView) mouseEvent.getTarget()).getParent();
                 int characterId = character.getCharacterId();
                 this.character.setTranslateX(-root.getWidth());
-                characterController.show(characterId, root);
+                characterController.show(characterId);
             }
         };
         characters.values().forEach(c -> c.addEventHandler(MouseEvent.MOUSE_CLICKED, characterEventHandler));
@@ -415,33 +423,17 @@ public class GameMainSceneController extends FXMLController implements Initializ
         CloudSubScene cloudSubScene = (CloudSubScene) cloudBox.getChildren().get(cloudId + 1);
         cloudSubScene.ResetStudentImage();
         SchoolBox schoolBox = playersSchools.get(player).getSecond();
-        Arrays.stream(students).forEach(schoolBox::insertStudentEntrance);
+        schoolBox.updateEntrance();
+        //Arrays.stream(students).forEach(schoolBox::insertStudentEntrance);
     }
 
     public void moveStudentsToRefillClouds() {
         moveAccordionDown();
         Map<Integer, Integer[]> cloudStudents = modelView.getField().getCloudStudents();
-        Pair<Double, Double> bagLayout = new Pair<>(bag.getLayoutX(), bag.getLayoutY());
-        //double studentsRadius = getSchoolOfClient().getDimStudentsRadius();
         for (Integer cloudId: cloudStudents.keySet()) {
             RealmType[] students = RealmType.getRealmsFromIntegerRepresentation(cloudStudents.get(cloudId));
             CloudSubScene cloud = (CloudSubScene) cloudBox.getChildren().get(cloudId + 1);
             cloud.initializeStudents(students);
-            /*for (RealmType student : students) {
-                StudentImage studentImage = new StudentImage(studentsRadius, student);
-                studentImage.setLayoutX(bagLayout.getFirst() + bag.getFitWidth() / 2);
-                studentImage.setLayoutY(bagLayout.getSecond() + bag.getFitHeight() / 2);
-                islandsMap.getChildren().add(studentImage);
-                TranslateTransition transition = new TranslateTransition(Duration.millis(1500), studentImage);
-                transition.setByX(cloud.getLayoutX() - studentImage.getLayoutX());
-                transition.setByY(cloud.getLayoutY() - studentImage.getLayoutY());
-                transition.setDelay(Duration.millis(500));
-                transition.play();
-                transition.setOnFinished(actionEvent -> {
-                    islandsMap.getChildren().remove(studentImage);
-                    //TODO: add to cloud
-                });
-            }*/
         }
     }
 
@@ -518,6 +510,10 @@ public class GameMainSceneController extends FXMLController implements Initializ
         PopupDialogController popupDialog = new PopupDialogController();
         popupDialog.show(popupText, this);
         root.getChildren().add(popupDialog);
+    }
+
+    public void closeErrorPopup(ErrorPopupController errorPopup) {
+        root.getChildren().remove(errorPopup);
     }
 
     class DragAndDropManager {

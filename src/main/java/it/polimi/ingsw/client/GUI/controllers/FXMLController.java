@@ -80,4 +80,20 @@ public abstract class FXMLController {
      * @param errorInfo the description of the error
      */
     public abstract void onError(ErrorMessageType error, String errorInfo);
+
+    /**
+     * Displays a dialog that informs the user that the connection with the server has been closed unexpectedly and so
+     * the application will close when the dialog is closed
+     */
+    public void displayShutdownAlert() {
+        ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        Dialog<String> dialog = new Dialog<>();
+        dialog.initModality(Modality.WINDOW_MODAL);
+        dialog.setTitle("Error");
+        dialog.setContentText("An error as occurred in the server, the application will now close");
+        dialog.getDialogPane().getButtonTypes().add(okButton);
+        dialog.getDialogPane().lookupButton(okButton).setDisable(false);
+        dialog.setOnCloseRequest(dialogEvent -> System.exit(0));
+        dialog.showAndWait();
+    }
 }

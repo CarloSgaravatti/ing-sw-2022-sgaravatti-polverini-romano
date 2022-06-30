@@ -63,7 +63,4 @@ public class CharacterWithoutInput extends CharacterCard {
     public void useEffect(Map<String, Object> arguments) throws IllegalCharacterActionRequestedException {
         throw new IllegalCharacterActionRequestedException("This character doesn't have any input");
     }
-
-    //TODO: decide if dynamicPlayCard.accept() have to be putted in the use effect method (so play card is not
-    // reimplemented, which is better)
 }

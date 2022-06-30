@@ -152,4 +152,10 @@ public class GameControllerTest {
         Assertions.assertEquals("PlayAssistant",
                 viewWithAckMessage.getMessage().getMessagePayload().getAttribute("ActionName").getAsString());
     }
+
+    @Test
+    void startTest() {
+        controller.startGame();
+        Assertions.assertTrue(controller.getModel().isStarted());
+    }
 }

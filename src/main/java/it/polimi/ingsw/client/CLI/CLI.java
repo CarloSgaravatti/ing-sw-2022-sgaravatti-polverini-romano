@@ -24,7 +24,6 @@ public class CLI implements Runnable, UserInterface {
     private final Scanner sc = new Scanner(System.in);
     private String nickname;
     private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
-    private ModelView modelView;
     private MapPrinter printer;
     private UserHelper helper;
     private InputManager inputManager;
@@ -257,6 +256,11 @@ public class CLI implements Runnable, UserInterface {
      */
     @Override
     public void askTowerChoice(TowerType[] freeTowers){
+        if (freeTowers.length == 1) {
+            System.out.println("Only the " + freeTowers[0] + " tower remain. It will be assigned to you.");
+            listeners.firePropertyChange("TowerChoice", null, freeTowers[0]);
+            return;
+        }
         System.out.println("You have to choose a tower, these are the options: " + Arrays.toString(freeTowers));
         boolean towerChosen = false;
         TowerType choice = null;
@@ -264,7 +268,6 @@ public class CLI implements Runnable, UserInterface {
         while (!towerChosen) {
             System.out.print("> ");
             try {
-                //choice = TowerType.valueOf(sc.next().toUpperCase());
                 choice = TowerType.valueOf(inputManager.getLastInput().toUpperCase());
                 towerChosen = true;
             } catch (IllegalArgumentException e) {
@@ -273,6 +276,7 @@ public class CLI implements Runnable, UserInterface {
         }
         inputManager.setInputPermitted(false);
         listeners.firePropertyChange("TowerChoice", null, choice);
+        System.out.println("Tou have chosen the " + choice + " tower. Now wait for other players choices.");
     }
 
     /**
@@ -283,6 +287,11 @@ public class CLI implements Runnable, UserInterface {
      */
     @Override
     public void askWizardChoice(WizardType[] freeWizards){
+        if (freeWizards.length == 1) {
+            System.out.println("Only the " + freeWizards[0] + " wizard remain. It will be assigned to you.");
+            listeners.firePropertyChange("WizardChoice", null, freeWizards[0]);
+            return;
+        }
         System.out.println("You have to choose a wizard, these are the options: " + Arrays.toString(freeWizards));
         boolean wizardChosen = false;
         WizardType choice = null;
@@ -290,7 +299,6 @@ public class CLI implements Runnable, UserInterface {
         while (!wizardChosen) {
             System.out.print("> ");
             try {
-                //choice = WizardType.valueOf(sc.next().toUpperCase());
                 choice = WizardType.valueOf(inputManager.getLastInput().toUpperCase());
                 wizardChosen = true;
             } catch (IllegalArgumentException e) {
@@ -299,6 +307,7 @@ public class CLI implements Runnable, UserInterface {
         }
         inputManager.setInputPermitted(false);
         listeners.firePropertyChange("WizardChoice", null, choice);
+        System.out.println("Tou have chosen the wizard " + choice + ". Now wait for other players choices.");
     }
 
     /**
@@ -400,7 +409,6 @@ public class CLI implements Runnable, UserInterface {
     @Override
     public void onGameInitialization(ModelView modelView) {
         printer = new MapPrinter(0, 0);
-        this.modelView = modelView;
         printer.initializeMap(modelView, nickname);
         helper = new UserHelper(modelView, inputManager);
     }
@@ -519,7 +527,11 @@ public class CLI implements Runnable, UserInterface {
      */
     @Override
     public void onError(ErrorMessageType error, String info) {
-        System.out.println(Colors.RED + "Received error " + error + ": " + info + Colors.RESET);
+        if (error != null) {
+            System.out.println(Colors.RED + "Received error " + error + ": " + info + Colors.RESET);
+        } else {
+            System.out.println(Colors.RED + info + Colors.RESET);
+        }
     }
 
     /**
@@ -557,5 +569,14 @@ public class CLI implements Runnable, UserInterface {
         else{
             listeners.firePropertyChange("DeleteSavedGame", null,null);
         }
+    }
+
+    /**
+     * Shutdown the application after a connection error
+     */
+    @Override
+    public void shutdown() {
+        System.err.println(Colors.RED + "Application will now close" + Colors.RESET);
+        System.exit(0);
     }
 }

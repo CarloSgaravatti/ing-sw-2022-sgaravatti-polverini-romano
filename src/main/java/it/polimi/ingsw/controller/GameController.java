@@ -138,7 +138,6 @@ public class GameController implements PropertyChangeListener{
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		MessageFromClient message = (MessageFromClient) evt.getNewValue();
-		//Message have to be ACTION
 		String nicknamePlayer = message.getClientMessageHeader().getNicknameSender();
 		String actionName = message.getClientMessageHeader().getMessageName();
 		if (!nicknamePlayer.equals(turnController.getActivePlayer().getNickName())) {
@@ -153,11 +152,11 @@ public class GameController implements PropertyChangeListener{
 						ErrorMessageType.TURN_NOT_FINISHED, "You can't end your turn now."));
 				return;
 			}
-			listeners.firePropertyChange(new PropertyChangeEvent(nicknamePlayer, "Action", actionName, new TurnPhase[0]));
 			boolean isPhaseEnded = turnController.endTurn();
 			actionController.resetPossibleActions(turnController.getCurrentPhase());
 			game.setIndexActivePlayer(turnController.getActivePlayer());
 			setStartingTurnPhase(turnController.getCurrentPhase());
+			listeners.firePropertyChange(new PropertyChangeEvent(nicknamePlayer, "Action", actionName, new TurnPhase[0]));
 			if (isPhaseEnded) {
 				handleEndPhase();
 				return;
@@ -173,11 +172,7 @@ public class GameController implements PropertyChangeListener{
 				PropertyChangeEvent event =
 						new PropertyChangeEvent(nicknamePlayer, "Action", actionName, newPossibleActions);
 				listeners.firePropertyChange(event);
-			} catch (IllegalArgumentException e) {
-				//TODO: decide if it has to handled here or directly in the action controller class;
-				//	the exception will be transformed in an error message
-				e.printStackTrace();
-			}
+			} catch (IllegalArgumentException ignored) {} // if thrown, the acknowledgement is not sent
 		}
 	}
 
@@ -206,6 +201,10 @@ public class GameController implements PropertyChangeListener{
 				turnController.getCurrentPhase(), newPossibleActions));
 	}
 
+	/**
+	 * Fires an event that contains the assistants that a player can play. The event will be fired at the beginning of each
+	 * planning phases; only the client that owns the assistants will receive the update
+	 */
 	private void notifyAssistantsToPlayers() {
 		for (Player p: game.getPlayers()) {
 			Integer[] assistantValues = p.getAssistants().stream().map(Assistant::getCardValue).toList().toArray(new Integer[0]);
