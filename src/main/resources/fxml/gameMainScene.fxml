@@ -82,7 +82,7 @@
                         <Button mnemonicParsing="false" text="PickFromCloud" />
                         <Button mnemonicParsing="false" text="PlayCharacter" />
                         <Button mnemonicParsing="false" text="EndTurn" />
-                        <Label prefHeight="117.0" prefWidth="199.0" textAlignment="CENTER" wrapText="true" />
+                        <Label prefHeight="147.0" prefWidth="199.0" textAlignment="CENTER" wrapText="true" />
                         <HBox alignment="CENTER" prefHeight="48.0" prefWidth="192.0" spacing="10.0">
                            <children>
                               <Button mnemonicParsing="false" text="Confirm" />
@@ -99,7 +99,7 @@
                   <AnchorPane prefHeight="79.0" prefWidth="1920.0" BorderPane.alignment="CENTER" />
                </bottom>
             </BorderPane>
-            <VBox fx:id="playersBox" layoutY="461.0" prefHeight="619.0" prefWidth="1920.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
+            <VBox fx:id="playersBox" layoutY="461.0" opacity="0.0" prefHeight="619.0" prefWidth="1920.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
                <children>
                   <AnchorPane prefHeight="47.0" prefWidth="1922.0">
                      <children>
