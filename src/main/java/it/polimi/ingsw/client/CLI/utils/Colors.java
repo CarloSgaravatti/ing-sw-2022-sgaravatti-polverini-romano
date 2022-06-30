@@ -1,5 +1,10 @@
 package it.polimi.ingsw.client.CLI.utils;
 
+/**
+ * Enumeration Colors provide all the constants of the unicode standard that are used
+ * for changing color to text character.
+ * Each constant have the corresponding unicode value associated.
+ */
 public enum Colors {
     BLACK("\u001B[30m"),
     RED("\u001B[31m"),
@@ -24,6 +29,11 @@ public enum Colors {
 
     private final String escape;
 
+    /**
+     * Constructs a new Colors with the specified code value
+     *
+     * @param escape the unicode string of the Colors
+     */
     Colors(String escape) {
         this.escape = escape;
     }

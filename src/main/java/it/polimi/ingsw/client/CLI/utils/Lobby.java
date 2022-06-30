@@ -3,13 +3,26 @@ package it.polimi.ingsw.client.CLI.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Lobby create all different parts of the printed lobby for every specific case
+ */
 public class Lobby {
     private final List<String[][]> lobby;
 
+    /**
+     * Construct a new Lobby that will load the lobby skeleton that will be filled
+     * when printing a specific lobby part
+     */
     public Lobby(){
         this.lobby = createSkeleton();
     }
 
+    /**
+     * createSkeleton create the lobby boxes (just the structure) and return the value that will be used
+     * by LobbyPrintManager
+     *
+     * @return all type of boxes
+     */
     public List<String[][]> createSkeleton(){
         List<String[][]> skeleton = new ArrayList<>();
         String newGame = "NewGame";
@@ -455,58 +468,116 @@ public class Lobby {
         return skeleton;
     }
 
+    /**
+     * return upperCommandBox for when we have at least one game in lobby
+     * @return upperCommandBox for when we have at least one game in lobby
+     */
     public String[][] getUpperCommandBox() {
         return cloneMatrix(lobby.get(1));
     }
 
+    /**
+     * upperCommandBox for when we have zero game in lobby
+     * @return upperCommandBox for when we have zero game in lobby
+     */
     public String[][] getUpperCommandBox1() {
         return cloneMatrix(lobby.get(0));
     }
 
+    /**
+     * setup box if we have just one game
+     * @return setup box if we have just one game
+     */
     public String[][] getSetup0() {
         return cloneMatrix(lobby.get(2));
     }
 
+    /**
+     * setup first box if we have more than one game
+     * @return setup first box if we have more than one game
+     */
     public String[][] getSetup1() {
         return cloneMatrix(lobby.get(3));
     }
 
+    /**
+     * setup box for boxes in the middle
+     * @return setup box for boxes in the middle
+     */
     public String[][] getSetup2() {
         return cloneMatrix(lobby.get(4));
     }
 
+    /**
+     * setup for last box in middles pages
+     * @return setup for last box in middles pages
+     */
     public String[][] getSetup3() {
         return cloneMatrix(lobby.get(5));
     }
 
+    /**
+     * setup for last box if we can go back in the previous lobby page or go to the next lobby page
+     * @return setup for last box if we can go back in the previous lobby page or go to the next lobby page
+     */
     public String[][] getLowerCommandBox() {
         return cloneMatrix(lobby.get(6));
     }
 
+    /**
+     * setup for last box if we have less than 5 games or exactly five games printed in first page
+     * @return setup for last box if we have less than 5 games or exactly five games printed in first page
+     */
     public String[][] getSetup4() {
         return cloneMatrix(lobby.get(7));
     }
 
+    /**
+     * setup for last box in the first page
+     * @return setup for last box in the first page
+     */
     public String[][] getSetup5() {
         return cloneMatrix(lobby.get(8));
     }
 
+    /**
+     * setup box if we have just one game in the last page
+     * @return setup box if we have just one game in the last page
+     */
     public String[][] getSetup6() {
         return cloneMatrix(lobby.get(9));
     }
 
+    /**
+     * last box in last page
+     * @return last box in last page
+     */
     public String[][] getSetup7() {
         return cloneMatrix(lobby.get(10));
     }
 
+    /**
+     * lowerCommandBox appear when we are in the last page
+     * @return lowerCommandBox appear when we are in the last page
+     */
     public String[][] getLowerCommandBoxLeft() {
         return cloneMatrix(lobby.get(11));
     }
 
+    /**
+     * lowerCommandBox appear when we are in the first page
+     * @return lowerCommandBox appear when we are in the first page
+     */
     public String[][] getLowerCommandBoxRight() {
         return cloneMatrix(lobby.get(12));
     }
 
+    /**
+     * Return a copy of the matrix with a different reference from the specified matrix
+     *
+     * @param matrix matrix that will be copied
+     * @return copy of the matrix with a different reference from the specified matrix
+     */
     public String[][] cloneMatrix(String[][] matrix) {
         String[][] clonedMatrix = new String[matrix.length][matrix[0].length];
         for (int i = 0; i < matrix.length; i++) {

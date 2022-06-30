@@ -1,7 +1,6 @@
 package it.polimi.ingsw;
 
 import it.polimi.ingsw.client.CLI.CLI;
-import it.polimi.ingsw.client.CLI.CLIStub;
 import it.polimi.ingsw.client.GUI.GUI;
 import it.polimi.ingsw.server.Server;
 import javafx.application.Application;
@@ -20,8 +19,6 @@ public class Eriantys {
                 System.setProperty("prism.allowhidpi", "false");
                 Application.launch(GUI.class);
             }
-            //For testing
-            case 3 -> CLIStub.main(null);
             default -> System.err.println("Error");
         }
     }

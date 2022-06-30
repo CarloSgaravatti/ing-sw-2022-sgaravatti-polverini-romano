@@ -1,5 +1,10 @@
 package it.polimi.ingsw.client.CLI.utils;
 
+/**
+ * Enumeration BackgroundColors provide all the constants of the unicode standard that are used
+ * for changing color to text background.
+ * Each constant have the corresponding unicode value associated.
+ */
 public enum BackgroundColors {
     BLACK("\u001B[40m"),
     RED("\u001B[41m"),
@@ -24,6 +29,11 @@ public enum BackgroundColors {
 
     private final String escape;
 
+    /**
+     * Constructs a new BackgroundColors with the specified code value
+     *
+     * @param escape the unicode string of the BackgroundColors
+     */
     BackgroundColors(String escape) {
         this.escape = escape;
     }

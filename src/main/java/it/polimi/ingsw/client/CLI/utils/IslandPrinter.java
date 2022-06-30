@@ -10,6 +10,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * IslandPrinter role is to create every single island box, after the creation all the
+ * created boxes are reunited by a single grid map by IslandMapPrinter
+ *
+ * @see IslandMapPrinter
+ */
 public class IslandPrinter {
     private final String[][] islandSkeleton;
     private static final Pair<Integer, Integer> ISLAND_INDEX_POSITION = new Pair<>(0, 7);
@@ -37,10 +43,20 @@ public class IslandPrinter {
     public static final int ISLAND_SIZE_X = 7;
     public static final int ISLAND_SIZE_Y = 15;
 
+    /**
+     * Construct a new IslandPrinter that will load the island skeleton that will be filled
+     * when printing a specific island
+     */
     public IslandPrinter() {
         islandSkeleton = getIslandSkeleton();
     }
 
+    /**
+     * getIslandSkeleton create the islands boxes (just the structure) and return the value that will be used
+     * by IslandPrinter
+     *
+     * @return built boxes
+     */
     public String[][] getIslandSkeleton() {
         String[][] islandSkeleton = new String[ISLAND_SIZE_X][ISLAND_SIZE_Y];
         for (String[] row: islandSkeleton) {
@@ -84,6 +100,18 @@ public class IslandPrinter {
         return islandSkeleton;
     }
 
+    /**
+     * Returns the completed island box of the island that have specified id.
+     * The method filled the island skeleton with the dynamics part of the island
+     *
+     * @param islandIndex the id of the island
+     * @param isPresent boolean value for reporting if mother nature is present in the island
+     * @param numTowers number of towers present into the island
+     * @param type type of tower present into the island
+     * @param islandStudent array containing the number of students for each type
+     * @param numNoEntryTiles number of no_entry_tile present in the island
+     * @return the completed island box of the island that have specified id
+     */
     public String[][] getIsland(int islandIndex, boolean isPresent, Integer numTowers,  TowerType type,
                                 Integer[] islandStudent, int numNoEntryTiles) {
         String[][] island = islandSkeleton; //doesn't matter if array are mutable, only the dynamic part are replaced

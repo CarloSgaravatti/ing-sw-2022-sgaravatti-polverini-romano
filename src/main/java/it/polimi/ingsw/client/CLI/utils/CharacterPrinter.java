@@ -8,6 +8,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * CharacterPrinter role is to create every single box for specific character, after the creation all the
+ * created boxes are reunited by a single grid map by CharacterMapPrinter
+ *
+ * @see CharacterMapPrinter
+ */
 public class CharacterPrinter {
     private ExpertFieldView expertField;
     private final String[][] characterSkeleton;
@@ -25,14 +31,29 @@ public class CharacterPrinter {
                     RealmType.RED_DRAGONS, UnicodeConstants.RED_DOT,
                     RealmType.PINK_FAIRES, UnicodeConstants.PURPLE_DOT);
 
+    /**
+     * Construct a new CharacterPrinter that will load the character skeleton that will be filled
+     * when printing a specific character
+     */
     public CharacterPrinter() {
         characterSkeleton = loadCharacterSkeleton();
     }
 
+    /**
+     * Sets the value of the expert field that this printer will use to print characters
+     *
+     * @param expertField the expert field used
+     */
     public void setExpertField(ExpertFieldView expertField) {
         this.expertField = expertField;
     }
 
+    /**
+     * loadCharacterSkeleton create the characters boxes (just the structure) and return the value that will be used
+     * by CharacterPrinter
+     *
+     * @return built boxes
+     */
     public String[][] loadCharacterSkeleton() {
         String[][] character = new String[CHARACTER_DIM_X][CHARACTER_DIM_Y];
         for(String[] strings: character) {
@@ -56,6 +77,13 @@ public class CharacterPrinter {
         return character;
     }
 
+    /**
+     * Returns the character box of the character that have specified id.
+     * The method filled the character skeleton with the dynamics part of the characters
+     *
+     * @param characterId id of the character
+     * @return specific character box for every character
+     */
     public String[][] getCharacter(int characterId) {
         int firstCharacterIdFigure = (characterId > 9) ? characterId / 10 : characterId;
         characterSkeleton[ID_POSITION.getFirst()][ID_POSITION.getSecond()] =
@@ -78,6 +106,11 @@ public class CharacterPrinter {
         return characterSkeleton;
     }
 
+    /**
+     * getCharacterWithStudents fills the character boxes that have to contain students with students
+     *
+     * @param characterId id of the character
+     */
     private void getCharacterWithStudent(int characterId) {
         characterSkeleton[NO_ENTRY_TILE_POSITION.getFirst()][NO_ENTRY_TILE_POSITION.getSecond()] = " ";
         characterSkeleton[NO_ENTRY_TILE_POSITION.getFirst()][NO_ENTRY_TILE_POSITION.getSecond() + 1] = " ";
@@ -93,6 +126,9 @@ public class CharacterPrinter {
         }
     }
 
+    /**
+     * getCharacterWithNoEntryTile fills the character boxes that have to contain no_entry_tiles with no_entry_tiles
+     */
     private void getCharacterWithNoEntryTile() {
         characterSkeleton[NO_ENTRY_TILE_POSITION.getFirst()][NO_ENTRY_TILE_POSITION.getSecond()] =
                 Colors.RED.toString() + expertField.getNumNoEntryTilesOnCharacter().getSecond() + Colors.RESET;
@@ -100,6 +136,9 @@ public class CharacterPrinter {
                 Colors.RED + "x" + Colors.RESET;
     }
 
+    /**
+     * getCharacterWithoutNothing fills the character boxes that doesn't have to contain no_entry_tiles or students just with spaces
+     */
     private void getCharacterWithoutNothing() {
         //For the moment I fill with spaces, but characterId can be used to place a special unicode character for that character
         characterSkeleton[NO_ENTRY_TILE_POSITION.getFirst()][NO_ENTRY_TILE_POSITION.getSecond()] = " ";
