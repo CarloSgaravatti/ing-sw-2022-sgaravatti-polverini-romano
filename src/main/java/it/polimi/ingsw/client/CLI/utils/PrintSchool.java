@@ -8,6 +8,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * PrintSchool is used for creating the skeleton of the school with all dynamics information inside
+ */
 public class PrintSchool {
     String[][] schoolSkeleton;
     public static final int SCHOOL_DIMENSION_X = 7;
@@ -24,10 +27,20 @@ public class PrintSchool {
                     RealmType.PINK_FAIRES, UnicodeConstants.PURPLE_DOT);
     private static final List<Integer> VERTICAL_POSTIONS_Y = List.of(0, 4, 24, 29, 34);
 
+    /**
+     * Construct a new PrintSchool that will load the school skeleton that will be filled
+     * when printing a specific school
+     */
     public PrintSchool() {
         schoolSkeleton = loadSchoolSkeleton();
     }
 
+    /**
+     * loadSchoolSkeleton create the school boxes (just the structure) and return the value that will be
+     * used by School by SchoolMapPrinter
+     *
+     * @return return the value that will be used by School by SchoolMapPrinter
+     */
     public String[][] loadSchoolSkeleton() {
         String[][] skeleton = new String[SCHOOL_DIMENSION_X][SCHOOL_DIMENSION_Y];
         for (String[] row: skeleton) {
@@ -49,6 +62,18 @@ public class PrintSchool {
         return skeleton;
     }
 
+    /**
+     * Returns the completed school box with all dynamics part.
+     * The method filled the school skeleton with the dynamics part of the island
+     *
+     * @param isProfessorPresent boolean array that tell wich professor is present in the school
+     * @param entranceStudents integer array that tell how many student for each type are present in the entrance
+     * @param numTowers number of towers present in school
+     * @param type type of towers present in school
+     * @param diningRoomStudents integer array that tell how many student for each type,
+     *                           are present in the dining room
+     * @return the completed school box with all dynamics part
+     */
     public String[][] getSchool(boolean[] isProfessorPresent, Integer[] entranceStudents,int numTowers ,TowerType type, Integer[] diningRoomStudents) {
         String[][] school = schoolSkeleton;
         int cont = 0;
@@ -76,6 +101,16 @@ public class PrintSchool {
         return schoolSkeleton;
     }
 
+    /**
+     * Add heading information to the school box
+     *
+     * @param nickname owner of the school name
+     * @param coins number of coins of the owner of te school
+     * @param addCoins boolean value for telling if the player have to get a coins
+     * @param school school box skeleton
+     * @param lastAssistant Pair of integer that represent index and mother nature movement of last assistant played
+     * @return school box with new heading
+     */
     public String[][] addHeading(String nickname, int coins, boolean addCoins, String[][] school, Pair<Integer, Integer> lastAssistant) {
         String[][] schoolWithHeading = new String[school.length + 2][school[0].length];
         Arrays.fill(schoolWithHeading[0], " ");

@@ -6,17 +6,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * LobbyPrinterManager role is to print the exact lobby part for each specific case
+ */
 public class LobbyPrintManager {
     private final Lobby lobby = new Lobby();
     private final Map<Integer, Triplet<Integer, Boolean, String[]>> lobbyInfo;
     private int currentStartingIdx = 0;
     private final List<Integer> lobbyIds;
 
+    /**
+     * Construct a new LobbyPrintManager by the info of the global lobby
+     *
+     * @param lobbyInfo global lobby information
+     */
     public LobbyPrintManager(Map<Integer, Triplet<Integer, Boolean, String[]>> lobbyInfo) {
         this.lobbyInfo = lobbyInfo;
         lobbyIds = new ArrayList<>(lobbyInfo.keySet());
     }
 
+    /**
+     * Return currentStartingIdx + 5 if is possible to see another page of not started games
+     *
+     * @return currentStartingIdx + 5 if is possible to see another page of not started games
+     */
     public boolean onNextFiveCommand() {
         if (lobbyInfo.size() - currentStartingIdx > 5) {
             currentStartingIdx += 5;
@@ -27,6 +40,11 @@ public class LobbyPrintManager {
         }
     }
 
+    /**
+     * Return currentStartingIdx - 5 if exist a previous page of not started games
+     *
+     * @return currentStartingIdx - 5 if exist a previous page of not started games
+     */
     public boolean onPreviousFiveCommand() {
         if (currentStartingIdx >= 5) {
             currentStartingIdx -= 5;
@@ -37,6 +55,12 @@ public class LobbyPrintManager {
         }
     }
 
+    /**
+     * printLobby construct all lobby with different boxex for every specific case as you can see in
+     * the Lobby class
+     *
+     * @see Lobby
+     */
     public void printLobby() {
         switch (lobbyInfo.size() - currentStartingIdx) {
             case 0 -> printMatrix(lobby.getUpperCommandBox1());
@@ -92,6 +116,11 @@ public class LobbyPrintManager {
         }
     }
 
+    /**
+     * Print the final lobby on the command line interface
+     *
+     * @param matrix matrix containing all boxes in the correct position and with information
+     */
     private void printMatrix(String[][] matrix) {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[0].length; j++) {
@@ -101,6 +130,16 @@ public class LobbyPrintManager {
         }
     }
 
+    /**
+     * Insert all the info in the boxes of the lobby
+     *
+     * @param setup is the single box of the lobby
+     * @param id index of the game
+     * @param numPlayers number of players in the game
+     * @param rules rules of the game (true if expert rule)
+     * @param names names of all participants
+     * @return the box with all information in it
+     */
     private String[][] insertSetupInfo(String[][] setup, int id, int numPlayers, boolean rules, String[] names) {
         setup[2][3] = String.valueOf(id);
         String rulesString = (rules) ? "expert" : "simple";

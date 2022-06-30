@@ -2,10 +2,21 @@ package it.polimi.ingsw.client.CLI.utils;
 
 import it.polimi.ingsw.model.enumerations.RealmType;
 
+/**
+ * PrintClouds is used for creating the skeleton of the cloud with all dynamics information inside
+ */
 public class PrintClouds {
     public static final int CLOUD_SIZE_X = 5;
     public static final int CLOUD_SIZE_Y = 10;
 
+    /**
+     * drawClouds create the cloud skeleton with dynamics parts inside
+     *
+     * @param cloudIndex index of the cloud
+     * @param full boolean value that tell if the cloud is full or empty
+     * @param students students' array
+     * @return the cloud skeleton with dynamics parts inside
+     */
     public static String[][] drawClouds(int cloudIndex, boolean full, RealmType ... students) {
         String[][] draw = new String[CLOUD_SIZE_X][CLOUD_SIZE_Y];
         draw[0][0] = Colors.BLUE + "╔" + Colors.RESET;
@@ -29,7 +40,7 @@ public class PrintClouds {
 
         }
 
-        draw[0][4]= Colors.BLACK +""+ BackgroundColors.BLUE + "" + cloudIndex + BackgroundColors.RESET +""+ Colors.RESET;
+        draw[0][4]= Colors.WHITE +""+ BackgroundColors.BLUE + "" + cloudIndex + BackgroundColors.RESET +""+ Colors.RESET;
 
         int f=0;
         int h=1;

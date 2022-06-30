@@ -1,6 +1,14 @@
 package it.polimi.ingsw.client.CLI.utils;
 
+/**
+ * PrintStaticMessage print the static message of the game.
+ * as welcome ,win ,lost and tie messages
+ */
 public class PrintStaticMessage {
+
+    /**
+     * printWelcome prints the welcome message on command line interface
+     */
     public static void printWelcome(){
         String r = Colors.RESET;
         Colors y = Colors.YELLOW;
@@ -33,6 +41,9 @@ public class PrintStaticMessage {
 
     }
 
+    /**
+     * printWin prints the "win" message on command line interface
+     */
     public static void printWin(){
         String r = Colors.RESET;
         Colors y = Colors.YELLOW;
@@ -57,6 +68,9 @@ public class PrintStaticMessage {
         System.out.println();
     }
 
+    /**
+     * printLoose prints the "loose" message on command line interface
+     */
     public static void printLoose(){
         String r = Colors.RESET;
         Colors y = Colors.RED;
@@ -81,6 +95,9 @@ public class PrintStaticMessage {
         System.out.println("\t                                   "+b+y+"LLLLLLLLL"+r+"   "+b+y+"OOOOOOOOO"+r+"   "+b+y+"SSSSSSSS"+r+"   "+b+y+"EEEEEEEEE"+r);
     }
 
+    /**
+     * printTie prints the "tie" message on command line interface
+     */
     public static void printTie(){
         String r = Colors.RESET;
         Colors y = Colors.GREEN;
