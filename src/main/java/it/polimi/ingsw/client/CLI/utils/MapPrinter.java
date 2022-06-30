@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * MapPrinter role is to put together all difference maps
+ */
 public class MapPrinter {
     private String[][] islandsMap;
     private ModelView modelView;
@@ -28,6 +31,12 @@ public class MapPrinter {
     private String[][] cloudsMap;
     private String[][] characterMap;
 
+    /**
+     * Initialize the space of the map containing all different maps with spaces
+     *
+     * @param dimX x axe dimension of the final map
+     * @param dimY y axe dimension of the final map
+     */
     public MapPrinter(int dimX, int dimY) {
         islandsMap = new String[dimX][dimY];
         for (String[] strings : islandsMap) {
@@ -36,6 +45,9 @@ public class MapPrinter {
         //TODO: set dimensions of map parts
     }
 
+    /**
+     * printMap print the complete map of all the game
+     */
     public synchronized void printMap() {
         int characterMapLength = (modelView.isExpert()) ? characterMap.length : 0;
         int maxDimensionX = Math.max(Math.max(islandsMap.length, cloudsMap.length), characterMapLength);
@@ -95,6 +107,7 @@ public class MapPrinter {
         //        Arrays.toString(modelView.getClientPlayerAssistants().keySet().toArray(new Integer[0])));
     }
 
+    //TODO: carlone controlla se è da eliminare
     public static void printMatrixRow(String[] matrixRow, int rowLength, int matrixRowDim, int numRows) {
         if (matrixRowDim < numRows) {
             for (int i = 0; i < rowLength; i++) {
@@ -107,18 +120,12 @@ public class MapPrinter {
         }
     }
 
-    @Deprecated
-    public void replaceMapPart(Pair<Integer, Integer> startingCoordinates, Pair<Integer, Integer> finalCoordinates,
-                               String[][] newMapPart) {
-        int matrixDimX = finalCoordinates.getFirst() - startingCoordinates.getFirst();
-        int matrixDimY = finalCoordinates.getSecond() - startingCoordinates.getSecond();
-        for (int i = 0; i  < matrixDimX; i++) {
-            for (int j = 0; j < matrixDimY; j++) {
-                islandsMap[i + startingCoordinates.getFirst()][j + startingCoordinates.getSecond()] = newMapPart[i][j];
-            }
-        }
-    }
-
+    /**
+     * Initialize the complete map by the specific value of ModelView
+     *
+     * @param modelView Model view used by initializeMap
+     * @param nickname nickname of the player of this map
+     */
     public synchronized void initializeMap(ModelView modelView, String nickname) {
         this.modelView = modelView;
         this.nickname = nickname;
@@ -136,41 +143,77 @@ public class MapPrinter {
         }
     }
 
+    /**
+     * Replace island in the map with another one by a specific id
+     *
+     * @param islandId index of the island to change
+     */
     public synchronized void replaceIsland(int islandId) {
         islandMapPrinter.changeOnlyIsland(islandId);
         islandsMap = islandMapPrinter.getIslandMap();
     }
 
+    /**
+     * Recompute all the island map
+     */
     public synchronized void recomputeIslandMap() {
         islandMapPrinter.initializeIslandMap();
         islandsMap = islandMapPrinter.getIslandMap();
     }
 
+    /**
+     * Replace school in the map with another one by a specific id
+     *
+     * @param player owner of the school
+     */
     public synchronized void replaceSchool(String player) {
         schoolMapPrinter.changeOnlySchoolOf(player);
         schoolMap = schoolMapPrinter.getSchoolMap();
     }
 
+    /**
+     * Recompute all the school map
+     */
     public synchronized void recomputeSchoolMap() {
         schoolMapPrinter.initializeSchoolMap();
         schoolMap = schoolMapPrinter.getSchoolMap();
     }
 
+    /**
+     * Replace a cloud in the map with another one by a specific id
+     *
+     * @param cloudId index of the cloud to replace
+     */
     public synchronized void replaceCloud(int cloudId) {
         cloudMapPrinter.changeOnlyCloud(cloudId);
         cloudsMap = cloudMapPrinter.getCloudMap();
     }
 
+    /**
+     * Recompute all the cloud map
+     */
     public synchronized void recomputeCloudMap() {
         cloudMapPrinter.initializeCloudMap();
         cloudsMap = cloudMapPrinter.getCloudMap();
     }
 
+    /**
+     * Replace a character in character map with another one by a specific id
+     *
+     * @param characterId index of the character to replace
+     */
     public synchronized void replaceCharacter(int characterId) {
         characterMapPrinter.changeOnlyCharacter(characterId);
         characterMap = characterMapPrinter.getCharacterMap();
     }
 
+    /**
+     * appendMatrixInLine merge together 2 matrix in line
+     *
+     * @param toAppend matrix to append to the main matrix
+     * @param matrix main matrix
+     * @return new main matrix with another matrix merged in it in line
+     */
     public static String[][] appendMatrixInLine(String[][] toAppend, String[][] matrix) {
         int matrixDimX = toAppend.length;
         int matrixDimY = (matrix.length == 0) ? 0 : matrix[0].length;
@@ -190,7 +233,14 @@ public class MapPrinter {
         return newMatrix;
     }
 
-    //The two matrix must have the same y dimension (or matrix can be 0 y-dimensioned)
+    /**
+     * appendMatrixInColumn merge together 2 matrix in column if the two matrix have the same
+     * Y-dimension (or matrix can be 0 y-dimensioned)
+     *
+     * @param toAppend matrix to append to the main matrix
+     * @param matrix main matrix
+     * @return new main matrix with another matrix merged in it in column
+     */
     public static String[][] appendMatrixInColumn(String[][] toAppend, String[][] matrix) {
         int matrixDimX = matrix.length;
         int toAppendDimX = toAppend.length;
@@ -210,7 +260,14 @@ public class MapPrinter {
         return newMatrix;
     }
 
-    //toInsert must be smaller in dimensions than oldMatrix
+    /**
+     * Substitute a sub matrix int the specified position
+     *
+     * @param oldMatrix main matrix
+     * @param toInsert new sub matrix
+     * @param startingPos starting position of the new sub matrix
+     * @return new main matrix with substituted sub matrix in it
+     */
     public static String[][] substituteSubMatrix(String[][] oldMatrix, String[][] toInsert, Pair<Integer, Integer> startingPos) {
         String[][] newMatrix = oldMatrix;
         for (int i = 0; i < toInsert.length; i++) {

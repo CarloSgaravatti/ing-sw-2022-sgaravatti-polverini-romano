@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Lobby create all different parts of the printed lobby for every specific case
+ * Lobby create all different parts of the printed lobby on the command line interface, with the
+ * help of a LobbyPrintManager, for every specific case
+ *
+ * @see LobbyPrintManager
  */
 public class Lobby {
     private final List<String[][]> lobby;
