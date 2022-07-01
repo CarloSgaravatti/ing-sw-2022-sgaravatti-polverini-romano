@@ -54,6 +54,11 @@ The game information will be printed every time a new turn start and, if it is t
 
 To know how to do actions, simply type Help when it is your turn.
 
+![CLI screenshot](https://user-images.githubusercontent.com/58942793/176948498-60dacfd4-4523-4030-b165-6ab6f9046864.png)
+
+Note: to make all things visible in a command line interface with a black background we have used the blue color for black towers; also, to better distinguish white
+and grey towers, grey towers are seen as cyan.
+
 ### GUI
 
 The GUI can be runned by inserting 2 after running the jar. For the best game experience, it is suggested to run the GUI in full screen on a 1920x1080 resolution.
