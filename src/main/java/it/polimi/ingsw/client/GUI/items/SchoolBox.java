@@ -63,11 +63,22 @@ public class SchoolBox {
                 .getResourceAsStream(Constants.towerImages.get(playerView.getPlayerTower()))))));
     }
 
+    /**
+     * method setAssistantImage takes last assistant played and inserts the image in the scene
+     *
+     * @param image image of the assistant
+     */
     public void setAssistantImage(Image image) {
         lastAssistantPlayed.setImage(image);
         lastAssistantPlayed.setPreserveRatio(true);
     }
 
+    /**
+     * method initializeSchool inserts students in the school when the game starts/restarts
+     *
+     * @param modelView the modelView of the client
+     * @param nickname  the nickname of the player
+     */
     public void initializeSchool(ModelView modelView, String nickname) {
         initializeStudents(entrance);
         initializeStudents(diningRoom);
@@ -89,6 +100,11 @@ public class SchoolBox {
         updateCoins();
     }
 
+    /**
+     * method initializeStudents inserts empty place for missing students
+     *
+     * @param container container of the students
+     */
     private void initializeStudents(AnchorPane container) {
         List<Node> students = container.getChildren();
         for (int i = 0; i < students.size(); i++) {
@@ -97,6 +113,9 @@ public class SchoolBox {
         }
     }
 
+    /**
+     * method initializeProfessors inserts empty place for the professors in the school
+     */
     private void initializeProfessors() {
         List<Node> professors = professorTable.getChildren();
         for (int i = 0; i < professors.size(); i++) {
@@ -108,6 +127,11 @@ public class SchoolBox {
         }
     }
 
+    /**
+     * method insertProfessor inserts image for professors in the school
+     *
+     * @param professorType type of the professor added
+     */
     public void insertProfessor(RealmType professorType) {
         //System.out.println("Inserting professor " + professorType);
         ProfessorImage professorImage = (ProfessorImage) professorTable.getChildren().get(diningRoomOrder.indexOf(professorType));
@@ -120,11 +144,21 @@ public class SchoolBox {
         fadeTransition.setOnFinished(actionEvent -> professorImage.setOpacity(1));*/
     }
 
+    /**
+     * method removeProfessor removes image of the professor in the school
+     *
+     * @param professorType type of the professor removed
+     */
     public void removeProfessor(RealmType professorType) {
         ProfessorImage professorImage = (ProfessorImage) professorTable.getChildren().get(diningRoomOrder.indexOf(professorType));
         professorImage.setOpacity(0);
     }
 
+    /**
+     * method insertStudentEntrance inserts students in the school entrance
+     *
+     * @param student type of the student added
+     */
     public synchronized void insertStudentEntrance(RealmType student) {
         List<Node> students = entrance.getChildren().stream().toList();
         Integer emptyIndex = findFirstEmpty(students);
@@ -134,12 +168,24 @@ public class SchoolBox {
         studentImage.setOnDragDetected(dragStartStudentHandler);
     }
 
+    /**
+     * method findFirstEmpty finds first empty place of the passed list of students
+     *
+     * @param students list of students
+     * @return returns index of the first empty place in the list of student
+     */
     private Integer findFirstEmpty(List<Node> students) {
         Optional<Node> studentEmpty = students.stream().filter(s -> s.getOpacity() == 0).findFirst();
         if (studentEmpty.isEmpty()) return null;
         return students.indexOf(studentEmpty.get());
     }
 
+    /**
+     * method removeFromEntrance removes students from the school entrance
+     *
+     * @param studentType type of the student removed
+     * @param isClientSchool boolean that says if the school is a client's school or not
+     */
     public synchronized void removeFromEntrance(RealmType studentType, boolean isClientSchool) {
         Optional<Node> student = entrance.getChildren().stream()
                 .filter(s -> ((StudentImage) s).getStudentType() == studentType)
@@ -150,6 +196,11 @@ public class SchoolBox {
         });
     }
 
+    /**
+     * method setDragStartStudentHandler links for every student the entrance for the drag and drop
+     *
+     * @param handler handler of drag start event for drag and drop
+     */
     public void setDragStartStudentHandler(EventHandler<MouseEvent> handler) {
         this.dragStartStudentHandler = handler;
         entrance.getChildren().stream()
@@ -157,11 +208,22 @@ public class SchoolBox {
                 .forEach(s -> s.setOnDragDetected(handler));
     }
 
+    /**
+     * method registerDiningRoomDragAndDrop logs events of drag and drop in the dining room
+     *
+     * @param dragOverHandler handler for the drag over event
+     * @param dropHandler handler for the drag and drop event
+     */
     public void registerDiningRoomDragAndDrop(EventHandler<DragEvent> dragOverHandler, EventHandler<DragEvent> dropHandler) {
         diningRoom.setOnDragOver(dragOverHandler);
         diningRoom.setOnDragDropped(dropHandler);
     }
 
+    /**
+     * method insertInDiningRoom inserts students in the school's dining room
+     *
+     * @param student student tha will be added to the school's dining room
+     */
     public synchronized void insertInDiningRoom(RealmType student) {
         int studentIdx = diningRoomOrder.indexOf(student);
         List<Node> studentsLine = diningRoom.getChildren().subList(studentIdx * 10, (studentIdx + 1) * 10);
@@ -171,6 +233,11 @@ public class SchoolBox {
         ((StudentImage) studentsLine.get(i)).setStudent(student);
     }
 
+    /**
+     * method removeFromDiningRoom removes students from the school's dining room'
+     *
+     * @param student student that will be removed from the school's dining room
+     */
     public void removeFromDiningRoom(RealmType student) {
         int studentIdx = diningRoomOrder.indexOf(student);
         List<Node> studentsLine = diningRoom.getChildren().subList(studentIdx * 10, (studentIdx + 1) * 10);
@@ -180,6 +247,11 @@ public class SchoolBox {
         studentsLine.get(i - 1).setOpacity(0);
     }
 
+    /**
+     * method moveStudentFromEntranceToDiningRoom moves student from the school's entrance to the school's dining room
+     *
+     * @param studentType student that will be moved
+     */
     public void moveStudentFromEntranceToDiningRoom(RealmType studentType) {
         Optional<Node> studentNode = entrance.getChildren().stream()
                 .filter(s -> ((StudentImage) s).getStudentType() == studentType)
@@ -205,7 +277,13 @@ public class SchoolBox {
             
         });
     }
-    
+
+    /**
+     * method findFirstFreePosition finds the first empty place in a list of student in the dining room
+     *
+     * @param student type of the students in the list checked
+     * @return returns 
+     */
     private Pair<Double, Double> findFirstFreePosition(RealmType student) {
         int studentIdx = diningRoomOrder.indexOf(student);
         List<Node> studentsLine = diningRoom.getChildren().subList(studentIdx * 10, (studentIdx + 1) * 10);
@@ -214,14 +292,31 @@ public class SchoolBox {
         return new Pair<>(studentsLine.get(i).getLayoutX(), studentsLine.get(i).getLayoutY());
     }
 
+    /**
+     * method getEntrancePane gets the school's entrance AnchorPane
+     *
+     * @return returns the school's entrance AnchorPane
+     */
     public AnchorPane getEntrancePane() {
         return entrance;
     }
 
+    /**
+     * method getEntrancePane gets the school's dining room AnchorPane
+     *
+     * @return returns the school's dining room AnchorPane
+     */
     public AnchorPane getDiningRoomPane() {
         return diningRoom;
     }
 
+    /**
+     * method getEntranceStudentLayout gets student's layout (x,y)
+     *
+     * @param student returns student's layout as (xPosition, yPosition)
+     * @return
+     * @throws NoSuchElementException
+     */
     public Pair<Double, Double> getEntranceStudentLayout(RealmType student) throws NoSuchElementException {
         Optional<Node> studentPresent = entrance.getChildren().stream()
                 .filter(s -> s.getOpacity() == 1 &&  ((StudentImage) s).getStudentType() == student).findFirst();
@@ -231,25 +326,46 @@ public class SchoolBox {
         return new Pair<>(xPosition, yPosition);
     }
 
+    /**
+     * method getDimStudentsRadius gets dimension of the student's circle radius
+     *
+     * @return returns dimension of the student's circle radius
+     */
     public double getDimStudentsRadius() {
         return dimStudentsRadius;
     }
 
+    /**
+     * method removeTower removes a tower from the school
+     *
+     */
     public void removeTower() {
         List<Node> towersVisible = towers.getChildren().stream().filter(Node::isVisible).toList();
         towersVisible.get(towersVisible.size() - 1).setVisible(false);
     }
 
+    /**
+     * method insertTower inserts a tower in the school
+     *
+     */
     public void insertTower() {
         towers.getChildren().stream().filter(n -> !n.isVisible()).findFirst().ifPresent(node -> node.setVisible(false));
     }
 
+    /**
+     * method updateCoins updates a player's coins' number
+     *
+     */
     public void updateCoins() {
         Label coinsLabel = (Label) ((VBox) container.getChildren().get(2)).getChildren().get(1);
         int numCoins = playerView.getPlayerCoins();
         coinsLabel.setText(Integer.toString(numCoins));
     }
 
+    /**
+     * method updateEntrance updates the school entrance with new students
+     *
+     */
     public void updateEntrance() {
         entrance.getChildren().forEach(s -> ((StudentImage) s).reset());
         RealmType[] entranceStudents = RealmType.getRealmsFromIntegerRepresentation(playerView.getSchoolStudents().getFirst());

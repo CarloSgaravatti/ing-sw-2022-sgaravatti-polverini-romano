@@ -40,17 +40,28 @@ public class CloudSubScene extends AnchorPane implements Initializable {
             e.printStackTrace();
         }
     }
+
+    /**
+     * method initializeStudents inserts 3 or 4 students in the cloud
+     *
+     * @param students array of students that will be inserted in the clouds
+     */
     public void initializeStudents(RealmType[] students) {
         List<Node> studentsNode = this.getChildren();
         for (int i = 0; i < studentsNode.size(); i++) {
             Circle circle = (Circle) studentsNode.get(i);
             StudentImage studentImage = new StudentImage(circle);
-            if (students.length > i) studentImage.setStudent(students[i]);
+            if(students.length > i)
+            studentImage.setStudent(students[i]);
             this.getChildren().set(i, studentImage);
 
         }
     }
 
+    /**
+     * method ResetStudentImage remove all the students from the cloud after a cloud choice by the player
+     *
+     */
     public void ResetStudentImage() {
         List <Node> studentsNode = this.getChildren();
         for(int i = 0; i < studentsNode.size(); i++){
@@ -58,6 +69,13 @@ public class CloudSubScene extends AnchorPane implements Initializable {
         }
 
     }
+
+    /**
+     * method initialize inserts random clouds in the scene
+     *
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         if(ifFourStudents) {
