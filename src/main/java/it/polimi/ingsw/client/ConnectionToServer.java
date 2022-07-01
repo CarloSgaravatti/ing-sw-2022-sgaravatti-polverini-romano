@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client;
 
-import it.polimi.ingsw.client.GUI.GUI;
 import it.polimi.ingsw.client.messageHandlers.DefaultMessageHandler;
 import it.polimi.ingsw.client.messageHandlers.MessageHandler;
 import it.polimi.ingsw.messages.*;
@@ -68,19 +67,13 @@ public class ConnectionToServer implements Runnable {
             while (isActive()) {
                 MessageFromServer message = (MessageFromServer) inputStream.readObject();
                 if (message != null && message.getServerMessageHeader().getMessageType() != ServerMessageType.PING_MESSAGE) {
-                    messageHandlerExecutor.submit(() -> {
-                        //TODO: delete try catch
-                        try {
-                            firstMessageHandler.handleMessage(message);
-                        } catch (Exception e) {e.printStackTrace();}
-                    });
+                    messageHandlerExecutor.submit(() -> firstMessageHandler.handleMessage(message));
                 } else if (message != null){
                     onPingMessage();
                 }
             }
         } catch (IOException | ClassNotFoundException | ClassCastException e) {
             System.err.println(e.getMessage());
-            e.printStackTrace();
         } finally {
             messageHandlerExecutor.shutdownNow();
             try {

@@ -7,9 +7,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -49,7 +47,8 @@ public class CharacterImage extends AnchorPane {
             updateStudents();
             studentsBox.setMaxHeight(10 + 2 * studentRadius);
             studentsBox.setAlignment(Pos.CENTER);
-            studentsBox.setLayoutY(super.getHeight() - studentsBox.getHeight());
+            AnchorPane.setBottomAnchor(studentsBox, 0.0);
+            //studentsBox.setLayoutY(super.getHeight() - studentsBox.getHeight());
             super.getChildren().add(studentsBox);
         }
     }
@@ -86,6 +85,7 @@ public class CharacterImage extends AnchorPane {
         ImageView imageView = new ImageView(image);
         imageView.setFitWidth(super.getWidth() / 4);
         imageView.setPreserveRatio(true);
+        AnchorPane.setBottomAnchor(imageView, 50.0);
         imageView.setLayoutY(super.getHeight() / 2);
         super.getChildren().add(imageView);
     }

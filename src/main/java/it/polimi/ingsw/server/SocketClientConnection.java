@@ -94,12 +94,11 @@ public class SocketClientConnection implements Runnable, ClientConnection {
             if (!setupDone) {
                 sendError(ErrorMessageType.CLIENT_WITHOUT_GAME, "Before doing this you have to select a game to play");
             } else {
-                //TODO: delete try catch when everything is ok
                 messageExecutor.submit(() -> {
                     try {
                         listeners.firePropertyChange("RemoteView", null, message);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        System.err.println(e.getMessage());
                     }
                 });
             }

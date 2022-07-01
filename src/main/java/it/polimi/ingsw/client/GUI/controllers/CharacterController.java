@@ -70,6 +70,8 @@ public class CharacterController extends FXMLController {
             for (int i = 0; i < numNoEntryTilesOnCharacter; i++) {
                 ImageView imageNoEntryTiles = new ImageView(new Image(Objects.requireNonNull(getClass()
                         .getResourceAsStream("/images/deny_island_icon.png"))));
+                imageNoEntryTiles.setFitHeight(studentsBox.getHeight());
+                imageNoEntryTiles.setPreserveRatio(true);
                 studentsBox.getChildren().add(imageNoEntryTiles);
             }
         }
@@ -79,10 +81,10 @@ public class CharacterController extends FXMLController {
         characterDescription.setText(description);
         characterTitle.setText("Character " + characterId);
         root.setTranslateX(0);
-        setOptions();
-        root.setOpacity(1);
         characterPlayable = false;
+        root.setOpacity(1);
         playButton.setOpacity(0.5);
+        setOptions();
     }
 
     /**
@@ -243,6 +245,7 @@ public class CharacterController extends FXMLController {
      * Make the play character button clickable after the user have selected all the options for playing the character
      */
     private void makePlayCharacterButtonClickable() {
+        System.out.println("Character is playable");
         characterPlayable = true;
         playButton.setOpacity(1);
     }

@@ -16,7 +16,7 @@ public class PrintSchool {
     public static final int SCHOOL_DIMENSION_X = 7;
     public static final int SCHOOL_DIMENSION_Y = 35;
     private static final Map<TowerType, Pair<UnicodeConstants, Colors>> towersUnicode =
-            Map.of(TowerType.BLACK, new Pair<>(UnicodeConstants.BLACK_TOWER, Colors.BLACK),
+            Map.of(TowerType.BLACK, new Pair<>(UnicodeConstants.BLACK_TOWER, Colors.BLUE),
                     TowerType.WHITE, new Pair<>(UnicodeConstants.WHITE_TOWER, Colors.WHITE),
                     TowerType.GREY, new Pair<>(UnicodeConstants.GREY_TOWER, Colors.CYAN));
     private static final Map<RealmType, UnicodeConstants> studentsUnicode =
@@ -25,7 +25,7 @@ public class PrintSchool {
                     RealmType.GREEN_FROGS, UnicodeConstants.GREEN_DOT,
                     RealmType.RED_DRAGONS, UnicodeConstants.RED_DOT,
                     RealmType.PINK_FAIRES, UnicodeConstants.PURPLE_DOT);
-    private static final List<Integer> VERTICAL_POSTIONS_Y = List.of(0, 4, 24, 29, 34);
+    private static final List<Integer> VERTICAL_POSITIONS_Y = List.of(0, 4, 24, 29, 34);
 
     /**
      * Construct a new PrintSchool that will load the school skeleton that will be filled
@@ -55,7 +55,7 @@ public class PrintSchool {
             skeleton[SCHOOL_DIMENSION_X - 1][i] = UnicodeConstants.HORIZONTAL.toString();
         }
         for (int i = 1; i < 6; i++) {
-            for (Integer j: VERTICAL_POSTIONS_Y) {
+            for (Integer j: VERTICAL_POSITIONS_Y) {
                 skeleton[i][j] = UnicodeConstants.VERTICAL.toString();
             }
         }
