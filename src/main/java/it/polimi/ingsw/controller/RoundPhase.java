@@ -5,6 +5,7 @@ import java.util.List;
 /**
  * Enum class RoundPhase contains all possible phases of the round, each phase has a list of actions that can be done
  * during it.
+ *
  * @see TurnPhase
  */
 public enum RoundPhase {

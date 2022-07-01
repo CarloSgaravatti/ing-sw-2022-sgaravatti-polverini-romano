@@ -68,7 +68,6 @@ public class SocketClientConnection implements Runnable, ClientConnection {
                 sendError(ErrorMessageType.CLIENT_WITHOUT_GAME, "Before doing this you have to select a game to play");
             } else {
                 //TODO: delete try catch when everything is ok
-                System.out.println("Received " + message.getClientMessageHeader().getMessageName());
                 messageExecutor.submit(() -> {
                     try {
                         listeners.firePropertyChange("RemoteView", null, message);

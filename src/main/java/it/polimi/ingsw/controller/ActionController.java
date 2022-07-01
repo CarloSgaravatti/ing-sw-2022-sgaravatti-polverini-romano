@@ -12,7 +12,6 @@ import it.polimi.ingsw.utils.Pair;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -61,6 +60,7 @@ public class ActionController {
 	/**
 	 * Process an action that has arrived from the client of the active player. If the action is the correct action that
 	 * the client is expected to do, the method will process it, otherwise it sends ILLEGAL_TURN_ACTION error to the client
+	 *
 	 * @param message the message from the client
 	 * @throws IllegalArgumentException if the action was malformed
 	 */
@@ -127,8 +127,8 @@ public class ActionController {
 	 * movement that the player can perform.
 	 *
 	 * @param payload the payload of the request
-	 * @throws IllegalArgumentException
-	 * @throws WrongTurnActionRequestedException
+	 * @throws IllegalArgumentException if the movement requested is not correct
+	 * @throws WrongTurnActionRequestedException if the current turn phase does not permit to move mother nature
 	 */
 	public void motherNatureMovement(MessagePayload payload) throws IllegalArgumentException,
 			WrongTurnActionRequestedException {
@@ -144,9 +144,18 @@ public class ActionController {
 		setTurnPhase(TurnPhase.SELECT_CLOUD);
 	}
 
-	//Use of ? to not have unchecked warning (maybe we should change the message format to not use generics)
+	/**
+	 * Performs a MoveStudents action for the active player, that have sent a message that contains the action in the
+	 * specified MessagePayload. The method tries to move students, if it fails it does a rollback (students are
+	 * reinserted in the entrance if the dining is full or if a student is not found on the entrance)
+	 *
+	 * @param payload the payload of the request
+	 * @throws IllegalArgumentException if the request was malformed
+	 * @throws WrongTurnActionRequestedException if the current turn phase does not permit to move students
+	 */
 	public void studentMovement(MessagePayload payload) throws IllegalArgumentException, WrongTurnActionRequestedException {
 		if (turnPhase != TurnPhase.MOVE_STUDENTS) throw new WrongTurnActionRequestedException();
+		//Use of ? to not have unchecked warning (maybe we should change the message format to not use generics)
 		List<?> toDiningRoom = (List<?>) payload.getAttribute("StudentsToDR").getAsObject();
 		List<?> toIslands = new ArrayList<>((List<?>) payload.getAttribute("StudentsToIslands").getAsObject());
 		if (toDiningRoom.size() + toIslands.size() != studentsToMove){
@@ -177,6 +186,13 @@ public class ActionController {
 		setTurnPhase(TurnPhase.MOVE_MOTHER_NATURE);
 	}
 
+	/**
+	 * Returns the students from the entrance that will be moved in the dining room in a MoveStudents action.
+	 *
+	 * @param students the students that need to be removed from the entrance (a list of RealmType)
+	 * @return the students from the entrance that will be moved in the dining room in a MoveStudents action.
+	 * @throws IllegalArgumentException if the entrance doesn't contain the specified students
+	 */
 	private Student[] getStudentsToDiningRoom(List<?> students) throws IllegalArgumentException {
 		School school = turnController.getActivePlayer().getSchool();
 		List<Student> removedFromEntrance = new ArrayList<>();
@@ -192,6 +208,15 @@ public class ActionController {
 		return removedFromEntrance.toArray(new Student[0]);
 	}
 
+	/**
+	 * Returns the students from the entrance that will be moved in the islands in a MoveStudents action, associated
+	 * with the id of the island on which they will be moved.
+	 *
+	 * @param students the students that need to be removed from the entrance (a list of pairs (RealmType,Integer)
+	 *                 where the integer is the id of the island and the realm type is the type of student  )
+	 * @return the students from the entrance that will be moved in the dining room in a MoveStudents action.
+	 * @throws IllegalArgumentException if the entrance doesn't contain the specified students
+	 */
 	private Map<Integer, List<Student>> getStudentsToIslands(List<?> students) throws IllegalArgumentException {
 		School school = turnController.getActivePlayer().getSchool();
 		Map<Integer, List<Student>> studentsToIslands = new HashMap<>();
@@ -217,7 +242,15 @@ public class ActionController {
 		return studentsToIslands;
 	}
 
-	public void pickStudentsFromClouds(MessagePayload payload) throws WrongTurnActionRequestedException {
+	/**
+	 * Performs a PickFromCloud action for the active player, that have sent a message that contains the action in the
+	 * specified MessagePayload.
+	 *
+	 * @param payload the payload of the message
+	 * @throws IllegalArgumentException if the selected cloud is empty
+	 * @throws WrongTurnActionRequestedException if the current turn phase does not permit to pick students from a cloud
+	 */
+	public void pickStudentsFromClouds(MessagePayload payload) throws WrongTurnActionRequestedException, IllegalArgumentException {
 		if (turnPhase != TurnPhase.SELECT_CLOUD) throw new WrongTurnActionRequestedException();
 		int cloudIndex = payload.getAttribute("Cloud").getAsInt();
 		Cloud cloud = gameController.getModel().getClouds()[cloudIndex];
@@ -231,6 +264,13 @@ public class ActionController {
 		setTurnPhase(TurnPhase.TURN_ENDED);
 	}
 
+	/**
+	 * Performs a PlayCharacter action for the active player, that have sent a message that contains the action in the
+	 * specified MessagePayload. The method will delegate to the CharacterController the action
+	 *
+	 * @param payload the payload of the message
+	 * @throws IllegalArgumentException if the request was malformed
+	 */
 	public void playCharacter(MessagePayload payload) throws IllegalArgumentException {
 		String arguments = payload.getAttribute("Arguments").getAsString();
 		List<String> args;
@@ -254,6 +294,9 @@ public class ActionController {
 		currentTurnRemainingActions.remove(TurnPhase.PLAY_CHARACTER_CARD);
 	}
 
+	/**
+	 * Refill the clouds at the beginning of a new planning phase
+	 */
 	public void refillClouds() {
 		Cloud[] clouds = gameController.getModel().getClouds();
 		try {
@@ -269,20 +312,44 @@ public class ActionController {
 		}
 	}
 
+	/**
+	 * Returns true if the island index is an index of an existing island in the game, otherwise false
+	 *
+	 * @param islandIndex the id of the island
+	 * @return true if the island index is an index of an existing island in the game, otherwise false
+	 */
 	private boolean isValidIsland(int islandIndex) {
 		int islandNumber = gameController.getModel().getIslands().size();
 		return islandIndex < islandNumber && islandIndex >= 0;
 	}
 
+	/**
+	 * Set the value of the current turn phase
+	 *
+	 * @param turnPhase the value of the current turn phase
+	 */
 	public void setTurnPhase(TurnPhase turnPhase) {
 		this.turnPhase = turnPhase;
 	}
 
+	/**
+	 * Returns true if the active player can end his turn, otherwise false. The player can end the tur if he has no
+	 * remaining actions or if only the PlayCharacter action remains.
+	 *
+	 * @return true if the active player can end his turn, otherwise false.
+	 */
 	public boolean checkIfTurnIsEnded() {
 		return turnPhase == TurnPhase.TURN_ENDED ||
 				(currentTurnRemainingActions.size() == 1 && currentTurnRemainingActions.contains(TurnPhase.PLAY_CHARACTER_CARD));
 	}
 
+	/**
+	 * Reset the action that the new active players can do in base of the specified round phase. For planning phase the
+	 * possible actions will contain only PlayAssistant, for the action phase the possible actions will be MoveStudents,
+	 * MoveMotherNature, PickFromCloud and (if the game is expert) PlayCharacter
+	 *
+	 * @param phase the current round phase
+	 */
 	public void resetPossibleActions(RoundPhase phase) {
 		currentTurnRemainingActions.clear(); //can contain play character card
 		currentTurnRemainingActions.addAll(phase.getTurnActions());
@@ -291,23 +358,51 @@ public class ActionController {
 		}
 	}
 
+	/**
+	 * Returns the actions that the active player can do in the turn
+	 *
+	 * @return the actions that the active player can do in the turn
+	 */
 	public List<TurnPhase> getCurrentTurnRemainingActions() {
 		return currentTurnRemainingActions;
 	}
 
+	/**
+	 * Returns the current turn phase on which the active player is
+	 *
+	 * @return the current turn phase on which the active player is
+	 */
 	public TurnPhase getTurnPhase() {
 		return turnPhase;
 	}
 
+	/**
+	 * Returns the CharacterController associated to this controller
+	 *
+	 * @return the CharacterController associated to this controller
+	 */
 	public CharacterController getCharacterController() {
 		return characterController;
 	}
 
+	/**
+	 * Fires an error event to the ErrorDispatcher
+	 *
+	 * @param errorType the type of error
+	 * @param errorInfo the description of the error
+	 */
 	private void fireError(ErrorMessageType errorType, String errorInfo) {
 		listeners.firePropertyChange(new PropertyChangeEvent(turnController.getActivePlayer().getNickName(),
 				"Error", errorType, errorInfo));
 	}
 
+	/**
+	 * Restore the action controller state after a game was restored.
+	 *
+	 * @param turnPhase the current turn phase (as it was before the game was stopped)
+	 * @param currentTurnRemainingActions the remaining actions that the active player can do in the turn (as they was
+	 *                                    before the game was stopped)
+	 */
 	public void restoreController(TurnPhase turnPhase, List<TurnPhase> currentTurnRemainingActions) {
 		this.turnPhase = turnPhase;
 		this.currentTurnRemainingActions.clear();

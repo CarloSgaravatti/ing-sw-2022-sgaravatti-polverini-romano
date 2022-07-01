@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.resumeGame;
+package it.polimi.ingsw.server.persistence;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;

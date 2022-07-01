@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.resumeGame;
+package it.polimi.ingsw.server.persistence;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
@@ -52,13 +52,12 @@ public class SaveGame {
         String fileName = jarPathString + "/backupGames/Game_With_ID_" + gameInfo.getGameId() + ".json";
         File file = new File(fileName);
         boolean created = file.createNewFile();
-        //System.out.println("Saved file on path: " + fileName);
         try {
             PrintWriter writer = new PrintWriter(fileName, StandardCharsets.UTF_8);
             writer.print(gsonBuilder.create().toJson(gameInfo));
             writer.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Wasn't able to save the game " + gameInfo.getGameId() + "on disk");
         }
     }
 
@@ -90,7 +89,6 @@ public class SaveGame {
             if (!fileToDelete.delete()) throw new Exception();
             System.out.println("Deleted file of game " + gameId);
         } catch (Exception e) {
-            e.printStackTrace();
             System.out.println("Could not delete file of name " + fileToDelete.getName());
         }
     }

@@ -64,6 +64,14 @@ public class CharacterController extends FXMLController {
                 StudentImage studentImage = new StudentImage(studentsBox.getHeight() / 2, student);
                 studentsBox.getChildren().add(studentImage);
             }
+        } else if (modelView.getField().getExpertField().areNoEntryTilesPresents() &&
+                modelView.getField().getExpertField().getNumNoEntryTilesOnCharacter().getFirst() == characterId) {
+            int numNoEntryTilesOnCharacter = modelView.getField().getExpertField().getNumNoEntryTilesOnCharacter().getSecond();
+            for (int i = 0; i < numNoEntryTilesOnCharacter; i++) {
+                ImageView imageNoEntryTiles = new ImageView(new Image(Objects.requireNonNull(getClass()
+                        .getResourceAsStream("/images/deny_island_icon.png"))));
+                studentsBox.getChildren().add(imageNoEntryTiles);
+            }
         }
         String description = JsonUtils.getCharacterDescription(characterId).getFirst();
         characterDescription.setMaxWidth(characterDescription.getWidth());
@@ -114,7 +122,6 @@ public class CharacterController extends FXMLController {
     @FXML
     void playCharacter(ActionEvent event) {
         if (!characterPlayable) return;
-        //TODO: control parameters for choice boxes
         StringBuilder action = new StringBuilder();
         action.append(characterId);
         if (inputManager.actionsNeeded.contains(CharacterInputManager.ActionType.SELECT_REALM)) {

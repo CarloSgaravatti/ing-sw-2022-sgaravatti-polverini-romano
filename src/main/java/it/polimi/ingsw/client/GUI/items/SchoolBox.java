@@ -1,12 +1,10 @@
 package it.polimi.ingsw.client.GUI.items;
 
 import it.polimi.ingsw.client.GUI.constants.Constants;
-import it.polimi.ingsw.client.modelView.FieldView;
 import it.polimi.ingsw.client.modelView.ModelView;
 import it.polimi.ingsw.client.modelView.PlayerView;
 import it.polimi.ingsw.model.enumerations.RealmType;
 import it.polimi.ingsw.utils.Pair;
-import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -55,7 +53,6 @@ public class SchoolBox {
         initializeSchool(modelView, player);
         VBox vBox = (VBox) container.getChildren().get(2);
         if (isExpertGame) {
-            //TODO: do better
             Image imageCoin = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/schools/coin.png")));
             ((Circle)vBox.getChildren().get(0)).setFill(new ImagePattern(imageCoin));
         } else container.getChildren().remove(vBox);
@@ -133,15 +130,8 @@ public class SchoolBox {
      * @param professorType type of the professor added
      */
     public void insertProfessor(RealmType professorType) {
-        //System.out.println("Inserting professor " + professorType);
         ProfessorImage professorImage = (ProfessorImage) professorTable.getChildren().get(diningRoomOrder.indexOf(professorType));
         professorImage.setOpacity(1);
-        /*FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000), professorImage);
-        fadeTransition.setDelay(Duration.millis(500));
-        fadeTransition.setFromValue(0.1);
-        fadeTransition.setToValue(1);
-        fadeTransition.setAutoReverse(true);
-        fadeTransition.setOnFinished(actionEvent -> professorImage.setOpacity(1));*/
     }
 
     /**
@@ -228,7 +218,6 @@ public class SchoolBox {
         int studentIdx = diningRoomOrder.indexOf(student);
         List<Node> studentsLine = diningRoom.getChildren().subList(studentIdx * 10, (studentIdx + 1) * 10);
         int i = 0;
-        //maybe can be done with streams, but I'm not sure that they preserve order
         while (studentsLine.get(i).getOpacity() == 1) i++;
         ((StudentImage) studentsLine.get(i)).setStudent(student);
     }
@@ -242,7 +231,6 @@ public class SchoolBox {
         int studentIdx = diningRoomOrder.indexOf(student);
         List<Node> studentsLine = diningRoom.getChildren().subList(studentIdx * 10, (studentIdx + 1) * 10);
         int i = 0;
-        //maybe can be done with streams, but I'm not sure that they preserve order
         while (studentsLine.get(i).getOpacity() == 1) i++;
         studentsLine.get(i - 1).setOpacity(0);
     }
@@ -313,9 +301,9 @@ public class SchoolBox {
     /**
      * method getEntranceStudentLayout gets student's layout (x,y)
      *
-     * @param student returns student's layout as (xPosition, yPosition)
-     * @return
-     * @throws NoSuchElementException
+     * @param student the student
+     * @return the layout of the specified student
+     * @throws NoSuchElementException if there isn't such a student
      */
     public Pair<Double, Double> getEntranceStudentLayout(RealmType student) throws NoSuchElementException {
         Optional<Node> studentPresent = entrance.getChildren().stream()

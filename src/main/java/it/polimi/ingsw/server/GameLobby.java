@@ -14,8 +14,8 @@ import it.polimi.ingsw.model.characters.Character11;
 import it.polimi.ingsw.model.characters.Character5;
 import it.polimi.ingsw.model.characters.Character7;
 import it.polimi.ingsw.model.enumerations.*;
-import it.polimi.ingsw.server.resumeGame.PersistenceGameInfo;
-import it.polimi.ingsw.server.resumeGame.SaveGame;
+import it.polimi.ingsw.server.persistence.PersistenceGameInfo;
+import it.polimi.ingsw.server.persistence.SaveGame;
 import it.polimi.ingsw.utils.Pair;
 
 import java.io.IOException;
@@ -24,8 +24,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * GameLobby is the part of the Server that ius responsible for handling a particular game. The GameLobby will handle the
- * TODO
+ * GameLobby is the part of the Server that ius responsible for handling a particular game. The GameLobby will instanciate
+ * the game controller and the game when the lobby become full of players.
  */
 public class GameLobby {
     private GameController gameController;

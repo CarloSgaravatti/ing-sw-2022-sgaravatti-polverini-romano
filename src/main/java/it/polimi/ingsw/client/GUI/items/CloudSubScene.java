@@ -1,18 +1,10 @@
 package it.polimi.ingsw.client.GUI.items;
 
-import it.polimi.ingsw.client.modelView.FieldView;
-import it.polimi.ingsw.model.Student;
 import it.polimi.ingsw.model.enumerations.RealmType;
-import it.polimi.ingsw.model.enumerations.TowerType;
-import it.polimi.ingsw.utils.Triplet;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.shape.Circle;
 
 import java.io.IOException;
@@ -51,8 +43,7 @@ public class CloudSubScene extends AnchorPane implements Initializable {
         for (int i = 0; i < studentsNode.size(); i++) {
             Circle circle = (Circle) studentsNode.get(i);
             StudentImage studentImage = new StudentImage(circle);
-            if(students.length > i)
-            studentImage.setStudent(students[i]);
+            if(students.length > i) studentImage.setStudent(students[i]);
             this.getChildren().set(i, studentImage);
 
         }
@@ -60,7 +51,6 @@ public class CloudSubScene extends AnchorPane implements Initializable {
 
     /**
      * method ResetStudentImage remove all the students from the cloud after a cloud choice by the player
-     *
      */
     public void ResetStudentImage() {
         List <Node> studentsNode = this.getChildren();

@@ -1,10 +1,9 @@
-package it.polimi.ingsw.server.resumeGame;
+package it.polimi.ingsw.server.persistence;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import it.polimi.ingsw.model.Student;
 import it.polimi.ingsw.model.effects.*;
 import it.polimi.ingsw.model.enumerations.RealmType;
 

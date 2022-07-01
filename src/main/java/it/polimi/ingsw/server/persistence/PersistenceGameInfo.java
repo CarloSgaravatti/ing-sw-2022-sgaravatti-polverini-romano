@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.resumeGame;
+package it.polimi.ingsw.server.persistence;
 
 import it.polimi.ingsw.controller.*;
 import it.polimi.ingsw.model.*;

@@ -15,6 +15,8 @@ import java.util.function.Consumer;
  * A CharacterWithoutInput is a CharacterCard that don't take any parameter from the player to play the card. This class
  * represent characters 2, 4, 6 and 8. All these characters have a different action that they will perform during the game if
  * the character is played: this action is injected in the character at the creation moment.
+ *
+ * @see it.polimi.ingsw.model.CharacterCard
  */
 public class CharacterWithoutInput extends CharacterCard {
     private Consumer<Player> dynamicPlayCard;
@@ -36,7 +38,7 @@ public class CharacterWithoutInput extends CharacterCard {
      *
      * @param player the player who wants to play the character
      * @throws NotEnoughCoinsException if the player doesn't have enough coins to play the character
-     * @see CharacterCard
+     * @see CharacterCard#playCard(Player)
      */
     @Override
     public void playCard(Player player) throws NotEnoughCoinsException {
@@ -44,17 +46,29 @@ public class CharacterWithoutInput extends CharacterCard {
         dynamicPlayCard.accept(player);
     }
 
+    /**
+     * Returns false, because this character does not require any input to be played
+     *
+     * @return false, because this character does not require any input to be played
+     */
     @Override
     public boolean requiresInput() {
         return false;
     }
 
+    /**
+     * Restore the dynamic effect of the card by getting it from a CharacterCreator
+     *
+     * @param game the restored game
+     */
     @Override
     public void restoreCharacter(Game game) {
         this.dynamicPlayCard = new CharacterCreator(game).getCharacterWithNoInputAction(this.getId());
     }
 
     /**
+     * Throws the exception, because the character does not have an effect. The CharacterController will make sure that
+     * this method is not called.
      *
      * @param arguments the character parameters
      * @throws IllegalCharacterActionRequestedException always, because these characters does not need an input

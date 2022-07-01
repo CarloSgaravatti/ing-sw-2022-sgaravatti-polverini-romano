@@ -26,6 +26,12 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * GUI is the main class of the graphical user interface of the client
+ *
+ * @see it.polimi.ingsw.client.UserInterface
+ * @see javafx.application.Application
+ */
 public class GUI extends Application implements UserInterface {
     private final PropertyChangeSupport listeners = new PropertyChangeSupport(this);
     private String nickname;
@@ -53,7 +59,7 @@ public class GUI extends Application implements UserInterface {
         this.stage.setTitle("Eriantys");
         this.stage.setScene(scene);
         this.stage.setFullScreen(true);
-        this.stage.show(); //display the stage on the screen
+        this.stage.show();
         this.stage.centerOnScreen();
         this.stage.setMinWidth(1152);
         this.stage.setMinHeight(648);
@@ -224,6 +230,7 @@ public class GUI extends Application implements UserInterface {
             PreviousGameController previousGameController = fxmlLoader.getController();
             previousGameController.addListener(this);
             previousGameController.init(numPlayers, rules, participants);
+            currentSceneController = previousGameController;
             this.stage.show();
             resizeListener.setScene(scene);
         });
@@ -262,10 +269,15 @@ public class GUI extends Application implements UserInterface {
                 System.err.println(e.getMessage());
             }
             stage.setScene(scene);
-            this.stage.setFullScreen(stage.fullScreenProperty().get());
-            currentSceneController = loader.getController();
-            ((GameMainSceneController) currentSceneController).initializeBoard(modelView, this.nickname);
-            currentSceneController.addListener(this);
+            if (stage.fullScreenProperty().get()) {
+                this.stage.setFullScreen(true);
+            } else {
+                this.stage.setMaximized(true);
+            }
+            GameMainSceneController gameMainSceneController = loader.getController();
+            gameMainSceneController.initializeBoard(modelView, this.nickname);
+            gameMainSceneController.addListener(this);
+            currentSceneController = gameMainSceneController;
             stage.show();
             resizeListener.setScene(scene);
         });
@@ -394,7 +406,6 @@ public class GUI extends Application implements UserInterface {
      */
     private void onIslandStudentsUpdate(Integer islandId, RealmType[] students, boolean fromEntrance) {
         Platform.runLater(() -> {
-            this.stage.setFullScreen(true);
             if (fromEntrance && !modelView.getCurrentActivePlayer().equals(nickname)) {
                 String currentPlayer = this.modelView.getCurrentActivePlayer();
                 ((GameMainSceneController) currentSceneController).moveStudentsToIsland(currentPlayer, islandId, students);
@@ -442,7 +453,7 @@ public class GUI extends Application implements UserInterface {
      */
     private void onProfessorUpdate(RealmType professor, String lastOwner, String newOwner) {
         Platform.runLater(() -> {
-            ((GameMainSceneController) currentSceneController).insertProfessorAnimation(newOwner, professor);
+            ((GameMainSceneController) currentSceneController).insertProfessor(newOwner, professor);
             if (lastOwner != null) ((GameMainSceneController) currentSceneController).getSchoolBox(lastOwner).removeProfessor(professor);
         });
     }
@@ -492,7 +503,6 @@ public class GUI extends Application implements UserInterface {
                             else island.removeNoEntryTile();
                         }
                     });
-            //TODO: update character
         });
     }
 
@@ -625,7 +635,7 @@ public class GUI extends Application implements UserInterface {
         } catch (IOException e) {
             System.err.println("Error in connection with server");
             currentSceneController.onError(null, "Error in connection with server");
-            return; //TODO
+            return;
         }
         System.out.println("Connection Established");
         ConnectionToServer connectionToServer = new ConnectionToServer(socket, this);

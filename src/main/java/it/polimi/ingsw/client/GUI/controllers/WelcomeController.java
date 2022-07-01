@@ -128,7 +128,7 @@ public class WelcomeController extends FXMLController {
         Button quitButton = new Button("Quit");
         quitButton.getStyleClass().add("main-menu-button");
         quitButton.setPrefWidth(300);
-        quitButton.setOnAction(actionEvent -> System.exit(0)); //TODO: do better
+        quitButton.setOnAction(actionEvent -> System.exit(0));
         vBox.getChildren().addAll(text, newGameButton, globalLobbyButton, quitButton);
         dialogRoot.getChildren().clear();
         dialogRoot.getChildren().add(vBox);

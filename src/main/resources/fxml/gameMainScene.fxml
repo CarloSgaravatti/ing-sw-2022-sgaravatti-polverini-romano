@@ -72,17 +72,17 @@
                   </AnchorPane>
                </top>
                <right>
-                  <VBox fx:id="turnManagementBox" alignment="CENTER" prefHeight="822.0" prefWidth="226.0" spacing="30.0" styleClass="turn-management-box">
+                  <VBox fx:id="turnManagementBox" alignment="CENTER" prefHeight="822.0" prefWidth="226.0" spacing="25.0" styleClass="turn-management-box">
                      <children>
                         <Label alignment="CENTER" prefHeight="21.0" prefWidth="193.0" text="Turn management" />
-                        <Label alignment="CENTER" prefHeight="63.0" prefWidth="196.0" wrapText="true" />
+                        <Label alignment="CENTER" prefHeight="80.0" prefWidth="196.0" wrapText="true" />
                         <Button mnemonicParsing="false" text="PlayAssistant" />
                         <Button mnemonicParsing="false" text="MoveStudents" />
                         <Button mnemonicParsing="false" text="MoveMotherNature" />
                         <Button mnemonicParsing="false" text="PickFromCloud" />
                         <Button mnemonicParsing="false" text="PlayCharacter" />
                         <Button mnemonicParsing="false" text="EndTurn" />
-                        <Label prefHeight="147.0" prefWidth="199.0" textAlignment="CENTER" wrapText="true" />
+                        <Label prefHeight="174.0" prefWidth="199.0" textAlignment="CENTER" wrapText="true" />
                         <HBox alignment="CENTER" prefHeight="48.0" prefWidth="192.0" spacing="10.0">
                            <children>
                               <Button mnemonicParsing="false" text="Confirm" />

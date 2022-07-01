@@ -11,7 +11,6 @@ import java.util.Map;
 
 /**
  * Abstract class CharacterCard provides all the behaviour that are common to all characters in the game.
- * ... TODO
  */
 public abstract class CharacterCard {
 	private final int id;
@@ -61,6 +60,7 @@ public abstract class CharacterCard {
 	 * Method playCard set the current player that want to play this character (if he has enough coins)
 	 * and puts a coin in the character if it isn't present. This method provides a default implementation
 	 * that is valid for many character, but not fall all characters (these have to override it).
+	 *
 	 * @param player the player who wants to play the character
 	 * @throws NotEnoughCoinsException if the player doesn't have enough coins to play the character
 	 */
@@ -82,7 +82,9 @@ public abstract class CharacterCard {
 	/**
 	 * Method useEffect provides a way on which a player can use the character effect during the turn
 	 * after the time he has played the character (only for characters that have some inputs). The specified arguments
-	 * represent an encoding of the parameters that a character card needs to perform his action.
+	 * represent an encoding of the parameters that a character card needs to perform his action. The CharacterController
+	 * will make sure that all the arguments that are passed to the character
+	 *
 	 * @param arguments the character parameters
 	 * @throws IllegalCharacterActionRequestedException if the parameters are not correct, or if the character does not
 	 * provide any effect that can be used after the player plays the card
@@ -122,12 +124,27 @@ public abstract class CharacterCard {
 		listeners.firePropertyChange(evt);
 	}
 
+	/**
+	 * Returns true if the character requires an input to be played, otherwise false.
+	 *
+	 * @return true if the character requires an input to be played, otherwise false.
+	 */
 	public boolean requiresInput() {
 		return true;
 	}
 
+	/**
+	 * Restore the character after the game was restored from persistence data
+	 *
+	 * @param game the restored game
+	 */
 	public abstract void restoreCharacter(Game game);
 
+	/**
+	 * Restore the active player of the character after the game was restored from persistence data
+	 *
+	 * @param player the active player of the character
+	 */
 	public void restoreActivePlayer(Player player) {
 		this.playerActive = player;
 	}
