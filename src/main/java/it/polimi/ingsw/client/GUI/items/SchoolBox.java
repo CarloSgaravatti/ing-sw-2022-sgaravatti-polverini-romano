@@ -350,7 +350,7 @@ public class SchoolBox {
      *
      */
     public void insertTower() {
-        towers.getChildren().stream().filter(n -> !n.isVisible()).findFirst().ifPresent(node -> node.setVisible(false));
+        towers.getChildren().stream().filter(n -> !n.isVisible()).findFirst().ifPresent(node -> node.setVisible(true));
     }
 
     /**

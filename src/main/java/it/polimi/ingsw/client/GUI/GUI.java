@@ -64,9 +64,6 @@ public class GUI extends Application implements UserInterface {
         this.stage.setMinHeight(648);
         this.stage.getIcons().add(new Image((Objects.requireNonNull(getClass()
                 .getResourceAsStream("/images/background/Eriantys.jpg")))));
-        /*this.stage.fullScreenProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue) stage.setMaximized(true);
-        });*/
         WelcomeController welcomeController = fxmlLoader.getController();
         welcomeController.addGUI(this);
         welcomeController.addListener(this);
