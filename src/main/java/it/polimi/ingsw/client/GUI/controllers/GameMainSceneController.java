@@ -216,6 +216,7 @@ public class GameMainSceneController extends FXMLController implements Initializ
                 CharacterImage characterImage = new CharacterImage(character, characterBox.getWidth() / 1.5, expertField);
                 characterBox.getChildren().add(characterImage);
                 characters.put(character, characterImage);
+                checkCoinsOnCharacters(character, characterImage, expertField);
             }
             setOnCharactersSelection();
             characterController.init(root, this);
@@ -263,6 +264,21 @@ public class GameMainSceneController extends FXMLController implements Initializ
             if (lastAssistant != null && lastAssistant.getFirst() != 0) {
                 setAssistantImage(player, lastAssistant.getFirst());
             }
+        }
+    }
+
+    /**
+     * Check if the character in the restored game had already a coin on it when the game restarts
+     *
+     * @param characterId the id of the coin
+     * @param characterImage the character image on the gui
+     * @param expertField the expert field of the client's model view
+     */
+    private void checkCoinsOnCharacters(int characterId, CharacterImage characterImage, ExpertFieldView expertField) {
+        int characterPrice = expertField.getCharacterPrice(characterId);
+        if ((characterPrice != 1 && characterId % 3 == 1) || (characterPrice != 2 && characterId % 3 == 2) ||
+                (characterPrice != 3 && characterId % 3 == 0)) {
+            characterImage.putCoin();
         }
     }
 
@@ -748,7 +764,16 @@ public class GameMainSceneController extends FXMLController implements Initializ
             dragEvent.consume();
         };
         private final EventHandler<DragEvent> dropOnIsland = dragEvent -> {
-            IslandSubScene island = (IslandSubScene) dragEvent.getTarget();
+            IslandSubScene island;
+            if (dragEvent.getTarget() instanceof IslandSubScene) {
+                island = (IslandSubScene) dragEvent.getTarget();
+            } else if (dragEvent.getTarget() instanceof ImageView){
+                island = (IslandSubScene) ((ImageView) dragEvent.getTarget()).getParent();
+            } else if (dragEvent.getTarget() instanceof HBox) {
+                island = (IslandSubScene) ((HBox) dragEvent.getTarget()).getParent();
+            } else { //only other thing that remains is a label
+                island = (IslandSubScene) ((Label) dragEvent.getTarget()).getParent();
+            }
             int islandId = island.getIslandId();
             if (studentsDraggable) {
                 playersSchools.get(clientNickname).getSecond().removeFromEntrance(lastStudentDragged, true);

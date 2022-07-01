@@ -43,14 +43,14 @@ public class SchoolBox {
             RealmType.YELLOW_GNOMES, RealmType.PINK_FAIRES, RealmType.BLUE_UNICORNS);
 
     /**
-     * constructor of the representation of the school in the main scene by the AnchorPane, it depends if the game is for expert or not.
+     * constructor of the representation of the school in the main scene by the AnchorPane, it depends on if the game
+     * is expert or not.
      *
      * @param player name of the school's player
      * @param container the AnchorPane that will contain the school
      * @param modelView the model view of the client
      * @param isExpertGame boolean that says if the game is for expert or not
      */
-
     public SchoolBox(String player, AnchorPane container, ModelView modelView, boolean isExpertGame) {
         this.container = container;
         this.playerView = modelView.getPlayers().get(player);
@@ -261,7 +261,7 @@ public class SchoolBox {
             StudentImage studentImage = (StudentImage) student;
             StudentImage fakeStudent = new StudentImage(studentImage);
             fakeStudent.setStudent(studentType);
-            entrance.getChildren().remove(studentImage);
+            studentImage.reset();
             entrance.getChildren().add(fakeStudent);
             Pair<Double, Double> firstFreeDiningRoom = findFirstFreePosition(studentType);
             double xTranslation = diningRoom.getLayoutX() + firstFreeDiningRoom.getFirst() - studentImage.getLayoutX();

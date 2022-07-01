@@ -11,13 +11,11 @@ public class IslandGroup extends Island {
 	private final List<Island> islands;
 	private int numTowers;
 
-	public IslandGroup(boolean motherNaturePresent, Island ... islands) /*throws IllegalIslandGroupException*/ {
-		super(islands[0].getTowerType(), true);
+	public IslandGroup(boolean motherNaturePresent, Island ... islands) {
+		super(islands[0].getTowerType(), motherNaturePresent);
 		this.islands = new ArrayList<>();
 		numTowers = 0;
 		for (Island i: islands) {
-			/*if (i.getTowerType() == null || i.getTowerType() != getTowerType())
-				throw new IllegalIslandGroupException();*/
 			this.islands.add(i);
 			numTowers += i.getNumTowers();
 		}

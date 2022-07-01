@@ -1,4 +1,6 @@
 package it.polimi.ingsw.exceptions;
 
-public class StudentsNumberInCloudException extends Exception{
-}
+/**
+ * StudentsNumberInCloudException is thrown when a component of the model tries to insert in a cloud a wrong number of students
+ */
+public class StudentsNumberInCloudException extends Exception{}

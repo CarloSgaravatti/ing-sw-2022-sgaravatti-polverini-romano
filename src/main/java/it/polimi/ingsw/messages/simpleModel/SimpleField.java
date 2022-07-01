@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * SimpleField contains all information about islands (SimpleIslands), clouds, professors and characters (SimpleCharacters)
+ * that are sent at the beginning of the game to clients
+ */
 public class SimpleField implements Serializable {
     private final List<SimpleIsland> islands;
     private final Map<Integer, Integer[]> clouds;

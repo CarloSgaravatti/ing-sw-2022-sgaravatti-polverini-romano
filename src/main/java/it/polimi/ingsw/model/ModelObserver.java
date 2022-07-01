@@ -18,7 +18,7 @@ public interface ModelObserver {
      * Method updateProfessorPresence checks if there are some changes to do in the professor
      * tables of each player for the specified professor.
      *
-     * @param studentType the Realm Type of the professor to udate
+     * @param studentType the Realm Type of the professor to update
      */
     void updateProfessorPresence(RealmType studentType);
 

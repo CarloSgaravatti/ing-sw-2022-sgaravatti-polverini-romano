@@ -7,6 +7,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * SimpleModel is light version of the model that is sent at the beginning of a restored game to restore clients
+ * information about the game
+ */
 public class SimpleModel implements Serializable {
     private SimpleField field;
     private List<SimplePlayer> schools;

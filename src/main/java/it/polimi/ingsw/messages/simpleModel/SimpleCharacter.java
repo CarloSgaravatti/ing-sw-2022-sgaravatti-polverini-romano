@@ -4,6 +4,9 @@ import it.polimi.ingsw.model.enumerations.RealmType;
 
 import java.io.Serializable;
 
+/**
+ * SimpleCharacter is a character representation that is used to send characters initializations at the beginning of a game
+ */
 public class SimpleCharacter implements Serializable {
     private RealmType[] students = null;
     private Integer numNoEntryTiles;

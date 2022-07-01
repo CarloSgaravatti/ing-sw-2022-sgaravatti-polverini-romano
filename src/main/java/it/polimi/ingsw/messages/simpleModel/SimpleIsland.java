@@ -5,6 +5,9 @@ import it.polimi.ingsw.utils.Triplet;
 
 import java.io.Serializable;
 
+/**
+ * SimpleIsland is an island representation that is used to send island updates during the game
+ */
 public class SimpleIsland implements Serializable {
     private final Triplet<Integer[], Integer, TowerType> islandRepresentation;
     private final int numEntryTiles;

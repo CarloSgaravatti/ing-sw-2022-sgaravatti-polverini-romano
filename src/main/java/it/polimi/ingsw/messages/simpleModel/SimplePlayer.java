@@ -7,6 +7,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * SimplePlayer is a player representation that is used to send school information at the beginning of a game
+ */
 public class SimplePlayer implements Serializable {
     private RealmType[] entrance;
     private RealmType[] diningRoom;

@@ -333,7 +333,7 @@ public class CLI implements Runnable, UserInterface {
      */
     @Override
     public void onPlayerJoined(String playerName) {
-        System.out.println(playerName + "has joined the game");
+        System.out.println(playerName + " has joined the game");
     }
 
     /**

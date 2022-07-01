@@ -11,7 +11,6 @@ import it.polimi.ingsw.server.RemoteView;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -154,7 +153,7 @@ public class GameController implements PropertyChangeListener{
 			}
 			boolean isPhaseEnded = turnController.endTurn();
 			actionController.resetPossibleActions(turnController.getCurrentPhase());
-			game.setIndexActivePlayer(turnController.getActivePlayer());
+			game.setActivePlayer(turnController.getActivePlayer());
 			setStartingTurnPhase(turnController.getCurrentPhase());
 			listeners.firePropertyChange(new PropertyChangeEvent(nicknamePlayer, "Action", actionName, new TurnPhase[0]));
 			if (isPhaseEnded) {

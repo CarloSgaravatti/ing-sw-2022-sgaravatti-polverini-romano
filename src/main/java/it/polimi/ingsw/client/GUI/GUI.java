@@ -268,12 +268,12 @@ public class GUI extends Application implements UserInterface {
             } catch (IOException e) {
                 System.err.println(e.getMessage());
             }
-            stage.setScene(scene);
             if (stage.fullScreenProperty().get()) {
                 this.stage.setFullScreen(true);
             } else {
                 this.stage.setMaximized(true);
             }
+            stage.setScene(scene);
             GameMainSceneController gameMainSceneController = loader.getController();
             gameMainSceneController.initializeBoard(modelView, this.nickname);
             gameMainSceneController.addListener(this);
@@ -530,7 +530,6 @@ public class GUI extends Application implements UserInterface {
         Platform.runLater(() -> {
             GameMainSceneController gameMainSceneController = ((GameMainSceneController) currentSceneController);
             SchoolBox schoolBox = gameMainSceneController.getSchoolBox(playerName);
-            gameMainSceneController.viewSchoolOf(playerName);
             Arrays.stream(toEntrance).forEach(schoolBox::removeFromDiningRoom);
             Arrays.stream(toDiningRoom).forEach(schoolBox::insertInDiningRoom);
             schoolBox.updateEntrance();
