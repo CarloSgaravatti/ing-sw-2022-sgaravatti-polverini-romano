@@ -43,7 +43,6 @@ public class GUI extends Application implements UserInterface {
     //This executor is used to not use the javafx thread to compute actions (so javafx thread is only
     //used for javafx stuffs)
     private final ExecutorService responseHandlerExecutor = Executors.newSingleThreadExecutor();
-    private ResizeListener resizeListener;
 
     /**
      * Starts the application
@@ -72,10 +71,6 @@ public class GUI extends Application implements UserInterface {
         welcomeController.addGUI(this);
         welcomeController.addListener(this);
         currentSceneController = welcomeController;
-
-        //TODO: implement or delete (also the class)
-        resizeListener = new ResizeListener(this.stage, this.scene);
-        //resizeListener.registerHandlers();
     }
 
     /**
@@ -126,7 +121,6 @@ public class GUI extends Application implements UserInterface {
                 sceneController.setGui(this);
                 currentSceneController = sceneController;
                 this.stage.show();
-                resizeListener.setScene(scene);
             }
         });
     }
@@ -155,7 +149,6 @@ public class GUI extends Application implements UserInterface {
             sceneController.setGui(this);
             currentSceneController = sceneController;
             this.stage.show();
-            resizeListener.setScene(scene);
         });
     }
 
@@ -232,7 +225,6 @@ public class GUI extends Application implements UserInterface {
             previousGameController.init(numPlayers, rules, participants);
             currentSceneController = previousGameController;
             this.stage.show();
-            resizeListener.setScene(scene);
         });
     }
 
@@ -279,7 +271,6 @@ public class GUI extends Application implements UserInterface {
             gameMainSceneController.addListener(this);
             currentSceneController = gameMainSceneController;
             stage.show();
-            resizeListener.setScene(scene);
         });
     }
 
@@ -687,7 +678,6 @@ public class GUI extends Application implements UserInterface {
         welcomeController.showMainMenu(nickname);
         currentSceneController = welcomeController;
         this.stage.show();
-        resizeListener.setScene(scene);
     }
 
     /**

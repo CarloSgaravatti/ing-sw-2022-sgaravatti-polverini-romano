@@ -341,7 +341,7 @@ public class CLI implements Runnable, UserInterface {
      */
     @Override
     public void onGameStarted() {
-        System.out.println("The game will start soon!");
+        System.out.println("The game will start soon!\nWait for other players choices");
     }
 
     /**

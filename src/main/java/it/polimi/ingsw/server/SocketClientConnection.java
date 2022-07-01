@@ -9,10 +9,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.NoSuchElementException;
 import java.util.concurrent.*;
 
+/**
+ * SocketClientConnection is a ClientConnection that handles the socket connection with the client by sending and
+ * reading messages through the socket.
+ *
+ * @see it.polimi.ingsw.server.ClientConnection
+ */
 public class SocketClientConnection implements Runnable, ClientConnection {
     private final Socket socket;
     private ObjectOutputStream out;
@@ -26,15 +31,31 @@ public class SocketClientConnection implements Runnable, ClientConnection {
     private final ExecutorService messageExecutor = Executors.newSingleThreadExecutor();
     private boolean isPingAckReceived = true;
 
+    /**
+     * Constructs a SocketClientConnection that will use the specified socket to send and read messages and that will be
+     * associated to the specified server instance
+     *
+     * @param socket the socket used for the connection
+     * @param server the instance of the server
+     */
     public SocketClientConnection(Socket socket, Server server) {
         this.socket = socket;
         this.server = server;
     }
 
+    /**
+     * Adds a listener that will listen to the specified property
+     *
+     * @param propertyName the name of the property
+     * @param listener the listener that will listen the property
+     */
     public void addListener(String propertyName, PropertyChangeListener listener) {
         listeners.addPropertyChangeListener(propertyName, listener);
     }
 
+    /**
+     * Initialize the client and then continue looping to read messages from the socket input stream
+     */
     @Override
     public void run() {
         try {
@@ -56,6 +77,12 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         }
     }
 
+    /**
+     * Read a message from the socket input stream
+     *
+     * @throws IOException if there is an error in reading the message
+     * @throws ClassNotFoundException if a not recognised message was read
+     */
     public void readMessage() throws IOException, ClassNotFoundException {
         MessageFromClient message = (MessageFromClient) in.readObject();
         if (message.getClientMessageHeader().getMessageType() == ClientMessageType.PING_ACK) {
@@ -81,6 +108,9 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         }
     }
 
+    /**
+     * Close the connection with the client
+     */
     private void close() {
         closeConnection();
         System.out.println("Deregistering client...");
@@ -89,6 +119,9 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         pingManager.shutdownNow();
     }
 
+    /**
+     * Sends a message to inform the client that the connection will be closed and then close the connection
+     */
     public synchronized void closeConnection() {
         ServerMessageHeader header = new ServerMessageHeader("ConnectionClosed", ServerMessageType.SERVER_MESSAGE);
         MessageFromServer message = new MessageFromServer(header, null);
@@ -101,6 +134,11 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         active = false;
     }
 
+    /**
+     * Send the specified message in the socket output stream
+     *
+     * @param message the message that will be sent
+     */
     private synchronized void send(Object message) {
         try {
             out.reset();
@@ -112,11 +150,20 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         }
     }
 
-    //Sending a message is a slow operation, it needs to be asynchronous from the caller of the method
+    /**
+     * Asynchronously send the specified message to the socket output stream
+     *
+     * @param message the message that will be sent
+     */
     public synchronized void asyncSend(final Object message){
         new Thread(() -> send(message)).start();
     }
 
+    /**
+     * Returns true if the connection is active, otherwise false
+     *
+     * @return true if the connection is active, otherwise false
+     */
     public synchronized boolean isActive() {
         return active;
     }
@@ -125,6 +172,13 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         this.active = active;
     }
 
+    /**
+     * Initialize the client by requesting from him the nickname
+     *
+     * @throws IOException if there is an error in the socket
+     * @throws ClassNotFoundException
+     * @throws ClassCastException if the arrived nickname message is not recognized as a MessageFromClient
+     */
     public void initializeClient() throws IOException, ClassNotFoundException, ClassCastException {
         ServerMessageHeader header = new ServerMessageHeader("NicknameRequest", ServerMessageType.SERVER_MESSAGE);
         MessageFromServer message = new MessageFromServer(header, new MessagePayload());
@@ -141,6 +195,11 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         }
     }
 
+    /**
+     * Handles a message from the client that have GAME_SETUP as the message type
+     *
+     * @param message the game setup message
+     */
     public void handleGameSetup(MessageFromClient message) {
         if (message.getClientMessageHeader().getMessageName().equals("QuitGame")) {
             server.quitGameOfClient(this, nickname);
@@ -200,6 +259,12 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         isPingAckReceived = pingAckReceived;
     }
 
+    /**
+     * Send the specified error to the client
+     *
+     * @param error the error type that will be sent to the client
+     * @param description the description of the error
+     */
     public void sendError(ErrorMessageType error, String description) {
         ServerMessageHeader header = new ServerMessageHeader("Error", ServerMessageType.SERVER_MESSAGE);
         MessagePayload payload = new MessagePayload();
@@ -208,6 +273,9 @@ public class SocketClientConnection implements Runnable, ClientConnection {
         asyncSend(new MessageFromServer(header, payload));
     }
 
+    /**
+     * Enable ping messages to the client and start sending them at a fixed rate of 1 minute
+     */
     public void enablePing() {
         MessageFromServer pingMessage = new MessageFromServer(
                 new ServerMessageHeader(null, ServerMessageType.PING_MESSAGE), null);

@@ -27,7 +27,7 @@ public enum UnicodeConstants {
     PURPLE_DOT(Colors.PURPLE + "\u25CF" + Colors.RESET),
     NO_COLOR_DOT("\u25CF"),
 
-    BLACK_TOWER(Colors.BLACK + "\u265C" + Colors.RESET),
+    BLACK_TOWER(Colors.BLUE + "\u265C" + Colors.RESET),
     WHITE_TOWER(Colors.WHITE + "\u265C" + Colors.RESET),
     GREY_TOWER(Colors.CYAN + "\u265C" + Colors.RESET), //There isn't grey, for the moment I put cyan
     NO_COLOR_TOWER("\u265C");

@@ -332,7 +332,6 @@ public class Server implements Runnable{
                     gamesParticipants.put(gameId, gamesMap.get(gameId).getGameParticipants());
                 }
             }
-            gamesParticipants.keySet().forEach(System.out::println);
             try {
                 SaveGame.saveGameParticipants(gamesParticipants);
             } catch (IOException e) {

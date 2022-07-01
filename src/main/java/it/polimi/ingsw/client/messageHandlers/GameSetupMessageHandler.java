@@ -61,7 +61,6 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
             case "GameInitializations" -> onGameInitializationMessage(payload);
             case "TowerTypeRequest" -> onTowerTypeRequest(payload);
             case "WizardTypeRequest" -> onWizardTypeRequest(payload);
-            case "SetupAck" -> onSetupAck(payload);
             case "RestoredSetup" -> onRestoredSetup(payload);
             case "GameRestoredData" -> onRestoredGameInitialization(payload);
         }
@@ -152,10 +151,6 @@ public class GameSetupMessageHandler extends BaseMessageHandler{
      */
     private void onWizardTypeRequest(MessagePayload payload) {
         getUserInterface().askWizardChoice((WizardType[]) payload.getAttribute("FreeWizards").getAsObject());
-    }
-
-    private void onSetupAck(MessagePayload payload) {
-        //TODO: decide if this message is useful
     }
 
     /**

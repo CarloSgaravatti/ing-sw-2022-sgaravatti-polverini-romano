@@ -18,9 +18,6 @@ public class MapPrinter {
     private final SchoolMapPrinter schoolMapPrinter = new SchoolMapPrinter();
     private final CloudMapPrinter cloudMapPrinter = new CloudMapPrinter();
     private final CharacterMapPrinter characterMapPrinter = new CharacterMapPrinter();
-
-
-    //TODO: add all to last map (for the moment i do separate maps)
     private String[][] schoolMap;
     private String[][] cloudsMap;
     private String[][] characterMap;
@@ -44,7 +41,6 @@ public class MapPrinter {
     public synchronized void printMap() {
         int characterMapLength = (modelView.isExpert()) ? characterMap.length : 0;
         int maxDimensionX = Math.max(Math.max(islandsMap.length, cloudsMap.length), characterMapLength);
-        //FIXME: try to eliminate if else
         for (int i = 0; i < maxDimensionX; i++) {
             if (i < islandsMap.length) {
                 for (int j = 0; j < islandsMap[i].length; j++) {
@@ -73,9 +69,6 @@ public class MapPrinter {
                     System.out.print(" ");
                 }
             }
-            /*printMatrixRow((i < islandsMap.length) ? islandsMap[i] : null, islandsMap[0].length, maxDimensionX, i);
-            printMatrixRow((i < cloudsMap.length) ? cloudsMap[i] : null, cloudsMap[0].length, maxDimensionX, i);
-            printMatrixRow((i < characterMap.length) ? characterMap[i] : null, characterMap[0].length, maxDimensionX, i);*/
             System.out.println();
         }
         for (int i = 0; i < schoolMap.length; i++) {
@@ -84,8 +77,6 @@ public class MapPrinter {
             }
             System.out.println();
         }
-
-        //temporary
         if (modelView.getClientPlayerAssistants().isEmpty()) return;
         StringBuilder assistants = new StringBuilder("These are your assistants: [");
         List<Integer> assistantValues = new ArrayList<>(modelView.getClientPlayerAssistants().keySet());
@@ -96,21 +87,6 @@ public class MapPrinter {
         assistants.append("(").append(assistantValues.get(assistantValues.size() - 1)).append(",")
                 .append(modelView.getClientPlayerAssistants().get(assistantValues.get(assistantValues.size() - 1))).append(")]");
         System.out.println(assistants);
-        //System.out.println("These are your assistants: " +
-        //        Arrays.toString(modelView.getClientPlayerAssistants().keySet().toArray(new Integer[0])));
-    }
-
-    //TODO: carlone controlla se è da eliminare
-    public static void printMatrixRow(String[] matrixRow, int rowLength, int matrixRowDim, int numRows) {
-        if (matrixRowDim < numRows) {
-            for (int i = 0; i < rowLength; i++) {
-                System.out.print(matrixRow[i]);
-            }
-        } else {
-            for (int i = 0; i < rowLength; i++) {
-                System.out.print(" ");
-            }
-        }
     }
 
     /**

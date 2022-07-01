@@ -101,6 +101,7 @@ public class TurnController {
 
 	/**
 	 * Returns the current RoundPhase order of play
+	 *
 	 * @return the order of play
 	 */
 	public Player[] getPlayerOrder() {
