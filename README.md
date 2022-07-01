@@ -56,7 +56,7 @@ To know how to do actions, simply type Help when it is your turn.
 
 ### GUI
 
-The CLI can be runned by inserting 2 after running the jar. For the best game experience, it is suggested to run the GUI in full screen on a 1920x1080 resolution.
+The GUI can be runned by inserting 2 after running the jar. For the best game experience, it is suggested to run the GUI in full screen on a 1920x1080 resolution.
 The next sections will be useful to know how to do actions during the turn
 
 #### Moving students with drag and drop
@@ -75,7 +75,8 @@ https://user-images.githubusercontent.com/58942793/176877439-190f1d75-36df-49ec-
 
 https://user-images.githubusercontent.com/58942793/176877482-8ebf915b-9257-4209-9e69-b4c67dec6fe0.mp4
 
-Note: this action is not mandatory, therefore it is possible to select the end turn button to end the turn without playing a character card
+Note: this action is not mandatory, therefore it is possible to select the end turn button to end the turn without playing a character card. The end turn will
+be automatic if all the actions are done.
 
 
 
