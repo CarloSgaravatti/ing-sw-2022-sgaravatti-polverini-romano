@@ -35,7 +35,11 @@ public class Bag {
 		return res;
 	}
 
-	//just for testing
+	/**
+	 * Returns the students that are present in the bag
+	 *
+	 * @return the students that are present in the bag
+	 */
 	public List<Student> getStudent(){
 		return this.students;
 	}

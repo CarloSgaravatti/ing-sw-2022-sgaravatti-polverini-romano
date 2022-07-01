@@ -49,12 +49,16 @@ public class School extends ProfessorPresenceObservable {
 		this.player.addPropertyChangeListener(player);
 	}
 
+	/**
+	 * Constructs an empty school
+	 */
 	public School() {
 		super();
 	}
 
 	/**
 	 * Insert all the specified students in the school entrance
+	 *
 	 * @param students the students to insert in entrance
 	 */
 	public void insertEntrance (Student ... students){
@@ -65,6 +69,7 @@ public class School extends ProfessorPresenceObservable {
 
 	/**
 	 * Method insertDiningRoom inserts a students in the dining room
+	 *
 	 * @param student the student to insert
 	 * @return true if the player can take a coin, otherwise false
 	 * @throws FullDiningRoomException if the dining room if full for the student's Realm Type
@@ -82,6 +87,7 @@ public class School extends ProfessorPresenceObservable {
 
 	/**
 	 * Method moveFromEntranceToDiningRoom pick a student from the entrance and puts it in the dining room
+	 *
 	 * @param studentType the Realm Type of the student to pick from the entrance
 	 * @return true if the player can take a coin, otherwise false
 	 * @throws StudentNotFoundException if the entrance doesn't have a student of specified Realm Type
@@ -95,6 +101,7 @@ public class School extends ProfessorPresenceObservable {
 
 	/**
 	 * Inserts a professor in the professor table
+	 *
 	 * @param professorType the Realm Type of the professor to insert
 	 */
 	public void insertProfessor (RealmType professorType) {
@@ -104,6 +111,7 @@ public class School extends ProfessorPresenceObservable {
 
 	/**
 	 * Removes a professor from the professor table
+	 *
 	 * @param professorType the Realm Type of the professor to remove
 	 */
 	public void removeProfessor (RealmType professorType){
@@ -113,6 +121,7 @@ public class School extends ProfessorPresenceObservable {
 	/**
 	 * Method sendTowerToIsland sends some towers from the garrison to the specified island. The number of
 	 * towers that are sent depends on how many towers the island can take
+	 *
 	 * @param island the island in which the tower is sent
 	 */
 	public void sendTowerToIsland (Island island) /*throws SchoolWithoutTowersException*/ {
@@ -123,22 +132,9 @@ public class School extends ProfessorPresenceObservable {
 	}
 
 	/**
-	 * Method sendStudentToIsland sends some students from the entrance of the specified Realm Types
-	 * to the specified island.
-	 * @param island the island on which the student is sent
-	 * @param students the Realm Type of the students to pick from the entrance
-	 * @throws StudentNotFoundException if the entrance doesn't have a student from the specified type
-	 */
-	@Deprecated
-	public void sendStudentToIsland (Island island, RealmType ... students) throws StudentNotFoundException {
-		for (RealmType studentType: students) {
-			island.addStudents(true, removeStudentEntrance(studentType));
-		}
-	}
-
-	/**
 	 * Method getNumStudentsDiningRoom returns the number of students presents in the dining room
 	 * of the specified Realm Type
+	 *
 	 * @param realmType the Realm Type of the number of students to return
 	 * @return the number of students of the specified Realm Type
 	 */
@@ -149,6 +145,7 @@ public class School extends ProfessorPresenceObservable {
 	/**
 	 * Method isProfessor present verifies whether the professor of the specified Realm Type is present
 	 * or not in the professor table
+	 *
 	 * @param realmType the Realm Type of the professor
 	 * @return true if the professor is present, otherwise false
 	 */
@@ -158,6 +155,7 @@ public class School extends ProfessorPresenceObservable {
 
 	/**
 	 * Returns the Tower Type that is assigned to the school
+	 *
 	 * @return the Tower Type of the school
 	 */
 	public TowerType getTowerType (){
@@ -166,6 +164,7 @@ public class School extends ProfessorPresenceObservable {
 
 	/**
 	 * Returns the number of towers that are currently in the school
+	 *
 	 * @return the number of towers
 	 */
 	public int getNumTowers() {
@@ -175,6 +174,7 @@ public class School extends ProfessorPresenceObservable {
 	/**
 	 * Puts some towers in the school, the number of towers depends on which island they came from
 	 * (1 if the island is a SingleIsland, more than 1 if the island is an IslandGroup)
+	 *
 	 * @param numTowersToIns the number of towers to insert
 	 */
 	public void insertTower(int numTowersToIns) {
@@ -183,6 +183,7 @@ public class School extends ProfessorPresenceObservable {
 
 	/**
 	 * Removes a student of the specified Realm Type from the entrance
+	 *
 	 * @param studentType the Realm Type of the student to remove
 	 * @return the student that has been removed from the entrance
 	 * @throws StudentNotFoundException if the entrance doesn't have any student of the specified type
@@ -201,6 +202,7 @@ public class School extends ProfessorPresenceObservable {
 
 	/**
 	 * Removes a student of the specified Realm Type from the dining room
+	 *
 	 * @param studentType the Realm Type of the student to remove
 	 * @return the student that has been removed from the dining room
 	 * @throws StudentNotFoundException if the dining room doesn't have any student of the specified type
@@ -218,6 +220,16 @@ public class School extends ProfessorPresenceObservable {
 		return toEliminate;
 	}
 
+	/**
+	 * Remove a student of the specified type from the student list and also update the int[] which is a summary of the
+	 * list
+	 *
+	 * @param studentsOfType the summary of the list of students
+	 * @param studentsList the list of students
+	 * @param studentType the type of student that needs to be removed
+	 * @return the removed students
+	 * @throws StudentNotFoundException if there isn't such a student
+	 */
 	//For a better reuse of code
 	private static Student remove(int[] studentsOfType, List<Student> studentsList, RealmType studentType)
 			throws StudentNotFoundException {
@@ -230,6 +242,7 @@ public class School extends ProfessorPresenceObservable {
 
 	/**
 	 * Returns the number of students of the specified Realm Type that are present in the entrance
+	 *
 	 * @param studentType the Realm Type of the students
 	 * @return the number of students in the entrance having the specified Realm Type
 	 */
@@ -239,6 +252,7 @@ public class School extends ProfessorPresenceObservable {
 
 	/**
 	 * Returns the number of professor that the professor table of this school have
+	 *
 	 * @return the number of professor owned by this school
 	 */
 	protected int getProfessorNumber() {
@@ -249,6 +263,15 @@ public class School extends ProfessorPresenceObservable {
 		return numProfessor;
 	}
 
+	/**
+	 * Insert the specified students in the dining room and returns the number of coins gained
+	 *
+	 * @param students the inserted students
+	 * @param notify true if the listener of the class will be informed, otherwise false
+	 * @param isFromEntrance true if the students come from the entrance, otherwise false
+	 * @return the number of coins gained
+	 * @throws FullDiningRoomException if the dining room is full for the specified type of students
+	 */
 	public int insertDiningRoom(Student[] students, boolean notify, boolean isFromEntrance) throws FullDiningRoomException {
 		int coinsGained = 0;
 		Integer[] studentsOfType = RealmType.getIntegerRepresentation(Arrays.stream(students)
@@ -268,6 +291,13 @@ public class School extends ProfessorPresenceObservable {
 		return coinsGained;
 	}
 
+	/**
+	 * Restore the school after the game has been restored from persistence data
+	 *
+	 * @param playerOwner the owner of the school, that will listen the school
+	 * @param game the game of the school, that will observe the school
+	 * @param gameConstants tha game constants of the game
+	 */
 	protected void restoreSchool(Player playerOwner, Game game, GameConstants gameConstants) {
 		this.addObserver(game);
 		this.player.addPropertyChangeListener(playerOwner);

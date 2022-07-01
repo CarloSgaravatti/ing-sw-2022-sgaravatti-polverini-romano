@@ -107,6 +107,11 @@ public class PersistenceGameInfo {
         SaveGame.saveGame(this);
     }
 
+    /**
+     * Restore the model of the previously saved game associated to this class and returns the Game instance of the game
+     *
+     * @return the Game instance of the restored game
+     */
     private Game restoreModelComponents() {
         Game game = new Game(new ArrayList<>(Arrays.asList(islands)), clouds, gameConstants, isExpertGame, bag, players);
         game.setNumPlayers(numPlayers);
@@ -120,13 +125,20 @@ public class PersistenceGameInfo {
                         .get(charactersWithTransient.getId()));
                 charactersWithTransient.restoreActivePlayer(lastActivePlayer);
             }
+            game.restoreCharacters(characterCards);
         }
-        game.restoreCharacters(characterCards);
         game.getPlayers().forEach(player -> player.restorePlayer(game, gameConstants));
         game.getIslands().forEach(island -> island.restoreIsland(game));
         return game;
     }
 
+    /**
+     * Restore controllers of the previously saved game associated to this class and returns the GameController
+     * that will control the restored game
+     *
+     * @param game the restored game
+     * @return the game controller of the restored game
+     */
     private GameController restoreControllers(final Game game) {
         GameController gameController = new GameController(game);
         Player[] lastOrder = Arrays.stream(lastPlayerOrder)

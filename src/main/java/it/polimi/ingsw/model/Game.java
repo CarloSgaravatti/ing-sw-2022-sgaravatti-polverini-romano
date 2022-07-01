@@ -54,6 +54,7 @@ public class Game implements ModelObserver, PropertyChangeListener {
 		this.players = new ArrayList<>(Arrays.stream(players).toList());
 		this.clouds = clouds;
 		this.isExpertGame = isExpertGame;
+		characterCards = new CharacterCard[gameConstants.getNumCharacterPerGame()];
 	}
 
 	public void createListeners(List<RemoteView> views, GameLobby lobby) {
@@ -318,7 +319,7 @@ public class Game implements ModelObserver, PropertyChangeListener {
 
 	public CharacterCard getCharacterById(int characterId) {
 		for (CharacterCard c: characterCards) {
-			if (characterId == c.getId()) return c;
+			if (c != null && characterId == c.getId()) return c;
 		}
 		return null;
 	}

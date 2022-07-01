@@ -65,6 +65,13 @@ public class CharacterCreator {
         };
     }
 
+    /**
+     * Returns the character action that is associated to a character with no input that have the specified id. This can
+     * be used both to create the character and to deserialize correctly a character.
+     *
+     * @param characterId the id of the character with no input
+     * @return the character action that is associated to a character with no input that have the specified id
+     */
     public Consumer<Player> getCharacterWithNoInputAction(int characterId) {
         return switch (characterId) {
             case 2 -> player -> player.getTurnEffect().setProfessorPrecedence(true);

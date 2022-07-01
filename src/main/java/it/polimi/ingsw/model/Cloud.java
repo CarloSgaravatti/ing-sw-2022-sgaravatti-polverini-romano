@@ -26,6 +26,9 @@ public class Cloud {
 
 	}
 
+	/**
+	 * Constructs an empty cloud
+	 */
 	public Cloud() {
 		studentsPresents = false;
 		game = new PropertyChangeSupport(this);

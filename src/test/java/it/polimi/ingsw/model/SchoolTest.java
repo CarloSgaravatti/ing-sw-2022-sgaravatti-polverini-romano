@@ -110,20 +110,6 @@ class SchoolTest extends TestCase {
         Assertions.assertNotNull(islandGroup.getTowerType());
     }
 
-    @ParameterizedTest
-    @EnumSource(RealmType.class)
-    void sendStudentToIsland(RealmType studentType) {
-        Island island = new SingleIsland();
-        int previousStudents = island.getNumStudentsOfType(studentType);
-        schoolTest.insertEntrance(new Student(studentType));
-        try {
-            schoolTest.sendStudentToIsland(island, studentType);
-        } catch (StudentNotFoundException e) {
-            Assertions.fail();
-        }
-        Assertions.assertEquals(previousStudents + 1, island.getNumStudentsOfType(studentType));
-    }
-
     @Test
     void removeStudentEntranceTest() {
         Student student = new Student(RealmType.YELLOW_GNOMES);

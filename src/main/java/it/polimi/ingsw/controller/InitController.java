@@ -128,7 +128,9 @@ public class InitController implements PropertyChangeListener {
 			}
 		}
 		listeners.firePropertyChange("Tower", tower, player.getNickName());
-		playersWithTower.put(player.getNickName(), tower);
+		synchronized (this) {
+			playersWithTower.put(player.getNickName(), tower);
+		}
 	}
 
 	/**
@@ -147,7 +149,9 @@ public class InitController implements PropertyChangeListener {
 		}
 		game.assignDeck(player, wizard);
 		listeners.firePropertyChange("Wizard", wizard, player.getNickName());
-		playersWithWizard.put(player.getNickName(), wizard);
+		synchronized (this) {
+			playersWithWizard.put(player.getNickName(), wizard);
+		}
 	}
 
 	/**
@@ -177,7 +181,7 @@ public class InitController implements PropertyChangeListener {
 	 *
 	 * @return players that have already chosen a wizard type
 	 */
-	public Map<String, WizardType> getPlayersWithWizard() {
+	public synchronized Map<String, WizardType> getPlayersWithWizard() {
 		return playersWithWizard;
 	}
 
@@ -186,7 +190,7 @@ public class InitController implements PropertyChangeListener {
 	 *
 	 * @return players that have already chosen a tower type
 	 */
-	public Map<String, TowerType> getPlayersWithTower() {
+	public synchronized Map<String, TowerType> getPlayersWithTower() {
 		return playersWithTower;
 	}
 

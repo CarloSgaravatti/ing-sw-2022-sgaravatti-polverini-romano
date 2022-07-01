@@ -20,6 +20,9 @@ public abstract class ProfessorPresenceObservable {
      */
     private final transient List<ModelObserver> observers;
 
+    /**
+     * Constructs a ProfessorPresenceObservable that will have no observers listening to the instance
+     */
     public ProfessorPresenceObservable() {
         observers = new ArrayList<>();
     }

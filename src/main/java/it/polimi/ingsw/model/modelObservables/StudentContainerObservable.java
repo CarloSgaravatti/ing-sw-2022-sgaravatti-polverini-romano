@@ -19,6 +19,9 @@ public abstract class StudentContainerObservable {
      */
     private final transient List<ModelObserver> observers;
 
+    /**
+     * Constructs a StudentContainerObservable that will have no observers listening to the instance
+     */
     public StudentContainerObservable() {
         observers = new ArrayList<>();
     }
