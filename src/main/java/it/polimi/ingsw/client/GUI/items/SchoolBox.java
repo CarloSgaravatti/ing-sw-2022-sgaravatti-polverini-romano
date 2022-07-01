@@ -24,6 +24,10 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * class used to initialize, modify and update the school box during the game with the drag and drop of students,addition of towers and professors
+ *
+ */
 public class SchoolBox {
     private final AnchorPane school;
     private final ImageView lastAssistantPlayed;
@@ -37,6 +41,15 @@ public class SchoolBox {
     private EventHandler<MouseEvent> dragStartStudentHandler;
     private static final List<RealmType> diningRoomOrder = List.of(RealmType.GREEN_FROGS, RealmType.RED_DRAGONS,
             RealmType.YELLOW_GNOMES, RealmType.PINK_FAIRES, RealmType.BLUE_UNICORNS);
+
+    /**
+     * constructor of the representation of the school in the main scene by the AnchorPane, it depends if the game is for expert or not.
+     *
+     * @param player name of the school's player
+     * @param container the AnchorPane that will contain the school
+     * @param modelView the model view of the client
+     * @param isExpertGame boolean that says if the game is for expert or not
+     */
 
     public SchoolBox(String player, AnchorPane container, ModelView modelView, boolean isExpertGame) {
         this.container = container;

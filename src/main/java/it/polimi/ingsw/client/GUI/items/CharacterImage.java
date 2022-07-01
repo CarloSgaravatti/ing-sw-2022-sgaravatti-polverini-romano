@@ -12,12 +12,23 @@ import javafx.scene.layout.VBox;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * CharacterImage is a representation of a character in the main scene as a usable card
+ *
+ */
 public class CharacterImage extends AnchorPane {
     private final int characterId;
     private final ExpertFieldView expertField;
     private HBox studentsBox;
     private double studentRadius;
 
+    /**
+     * Constructor of the CharacterImage. The image will be a card that represent the action and the image of the character
+     *
+     * @param characterId index of the character
+     * @param imageWidth width of the image of the character
+     * @param expertField view of the field for expert game
+     */
     public CharacterImage(int characterId, double imageWidth, ExpertFieldView expertField) {
         super();
         super.setWidth(imageWidth);
@@ -43,10 +54,19 @@ public class CharacterImage extends AnchorPane {
         }
     }
 
+    /**
+     * method getCharacterId gets the index of the character
+     *
+     * @return returns the index of the character
+     */
     public int getCharacterId() {
         return characterId;
     }
 
+    /**
+     * method updateStudents inserts new students after a character's action.
+     *
+     */
     public void updateStudents() {
         studentsBox.getChildren().clear();
         RealmType[] students = RealmType.getRealmsFromIntegerRepresentation(expertField.characterStudents(characterId));
@@ -57,10 +77,10 @@ public class CharacterImage extends AnchorPane {
         }
     }
 
-    public void removeNoEntryTile() {
-
-    }
-
+    /**
+     * method putCoin inserts a coin after a character's action
+     *
+     */
     public void putCoin() {
         Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/schools/coin.png")));
         ImageView imageView = new ImageView(image);

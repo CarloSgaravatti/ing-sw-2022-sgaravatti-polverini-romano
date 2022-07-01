@@ -458,7 +458,7 @@ public class GameMainSceneController extends FXMLController implements Initializ
      * @param islands the unified islands
      */
     public void mergeIslands(List<Integer> islands) {
-        this.islands.mergeIslands2(islands);
+        this.islands.mergeIslands(islands);
     }
 
     /**

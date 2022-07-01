@@ -11,11 +11,20 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
+/**
+ * CloudSubScene is used to represent the single cloud, with the addition of students on it when the game requests it
+ *
+ */
 public class CloudSubScene extends AnchorPane implements Initializable {
     private final boolean ifFourStudents;
     private final int cloudId;
 
-
+    /**
+     * constructor of the CloudSubScene where the cloudId and the boolean "isFourStudents" are initialized
+     *
+     * @param isFourStudents boolean that says if the cloud is for 4 students
+     * @param cloudId Id of the cloud
+     */
     public CloudSubScene(boolean isFourStudents, int cloudId) {
         this.ifFourStudents = isFourStudents;
         this.cloudId = cloudId;
@@ -74,6 +83,11 @@ public class CloudSubScene extends AnchorPane implements Initializable {
         else super.getStyleClass().add("cloud-pane" + (new Random().nextInt(4) + 1));
     }
 
+    /**
+     * method getCloudId gets the Id of a cloud
+     *
+     * @return returns the cloud id
+     */
     public int getCloudId() {
         return cloudId;
     }

@@ -15,12 +15,22 @@ import javafx.util.Duration;
 
 import java.util.*;
 
+/**
+ * IslandMap is used for represent the map of the islands in the main scene where mother nature, students and towers will move and appear/disappear during the game
+ *
+ */
 public class IslandMap {
     private final AnchorPane container;
     private final ModelView modelView;
     private final List<IslandSubScene> islandsSubScenes = new ArrayList<>();
     private final double islandsWidth;
 
+    /**
+     * constructor used for initialize the container of the islands and the modelView
+     *
+     * @param container AnchorPane that will contain the islands
+     * @param modelView modelView of the island map
+     */
     public IslandMap(AnchorPane container, ModelView modelView) {
         this.container = container;
         this.modelView = modelView;
@@ -30,6 +40,11 @@ public class IslandMap {
         islandsWidth = islandsSubScenes.get(0).getPrefWidth();
     }
 
+
+    /**
+     * method used for initialize the island map, it inserts all the islands as images using the method IslandSubScene
+     *
+     */
     public void initializeMap() {
         List<Node> islands = container.getChildren().subList(0, modelView.getField().getIslandSize());
         for (int i = 0; i < islands.size(); i++) {
@@ -60,6 +75,11 @@ public class IslandMap {
         }
     }
 
+    /**
+     * method used for delete redundant islands choosing a random island
+     *
+     * @param islands
+     */
     private void eliminateRedundantIslands(List<Node> islands) {
         Random rnd = new Random();
         while (islands.size() > modelView.getField().getIslandSize()) {
@@ -68,6 +88,13 @@ public class IslandMap {
         }
     }
 
+    /**
+     * method setDragAndDropHandlers links for every island the handler for the drag and drop
+     *
+     * @param dragOverIsland handler of drag over island event
+     * @param dropOnIsland handler of drop on island event
+     * @param dragMotherNatureStartHandler handler of drag mother nature event
+     */
     public void setDragAndDropHandlers(EventHandler<DragEvent> dragOverIsland, EventHandler<DragEvent> dropOnIsland,
                                        EventHandler<MouseEvent> dragMotherNatureStartHandler) {
         for (IslandSubScene island: islandsSubScenes) {
@@ -77,6 +104,12 @@ public class IslandMap {
         }
     }
 
+    /**
+     * method used to move mother nature between the islands
+     *
+     * @param oldPosition old position of mother nature (island index)
+     * @param newPosition new position of mother nature (island index)
+     */
     public void moveMotherNature(int oldPosition, int newPosition) {
         AnchorPane motherNature = new AnchorPane();
         motherNature.getStyleClass().add("mother-nature");
@@ -99,26 +132,43 @@ public class IslandMap {
         });
     }
 
+    /**
+     * method getIslands gives a list of islands
+     *
+     * @return returns the list of islands requested
+     */
     public List<IslandSubScene> getIslands() {
         return islandsSubScenes;
     }
 
+    /**
+     * method getIslandPosition gives the position of the island requested
+     *
+     * @param islandId island that position is requested
+     * @return returns a pair of positions (on X and Y)
+     */
     public Pair<Double, Double> getIslandPosition(int islandId) {
         IslandSubScene island = islandsSubScenes.get(islandId);
         return new Pair<>(island.getLayoutX() + island.getWidth() / 2,
                 island.getLayoutY() + island.getHeight() / 2);
     }
 
-    @Deprecated
-    public List<IslandSubScene> getIslandsById(int islandId) {
-        return  islandsSubScenes.stream().filter(i -> i.getIslandId() == islandId).toList();
-    }
-
+    /**
+     * method getIslandById gets and island searching by the island Id
+     *
+     * @param islandId Id of the island requested
+     * @return returns the island requested
+     */
     public Optional<IslandSubScene> getIslandById(int islandId) {
         return islandsSubScenes.stream().filter(i -> i.getIslandId() == islandId).findFirst();
     }
 
-    public void mergeIslands2(List<Integer> unifiedIds) {
+    /**
+     * method mergeIslands does the merge of two or more island during the game
+     *
+     * @param unifiedIds indexes of islands that will be merged
+     */
+    public void mergeIslands(List<Integer> unifiedIds) {
         Integer centerId = (unifiedIds.size() == 2) ? unifiedIds.get(0) : unifiedIds.get(1);
         int minId = unifiedIds.stream().min(Comparator.comparingInt(i -> i)).orElse(unifiedIds.get(0));
         unifiedIds.remove(centerId);
@@ -150,69 +200,4 @@ public class IslandMap {
                 .forEach(islandSubScene -> islandSubScene.setIslandId(islandSubScene.getIslandId() - 1));
     }
 
-    @Deprecated
-    public void mergeIslands(List<Integer> unifiedIds) {
-        Integer centerId = (unifiedIds.size() == 2) ? unifiedIds.get(0) : unifiedIds.get(1);
-        int minId = unifiedIds.stream().min(Comparator.comparingInt(i -> i)).orElse(unifiedIds.get(0));
-        unifiedIds.remove(centerId);
-        List<IslandSubScene> centerIsland = getIslandsById(centerId);
-        for (Integer i: unifiedIds) {
-            List<IslandSubScene> islandToMove = getIslandsById(i);
-            Optional<IslandSubScene> closerIslandToFirst = getClosestIsland(islandToMove, centerIsland.get(0));
-            Optional<IslandSubScene> closerIslandToLast = getClosestIsland(islandToMove, centerIsland.get(centerIsland.size() - 1));
-            if (closerIslandToFirst.isPresent() && closerIslandToLast.isPresent()) {
-                double xTranslate;
-                double yTranslate;
-                double offset = islandsWidth / 1.6; //TODO: control this and eventually change it
-                if (distance(closerIslandToFirst.get(), centerIsland.get(0)) <=
-                        distance(closerIslandToLast.get(), centerIsland.get(centerIsland.size() - 1))) {
-                    xTranslate = (centerIsland.get(0).getLayoutX() - closerIslandToFirst.get().getLayoutX()) +
-                            ((centerIsland.get(0).getLayoutX() > closerIslandToFirst.get().getLayoutX()) ? -offset : offset);
-                    yTranslate = (centerIsland.get(0).getLayoutY() - closerIslandToFirst.get().getLayoutY()) +
-                            ((centerIsland.get(0).getLayoutY() > closerIslandToFirst.get().getLayoutY()) ? -offset : offset);
-                } else {
-                    xTranslate = (centerIsland.get(centerIsland.size() - 1).getLayoutX() - closerIslandToLast.get().getLayoutX()) +
-                            ((centerIsland.get(centerIsland.size() - 1).getLayoutX() > closerIslandToLast.get().getLayoutX()) ? -offset : offset);
-                    yTranslate = (centerIsland.get(centerIsland.size() - 1).getLayoutY() - closerIslandToLast.get().getLayoutY()) +
-                            ((centerIsland.get(centerIsland.size() - 1).getLayoutY() > closerIslandToLast.get().getLayoutY()) ? -offset : offset);
-                }
-                islandToMove.forEach(island -> {
-                    TranslateTransition transition = new TranslateTransition(Duration.millis(2000), island);
-                    transition.setByX(xTranslate);
-                    transition.setByY(yTranslate);
-                    transition.play();
-                    island.setIslandId(minId);
-                    transition.setOnFinished(actionEvent -> {
-                        island.getStyleClass().remove("root-island-in-group");
-                        //island.setRootIsland(false);
-                        island.setTranslateX(0);
-                        island.setLayoutX(island.getLayoutX() + transition.getByX());
-                        island.setTranslateY(0);
-                        island.setLayoutY(island.getLayoutY() + transition.getByY());
-                    });
-                });
-            }
-        }
-        if (centerIsland.size() == 1) centerIsland.get(0).getStyleClass().add("root-island-in-group");
-        if (centerId != minId) centerIsland.forEach(islandSubScene -> islandSubScene.setIslandId(minId));
-        //decrement ids to maintain compatibility with CLI (and also model)
-        islandsSubScenes.stream()
-                .filter(i -> i.getIslandId() > centerIsland.get(0).getIslandId()
-                        && i.getIslandId() > unifiedIds.stream().max(Comparator.comparingInt(id -> id)).orElse(0))
-                .forEach(i -> i.setIslandId(i.getIslandId() - unifiedIds.size() + 1));
-        islandsSubScenes.forEach(island -> System.out.println(island.getIslandId()));
-    }
-
-    private Optional<IslandSubScene> getClosestIsland(List<IslandSubScene> islands, IslandSubScene centerIsland) {
-        return islands.stream().min((i1, i2) -> {
-            double i1Distance = distance(i1, centerIsland);
-            double i2Distance = distance(i2, centerIsland);
-            return Double.compare(i1Distance, i2Distance);
-        });
-    }
-
-    private double distance(IslandSubScene i1, IslandSubScene i2) {
-        return Math.pow(i1.getLayoutX() - i2.getLayoutX(), 2) +
-                Math.pow(i1.getLayoutY() - i2.getLayoutY(), 2);
-    }
 }

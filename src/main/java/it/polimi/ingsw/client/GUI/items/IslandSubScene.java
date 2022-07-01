@@ -19,6 +19,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
+/**
+ * class IslandSubScene is used for represent the single islands with the addition of students, towers and mother nature on them during the game
+ *
+ */
 public class IslandSubScene extends AnchorPane implements Initializable {
     @FXML private HBox redStudent;
     @FXML private HBox greenStudent;
@@ -31,6 +35,10 @@ public class IslandSubScene extends AnchorPane implements Initializable {
     private final Map<RealmType, HBox> students = new HashMap<>();
     private int islandId;
 
+    /**
+     * constructor of the IslandsSubScene that initializes the image of the single island
+     *
+     */
     public IslandSubScene() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/island.fxml"));
@@ -42,6 +50,12 @@ public class IslandSubScene extends AnchorPane implements Initializable {
         }
     }
 
+    /**
+     * method init initialize the island adding it in the fieldView
+     *
+     * @param fieldView fieldView of the islands
+     * @param islandId Id of the island added in the filedView
+     */
     public void init(FieldView fieldView, int islandId) {
         /*Triplet<Integer[], Integer, TowerType> island = fieldView.getIsland(islandId);
         Integer[] studentsInIsland = island.getFirst();
@@ -53,6 +67,11 @@ public class IslandSubScene extends AnchorPane implements Initializable {
         updateIsland(fieldView);
     }
 
+    /**
+     * method addStudent adds a student on an island
+     *
+     * @param student type of the student that will be added on the island
+     */
     public void addStudent(RealmType student) {
         Label label = (Label) students.get(student).getChildren().get(0);
         int labelText = Integer.parseInt(label.getText());
@@ -62,16 +81,30 @@ public class IslandSubScene extends AnchorPane implements Initializable {
         }
     }
 
+    /**
+     * method addTower adds a tower on an island
+     *
+     * @param tower type of the tower that will be added on the island
+     */
     public void addTower(TowerType tower) {
         Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(Constants.towerImages.get(tower))));
         this.tower.setImage(image);
         this.tower.getParent().setVisible(true);
     }
 
+    /**
+     * method setMotherNature sets the presence of mother nature on the island
+     *
+     * @param present boolean that says if mother nature is present on the island or not
+     */
     public void setMotherNature(boolean present) {
         this.motherNature.setVisible(present);
     }
 
+    /**
+     * method insertNoEntryTile inserts a No Entry Tile on the island
+     *
+     */
     public void insertNoEntryTile() {
         Label label = (Label) noEntryTile.getChildren().get(0);
         int labelText = Integer.parseInt(label.getText());
@@ -81,6 +114,10 @@ public class IslandSubScene extends AnchorPane implements Initializable {
         }
     }
 
+    /**
+     * method removeNoEntryTile removes a No Entry Tile on the island
+     *
+     */
     public void removeNoEntryTile() {
         Label label = (Label) noEntryTile.getChildren().get(0);
         int labelText = Integer.parseInt(label.getText());
@@ -90,28 +127,58 @@ public class IslandSubScene extends AnchorPane implements Initializable {
         }
     }
 
+    /**
+     * method getNumNoEntryTile gets the number of No Entry Tiles on the island
+     *
+     * @return returns the number of No Entry Tiles on the island
+     */
     public int getNumNoEntryTile() {
         Label label = (Label) noEntryTile.getChildren().get(0);
         return Integer.parseInt(label.getText());
     }
 
-
+    /**
+     * method getMotherNature gets the AnchorPane of mother nature
+     *
+     * @return returns the AnchorPane of mother nature
+     */
     public AnchorPane getMotherNature() {
         return motherNature;
     }
 
+    /**
+     * method getMotherNatureLayout gets the layout of mother nature by a pair of position (on X and on Y)
+     *
+     * @return returns the mother nature's layout
+     */
     public Pair<Double, Double> getMotherNatureLayout() {
         return new Pair<>(motherNature.getLayoutX(), motherNature.getLayoutY());
     }
 
+    /**
+     * method getIslandId gets the id of the island
+     *
+     * @return returns the id of the island
+     */
     public int getIslandId() {
         return islandId;
     }
 
+    /**
+     * method setIslandId sets an id for the island
+     *
+     * @param islandId id that will be linked to an island
+     */
     public void setIslandId(int islandId) {
         this.islandId = islandId;
     }
 
+    /**
+     * method initialize initializes the IslandSubScene
+     *
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         students.put(RealmType.YELLOW_GNOMES, yellowStudent);
@@ -126,6 +193,11 @@ public class IslandSubScene extends AnchorPane implements Initializable {
         super.getStyleClass().add("island-pane" + (new Random().nextInt(3) + 1));
     }
 
+    /**
+     * method updateIsland updates an island in the filedView
+     *
+     * @param fieldView filedView where the island will be updated
+     */
     public void updateIsland(FieldView fieldView) {
         Triplet<Integer[], Integer, TowerType> island = fieldView.getIsland(islandId);
         Integer[] students = island.getFirst();
