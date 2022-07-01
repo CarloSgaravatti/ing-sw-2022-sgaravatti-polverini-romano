@@ -276,7 +276,7 @@ public class CLI implements Runnable, UserInterface {
         }
         inputManager.setInputPermitted(false);
         listeners.firePropertyChange("TowerChoice", null, choice);
-        System.out.println("Tou have chosen the " + choice + " tower. Now wait for other players choices.");
+        System.out.println("You have chosen the " + choice + " tower. Now wait for other players choices.");
     }
 
     /**
@@ -307,7 +307,7 @@ public class CLI implements Runnable, UserInterface {
         }
         inputManager.setInputPermitted(false);
         listeners.firePropertyChange("WizardChoice", null, choice);
-        System.out.println("Tou have chosen the wizard " + choice + ". Now wait for other players choices.");
+        System.out.println("You have chosen the wizard " + choice + ". Now wait for other players choices.");
     }
 
     /**
