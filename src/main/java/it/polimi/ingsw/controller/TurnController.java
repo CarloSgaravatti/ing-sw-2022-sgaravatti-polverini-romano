@@ -107,10 +107,24 @@ public class TurnController {
 		return playerOrder;
 	}
 
+	/**
+	 * Returns the object that is responsible for calculating the order in planning phase
+	 *
+	 * @return the object that is responsible for calculating the order in planning phase
+	 */
 	public PlanningPhaseOrder getPlanningPhaseOrderStrategy() {
 		return (PlanningPhaseOrder) phaseOrderStrategy[0];
 	}
 
+	/**
+	 * Restore the turn controller state after a game was restored.
+	 *
+	 * @param orderCalculated boolean value that tells if order is calculated or not
+	 * @param lastOrder previous order before the interruption og the game
+	 * @param activePlayer is the active player in the turn
+	 * @param lastPhase last phase before the game interruption
+	 * @param isFirstRound boolean value that tells if is the first round
+	 */
 	public void restoreController(boolean orderCalculated, Player[] lastOrder, Player activePlayer, RoundPhase lastPhase, boolean isFirstRound) {
 		this.orderCalculated = orderCalculated;
 		this.playerOrder = lastOrder;
