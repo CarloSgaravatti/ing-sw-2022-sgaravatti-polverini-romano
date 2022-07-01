@@ -106,9 +106,11 @@ public class GameMainSceneController extends FXMLController implements Initializ
             transition.setNode(playersBox);
             transition.setDuration(Duration.millis(500));
             if (buttonText.equals("^")) {
+                playersBox.setTranslateY(yTranslation);
                 transition.setByY(-yTranslation);
                 button.setText("v");
             } else {
+                playersBox.setTranslateY(0);
                 transition.setByY(yTranslation);
                 button.setText("^");
             }
@@ -169,6 +171,10 @@ public class GameMainSceneController extends FXMLController implements Initializ
             button.setOnAction(actionEvent -> {
                 if (button.getOpacity() != 1) return;
                 if (button.getEffect() == null) return;
+                if (characterSelectable && !button.getText().equals("PlayCharacter")) {
+                    characterController.closeCharacterView(actionEvent);
+                    characterSelectable = false;
+                }
                 switch (button.getText()) {
                     case "PlayAssistant" -> onStartPlayAssistant();
                     case "MoveStudents" -> onStartMoveStudents();
@@ -183,7 +189,6 @@ public class GameMainSceneController extends FXMLController implements Initializ
         confirmActionButton.setOnAction(actionEvent -> {
             if (decisionBox.isVisible()) {
                 firePropertyChange(lastAction.getFirst(), null, lastAction.getSecond());
-                System.out.println(lastAction.getFirst() + " " + lastAction.getSecond());
             }
             actionDescriptionLabel.setText("");
             decisionBox.setVisible(false);
@@ -431,7 +436,6 @@ public class GameMainSceneController extends FXMLController implements Initializ
                 islands.getIslands().get(islandId).addStudent(student);
             });
         }
-        if (parallelTransition != null) parallelTransition.setOnFinished(actionEvent -> moveAccordionUp());
     }
 
     /**
@@ -725,7 +729,6 @@ public class GameMainSceneController extends FXMLController implements Initializ
             if (studentsDraggable) {
                 StudentImage student = (StudentImage) mouseEvent.getTarget();
                 lastStudentDragged = student.getStudentType();
-                System.out.println("Drag start");
                 if (action == null) {
                     action = new StringBuilder();
                     studentsMoved.clear();

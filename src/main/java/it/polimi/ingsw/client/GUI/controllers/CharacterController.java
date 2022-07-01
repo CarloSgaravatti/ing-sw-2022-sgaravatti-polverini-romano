@@ -110,6 +110,7 @@ public class CharacterController extends FXMLController {
      */
     @FXML
     void closeCharacterView(ActionEvent event) {
+        inputManager.resetEvents();
         root.setOpacity(0);
         root.setTranslateX(translation);
         inputManager.reset();
@@ -245,7 +246,6 @@ public class CharacterController extends FXMLController {
      * Make the play character button clickable after the user have selected all the options for playing the character
      */
     private void makePlayCharacterButtonClickable() {
-        System.out.println("Character is playable");
         characterPlayable = true;
         playButton.setOpacity(1);
     }
@@ -598,6 +598,28 @@ public class CharacterController extends FXMLController {
             actionsOrder.addAll(actionsNeeded);
             actionsOrder.remove(ActionType.SELECT_REALM);
             actionsOrder.remove(ActionType.SELECT_NUMBER);
+        }
+
+        /**
+         * Reset the events after the character dialog is closed
+         */
+        private void resetEvents() {
+            if (actionsOrder.contains(ActionType.SELECT_STUDENTS_FROM_ENTRANCE)) {
+                AnchorPane entrancePane = gameMainSceneController.getSchoolOfClient().getEntrancePane();
+                entrancePane.getChildren().forEach(student -> {
+                    student.getStyleClass().clear();
+                    SelectionEvent event = new SelectionEvent(SelectionEvent.ANY);
+                    Event.fireEvent(student, event);
+                });
+            }
+            if (actionsOrder.contains(ActionType.SELECT_STUDENTS_FROM_DINING_ROOM)) {
+                AnchorPane diningRoomPane = gameMainSceneController.getSchoolOfClient().getDiningRoomPane();
+                diningRoomPane.getChildren().forEach(student -> {
+                    student.getStyleClass().clear();
+                    SelectionEvent event = new SelectionEvent(SelectionEvent.ANY);
+                    Event.fireEvent(student, event);
+                });
+            }
         }
     }
 }

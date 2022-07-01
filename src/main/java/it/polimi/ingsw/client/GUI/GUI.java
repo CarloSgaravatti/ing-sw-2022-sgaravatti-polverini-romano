@@ -535,8 +535,8 @@ public class GUI extends Application implements UserInterface {
     private void onCoinsUpdate(String playerName) {
         Platform.runLater(() -> {
             GameMainSceneController gameMainSceneController = ((GameMainSceneController) currentSceneController);
-            gameMainSceneController.viewSchoolOf(playerName);
             gameMainSceneController.getSchoolBox(playerName).updateCoins();
+            gameMainSceneController.viewSchoolOf(playerName);
         });
     }
 
